@@ -27,6 +27,9 @@
 use Fatchip\CTPayment\CTPaymentMethodsIframe\CreditCard;
 use Fatchip\CTPayment\CTResponse\CTResponseIframe\CTResponseCreditCard;
 use Fatchip\CTPayment\CTPaymentMethodsIframe\EasyCredit;
+use Fatchip\CTPayment\CTPaymentMethodsIframe\Paydirekt;
+use Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard;
+use Fatchip\CTPayment\CTPaymentMethodsIframe\PostFinance;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
@@ -70,6 +73,15 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
                 return $this->redirect(['action' => 'gateway', 'forceSecure' => true]);
             case 'fatchip_computop_easycredit':
                 return $this->redirect(['action' => 'accepted_conditions', 'forceSecure' => true]);
+            case 'fatchip_computop_paydirekt':
+                return $this->redirect(['action' => 'gatewayPaydirekt', 'forceSecure' => true]);
+            case 'fatchip_computop_paypal_standard':
+                return $this->redirect(['action' => 'gatewayPaypalstandard', 'forceSecure' => true]);
+            case 'fatchip_computop_postfinance':
+                return $this->redirect(['action' => 'gatewayPostfinance', 'forceSecure' => true]);
+
+
+
             default:
                 return $this->redirect(['controller' => 'checkout']);
         }
@@ -91,7 +103,7 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
-        $ctOrder->setAmount($this->getAmount());
+        $ctOrder->setAmount($this->getAmount() * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($this->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($this->getCTAddress($user['shippingaddress']));
@@ -100,7 +112,7 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
         $myCC = new CreditCard(
             $config,
             $ctOrder,
-            $router->assemble(['action' => 'index', 'forceSecure' => true]),
+            $router->assemble(['action' => 'success', 'forceSecure' => true]),
             $router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $router->assemble(['action' => 'notify', 'forceSecure' => true])
         );
@@ -143,6 +155,112 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
         $this->redirect($myEC->getHTTPGetURL());
 
     }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function gatewayPaydirektAction()
+    {
+        $router = $this->Front()->Router();
+        $user = $this->getUser();
+
+        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $config = $plugin->Config()->toArray();
+        // ToDo: handle possible exception here
+        $service = $this->container->get('FatchipCTPaymentApiClient');
+
+        // ToDo refactor ctOrder creation
+        $ctOrder = new CTOrder();
+        $ctOrder->setAmount($this->getAmount() * 100);
+        $ctOrder->setCurrency($this->getCurrencyShortName());
+        $ctOrder->setBillingAddress($this->getCTAddress($user['billingaddress']));
+        $ctOrder->setShippingAddress($this->getCTAddress($user['shippingaddress']));
+
+        // ToDo should this be done in the CTPaymentService?
+        $myPD = new Paydirekt(
+          $config,
+          $ctOrder,
+          $router->assemble(['action' => 'success', 'forceSecure' => true]),
+          $router->assemble(['action' => 'failure', 'forceSecure' => true]),
+          $router->assemble(['action' => 'notify', 'forceSecure' => true])
+
+        );
+        $myPD->setUserData($service->createPaymentToken($this->getAmount(), $user['billing']['customernumber']));
+        $this->redirect($myPD->getHTTPGetURL());
+
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function gatewayPaypalstandardAction()
+    {
+        $router = $this->Front()->Router();
+        $user = $this->getUser();
+
+        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $config = $plugin->Config()->toArray();
+        // ToDo: handle possible exception here
+        $service = $this->container->get('FatchipCTPaymentApiClient');
+
+        // ToDo refactor ctOrder creation
+        $ctOrder = new CTOrder();
+        $test = $this->getAmount();
+        $ctOrder->setAmount($this->getAmount() * 100);
+        $ctOrder->setCurrency($this->getCurrencyShortName());
+        $ctOrder->setBillingAddress($this->getCTAddress($user['billingaddress']));
+        $ctOrder->setShippingAddress($this->getCTAddress($user['shippingaddress']));
+
+        // ToDo should this be done in the CTPaymentService?
+        $myPP = new PaypalStandard(
+          $config,
+          $ctOrder,
+          $router->assemble(['action' => 'success', 'forceSecure' => true]),
+          $router->assemble(['action' => 'failure', 'forceSecure' => true]),
+          $router->assemble(['action' => 'notify', 'forceSecure' => true])
+
+        );
+        $myPP->setUserData($service->createPaymentToken($this->getAmount(), $user['billing']['customernumber']));
+        $this->redirect($myPP->getHTTPGetURL());
+
+    }
+
+    public function gatewayPostfinanceAction()
+    {
+        $router = $this->Front()->Router();
+        $user = $this->getUser();
+
+        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $config = $plugin->Config()->toArray();
+        // ToDo: handle possible exception here
+        $service = $this->container->get('FatchipCTPaymentApiClient');
+
+        // ToDo refactor ctOrder creation
+        $ctOrder = new CTOrder();
+        $test = $this->getAmount();
+        $ctOrder->setAmount($this->getAmount()*100);
+        $ctOrder->setCurrency($this->getCurrencyShortName());
+        $ctOrder->setBillingAddress($this->getCTAddress($user['billingaddress']));
+        $ctOrder->setShippingAddress($this->getCTAddress($user['shippingaddress']));
+
+        // ToDo should this be done in the CTPaymentService?
+        $myPF = new PostFinance(
+          $config,
+          $ctOrder,
+          $router->assemble(['action' => 'success', 'forceSecure' => true]),
+          $router->assemble(['action' => 'failure', 'forceSecure' => true]),
+          $router->assemble(['action' => 'notify', 'forceSecure' => true])
+
+        );
+
+        $myPF->setUserData($service->createPaymentToken($this->getAmount(), $user['billing']['customernumber']));
+        $this->redirect($myPF->getHTTPGetURL());
+
+    }
+
+
 
     /**
      * @return void
