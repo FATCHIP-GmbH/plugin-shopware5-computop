@@ -307,9 +307,9 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         ));
 
         $this->Form()->setElement('boolean', 'mobilePaySendMobileNr', array(
-          'value' => false,
-          'label' => 'MobilePay - Handynummer übermitteln',
-          'required' => false,
+            'value' => false,
+            'label' => 'MobilePay - Handynummer übermitteln',
+            'required' => false,
         ));
 
         $this->Form()->setElement('text', 'payDirektShopApiKey', array(
@@ -344,9 +344,9 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         ));
 
         $this->Form()->setElement('boolean', 'bonitaetusereturnaddress', array(
-          'value' => false,
-          'label' => 'Bonitätsprüfung - Zurückgelieferte Adressdaten verwenden',
-          'required' => false,
+            'value' => false,
+            'label' => 'Bonitätsprüfung - Zurückgelieferte Adressdaten verwenden',
+            'required' => false,
             'description' => 'Sollen die zurückgelieferten Adressdaten die bereits bestehenden aktualisieren?'
         ));
 
@@ -355,21 +355,21 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         require_once __DIR__ . DIRECTORY_SEPARATOR . 'Components/Api/vendor/autoload.php';
         /** @var \Fatchip\CTPayment\CTPaymentService $service */
         $service = new \Fatchip\CTPayment\CTPaymentService(null);
-        $paymentmethods = $service->getPaymentMethods();
-        foreach($paymentmethods as $paymentMeth) {
-            $this->Form()->setElement('select', 'bonitaet' . $paymentMeth['name'], array(
-              'value' => 'inactive',
-              'store' => array(
-                array('inactive', 'Inkativ'),
-                array('QuickCheckConsumer', 'QuickCheckConsumer'),
-                array('CreditCheckConsumer', 'CreditCheckConsumer'),
-                array('QuickCheckBusiness', 'QuickCheckBusiness'),
-                array('CreditCheckBusiness', 'CreditCheckBusiness>'),
-                array('IdentCheckConsumer', 'IdentCheckConsumer>'),
-              ),
-              'label' => 'Bonitätsprüfung ' . $paymentMeth['shortname'],
-              'required' => true,
-              'editable' => false,
+        $paymentMethods = $service->getPaymentMethods();
+        foreach ($paymentMethods as $paymentMethod) {
+            $this->Form()->setElement('select', 'bonitaet' . $paymentMethod['name'], array(
+                'value' => 'inactive',
+                'store' => array(
+                    array('inactive', 'Inkativ'),
+                    array('QuickCheckConsumer', 'QuickCheckConsumer'),
+                    array('CreditCheckConsumer', 'CreditCheckConsumer'),
+                    array('QuickCheckBusiness', 'QuickCheckBusiness'),
+                    array('CreditCheckBusiness', 'CreditCheckBusiness>'),
+                    array('IdentCheckConsumer', 'IdentCheckConsumer>'),
+                ),
+                'label' => 'Bonitätsprüfung ' . $paymentMethod['shortname'],
+                'required' => true,
+                'editable' => false,
             ));
         }
 
@@ -381,7 +381,10 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      */
     protected function createPayments()
     {
-        $paymentMethods = $this->getPaymentMethods();
+        require_once __DIR__ . DIRECTORY_SEPARATOR . 'Components/Api/vendor/autoload.php';
+        /** @var \Fatchip\CTPayment\CTPaymentService $service */
+        $service = new \Fatchip\CTPayment\CTPaymentService(null);
+        $paymentMethods = $service->getPaymentMethods();
 
         foreach ($paymentMethods as $paymentMethod) {
             if ($this->Payments()->findOneBy(array('name' => $paymentMethod['name']))) {
@@ -402,25 +405,5 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             }
             $this->createPayment($payment);
         }
-    }
-
-
-    /**
-     * @return array
-     */
-    public function getPaymentMethods()
-    {
-        return array(
-            array(
-                'name' => 'fatchip_computop_creditcard',
-                'description' => 'Computop Kreditkarte',
-                'template' => 'fatchip_computop_creditcard.tpl',
-                'position' => 1,),
-            array(
-                'name' => 'fatchip_computop_easycredit',
-                'description' => 'Computop Easycredit',
-                'template' => 'fatchip_computop_easycredit.tpl',
-                'position' => 2,),
-        );
     }
 }
