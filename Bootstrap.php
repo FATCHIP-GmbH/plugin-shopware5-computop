@@ -18,6 +18,190 @@
  */
 class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
+
+    private $formGeneralTextElements =
+        [
+            'merchantID' => [
+                'name' => 'merchantID',
+                'type' => 'text',
+                'value' => '',
+                'label' => 'MerchantID',
+                'required' => true,
+            ],
+            'mac' => [
+                'name' => 'mac',
+                'type' => 'text',
+                'value' => '',
+                'label' => 'MAC',
+                'required' => true,
+            ],
+            'blowfishPassword' => [
+                'name' => 'blowfishPassword',
+                'type' => 'text',
+                'value' => '',
+                'label' => 'Blowfish Password',
+                'required' => true,
+            ],
+        ];
+
+    private $formCreditCardSelectElements =
+        [
+            'creditCardCaption' => [
+                'name' => 'creditCardCaption',
+                'type' => 'select',
+                'value' => 'AUTO',
+                'label' => 'Kreditkarte - Caption Methode',
+                'required' => true,
+                'editable' => false,
+                'store' =>
+                    [
+                        ['AUTO', 'Automatisch'],
+                        ['MANUAL', 'Manuell'],
+                        ['DELAYED', 'Verzögert'],
+                    ],
+            ],
+            'creditCardAcquirer' => [
+                'name' => 'creditCardAcquirer',
+                'type' => 'select',
+                'value' => 'GICC',
+                'label' => 'Kreditkarte - Acquirer',
+                'required' => 'true',
+                'editable' => false,
+                'store' =>
+                    [
+                        ['GICC', 'GICC: Concardis, B+S Card Service, EVO Payments, American Express, Elavon, SIX Payment Service'],
+                        ['CAPN', 'CAPN: American Express'],
+                        ['Omnipay', 'Omnipay: EMS payment solutions, Global Payments, Paysquare'],
+                    ],
+            ],
+        ];
+
+    private $formCreditCardNumberElements =
+        [
+            'creditCardDelay' => [
+                'name' => 'creditCardDelay',
+                'type' => 'number',
+                'value' => '1',
+                'label' => 'creditCardDelay',
+                'required' => true,
+                'description' => 'Verzögerung in Stunden wenn als Caption Methode "Verzögert" gewählt wurde',
+            ],
+        ];
+
+    private $formIdealoSelectElements =
+        [
+            'idealDirektOderUeberSofort' => [
+                'name' => 'idealDirektOderUeberSofort',
+                'type' => 'select',
+                'value' => 'DIREKT',
+                'label' => 'iDEAL - iDEAL Direkt oder über Sofort',
+                'required' => true,
+                'editable' => false,
+                'store' =>
+                    [
+                        ['DIREKT', 'iDEAL Direkt'],
+                        ['SOFORT', 'via Sofort'],
+                    ],
+            ],
+            'lastschriftDienst' => [
+                'name' => 'lastschriftDienst',
+                'type' => 'select',
+                'value' => 'DIREKT',
+                'label' => 'Lastschrift - Anbinden über Dienst',
+                'required' => true,
+                'editable' => false,
+                'store' =>
+                    [
+                        ['DIREKT', 'Direktanbindung'],
+                        ['EVO', 'EVO Payments'],
+                        ['INTERCARD', 'Intercard'],
+                    ],
+            ],
+        ];
+
+    private $formPayDirektTextElements =
+        [
+            'payDirektShopApiKey' => [
+                'name' => 'payDirektShopApiKey',
+                'type' => 'text',
+                'value' => '',
+                'label' => 'Paydirekt - Shop Api Key',
+                'required' => true,
+            ],
+        ];
+
+    private $formPayDirektSelectElements =
+        [
+            'payDirektCaption' => [
+                'name' => 'payDirektCaption',
+                'type' => 'select',
+                'value' => 'AUTO',
+                'label' => 'iDEAL - iDEAL Direkt oder über Sofort',
+                'required' => true,
+                'editable' => false,
+                'store' =>
+                    [
+                        ['AUTO', 'Automatisch'],
+                        ['MANUAL', 'Manuell'],
+                        ['DELAYED', 'Verzögert'],
+                    ],
+            ],
+        ];
+
+    private $formPayDirektNumberElements =
+        [
+            'payDirektCardDelay' => [
+                'name' => 'payDirektCardDelay',
+                'type' => 'number',
+                'value' => '1',
+                'label' => 'Paydirekt - Verzögerung Einzug',
+                'required' => true,
+                'description' => 'Verzögerung in Stunden wenn als Caption Methode "Verzögert" gewählt wurde',
+            ],
+        ];
+
+    private $formPayPalSelectElements =
+        [
+            'paypalCaption' => [
+                'name' => 'paypalCaption',
+                'type' => 'select',
+                'value' => 'AUTO',
+                'label' => 'Paypal - Caption Methode',
+                'required' => true,
+                'editable' => false,
+                'store' =>
+                    [
+                        ['AUTO', 'Automatisch'],
+                        ['MANUAL', 'Manuell'],
+                    ],
+                'description' => 'bestimmt, ob der angefragte Betrag sofort oder erst später abgebucht wird. <br>
+                                  <b>Wichtig:<br>Bitte kontaktieren Sie den Computop Support für Manual, um die unterschiedlichen Einsatzmöglichkeiten abzuklären.</b>',
+            ],
+        ];
+
+    private $formBonitaetElements =
+        [
+            'bonitaetusereturnaddress' => [
+                'name' => 'bonitaetusereturnaddress',
+                'type' => 'boolean',
+                'value' => false,
+                'label' => 'Bonitätsprüfung - Zurückgelieferte Adressdaten verwenden',
+                'required' => true,
+            ],
+        ];
+
+    private $formMobilePayBooleanElements =
+        [
+            'mobilePaySendMobileNr' => [
+                'name' => 'mobilePaySendMobileNr',
+                'type' => 'boolean',
+                'value' => false,
+                'label' => 'MobilePay - Handynummer übermitteln',
+                'required' => false,
+            ],
+        ];
+
+
     /**
      * Returns plugin info
      *
@@ -240,116 +424,32 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
     /***
      *  Creates the settings page for this plugin.
-     *  hiddenmessage: The message that is shown blurry if article has not been bought
-     *  calltoaction: Text that is shown below properties table to explain why properties are not readable
      */
     private function createConfig()
     {
-        $this->Form()->setElement('text', 'merchantID', array(
-            'value' => '',
-            'label' => 'MerchantID',
-            'required' => true,
-        ));
+        // general
+        $this->createFormTextElements($this->formGeneralTextElements);
 
-        $this->Form()->setElement('text', 'mac', array(
-            'value' => '',
-            'label' => 'MAC',
-            'required' => true,
-        ));
+        // credit cards
+        $this->createFormSelectElements($this->formCreditCardSelectElements);
+        $this->createFormTextElements($this->formCreditCardNumberElements);
 
-        $this->Form()->setElement('text', 'blowfishPassword', array(
-            'value' => '',
-            'label' => 'Blowfish Password',
-            'required' => true,
-        ));
+        // idealo and Sofort
+        $this->createFormSelectElements($this->formIdealoSelectElements);
 
-        $this->Form()->setElement('select', 'creditCardCaption', array(
-            'value' => 'AUTO',
-            'store' => array(array('AUTO', 'Automatisch'), array('MANUAL', 'Manuell'), array('DELAYED', 'Verzögert')),
-            'label' => 'Kreditkarte - Caption Methode',
-            'description' => '',
-            'required' => true,
-            'editable' => false,
-        ));
+        // Mobilepay
+        $this->createFormTextElements($this->formMobilePayBooleanElements);
 
-        $this->Form()->setElement('number', 'creditCardDelay', array(
-            'value' => '1',
-            'label' => 'Kreditkarte - Verzögerung Einzug',
-            'description' => 'Verzögerung in Stunden wenn als Caption Methode "Verzögert" gewählt wurde',
-        ));
+        //paydirekt
+        $this->createFormTextElements($this->formPayDirektTextElements);
+        $this->createFormSelectElements($this->formPayDirektSelectElements);
+        $this->createFormTextElements($this->formPayDirektNumberElements);
 
-        $this->Form()->setElement('select', 'creditCardAcquirer', array(
-            'value' => 'GICC',
-            'store' => array(array('GICC', 'GICC: Concardis, B+S Card Service, EVO Payments, American Express, Elavon, SIX Payment Service'),
-                array('CAPN', 'CAPN: American Express'), array('Omnipay', 'Omnipay: EMS payment solutions, Global Payments, Paysquare')),
-            'label' => 'Kreditkarte - Acquirer',
-            'required' => true,
-            'editable' => false,
-        ));
+        //paypal
+        $this->createFormSelectElements($this->formPayPalSelectElements);
 
-        $this->Form()->setElement('select', 'idealDirektOderUeberSofort', array(
-            'value' => 'DIREKT',
-            'store' => array(array('DIREKT', 'iDEAL Direkt'),
-                array('SOFORT', 'via Sofort')),
-            'label' => 'iDEAL - iDEAL Direkt oder über Sofort ',
-            'required' => true,
-            'editable' => false,
-        ));
-
-        $this->Form()->setElement('select', 'lastschriftDienst', array(
-            'value' => 'DIREKT',
-            'store' => array(array('DIREKT', 'Direktanbindung'),
-                array('EVO', 'EVO Payments'), array('INTERCARD', 'Intercard'),
-            ),
-            'label' => 'Lastschrift - Anbinden über Dienst',
-            'required' => true,
-            'editable' => false,
-        ));
-
-        $this->Form()->setElement('boolean', 'mobilePaySendMobileNr', array(
-            'value' => false,
-            'label' => 'MobilePay - Handynummer übermitteln',
-            'required' => false,
-        ));
-
-        $this->Form()->setElement('text', 'payDirektShopApiKey', array(
-            'value' => '',
-            'label' => 'Paydirekt - Shop Api Key',
-            'required' => true,
-        ));
-
-        $this->Form()->setElement('select', 'payDirektCaption', array(
-            'value' => 'AUTO',
-            'store' => array(array('AUTO', 'Automatisch'), array('MANUAL', 'Manuell'), array('DELAYED', 'Verzögert')),
-            'label' => 'Paydirekt - Caption Methode',
-            'description' => '',
-            'required' => true,
-            'editable' => false,
-        ));
-
-        $this->Form()->setElement('number', 'payDirektCardDelay', array(
-            'value' => '1',
-            'label' => 'Paydirekt - Verzögerung Einzug',
-            'description' => 'Verzögerung in Stunden wenn als Caption Methode "Verzögert" gewählt wurde',
-        ));
-
-        $this->Form()->setElement('select', 'paypalCaption', array(
-            'value' => 'AUTO',
-            'store' => array(array('AUTO', 'Automatisch'), array('MANUAL', 'Manuell')),
-            'label' => 'Paypal - Caption Methode',
-            'description' => 'bestimmt, ob der angefragte Betrag sofort oder erst später abgebucht wird. <br>
-          <b>Wichtig:<br>Bitte kontaktieren Sie den Computop Support für Manual, um die unterschiedlichen Einsatzmöglichkeiten abzuklären.</b>',
-            'required' => true,
-            'editable' => false,
-        ));
-
-        $this->Form()->setElement('boolean', 'bonitaetusereturnaddress', array(
-            'value' => false,
-            'label' => 'Bonitätsprüfung - Zurückgelieferte Adressdaten verwenden',
-            'required' => false,
-            'description' => 'Sollen die zurückgelieferten Adressdaten die bereits bestehenden aktualisieren?'
-        ));
-
+        //rating
+        $this->createFormTextElements($this->formBonitaetElements);
 
         //For every paymentmethod, we add a setting for Bonitätsprüfung
         require_once __DIR__ . DIRECTORY_SEPARATOR . 'Components/Api/vendor/autoload.php';
@@ -372,8 +472,39 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 'editable' => false,
             ));
         }
+    }
 
 
+    /**
+     * @param array $elements
+     */
+    private function createFormTextElements($elements)
+    {
+        foreach ($elements as $element) {
+            $this->Form()->setElement($element['type'], $element['name'], array(
+                'value' => $element['value'],
+                'label' => $element['label'],
+                'required' => $element['required'],
+                'description' => $element['description'],
+            ));
+        }
+    }
+
+    /**
+     * @param array $elements
+     */
+    private function createFormSelectElements($elements)
+    {
+        foreach ($elements as $element) {
+            $this->Form()->setElement($element['type'], $element['name'], array(
+                'value' => $element['value'],
+                'label' => $element['label'],
+                'required' => $element['required'],
+                'editable' => $element['editable'],
+                'store' => $element['store'],
+                'description' => $element['description'],
+            ));
+        }
     }
 
     /**
