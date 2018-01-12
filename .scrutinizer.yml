@@ -183,7 +183,7 @@ build:
             - export PLUGIN_NAME=FatchipCTPayment
             - export PLUGIN_DIRECTORY=${SHOPWARE_DIRECTORY}/engine/Shopware/Plugins/Community/Frontend
             - git submodule update --init --recursive --remote
-            - git submodules sync
+            - git submodule sync
             - git clone https://github.com/shopware/shopware.git ${SHOPWARE_DIRECTORY} --branch ${SHOPWARE_VERSION}
             - ant -f ${SHOPWARE_DIRECTORY}/build/build.xml -Dapp.host=localhost -Ddb.user=root -Ddb.host=127.0.0.1 -Ddb.name=shopware build-unit
             - cp -R /home/scrutinizer/build ${PLUGIN_DIRECTORY}/${PLUGIN_NAME}
