@@ -15,7 +15,7 @@ class Service implements SubscriberInterface
     /**
      * Returns the subscribed events
      *
-     * @return array<string[]
+     * @return array<string,string>
      */
     public static function getSubscribedEvents()
     {
@@ -26,7 +26,7 @@ class Service implements SubscriberInterface
     }
 
     /**
-     * @return boolean
+     * @return CTPaymentService
      */
     public function onInitApiClient()
     {
