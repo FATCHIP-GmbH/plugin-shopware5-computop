@@ -1,0 +1,27 @@
+{
+  "label": {
+    "de": "Computop Payment",
+    "en": "Computop payment"
+  },
+  "copyright": "(c) by FATCHIP GmbH",
+  "license": "proprietary",
+  "link": "http://www.fatchip.de",
+  "support": "support@fatchip.de",
+  "author": "FATCHIP GmbH",
+  "currentVersion": "%%VERSION%%",
+  "solution_name": "Fatchip CTPayment",
+  "changelog": {
+    "de": {
+      "1.0": "Erstveröffentlichung - Weitere Updates in der Datei CHANGELOG.md"
+    },
+    "en": {
+      "1.0": "First release - Further updates in the file CHANGELOG.md"
+    }
+  },
+  "compatibility": {
+    "minimumVersion": "5.2.0",
+    "maximumVersion": null,
+    "blacklist": [
+    ]
+  }
+}
