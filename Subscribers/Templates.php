@@ -50,7 +50,7 @@ class Templates implements SubscriberInterface
     }
 
     /**
-     * @inheritdoc
+     * @return array<string,string>
      */
     public static function getSubscribedEvents()
     {

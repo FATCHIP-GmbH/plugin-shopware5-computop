@@ -34,6 +34,9 @@ use Fatchip\CTPayment\CTEnums\CTEnumEasyCredit;
 use Fatchip\CTPayment\CTResponse\CTResponseIframe\CTResponseEasyCredit;
 use VIISON\AddressSplitter\AddressSplitter;
 
+/**
+ * Class Shopware_Controllers_Frontend_FatchipCTPayment
+ */
 class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controllers_Frontend_Payment
 {
 
@@ -47,10 +50,16 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
         return ['notify'];
     }
 
+    /**
+     *
+     */
     public function preDispatch()
     {
     }
 
+    /**
+     * @return void
+     */
     public function indexAction()
     {
         /**
@@ -66,6 +75,10 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
         }
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function gatewayAction()
     {
         $router = $this->Front()->Router();
@@ -96,6 +109,10 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
 
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function gatewayEasycreditAction()
     {
         $router = $this->Front()->Router();
@@ -127,9 +144,12 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
 
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function acceptedConditionsAction()
     {
-        $requestParams = $this->Request()->getParams();
         $router = $this->Front()->Router();
         $user = $this->getUser();
         $session = Shopware()->Session();
@@ -167,6 +187,7 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
     }
 
     /**
+     * @return void
      * Cancel action method
      */
     public function failureAction()
@@ -178,12 +199,12 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
 
         $response = $service->createPaymentResponse($requestParams);
         // ToDo extend shippingPayment template to show errors instead of dying ;)
-        die($response->getDescription());
         return $this->redirect(['controller' => 'checkout', 'action' => 'shippingPayment', 'sTarget' => 'checkout']);
     }
 
     /**
      * Cancel action method
+     * @return void
      */
     public function successAction()
     {
@@ -218,6 +239,7 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
 
     /**
      * Cancel action method
+     * @return void
      */
     public function authSuccessAction()
     {
@@ -305,34 +327,3 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
         return Shopware()->Db()->fetchOne($countrySql, [$countryId]);
     }
 }
-
-/*      $url = $myCC->getForm();
-
-        $query = $myCC->getTransactionQuery();
-        $Len = mb_strlen($query);
-
-        $postdata['MerchantID'] = $merchantID;
-        $postdata['Len'] = $Len;
-        $postdata['Data'] = $myCC->getEncryptedData();
-        $postdata['Background'] = 'https://www.google.de/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png';
-        foreach ( $postdata as $key => $value) {
-            $post_items[] = $key . '=' . $value;
-        }
-        $post_string = implode ('&', $post_items);
-        $curl_connection =
-            curl_init($myCC->getCTPaymentURL());
-        //set options
-        curl_setopt($curl_connection, CURLOPT_CONNECTTIMEOUT, 30);
-        curl_setopt($curl_connection, CURLOPT_USERAGENT,
-            "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)");
-        curl_setopt($curl_connection, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl_connection, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl_connection, CURLOPT_FOLLOWLOCATION, 1);
-
-        //set data to be posted
-        curl_setopt($curl_connection, CURLOPT_POSTFIELDS, $post_string);
-
-        //perform our request
-
-        $url = curl_exec($curl_connection);
-*/

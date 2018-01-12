@@ -30,6 +30,9 @@ use Enlight\Event\SubscriberInterface;
 class Checkout implements SubscriberInterface
 {
 
+    /**
+     * @return array<string,string>
+     */
     public static function getSubscribedEvents()
     {
         return array(
@@ -60,6 +63,7 @@ class Checkout implements SubscriberInterface
     /**
      * ToDo refactor , this is only for SW 5.2 yet
      * @param array $paymentData
+     * @return void
      */
     private function saveUserBirthday(array $paymentData)
     {
@@ -76,10 +80,13 @@ class Checkout implements SubscriberInterface
         Shopware()->Models()->flush();
     }
 
+    /**
+     * @param \Enlight_Controller_ActionEventArgs $args
+     * @return void
+     */
     public function onPostdispatchFrontendCheckout(\Enlight_Controller_ActionEventArgs $args)
     {
         $subject = $args->getSubject();
-        $view = $subject->View();
         $request = $subject->Request();
         $response = $subject->Response();
         $session = Shopware()->Session();
@@ -87,9 +94,6 @@ class Checkout implements SubscriberInterface
         if (!$request->isDispatched() || $response->isException() || $request->getModuleName() != 'frontend') {
             return;
         }
-
-        $session = Shopware()->Session();
-        $userData = Shopware()->Modules()->Admin()->sGetUserData();
 
         // ToDo should check here all Session vars?
         if ($request->getActionName() === 'confirm' && !$session->offsetExists('fatchipComputopEasyCreditPayId')) {
