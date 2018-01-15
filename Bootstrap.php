@@ -16,6 +16,9 @@
  *
  * - uninstall: Triggered when the plugin is reinstalled or uninstalled. Clean up your tables here.
  */
+
+use Fatchip\CTPayment\CTPaymentService;
+
 class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
 
@@ -368,6 +371,11 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             'Shopware\FatchipCTPayment',
             $this->Path()
         );
+        // register computop Api
+        $this->Application()->Loader()->registerNamespace(
+            'Fatchip\CTPayment',
+            $this->Path() . DIRECTORY_SEPARATOR . 'Components/Api'
+        );
     }
 
     /**
@@ -452,9 +460,9 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $this->createFormTextElements($this->formBonitaetElements);
 
         //For every paymentmethod, we add a setting for Bonitätsprüfung
-        require_once __DIR__ . DIRECTORY_SEPARATOR . 'Components/Api/vendor/autoload.php';
+
         /** @var \Fatchip\CTPayment\CTPaymentService $service */
-        $service = new \Fatchip\CTPayment\CTPaymentService(null);
+        $service = new CTPaymentService(null);
         $paymentMethods = $service->getPaymentMethods();
         foreach ($paymentMethods as $paymentMethod) {
             $this->Form()->setElement('select', 'bonitaet' . $paymentMethod['name'], array(
@@ -512,9 +520,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      */
     protected function createPayments()
     {
-        require_once __DIR__ . DIRECTORY_SEPARATOR . 'Components/Api/vendor/autoload.php';
         /** @var \Fatchip\CTPayment\CTPaymentService $service */
-        $service = new \Fatchip\CTPayment\CTPaymentService(null);
+        $service = new CTPaymentService(null);
         $paymentMethods = $service->getPaymentMethods();
 
         foreach ($paymentMethods as $paymentMethod) {

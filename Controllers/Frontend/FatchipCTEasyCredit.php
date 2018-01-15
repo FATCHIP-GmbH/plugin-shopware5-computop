@@ -39,6 +39,18 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
 
     const PAYMENTSTATUSPAID = 12;
 
+    /** @var \Fatchip\CTPayment\CTPaymentService $service */
+    protected $paymentService = null;
+
+    /**
+     * init payment controller
+     */
+    public function init()
+    {
+        // ToDo handle possible Exception
+        $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
+    }
+
     /**
      * @return void
      * @throws Exception
@@ -52,8 +64,6 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
 
         $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $config = $plugin->Config()->toArray();
-        // ToDo: handle possible exception here
-        $service = $this->container->get('FatchipCTPaymentApiClient');
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
@@ -68,7 +78,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
             $router->assemble(['action' => 'notify', 'forceSecure' => true]),
             CTEnumEasyCredit::EVENTTOKEN_INIT
         );
-        $myEC->setUserData($service->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']));
+        $myEC->setUserData($this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']));
         // ToDo this works only in >SW 5.2 -> refactor
         $myEC->setDateOfBirth($user['additional']['user']['birthday']);
 
@@ -88,8 +98,6 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
 
         $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $config = $plugin->Config()->toArray();
-        // ToDo: handle possible exception here
-        $service = $this->container->get('FatchipCTPaymentApiClient');
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
@@ -105,7 +113,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
             CTEnumEasyCredit::EVENTTOKEN_CON
         );
         $myEC->confirm($session->offsetGet('fatchipComputopEasyCreditPayId'));
-        $myEC->setUserData($service->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']));
+        $myEC->setUserData($this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']));
         // ToDo this works only in >SW 5.2 -> refactor
         $myEC->setDateOfBirth($user['additional']['user']['birthday']);
         $this->saveOrder(
@@ -131,8 +139,6 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
 
         $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $config = $plugin->Config()->toArray();
-        // ToDo: handle possible exception here
-        $service = $this->container->get('FatchipCTPaymentApiClient');
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
@@ -149,11 +155,11 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
             $router->assemble(['action' => 'notify', 'forceSecure' => true]),
             CTEnumEasyCredit::EVENTTOKEN_GET
         );
-        $myEC->setUserData($service->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']));
+        $myEC->setUserData($this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']));
         $myEC->setDateOfBirth($user['additional']['user']['birthday']);
 
         /** @var CTResponseEasyCredit $response */
-        $response = $service->createECPaymentResponse($requestParams);
+        $response = $this->paymentService->createECPaymentResponse($requestParams);
         switch ($response->getStatus()) {
             case CTEnumStatus::AUTHORIZE_REQUEST:
                 $responseObject = $myEC->getDecision($response->getPayID());
@@ -183,10 +189,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $requestParams = $this->Request()->getParams();
         $session = Shopware()->Session();
 
-        /** @var \Fatchip\CTPayment\CTPaymentService $service */
-        $service = $this->container->get('FatchipCTPaymentApiClient');
-
-        $response = $service->createPaymentResponse($requestParams);
+        $response = $this->paymentService->createPaymentResponse($requestParams);
         // ToDo extend shippingPayment template to show errors instead of dying ;)
 
         // remove easycredit session var
@@ -206,14 +209,11 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $user = $this->getUser();
         $session = Shopware()->Session();
 
-        /** @var \Fatchip\CTPayment\CTPaymentService $service */
-        $service = $this->container->get('FatchipCTPaymentApiClient');
-
         /** @var CTResponseCreditCard $response */
-        $response = $service->createPaymentResponse($requestParams);
-        $token = $service->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']);
+        $response = $this->paymentService->createPaymentResponse($requestParams);
+        $token = $this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']);
 
-        if (!$service->isValidToken($response, $token)) {
+        if (!$this->paymentService->isValidToken($response, $token)) {
             $this->forward('failure');
             return;
         }

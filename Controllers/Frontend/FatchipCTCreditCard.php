@@ -38,6 +38,19 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
 
     const PAYMENTSTATUSPAID = 12;
 
+    /** @var \Fatchip\CTPayment\CTPaymentService $service */
+    protected $paymentService = null;
+
+    /**
+     * init payment controller
+     */
+    public function init()
+    {
+        // ToDo handle possible Exception
+        $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
+    }
+
+
 
     /**
      * @return void
@@ -51,8 +64,6 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
 
         $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $config = $plugin->Config()->toArray();
-        // ToDo: handle possible exception here
-        $service = $this->container->get('FatchipCTPaymentApiClient');
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
@@ -65,11 +76,11 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $myCC = new CreditCard(
             $config,
             $ctOrder,
-            $router->assemble(['action' => 'success', 'forceSecure' => false]),
-            $router->assemble(['action' => 'failure', 'forceSecure' => false]),
-            $router->assemble(['action' => 'notify', 'forceSecure' => false])
+            $router->assemble(['action' => 'success', 'forceSecure' => true]),
+            $router->assemble(['action' => 'failure', 'forceSecure' => true]),
+            $router->assemble(['action' => 'notify', 'forceSecure' => true])
         );
-        $myCC->setUserData($service->createPaymentToken($this->getAmount(), $user['billing']['customernumber']));
+        $myCC->setUserData($this->paymentService->createPaymentToken($this->getAmount(), $user['billing']['customernumber']));
         $this->redirect($myCC->getHTTPGetURL());
 
     }
@@ -83,10 +94,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     {
         $requestParams = $this->Request()->getParams();
 
-        /** @var \Fatchip\CTPayment\CTPaymentService $service */
-        $service = $this->container->get('FatchipCTPaymentApiClient');
-
-        $response = $service->createPaymentResponse($requestParams);
+        $response = $this->paymentService->createPaymentResponse($requestParams);
         // ToDo extend shippingPayment template to show errors instead of dying ;)
         return $this->redirect(['controller' => 'checkout', 'action' => 'shippingPayment', 'sTarget' => 'checkout']);
     }
@@ -101,14 +109,11 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $requestParams = $this->Request()->getParams();
         $user = $this->getUser();
 
-        /** @var \Fatchip\CTPayment\CTPaymentService $service */
-        $service = $this->container->get('FatchipCTPaymentApiClient');
-
         /** @var CTResponseCreditCard $response */
-        $response = $service->createPaymentResponse($requestParams);
-        $token = $service->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']);
+        $response = $this->paymentService->createPaymentResponse($requestParams);
+        $token = $this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']);
 
-        if (!$service->isValidToken($response, $token)) {
+        if (!$this->paymentService->isValidToken($response, $token)) {
             $this->forward('failure');
             return;
         }
