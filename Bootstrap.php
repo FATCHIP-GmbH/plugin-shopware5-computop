@@ -383,11 +383,15 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         //$this->registerTemplateDir();
         $this->registerSnippets();
 
+        //TODO: Schauen ob wirklich gebraucht wird.
+        $container = Shopware()->Container();
+
         $subscribers = [
             new \Shopware\FatchipCTPayment\Subscribers\ControllerPath($this->Path()),
             new \Shopware\FatchipCTPayment\Subscribers\Service(),
             new \Shopware\FatchipCTPayment\Subscribers\Templates($this),
             new \Shopware\FatchipCTPayment\Subscribers\Checkout(),
+            new \Shopware\FatchipCTPayment\Subscribers\BackendRiskManagement($container),
         ];
 
         foreach ($subscribers as $subscriber) {
@@ -422,6 +426,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         }
     }
 
+
     /***
      *  Creates the settings page for this plugin.
      */
@@ -451,27 +456,18 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         //rating
         $this->createFormTextElements($this->formBonitaetElements);
 
-        //For every paymentmethod, we add a setting for Bonitätsprüfung
-        require_once __DIR__ . DIRECTORY_SEPARATOR . 'Components/Api/vendor/autoload.php';
-        /** @var \Fatchip\CTPayment\CTPaymentService $service */
-        $service = new \Fatchip\CTPayment\CTPaymentService(null);
-        $paymentMethods = $service->getPaymentMethods();
-        foreach ($paymentMethods as $paymentMethod) {
-            $this->Form()->setElement('select', 'bonitaet' . $paymentMethod['name'], array(
-                'value' => 'inactive',
-                'store' => array(
-                    array('inactive', 'Inkativ'),
-                    array('QuickCheckConsumer', 'QuickCheckConsumer'),
-                    array('CreditCheckConsumer', 'CreditCheckConsumer'),
-                    array('QuickCheckBusiness', 'QuickCheckBusiness'),
-                    array('CreditCheckBusiness', 'CreditCheckBusiness>'),
-                    array('IdentCheckConsumer', 'IdentCheckConsumer>'),
-                ),
-                'label' => 'Bonitätsprüfung ' . $paymentMethod['shortname'],
-                'required' => true,
-                'editable' => false,
-            ));
-        }
+        //CRIF-Bonitätsprüfung. Globally set to inactive, Quickcheck or Creditcheck
+        $this->Form()->setElement('select', 'crifmethod' , array(
+          'value' => 'inactive',
+          'store' => array(
+            array('inactive', 'Inkativ'),
+            array('QuickCheck', 'QuickCheck'),
+            array('CreditCheck', 'CreditCheck'),
+          ),
+          'label' => 'Bonitätsprüfung CRIF',
+          'required' => true,
+          'editable' => false,
+        ));
     }
 
 
