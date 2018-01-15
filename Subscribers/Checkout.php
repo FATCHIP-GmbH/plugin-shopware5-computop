@@ -48,8 +48,10 @@ class Checkout implements SubscriberInterface
      */
     public function onAfterPaymentAction(\Enlight_Hook_HookArgs $args)
     {
-        $request = $args->getSubject()->Request();
+        $subject = $args->getSubject();
+        $request = $subject->Request();
         $params = $request->getParams();
+        $session = Shopware()->Session();
 
         // save birthday
         // ToDo prevent forward to checkotu confirm if params are missing
@@ -57,6 +59,15 @@ class Checkout implements SubscriberInterface
         if (!empty($params['FatchipComputopPaymentData'])) {
             $this->saveUserBirthday($params['FatchipComputopPaymentData']);
         }
+
+
+        $paymentName = $this->getPaymentNameFromId($params['payment']);
+
+        // ToDo should check here all Session vars?
+        if ($paymentName === 'fatchip_computop_easycredit' && $request->getActionName() === 'saveShippingPayment' && !$session->offsetExists('fatchipComputopEasyCreditPayId')) {
+            $subject->forward('gateway', 'FatchipCTEasyCredit', null);
+        }
+
     }
 
 
@@ -86,19 +97,18 @@ class Checkout implements SubscriberInterface
      */
     public function onPostdispatchFrontendCheckout(\Enlight_Controller_ActionEventArgs $args)
     {
-        $subject = $args->getSubject();
-        $request = $subject->Request();
-        $response = $subject->Response();
-        $session = Shopware()->Session();
+    }
 
-        if (!$request->isDispatched() || $response->isException() || $request->getModuleName() != 'frontend') {
-            return;
-        }
-
-        // ToDo should check here all Session vars?
-        if ($request->getActionName() === 'confirm' && !$session->offsetExists('fatchipComputopEasyCreditPayId')) {
-            $subject->forward('gatewayEasycredit', 'FatchipCTPayment', null, ['sTarget' => 'checkout']);
-        }
+    /**
+     * returns payment name
+     *
+     * @param string $paymentID
+     * @return string
+     */
+    public function getPaymentNameFromId($paymentID)
+    {
+        $sql         = 'SELECT `name` FROM `s_core_paymentmeans` WHERE id = ?';
+        return  Shopware()->Db()->fetchOne($sql, $paymentID);
     }
 
 }

@@ -210,7 +210,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      */
     public function getInfo()
     {
-        $logo = base64_encode(file_get_contents(dirname(__FILE__) . '/logo.png'));
+        $logo = base64_encode(file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'logo.png'));
         $info = json_decode(file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'plugin.json'), true);
         if (!$info) {
             throw new Exception('The plugin has an invalid version file.');
