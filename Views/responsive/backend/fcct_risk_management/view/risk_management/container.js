@@ -4,7 +4,6 @@ Ext.define('Shopware.apps.RiskManagement.view.risk_management.fcct__Container', 
   
   createItems: function()
   {
-    alert('blah');
     var me = this;
     
     //create store
