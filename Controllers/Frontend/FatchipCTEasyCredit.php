@@ -31,25 +31,15 @@ use Fatchip\CTPayment\CTEnums\CTEnumEasyCredit;
 use Shopware\FatchipCTPayment\Util;
 use Fatchip\CTPayment\CTPaymentMethodsIframe\EasyCredit;
 
+// add baseclass via require_once so we can extend
+// ToDo find a better solution for this
+require_once 'FatchipCTPayment.php';
+
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTEasyCredit
  */
-class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Controllers_Frontend_Payment
+class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
-
-    const PAYMENTSTATUSPAID = 12;
-
-    /** @var \Fatchip\CTPayment\CTPaymentService $service */
-    protected $paymentService = null;
-
-    /**
-     * init payment controller
-     */
-    public function init()
-    {
-        // ToDo handle possible Exception
-        $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
-    }
 
     /**
      * @return void
@@ -177,25 +167,6 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
                 $this->forward('failure');
                 break;
         }
-    }
-
-    /**
-     * Cancel action method
-     * @return void
-     * @throws Exception
-     */
-    public function failureAction()
-    {
-        $requestParams = $this->Request()->getParams();
-        $session = Shopware()->Session();
-
-        $response = $this->paymentService->createPaymentResponse($requestParams);
-        // ToDo extend shippingPayment template to show errors instead of dying ;)
-
-        // remove easycredit session var
-        $session->offsetSet('fatchipComputopEasyCreditPayId', null);
-
-        return $this->redirect(['controller' => 'checkout', 'action' => 'shippingPayment']);
     }
 
     /**

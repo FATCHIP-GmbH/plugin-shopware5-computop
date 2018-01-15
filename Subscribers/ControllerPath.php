@@ -65,6 +65,11 @@ class ControllerPath implements SubscriberInterface
             => 'onGetControllerPathFrontendFatchipCTCreditCard',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTEasyCredit'
             => 'onGetControllerPathFrontendFatchipCTEasyCredit',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaydirekt'
+            => 'onGetControllerPathFrontendFatchipCTPaydirekt',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaypalStandard'
+            => 'onGetControllerPathFrontendFatchipCTPaypalStandard',
+
         );
     }
 
@@ -97,5 +102,26 @@ class ControllerPath implements SubscriberInterface
     {
         return $this->path . '/Controllers/Frontend/FatchipCTEasyCredit.php';
     }
+
+    /**
+     * Returns the path to a frontend controller for an event.
+     *
+     * @return string
+     */
+    public function onGetControllerPathFrontendFatchipCTPaydirekt()
+    {
+        return $this->path . '/Controllers/Frontend/FatchipCTPaydirekt.php';
+    }
+
+    /**
+     * Returns the path to a frontend controller for an event.
+     *
+     * @return string
+     */
+    public function onGetControllerPathFrontendFatchipCTPaypalStandard()
+    {
+        return $this->path . '/Controllers/Frontend/FatchipCTPaypalStandard.php';
+    }
+
 
 }

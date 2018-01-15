@@ -30,11 +30,11 @@ require_once 'FatchipCTPayment.php';
 
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTCreditCard
+ * Class Shopware_Controllers_Frontend_FatchipCTPaydirekt
  */
-class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Controllers_Frontend_FatchipCTPayment
+class Shopware_Controllers_Frontend_FatchipCTPaydirekt extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
 
-    public $paymentClass = 'CreditCard';
+    public $paymentClass = 'Paydirekt';
 
 }

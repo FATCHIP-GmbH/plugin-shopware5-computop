@@ -27,10 +27,30 @@
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTPayment
  */
+
+use Shopware\FatchipCTPayment\Util;
+use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\CTPayment\CTEnums\CTEnumStatus;
+
+
 class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controllers_Frontend_Payment
 {
 
     const PAYMENTSTATUSPAID = 12;
+
+    /** @var \Fatchip\CTPayment\CTPaymentService $service */
+    protected $paymentService = null;
+
+    public $paymentClass = '';
+
+    /**
+     * init payment controller
+     */
+    public function init()
+    {
+        // ToDo handle possible Exception
+        $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
+    }
 
     /**
      * Whitelist notifyAction
@@ -60,6 +80,10 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
                 return $this->redirect(['controller' => 'FatchipCTCreditCard','action' => 'gateway', 'forceSecure' => true]);
             case 'fatchip_computop_easycredit':
                 return $this->redirect(['controller' => 'FatchipCTEasyCredit','action' => 'accepted_conditions', 'forceSecure' => true]);
+            case 'fatchip_computop_paydirekt':
+                return $this->redirect(['controller' => 'FatchipCTPaydirekt','action' => 'gateway', 'forceSecure' => true]);
+            case 'fatchip_computop_paypal_standard':
+                return $this->redirect(['controller' => 'FatchipCTPaypalStandard','action' => 'gateway', 'forceSecure' => true]);
             default:
                 return $this->redirect(['controller' => 'checkout']);
         }
@@ -71,6 +95,33 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
      */
     public function gatewayAction()
     {
+        $router = $this->Front()->Router();
+        $user = $this->getUser();
+        $util = new Util();
+
+        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $config = $plugin->Config()->toArray();
+
+        // ToDo refactor ctOrder creation
+        $ctOrder = new CTOrder();
+        $ctOrder->setAmount($this->getAmount());
+        $ctOrder->setCurrency($this->getCurrencyShortName());
+        $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
+        $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
+        // Mandatory for paypalStandard
+        $ctOrder->setOrderDesc('TestBestellung');
+
+        $payment = $this->paymentService->getPaymentClass(
+            $this->paymentClass,
+            $config,
+            $ctOrder,
+            $router->assemble(['action' => 'success', 'forceSecure' => true]),
+            $router->assemble(['action' => 'failure', 'forceSecure' => true]),
+            $router->assemble(['action' => 'notify', 'forceSecure' => true])
+        );
+        // ToDo should this be done in the CTPaymentService?
+        $payment->setUserData($this->paymentService->createPaymentToken($this->getAmount(), $user['billing']['customernumber']));
+        $this->redirect($payment->getHTTPGetURL());
     }
 
 
@@ -80,6 +131,16 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
      */
     public function failureAction()
     {
+        $requestParams = $this->Request()->getParams();
+        $session = Shopware()->Session();
+
+        $response = $this->paymentService->createPaymentResponse($requestParams);
+        // ToDo extend shippingPayment template to show errors instead of dying ;)
+
+        // remove easycredit session var
+        $session->offsetSet('fatchipComputopEasyCreditPayId', null);
+
+        return $this->redirect(['controller' => 'checkout', 'action' => 'shippingPayment']);
     }
 
     /**
@@ -88,6 +149,30 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
      */
     public function successAction()
     {
+        $requestParams = $this->Request()->getParams();
+        $user = $this->getUser();
+
+        /** @var CTResponseCreditCard $response */
+        $response = $this->paymentService->createPaymentResponse($requestParams);
+        $token = $this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']);
+
+        if (!$this->paymentService->isValidToken($response, $token)) {
+            $this->forward('failure');
+            return;
+        }
+        switch ($response->getStatus()) {
+            case CTEnumStatus::OK:
+                $this->saveOrder(
+                    $response->getTransID(),
+                    $response->getUserData(),
+                    self::PAYMENTSTATUSPAID
+                );
+                $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
+                break;
+            default:
+                $this->forward('failure');
+                break;
+        }
     }
 
 }
