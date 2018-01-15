@@ -84,6 +84,12 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
                 return $this->redirect(['controller' => 'FatchipCTPaydirekt','action' => 'gateway', 'forceSecure' => true]);
             case 'fatchip_computop_paypal_standard':
                 return $this->redirect(['controller' => 'FatchipCTPaypalStandard','action' => 'gateway', 'forceSecure' => true]);
+            case 'fatchip_computop_ideal':
+                return $this->redirect(['controller' => 'FatchipCTIdeal','action' => 'gateway', 'forceSecure' => true]);
+            case 'fatchip_computop_klarna':
+                return $this->redirect(['controller' => 'FatchipCTKlarna','action' => 'gateway', 'forceSecure' => true]);
+            case 'fatchip_computop_mobilepay':
+                return $this->redirect(['controller' => 'FatchipCTMobilePay','action' => 'gateway', 'forceSecure' => true]);
             default:
                 return $this->redirect(['controller' => 'checkout']);
         }
