@@ -59,7 +59,7 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
             case 'fatchip_computop_creditcard':
                 return $this->redirect(['controller' => 'FatchipCTCreditCard','action' => 'gateway', 'forceSecure' => true]);
             case 'fatchip_computop_easycredit':
-                return $this->redirect(['controller' => 'FatchipCTEasyCredit','action' => 'accepted_condition', 'forceSecure' => true]);
+                return $this->redirect(['controller' => 'FatchipCTEasyCredit','action' => 'accepted_conditions', 'forceSecure' => true]);
             default:
                 return $this->redirect(['controller' => 'checkout']);
         }

@@ -36,6 +36,9 @@ use Shopware\FatchipCTPayment\Util;
 class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Controllers_Frontend_Payment
 {
 
+    const PAYMENTSTATUSPAID = 12;
+
+
     /**
      * @return void
      * @throws Exception

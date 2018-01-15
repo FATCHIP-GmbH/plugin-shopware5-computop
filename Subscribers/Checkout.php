@@ -65,7 +65,7 @@ class Checkout implements SubscriberInterface
 
         // ToDo should check here all Session vars?
         if ($paymentName === 'fatchip_computop_easycredit' && $request->getActionName() === 'saveShippingPayment' && !$session->offsetExists('fatchipComputopEasyCreditPayId')) {
-            $subject->forward('gateway', 'FatchipCTEasyCredit', null);
+            $subject->redirect(['controller' => 'FatchipCTEasyCredit','action' => 'gateway', 'forceSecure' => true]);
         }
 
     }

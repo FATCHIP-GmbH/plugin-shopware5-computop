@@ -37,6 +37,8 @@ use Fatchip\CTPayment\CTPaymentMethodsIframe\EasyCredit;
 class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Controllers_Frontend_Payment
 {
 
+    const PAYMENTSTATUSPAID = 12;
+
     /**
      * @return void
      * @throws Exception
@@ -142,7 +144,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         // set CC Params and request iFrame Url
         // should this be done in the CTPaymentService?
         $myEC = new EasyCredit($config, $ctOrder,
-            $router->assemble(['action' => 'auth_success', 'forceSecure' => true]),
+            $router->assemble(['action' => 'success', 'forceSecure' => true]),
             $router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $router->assemble(['action' => 'notify', 'forceSecure' => true]),
             CTEnumEasyCredit::EVENTTOKEN_GET
@@ -179,13 +181,18 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
     public function failureAction()
     {
         $requestParams = $this->Request()->getParams();
+        $session = Shopware()->Session();
 
         /** @var \Fatchip\CTPayment\CTPaymentService $service */
         $service = $this->container->get('FatchipCTPaymentApiClient');
 
         $response = $service->createPaymentResponse($requestParams);
         // ToDo extend shippingPayment template to show errors instead of dying ;)
-        return $this->redirect(['controller' => 'checkout', 'action' => 'shippingPayment', 'sTarget' => 'checkout']);
+
+        // remove easycredit session var
+        $session->offsetSet('fatchipComputopEasyCreditPayId', null);
+
+        return $this->redirect(['controller' => 'checkout', 'action' => 'shippingPayment']);
     }
 
     /**
@@ -197,6 +204,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
     {
         $requestParams = $this->Request()->getParams();
         $user = $this->getUser();
+        $session = Shopware()->Session();
 
         /** @var \Fatchip\CTPayment\CTPaymentService $service */
         $service = $this->container->get('FatchipCTPaymentApiClient');
@@ -216,6 +224,9 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
                     $response->getUserData(),
                     self::PAYMENTSTATUSPAID
                 );
+
+                $session->offsetSet('fatchipComputopEasyCreditPayId', null);
+
                 $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
                 break;
             default:
