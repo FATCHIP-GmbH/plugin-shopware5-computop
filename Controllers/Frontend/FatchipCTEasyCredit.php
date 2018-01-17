@@ -48,7 +48,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
     public function gatewayAction()
     {
         $router = $this->Front()->Router();
-        $user = $this->getUser();
+        $user = Shopware()->Modules()->Admin()->sGetUserData();
         // ToDo better handling for helper classes / methods
         $util = new Util();
 

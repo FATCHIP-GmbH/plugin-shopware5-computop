@@ -9,8 +9,11 @@
             <div class="alert--content error-content"></div>
         </div>
 
+        {if ! $sUserData.additional.user.birthday && $sUserData.additional.user.birthday != '0000-00-00' }
+
         {* The main form field table *}
         {block name="frontend_checkout_payment_fatchip_computop_birthday_label"}
+            Birthday: {$Birthday} <BR>
             <p class="none">
                 <label for="fatchip_computop_easycredit_birthday">{s name='birthdate'}Bitte geben Sie Ihr Geburtsdatum an:{/s}</label>
             </p>
@@ -25,7 +28,8 @@
                 >
                     <option disabled="disabled" value="">--</option>
                     {section name="birthdate" start=1 loop=32 step=1}
-                        <option value="{$smarty.section.birthdate.index}">
+                        {$isSelected = $smarty.section.birthdate.index == $data.birthday}
+                        <option value="{$smarty.section.birthdate.index}" {if $isSelected}selected{/if}>
                             {$smarty.section.birthdate.index}
                         </option>
                     {/section}
@@ -42,7 +46,8 @@
                 >
                     <option disabled="disabled" value="">-</option>
                     {section name="birthmonth" start=1 loop=13 step=1}
-                        <option value="{$smarty.section.birthmonth.index}">
+                        {$isSelected = $smarty.section.birthmonth.index == $data.birthmonth}
+                        <option value="{$smarty.section.birthmonth.index}" {if $isSelected}selected{/if}>
                             {$smarty.section.birthmonth.index}
                         </option>
                     {/section}
@@ -59,14 +64,15 @@
                 >
                     <option disabled="disabled" value="">----</option>
                     {section name="birthyear" loop=2000 max=100 step=-1}
-                        <option value="{$smarty.section.birthyear.index}">
+                        {$isSelected = $smarty.section.birthyear.index == $data.birthyear}
+                        <option value="{$smarty.section.birthyear.index}" {if $isSelected}selected{/if}>
                             {$smarty.section.birthyear.index}
                         </option>
                     {/section}
                 </select>
             {/block}
         </div>
-
+        {/if}
         {* A box for displaying validation errors *}
         <div class="fatchip-computop-payment-validation-error-box alert is--error is--rounded" style="display: none;">
             <div class="alert--icon">

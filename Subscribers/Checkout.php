@@ -52,11 +52,12 @@ class Checkout implements SubscriberInterface
         $request = $subject->Request();
         $params = $request->getParams();
         $session = Shopware()->Session();
+        $test = $request->getActionName();
 
         // save birthday
         // ToDo prevent forward to checkotu confirm if params are missing
         // dont know where to do this (yet)
-        if (!empty($params['FatchipComputopPaymentData'])) {
+        if (!empty($params['FatchipComputopPaymentData']) && $request->getActionName() === 'saveShippingPayment' ) {
             $this->saveUserBirthday($params['FatchipComputopPaymentData']);
         }
 
@@ -106,6 +107,16 @@ class Checkout implements SubscriberInterface
 
         if (!$request->isDispatched() || $response->isException()) {
             return;
+        }
+
+        if ($request->getActionName() == 'shippingPayment') {
+            $userData = Shopware()->Modules()->Admin()->sGetUserData();
+
+            $birthday = explode('-', $userData['additional']['user']['birthday']);
+            $data['birthday'] = $birthday[2];
+            $data['birthmonth'] = $birthday[1];
+            $data['birthyear'] = $birthday[0];
+            $view->assign('data', $data);
         }
 
         if ($request->getActionName() == 'confirm') {
