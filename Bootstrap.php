@@ -27,6 +27,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 'value' => '',
                 'label' => 'MerchantID',
                 'required' => true,
+                'description' => '',
             ],
             'mac' => [
                 'name' => 'mac',
@@ -34,6 +35,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 'value' => '',
                 'label' => 'MAC',
                 'required' => true,
+                'description' => '',
             ],
             'blowfishPassword' => [
                 'name' => 'blowfishPassword',
@@ -41,6 +43,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 'value' => '',
                 'label' => 'Blowfish Password',
                 'required' => true,
+                'description' => '',
             ],
         ];
 
@@ -59,6 +62,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                         ['MANUAL', 'Manuell'],
                         ['DELAYED', 'Verzögert'],
                     ],
+                'description' => '',
             ],
             'creditCardAcquirer' => [
                 'name' => 'creditCardAcquirer',
@@ -73,6 +77,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                         ['CAPN', 'CAPN: American Express'],
                         ['Omnipay', 'Omnipay: EMS payment solutions, Global Payments, Paysquare'],
                     ],
+                'description' => '',
             ],
         ];
 
@@ -102,6 +107,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                         ['DIREKT', 'iDEAL Direkt'],
                         ['SOFORT', 'via Sofort'],
                     ],
+                'description' => '',
             ],
             'lastschriftDienst' => [
                 'name' => 'lastschriftDienst',
@@ -116,6 +122,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                         ['EVO', 'EVO Payments'],
                         ['INTERCARD', 'Intercard'],
                     ],
+                'description' => '',
             ],
         ];
 
@@ -127,6 +134,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 'value' => '',
                 'label' => 'Paydirekt - Shop Api Key',
                 'required' => true,
+                'description' => '',
             ],
         ];
 
@@ -145,6 +153,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                         ['MANUAL', 'Manuell'],
                         ['DELAYED', 'Verzögert'],
                     ],
+                'description' => '',
             ],
         ];
 
@@ -187,6 +196,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 'value' => false,
                 'label' => 'Bonitätsprüfung - Zurückgelieferte Adressdaten verwenden',
                 'required' => true,
+                'description' => '',
             ],
         ];
 
@@ -198,6 +208,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 'value' => false,
                 'label' => 'MobilePay - Handynummer übermitteln',
                 'required' => false,
+                'description' => '',
             ],
         ];
 
