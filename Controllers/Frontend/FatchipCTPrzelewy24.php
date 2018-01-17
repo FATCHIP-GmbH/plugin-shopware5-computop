@@ -30,23 +30,11 @@ require_once 'FatchipCTPayment.php';
 
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTMobilepay
+ * Class Shopware_Controllers_Frontend_FatchipCTPrzelewy24
  */
-class Shopware_Controllers_Frontend_FatchipCTMobilepay extends Shopware_Controllers_Frontend_FatchipCTPayment
+class Shopware_Controllers_Frontend_FatchipCTPrzelewy24 extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
 
-    public $paymentClass = 'Mobilepay';
-
-    public function getPaymentClass($config, $order) {
-        $router = $this->Front()->Router();
-
-        return new \Fatchip\CTPayment\CTPaymentMethodsIframe\Mobilepay(
-          $config,
-          $order, $router->assemble(['action' => 'success', 'forceSecure' => true]),
-          $router->assemble(['action' => 'failure', 'forceSecure' => true]),
-          $router->assemble(['action' => 'notify', 'forceSecure' => true]),
-          $this->getOrderDesc($order),
-          $this->getUserData());
-    }
+    public $paymentClass = 'Przelewy24';
 
 }

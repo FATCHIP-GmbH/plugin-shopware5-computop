@@ -61,11 +61,14 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
+        $ctOrder->setEmail($user['additional']['user']['email']);
 
         $myEC = new EasyCredit($config, $ctOrder,
             $router->assemble(['action' => 'auth_success', 'forceSecure' => true]),
             $router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $this->getOrderDesc($ctOrder),
+            $this->getUserData(),
             CTEnumEasyCredit::EVENTTOKEN_INIT
         );
         $myEC->setUserData($this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']));
@@ -95,11 +98,14 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
+        $ctOrder->setEmail($user['additional']['user']['email']);
 
         $myEC = new EasyCredit($config, $ctOrder,
             $router->assemble(['action' => 'confirm_conditions', 'forceSecure' => true]),
             $router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $this->getOrderDesc($ctOrder),
+            $this->getUserData(),
             CTEnumEasyCredit::EVENTTOKEN_CON
         );
         $myEC->confirm($session->offsetGet('fatchipComputopEasyCreditPayId'));
@@ -136,6 +142,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
+        $ctOrder->setEmail($user['additional']['user']['email']);
 
         // set CC Params and request iFrame Url
         // should this be done in the CTPaymentService?
@@ -143,6 +150,8 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
             $router->assemble(['action' => 'success', 'forceSecure' => true]),
             $router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $this->getOrderDesc($ctOrder),
+            $this->getUserData(),
             CTEnumEasyCredit::EVENTTOKEN_GET
         );
         $myEC->setUserData($this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']));
@@ -237,8 +246,22 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $easyCreditInformation['betragRate'] = $financing['ratenplan']['zahlungsplan']['betragRate'];
         $easyCreditInformation['betragLetzteRate'] = $financing['ratenplan']['zahlungsplan']['betragLetzteRate'];
         $easyCreditInformation['urlVorvertraglicheInformationen'] = $process['allgemeineVorgangsdaten']['urlVorvertraglicheInformationen'];
+
         return $easyCreditInformation;
+    }
 
+    public function getPaymentClass($config, $order) {
+        $router = $this->Front()->Router();
 
+        return new \Fatchip\CTPayment\CTPaymentMethodsIframe\EasyCredit(
+          $config,
+          $order,
+          $router->assemble(['action' => 'success', 'forceSecure' => true]),
+          $router->assemble(['action' => 'failure', 'forceSecure' => true]),
+          $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+          $this->getUserData(),
+          $this->getOrderDesc($order),
+          CTEnumEasyCredit::EVENTTOKEN_INIT
+           );
     }
 }

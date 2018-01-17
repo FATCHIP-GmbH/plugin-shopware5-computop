@@ -34,7 +34,6 @@ require_once 'FatchipCTPayment.php';
  */
 class Shopware_Controllers_Frontend_FatchipCTIdeal extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
-
     public $paymentClass = 'Ideal';
 
 }

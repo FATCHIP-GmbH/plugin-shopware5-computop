@@ -25,13 +25,15 @@ class Util
 
         return new CTAddress(
             ($swAddress['salutation'] == 'mr') ? 'Herr' : 'Frau',
+            $swAddress['company'],
             $swAddress['firstname'],
             $swAddress['lastname'],
             $splitAddress['streetName'],
             $splitAddress['houseNumber'],
             $swAddress['zipcode'],
             $swAddress['city'],
-            $this->getCTCountry($swAddress['countryId']),
+            $this->getCTCountryIso($swAddress['countryId']),
+            $this->getCTCountryIso3($swAddress['countryId']),
             // ToDo does this correspond to additional_address_lines?
             $swAddress['additional_address_line1']
         );
@@ -44,9 +46,15 @@ class Util
      * @param $countryId
      * @return string
      */
-    public function getCTCountry($countryId)
+    public function getCTCountryIso($countryId)
     {
         $countrySql = 'SELECT countryiso FROM s_core_countries WHERE id=?';
+        return Shopware()->Db()->fetchOne($countrySql, [$countryId]);
+    }
+
+    public function getCTCountryIso3($countryId)
+    {
+        $countrySql = 'SELECT iso3 FROM s_core_countries WHERE id=?';
         return Shopware()->Db()->fetchOne($countrySql, [$countryId]);
     }
 }
