@@ -37,4 +37,5 @@ class Shopware_Controllers_Frontend_FatchipCTPaydirekt extends Shopware_Controll
 
     public $paymentClass = 'Paydirekt';
 
+
 }

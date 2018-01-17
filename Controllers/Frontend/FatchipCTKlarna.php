@@ -37,4 +37,28 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends Shopware_Controllers
 
     public $paymentClass = 'Klarna';
 
+    public function getPaymentClass($config, $order) {
+        $router = $this->Front()->Router();
+
+        return new \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna(
+            $config,
+            $order,
+            $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $this->getOrderDesc(),
+            $this->getUserData(),
+            'stefnq@sdflj.de',  //TODO
+            '030 34989384938', //TODO
+            '01511 838757577', //TODO
+            '1960-07-07', //TODO
+            'M', //TODO
+            FALSE, //TODO
+            '-1'
+        );
+    }
+
+    public function getOrderDesc() {
+        //TODO: Implementieren
+        return '2;1234;TestProdukt;450;19;0;0';
+    }
+
 }

@@ -66,6 +66,8 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
             $router->assemble(['action' => 'auth_success', 'forceSecure' => true]),
             $router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $this->getOrderDesc($ctOrder),
+            $this->getUserData(),
             CTEnumEasyCredit::EVENTTOKEN_INIT
         );
         $myEC->setUserData($this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']));
@@ -100,6 +102,8 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
             $router->assemble(['action' => 'confirm_conditions', 'forceSecure' => true]),
             $router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $this->getOrderDesc($ctOrder),
+            $this->getUserData(),
             CTEnumEasyCredit::EVENTTOKEN_CON
         );
         $myEC->confirm($session->offsetGet('fatchipComputopEasyCreditPayId'));
@@ -143,6 +147,8 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
             $router->assemble(['action' => 'success', 'forceSecure' => true]),
             $router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $this->getOrderDesc($ctOrder),
+            $this->getUserData(),
             CTEnumEasyCredit::EVENTTOKEN_GET
         );
         $myEC->setUserData($this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']));
@@ -213,5 +219,20 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
      */
     public function notifyAction()
     {
+    }
+
+    public function getPaymentClass($config, $order) {
+        $router = $this->Front()->Router();
+
+        return new \Fatchip\CTPayment\CTPaymentMethodsIframe\EasyCredit(
+          $config,
+          $order,
+          $router->assemble(['action' => 'success', 'forceSecure' => true]),
+          $router->assemble(['action' => 'failure', 'forceSecure' => true]),
+          $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+          $this->getUserData(),
+          $this->getOrderDesc($order),
+          CTEnumEasyCredit::EVENTTOKEN_INIT
+           );
     }
 }

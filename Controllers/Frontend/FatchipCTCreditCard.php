@@ -38,3 +38,5 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     public $paymentClass = 'CreditCard';
 
 }
+
+

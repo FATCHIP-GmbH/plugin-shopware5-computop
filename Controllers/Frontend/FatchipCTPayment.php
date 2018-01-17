@@ -33,7 +33,7 @@ use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 
 
-class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controllers_Frontend_Payment
+abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controllers_Frontend_Payment
 {
 
     const PAYMENTSTATUSPAID = 12;
@@ -80,16 +80,21 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
                 return $this->redirect(['controller' => 'FatchipCTCreditCard','action' => 'gateway', 'forceSecure' => true]);
             case 'fatchip_computop_easycredit':
                 return $this->redirect(['controller' => 'FatchipCTEasyCredit','action' => 'accepted_conditions', 'forceSecure' => true]);
-            case 'fatchip_computop_paydirekt':
-                return $this->redirect(['controller' => 'FatchipCTPaydirekt','action' => 'gateway', 'forceSecure' => true]);
-            case 'fatchip_computop_paypal_standard':
-                return $this->redirect(['controller' => 'FatchipCTPaypalStandard','action' => 'gateway', 'forceSecure' => true]);
             case 'fatchip_computop_ideal':
                 return $this->redirect(['controller' => 'FatchipCTIdeal','action' => 'gateway', 'forceSecure' => true]);
             case 'fatchip_computop_klarna':
                 return $this->redirect(['controller' => 'FatchipCTKlarna','action' => 'gateway', 'forceSecure' => true]);
+            case 'fatchip_computop_lastschrift':
+                return $this->redirect(['controller' => 'FatchipCTLastschrift','action' => 'gateway', 'forceSecure' => true]);
             case 'fatchip_computop_mobilepay':
                 return $this->redirect(['controller' => 'FatchipCTMobilePay','action' => 'gateway', 'forceSecure' => true]);
+            case 'fatchip_computop_paydirekt':
+                return $this->redirect(['controller' => 'FatchipCTPaydirekt','action' => 'gateway', 'forceSecure' => true]);
+            case 'fatchip_computop_paypal_standard':
+                return $this->redirect(['controller' => 'FatchipCTPaypalStandard','action' => 'gateway', 'forceSecure' => true]);
+
+
+
             default:
                 return $this->redirect(['controller' => 'checkout']);
         }
@@ -110,23 +115,17 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
-        $ctOrder->setAmount($this->getAmount());
+        //important: multiply amount by 100
+        $ctOrder->setAmount($this->getAmount() * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
         // Mandatory for paypalStandard
         $ctOrder->setOrderDesc('TestBestellung');
 
-        $payment = $this->paymentService->getPaymentClass(
-            $this->paymentClass,
-            $config,
-            $ctOrder,
-            $router->assemble(['action' => 'success', 'forceSecure' => true]),
-            $router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $router->assemble(['action' => 'notify', 'forceSecure' => true])
-        );
-        // ToDo should this be done in the CTPaymentService?
-        $payment->setUserData($this->paymentService->createPaymentToken($this->getAmount(), $user['billing']['customernumber']));
+
+        $payment = $this->getPaymentClass($config, $ctOrder);
+
         $this->redirect($payment->getHTTPGetURL());
     }
 
@@ -179,6 +178,34 @@ class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controller
                 $this->forward('failure');
                 break;
         }
+    }
+
+    public function getOrderDesc($order) {
+        //TODO: Implementieren
+        return 'ORderDesc';
+    }
+
+    public function getUserData() {
+        // ToDo should this be done in the CTPaymentService?
+        $user = $this->getUser();
+        return $this->paymentService->createPaymentToken($this->getAmount(), $user['billing']['customernumber']);
+    }
+
+    public function getPaymentClass($config, $order) {
+        $router = $this->Front()->Router();
+
+        $userData = $this->getUserData();
+
+        return $this->paymentService->getPaymentClass(
+             $this->paymentClass,
+             $config,
+             $order,
+             $router->assemble(['action' => 'success', 'forceSecure' => true]),
+             $router->assemble(['action' => 'failure', 'forceSecure' => true]),
+             $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+             'orderdesc', //todo
+             $userData);
+
     }
 
 }

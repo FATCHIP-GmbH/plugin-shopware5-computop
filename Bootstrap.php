@@ -392,6 +392,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             new \Shopware\FatchipCTPayment\Subscribers\Templates($this),
             new \Shopware\FatchipCTPayment\Subscribers\Checkout(),
             new \Shopware\FatchipCTPayment\Subscribers\BackendRiskManagement($container),
+            new \Shopware\FatchipCTPayment\Subscribers\FrontendRiskManagement($container),
         ];
 
         foreach ($subscribers as $subscriber) {
