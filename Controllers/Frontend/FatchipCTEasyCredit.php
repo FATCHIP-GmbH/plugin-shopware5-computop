@@ -61,6 +61,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
+        $ctOrder->setEmail($user['additional']['user']['email']);
 
         $myEC = new EasyCredit($config, $ctOrder,
             $router->assemble(['action' => 'auth_success', 'forceSecure' => true]),
@@ -97,6 +98,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
+        $ctOrder->setEmail($user['additional']['user']['email']);
 
         $myEC = new EasyCredit($config, $ctOrder,
             $router->assemble(['action' => 'confirm_conditions', 'forceSecure' => true]),
@@ -140,6 +142,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
+        $ctOrder->setEmail($user['additional']['user']['email']);
 
         // set CC Params and request iFrame Url
         // should this be done in the CTPaymentService?

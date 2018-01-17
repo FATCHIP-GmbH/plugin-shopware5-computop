@@ -75,7 +75,10 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         /**
          * Check if one of the payment methods is selected. Else return to default controller.
          */
+
+        $debug = $this->getPaymentShortName();
         switch ($this->getPaymentShortName()) {
+
             case 'fatchip_computop_creditcard':
                 return $this->redirect(['controller' => 'FatchipCTCreditCard','action' => 'gateway', 'forceSecure' => true]);
             case 'fatchip_computop_easycredit':
@@ -92,6 +95,12 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 return $this->redirect(['controller' => 'FatchipCTPaydirekt','action' => 'gateway', 'forceSecure' => true]);
             case 'fatchip_computop_paypal_standard':
                 return $this->redirect(['controller' => 'FatchipCTPaypalStandard','action' => 'gateway', 'forceSecure' => true]);
+            case 'fatchip_computop_postfinance':
+                return $this->redirect(['controller' => 'FatchipCTPostFinance','action' => 'gateway', 'forceSecure' => true]);
+            case 'fatchip_computop_przelewy24':
+                return $this->redirect(['controller' => 'FatchipCTPrzelewy24','action' => 'gateway', 'forceSecure' => true]);
+            case 'fatchip_computop_sofort':
+                return $this->redirect(['controller' => 'FatchipCTSofort','action' => 'gateway', 'forceSecure' => true]);
 
 
 
@@ -120,6 +129,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
+        $ctOrder->setEmail($user['additional']['user']['email']);
         // Mandatory for paypalStandard
         $ctOrder->setOrderDesc('TestBestellung');
 
