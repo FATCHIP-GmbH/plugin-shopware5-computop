@@ -161,15 +161,20 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $response = $this->paymentService->createECPaymentResponse($requestParams);
         switch ($response->getStatus()) {
             case CTEnumStatus::AUTHORIZE_REQUEST:
-                $responseObject = $myEC->getDecision($response->getPayID());
-                $decision = json_decode($responseObject->getDesicion());
-                $process = json_decode($responseObject->getProcess());
-                $financing = json_decode($responseObject->getFinancing());
 
-                $session->offsetSet('fatchipComputopEasyCreditDecision', $decision);
-                $session->offsetSet('fatchipComputopEasyCreditProcess', $process);
-                $session->offsetSet('fatchipComputopEasyCreditFinancing', $financing);
-                $session->offsetSet('fatchipComputopEasyCreditPayId', $responseObject->getPayID());
+                // Only save Information to Session if $decision['entscheidung']['entscheidungsergebnis'] is "GRUEN"
+                // see https://www.computop.com/fileadmin/user_upload/Downloads_Content/deutsch/Handbuch/Manual_Computop_Paygate_easyCredit.pdf
+                // page 11
+
+                $responseObject = $myEC->getDecision($response->getPayID());
+                $decision = json_decode($responseObject->getDesicion(), true);
+
+                if (!($decision['entscheidung']['entscheidungsergebnis'] === 'GRUEN')){
+                    $this->forward('failure');
+                    break; // forward
+                }
+
+                $session->offsetSet('FatchipComputopEasyCreditInformation', $this->getConfirmPageInformation($responseObject));
                 $this->redirect(['controller' => 'checkout', 'action' => 'confirm']);
                 break;
             default:
@@ -205,7 +210,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
                     self::PAYMENTSTATUSPAID
                 );
 
-                $session->offsetSet('fatchipComputopEasyCreditPayId', null);
+                $session->offsetSet('FatchipComputopEasyCreditInformation', null);
 
                 $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
                 break;
@@ -222,6 +227,27 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
      */
     public function notifyAction()
     {
+    }
+
+    private function getConfirmPageInformation ($responseObject){
+        $easyCreditInformation = [];
+
+        $process = json_decode($responseObject->getProcess(), true);
+        $financing = json_decode($responseObject->getFinancing(), true);
+
+        $easyCreditInformation['anzahlRaten'] = $financing['ratenplan']['zahlungsplan']['anzahlRaten'];
+        $easyCreditInformation['tilgungsplanText'] = $financing['tilgungsplanText'];
+        $easyCreditInformation['urlVorvertraglicheInformationen'] = $process['allgemeineVorgangsdaten']['urlVorvertraglicheInformationen'];
+        $easyCreditInformation['bestellwert'] = $financing['finanzierung']['bestellwert'];
+        $easyCreditInformation['anfallendeZinsen'] = $financing['ratenplan']['zinsen']['anfallendeZinsen'];
+        $easyCreditInformation['gesamtsumme'] = $financing['ratenplan']['gesamtsumme'];
+        $easyCreditInformation['effektivzins'] = $financing['ratenplan']['zinsen']['effektivzins'];
+        $easyCreditInformation['nominalzins'] = $financing['ratenplan']['zinsen']['nominalzins'];
+        $easyCreditInformation['betragRate'] = $financing['ratenplan']['zahlungsplan']['betragRate'];
+        $easyCreditInformation['betragLetzteRate'] = $financing['ratenplan']['zahlungsplan']['betragLetzteRate'];
+        $easyCreditInformation['urlVorvertraglicheInformationen'] = $process['allgemeineVorgangsdaten']['urlVorvertraglicheInformationen'];
+
+        return $easyCreditInformation;
     }
 
     public function getPaymentClass($config, $order) {

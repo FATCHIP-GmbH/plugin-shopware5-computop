@@ -97,6 +97,26 @@ class Checkout implements SubscriberInterface
      */
     public function onPostdispatchFrontendCheckout(\Enlight_Controller_ActionEventArgs $args)
     {
+        $subject = $args->getSubject();
+        $view = $subject->View();
+        $request = $subject->Request();
+        $response = $subject->Response();
+        $session = Shopware()->Session();
+
+
+        if (!$request->isDispatched() || $response->isException()) {
+            return;
+        }
+
+        if ($request->getActionName() == 'confirm') {
+
+            $view->extendsTemplate('frontend/checkout/fatchip_computop_confirm.tpl');
+
+            // add easyCredit Information to view
+            if ($session->offsetGet('FatchipComputopEasyCreditInformation')) {
+                $view->assign('FatchipComputopEasyCreditInformation', $session->offsetGet('FatchipComputopEasyCreditInformation'));
+            }
+        }
     }
 
     /**
