@@ -43,6 +43,10 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
     public $paymentClass = '';
 
+    protected $plugin;
+
+    protected $config;
+
     /**
      * init payment controller
      */
@@ -50,6 +54,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     {
         // ToDo handle possible Exception
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
+        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $this->config = $this->plugin->Config()->toArray();
     }
 
     /**
@@ -76,7 +82,6 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
          * Check if one of the payment methods is selected. Else return to default controller.
          */
 
-        $debug = $this->getPaymentShortName();
         switch ($this->getPaymentShortName()) {
 
             case 'fatchip_computop_creditcard':
@@ -102,8 +107,6 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             case 'fatchip_computop_sofort':
                 return $this->redirect(['controller' => 'FatchipCTSofort','action' => 'gateway', 'forceSecure' => true]);
 
-
-
             default:
                 return $this->redirect(['controller' => 'checkout']);
         }
@@ -115,12 +118,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     public function gatewayAction()
     {
-        $router = $this->Front()->Router();
         $user = $this->getUser();
         $util = new Util();
-
-        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-        $config = $plugin->Config()->toArray();
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
@@ -134,7 +133,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $ctOrder->setOrderDesc('TestBestellung');
 
 
-        $payment = $this->getPaymentClass($config, $ctOrder);
+        $payment = $this->getPaymentClass($this->config, $ctOrder);
 
         $this->redirect($payment->getHTTPGetURL());
     }
@@ -148,14 +147,17 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     {
         $requestParams = $this->Request()->getParams();
         $session = Shopware()->Session();
+        $ctError = [];
 
         $response = $this->paymentService->createPaymentResponse($requestParams);
-        // ToDo extend shippingPayment template to show errors instead of dying ;)
+
+        $ctError['CTErrorMessage'] = $response->getDescription();
+        $ctError['CTErrorCode'] = $response->getCode();
 
         // remove easycredit session var
         $session->offsetSet('fatchipComputopEasyCreditPayId', null);
 
-        return $this->redirect(['controller' => 'checkout', 'action' => 'shippingPayment']);
+        return $this->forward('shippingPayment', 'checkout', null, array('CTError' => $ctError));
     }
 
     /**
@@ -201,14 +203,14 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         return $this->paymentService->createPaymentToken($this->getAmount(), $user['billing']['customernumber']);
     }
 
-    public function getPaymentClass($config, $order) {
+    public function getPaymentClass($order) {
         $router = $this->Front()->Router();
 
         $userData = $this->getUserData();
 
         return $this->paymentService->getPaymentClass(
              $this->paymentClass,
-             $config,
+             $this->config,
              $order,
              $router->assemble(['action' => 'success', 'forceSecure' => true]),
              $router->assemble(['action' => 'failure', 'forceSecure' => true]),

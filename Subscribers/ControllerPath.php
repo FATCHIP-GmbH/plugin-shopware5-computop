@@ -30,7 +30,8 @@ use Enlight\Event\SubscriberInterface;
 /**
  * provide paths to custom controllers
  */
-class ControllerPath implements SubscriberInterface {
+class ControllerPath implements SubscriberInterface
+{
 
     /**
      * path to plugin files
@@ -44,7 +45,8 @@ class ControllerPath implements SubscriberInterface {
      *
      * @param string $path
      */
-    public function __construct($path) {
+    public function __construct($path)
+    {
         $this->path = $path;
     }
 
@@ -53,144 +55,48 @@ class ControllerPath implements SubscriberInterface {
      *
      * @return array<string,string>
      */
-    public static function getSubscribedEvents() {
+    public static function getSubscribedEvents()
+    {
+        
         return array(
             //Frontend
-          'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPayment'
-          => 'onGetControllerPathFrontendFatchipCTPayment',
-          'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTCreditCard'
-          => 'onGetControllerPathFrontendFatchipCTCreditCard',
-          'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTEasyCredit'
-          => 'onGetControllerPathFrontendFatchipCTEasyCredit',
-          'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTIdeal'
-          => 'onGetControllerPathFrontendFatchipCTIdeal',
-          'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTKlarna'
-          => 'onGetControllerPathFrontendFatchipCTKlarna',
-          'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTLastschrift'
-          => 'onGetControllerPathFrontendFatchipCTLastschrift',
-          'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTMobilepay'
-          => 'onGetControllerPathFrontendFatchipCTMobilepay',
-          'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaydirekt'
-          => 'onGetControllerPathFrontendFatchipCTPaydirekt',
-          'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaypalStandard'
-          => 'onGetControllerPathFrontendFatchipCTPaypalStandard',
-          'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPostFinance'
-          => 'onGetControllerPathFrontendFatchipCTPostFinance',
-          'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPrzelewy24'
-          => 'onGetControllerPathFrontendFatchipCTPrzelewy24',
-          'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTSofort'
-          => 'onGetControllerPathFrontendFatchipCTSofort',
-
-
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPayment'
+            => 'onGetControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTCreditCard'
+            => 'onGetControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTEasyCredit'
+            => 'onGetControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTIdeal'
+            => 'onGetControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTKlarna'
+            => 'onGetControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTLastschrift'
+            => 'onGetControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTMobilepay'
+            => 'onGetControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaydirekt'
+            => 'onGetControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaypalStandard'
+            => 'onGetControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPostFinance'
+            => 'onGetControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPrzelewy24'
+            => 'onGetControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTSofort'
+            => 'onGetControllerPath',
 
 
         );
     }
 
     /**
-     * Returns the path to a frontend controller for an event.
-     *
+     * @param \Enlight_Event_EventArgs $args
      * @return string
      */
-    public function onGetControllerPathFrontendFatchipCTPayment() {
-        return $this->path . '/Controllers/Frontend/FatchipCTPayment.php';
+    public function onGetControllerPath(\Enlight_Event_EventArgs $args)
+    {
+        $controllerName = $args->getRequest()->getControllerName();
+        return $this->path . 'Controllers/Frontend/' . $controllerName . '.php';
     }
-
-    /**
-     * Returns the path to a frontend controller for an event.
-     *
-     * @return string
-     */
-    public function onGetControllerPathFrontendFatchipCTCreditCard() {
-        return $this->path . '/Controllers/Frontend/FatchipCTCreditCard.php';
-    }
-
-    /**
-     * Returns the path to a frontend controller for an event.
-     *
-     * @return string
-     */
-    public function onGetControllerPathFrontendFatchipCTEasyCredit() {
-        return $this->path . '/Controllers/Frontend/FatchipCTEasyCredit.php';
-    }
-
-    /**
-     * Returns the path to a frontend controller for an event.
-     *
-     * @return string
-     */
-    public function onGetControllerPathFrontendFatchipCTIdeal() {
-        return $this->path . '/Controllers/Frontend/FatchipCTIdeal.php';
-    }
-
-    /**
-     * Returns the path to a frontend controller for an event.
-     *
-     * @return string
-     */
-    public function onGetControllerPathFrontendFatchipCTKlarna() {
-        return $this->path . '/Controllers/Frontend/FatchipCTKlarna.php';
-    }
-
-    /**
-     * Returns the path to a frontend controller for an event.
-     *
-     * @return string
-     */
-    public function onGetControllerPathFrontendFatchipCTLastschrift() {
-        return $this->path . '/Controllers/Frontend/FatchipCTLastschrift.php';
-    }
-
-    /**
-     * Returns the path to a frontend controller for an event.
-     *
-     * @return string
-     */
-    public function onGetControllerPathFrontendFatchipCTMobilepay() {
-        return $this->path . '/Controllers/Frontend/FatchipCTMobilepay.php';
-    }
-
-    /**
-     * Returns the path to a frontend controller for an event.
-     *
-     * @return string
-     */
-    public function onGetControllerPathFrontendFatchipCTPaydirekt() {
-        return $this->path . '/Controllers/Frontend/FatchipCTPaydirekt.php';
-    }
-
-    /**
-     * Returns the path to a frontend controller for an event.
-     *
-     * @return string
-     */
-    public function onGetControllerPathFrontendFatchipCTPostFinance() {
-        return $this->path . '/Controllers/Frontend/FatchipCTPostFinance.php';
-    }
-
-    /**
-     * Returns the path to a frontend controller for an event.
-     *
-     * @return string
-     */
-    public function onGetControllerPathFrontendFatchipCTPrzelewy24() {
-        return $this->path . '/Controllers/Frontend/FatchipCTPrzelewy24.php';
-    }
-
-    /**
-     * Returns the path to a frontend controller for an event.
-     *
-     * @return string
-     */
-    public function onGetControllerPathFrontendFatchipCTSofort() {
-        return $this->path . '/Controllers/Frontend/FatchipCTSofort.php';
-    }
-
-
-
-
-
-
-
 
 }

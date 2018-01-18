@@ -103,6 +103,7 @@ class Checkout implements SubscriberInterface
         $request = $subject->Request();
         $response = $subject->Response();
         $session = Shopware()->Session();
+        $params = $request->getParams();
 
 
         if (!$request->isDispatched() || $response->isException()) {
@@ -117,11 +118,15 @@ class Checkout implements SubscriberInterface
             $data['birthmonth'] = $birthday[1];
             $data['birthyear'] = $birthday[0];
             $view->assign('data', $data);
+
+            // assign payment errors and error template to view
+            $view->extendsTemplate('frontend/checkout/shipping_payment.tpl');
+            $view->assign('CTError', $params['CTError']);
         }
 
         if ($request->getActionName() == 'confirm') {
 
-            $view->extendsTemplate('frontend/checkout/fatchip_computop_confirm.tpl');
+            $view->extendsTemplate('frontend/checkout/confirm.tpl');
 
             // add easyCredit Information to view
             if ($session->offsetGet('FatchipComputopEasyCreditInformation')) {
