@@ -52,17 +52,15 @@ class Checkout implements SubscriberInterface
         $request = $subject->Request();
         $params = $request->getParams();
         $session = Shopware()->Session();
+        $paymentName = $this->getPaymentNameFromId($params['payment']);
         $test = $request->getActionName();
 
         // save birthday
-        // ToDo prevent forward to checkotu confirm if params are missing
+        // ToDo prevent forward to checkout confirm if params are missing
         // dont know where to do this (yet)
-        if (!empty($params['FatchipComputopPaymentData']) && $request->getActionName() === 'saveShippingPayment' ) {
+        if (!empty($params['FatchipComputopPaymentData']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_easycredit') {
             $this->saveUserBirthday($params['FatchipComputopPaymentData']);
         }
-
-
-        $paymentName = $this->getPaymentNameFromId($params['payment']);
 
         // ToDo should check here all Session vars?
         if ($paymentName === 'fatchip_computop_easycredit' && $request->getActionName() === 'saveShippingPayment' && !$session->offsetExists('fatchipComputopEasyCreditPayId')) {

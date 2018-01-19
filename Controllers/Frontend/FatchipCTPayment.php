@@ -133,7 +133,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $ctOrder->setOrderDesc('TestBestellung');
 
 
-        $payment = $this->getPaymentClass($this->config, $ctOrder);
+        $payment = $this->getPaymentClass($ctOrder);
 
         $this->redirect($payment->getHTTPGetURL());
     }
