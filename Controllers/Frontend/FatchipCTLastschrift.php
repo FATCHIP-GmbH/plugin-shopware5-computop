@@ -34,9 +34,26 @@ require_once 'FatchipCTPayment.php';
  */
 class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
+    public $paymentClass = '';
 
-    public $paymentClass = 'Lastschrift';
-
+    /**
+     * init payment controller
+     */
+    public function init()
+    {
+        parent::init();
+        switch ($this->config['lastschriftDienst']) {
+            case 'DIREKT':
+                $this->paymentClass = 'LastschriftDirekt';
+                break;
+            case 'EVO':
+                $this->paymentClass = 'LastschriftEVO';
+                break;
+            case 'INTERCARD':
+                $this->paymentClass = 'LastschriftInterCard';
+                break;
+        }
+    }
 }
 
 
