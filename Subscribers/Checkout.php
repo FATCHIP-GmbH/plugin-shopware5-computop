@@ -119,6 +119,8 @@ class Checkout implements SubscriberInterface
 
             // assign payment errors and error template to view
             $view->extendsTemplate('frontend/checkout/shipping_payment.tpl');
+            // ToDo DO not Display User canceled:22730703 at least for paydirekt
+            // logic shouldnt be here or in the template ...
             $view->assign('CTError', $params['CTError']);
         }
 
