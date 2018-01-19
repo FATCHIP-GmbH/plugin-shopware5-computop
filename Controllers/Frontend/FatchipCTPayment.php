@@ -74,45 +74,6 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     /**
-     *
-     */
-    public function indexAction()
-    {
-        /**
-         * Check if one of the payment methods is selected. Else return to default controller.
-         */
-
-        switch ($this->getPaymentShortName()) {
-
-            case 'fatchip_computop_creditcard':
-                return $this->redirect(['controller' => 'FatchipCTCreditCard','action' => 'gateway', 'forceSecure' => true]);
-            case 'fatchip_computop_easycredit':
-                return $this->redirect(['controller' => 'FatchipCTEasyCredit','action' => 'accepted_conditions', 'forceSecure' => true]);
-            case 'fatchip_computop_ideal':
-                return $this->redirect(['controller' => 'FatchipCTIdeal','action' => 'gateway', 'forceSecure' => true]);
-            case 'fatchip_computop_klarna':
-                return $this->redirect(['controller' => 'FatchipCTKlarna','action' => 'gateway', 'forceSecure' => true]);
-            case 'fatchip_computop_lastschrift':
-                return $this->redirect(['controller' => 'FatchipCTLastschrift','action' => 'gateway', 'forceSecure' => true]);
-            case 'fatchip_computop_mobilepay':
-                return $this->redirect(['controller' => 'FatchipCTMobilePay','action' => 'gateway', 'forceSecure' => true]);
-            case 'fatchip_computop_paydirekt':
-                return $this->redirect(['controller' => 'FatchipCTPaydirekt','action' => 'gateway', 'forceSecure' => true]);
-            case 'fatchip_computop_paypal_standard':
-                return $this->redirect(['controller' => 'FatchipCTPaypalStandard','action' => 'gateway', 'forceSecure' => true]);
-            case 'fatchip_computop_postfinance':
-                return $this->redirect(['controller' => 'FatchipCTPostFinance','action' => 'gateway', 'forceSecure' => true]);
-            case 'fatchip_computop_przelewy24':
-                return $this->redirect(['controller' => 'FatchipCTPrzelewy24','action' => 'gateway', 'forceSecure' => true]);
-            case 'fatchip_computop_sofort':
-                return $this->redirect(['controller' => 'FatchipCTSofort','action' => 'gateway', 'forceSecure' => true]);
-
-            default:
-                return $this->redirect(['controller' => 'checkout']);
-        }
-    }
-
-    /**
      * @return void
      * @throws Exception
      */

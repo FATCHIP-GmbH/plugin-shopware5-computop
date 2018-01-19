@@ -533,7 +533,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             $payment = array(
                 'name' => $paymentMethod['name'],
                 'description' => $paymentMethod['description'],
-                'action' => 'FatchipCTPayment',
+                'action' => $paymentMethod['action'],
                 'active' => 0,
                 'position' => $paymentMethod['position'],
                 'additionalDescription' => '',
