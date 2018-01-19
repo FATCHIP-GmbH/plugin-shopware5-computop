@@ -58,6 +58,14 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $this->config = $this->plugin->Config()->toArray();
     }
 
+
+    public function indexAction()
+    {
+        // forward to gatewayAction as default for all payment classes
+        $this->forward('gateway');
+
+    }
+
     /**
      * Whitelist notifyAction
      */
