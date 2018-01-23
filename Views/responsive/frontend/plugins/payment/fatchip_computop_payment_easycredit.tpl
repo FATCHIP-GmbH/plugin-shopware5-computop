@@ -9,7 +9,7 @@
             <div class="alert--content error-content"></div>
         </div>
 
-        {if ! $sUserData.additional.user.birthday && $sUserData.additional.user.birthday != '0000-00-00' }
+        {if ! $data.birthday }
 
         {* The main form field table *}
         {block name="frontend_checkout_payment_fatchip_computop_birthday_label"}
