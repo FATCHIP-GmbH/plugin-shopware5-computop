@@ -47,6 +47,9 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
     protected $config;
 
+    /** @var Util $utils **/
+    protected $utils;
+
     /**
      * init payment controller
      */
@@ -56,6 +59,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $this->config = $this->plugin->Config()->toArray();
+        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
     }
 
 
@@ -88,19 +92,17 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     public function gatewayAction()
     {
         $user = $this->getUser();
-        $util = new Util();
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
         //important: multiply amount by 100
         $ctOrder->setAmount($this->getAmount() * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
-        $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
+        $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
+        $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
         $ctOrder->setEmail($user['additional']['user']['email']);
         // Mandatory for paypalStandard
         $ctOrder->setOrderDesc('TestBestellung');
-
 
         $payment = $this->getPaymentClass($ctOrder);
 
@@ -136,11 +138,10 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     public function successAction()
     {
         $requestParams = $this->Request()->getParams();
-        $user = $this->getUser();
 
         /** @var CTResponseCreditCard $response */
         $response = $this->paymentService->createPaymentResponse($requestParams);
-        $token = $this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']);
+        $token = $this->paymentService->createPaymentToken($this->getAmount(), $this->utils->getUserCustomerNumber($this->getUser()));
 
         if (!$this->paymentService->isValidToken($response, $token)) {
             $this->forward('failure');
@@ -167,15 +168,18 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     public function getUserData() {
-        // ToDo should this be done in the CTPaymentService?
-        $user = $this->getUser();
-        return $this->paymentService->createPaymentToken($this->getAmount(), $user['billing']['customernumber']);
+        // for now just set the Userdata Token
+        return $this->getUserDataToken();
+    }
+
+    public function getUserDataToken() {
+        return $this->paymentService->createPaymentToken($this->getAmount(), $this->utils->getUserCustomerNumber($this->getUser()));
     }
 
     public function getPaymentClass($order) {
         $router = $this->Front()->Router();
 
-        $userData = $this->getUserData();
+        $userData = $this->getUserDataToken();
 
         return $this->paymentService->getPaymentClass(
              $this->paymentClass,

@@ -10,6 +10,7 @@ namespace Shopware\FatchipCTPayment;
 
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use VIISON\AddressSplitter\AddressSplitter;
+use Shopware;
 
 
 class Util
@@ -57,6 +58,20 @@ class Util
         $countrySql = 'SELECT iso3 FROM s_core_countries WHERE id=?';
         return Shopware()->Db()->fetchOne($countrySql, [$countryId]);
     }
+
+
+    // SW 5.0 - 5.3 Comppatibility
+    public function getUserCustomerNumber($user)
+    {
+        $customerNumber = null;
+        if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
+            $customerNumber = $user['billing']['customernumber'];
+        } else {
+            $customerNumber =$user['billingaddress']['customernumber'];
+        }
+        return $customerNumber;
+    }
+
 }
 
 

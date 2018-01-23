@@ -400,6 +400,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $subscribers = [
             new \Shopware\FatchipCTPayment\Subscribers\ControllerPath($this->Path()),
             new \Shopware\FatchipCTPayment\Subscribers\Service(),
+            new \Shopware\FatchipCTPayment\Subscribers\Utils(),
             new \Shopware\FatchipCTPayment\Subscribers\Templates($this),
             new \Shopware\FatchipCTPayment\Subscribers\Checkout(),
             new \Shopware\FatchipCTPayment\Subscribers\BackendRiskManagement($container),
