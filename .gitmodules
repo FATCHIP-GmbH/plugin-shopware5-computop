@@ -1,5 +1,0 @@
-[submodule "Components/Api"]
-	path = Components/Api
-	url = https://github.com/FATCHIP-GmbH/library-computop.git
-	branch = master
-
