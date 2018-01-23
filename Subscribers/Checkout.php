@@ -26,9 +26,13 @@
 namespace Shopware\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
+use Shopware\FatchipCTPayment\Util;
 
 class Checkout implements SubscriberInterface
 {
+
+    /** @var Util $utils **/
+    protected $utils;
 
     /**
      * @return array<string,string>
@@ -48,18 +52,23 @@ class Checkout implements SubscriberInterface
      */
     public function onAfterPaymentAction(\Enlight_Hook_HookArgs $args)
     {
+        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
         $subject = $args->getSubject();
         $request = $subject->Request();
         $params = $request->getParams();
         $session = Shopware()->Session();
-        $paymentName = $this->getPaymentNameFromId($params['payment']);
+        $paymentName = $this->utils->getPaymentNameFromId($params['payment']);
         $test = $request->getActionName();
 
         // save birthday
         // ToDo prevent forward to checkout confirm if params are missing
         // dont know where to do this (yet)
         if (!empty($params['FatchipComputopPaymentData']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_easycredit') {
-            $this->saveUserBirthday($params['FatchipComputopPaymentData']);
+            $this->utils->updateUserDoB($session->get('sUserId'),
+                $params['FatchipComputopPaymentData']['fatchip_computop_easycredit_birthyear'].'-'.
+                $params['FatchipComputopPaymentData']['fatchip_computop_easycredit_birthmonth'].'-'.
+                $params['FatchipComputopPaymentData']['fatchip_computop_easycredit_birthday']
+                );
         }
 
         // ToDo should check here all Session vars?
@@ -77,6 +86,7 @@ class Checkout implements SubscriberInterface
      */
     private function saveUserBirthday(array $paymentData)
     {
+        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
         $session = Shopware()->Session();
         $userId = $session->get('sUserId');
         /* @var \Shopware\Models\Customer\Customer $user */
@@ -134,17 +144,4 @@ class Checkout implements SubscriberInterface
             }
         }
     }
-
-    /**
-     * returns payment name
-     *
-     * @param string $paymentID
-     * @return string
-     */
-    public function getPaymentNameFromId($paymentID)
-    {
-        $sql         = 'SELECT `name` FROM `s_core_paymentmeans` WHERE id = ?';
-        return  Shopware()->Db()->fetchOne($sql, $paymentID);
-    }
-
 }

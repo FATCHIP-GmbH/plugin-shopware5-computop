@@ -47,35 +47,22 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
      */
     public function gatewayAction()
     {
-        $router = $this->Front()->Router();
         $user = Shopware()->Modules()->Admin()->sGetUserData();
-        // ToDo better handling for helper classes / methods
-        $util = new Util();
-
-        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-        $config = $plugin->Config()->toArray();
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
-        $ctOrder->setAmount($this->getAmount() * 10000);
+        //important: multiply amount by 100
+        $ctOrder->setAmount($this->getAmount() * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
-        $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
+        $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
+        $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
         $ctOrder->setEmail($user['additional']['user']['email']);
 
-        $myEC = new EasyCredit($config, $ctOrder,
-            $router->assemble(['action' => 'auth_success', 'forceSecure' => true]),
-            $router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $router->assemble(['action' => 'notify', 'forceSecure' => true]),
-            $this->getOrderDesc($ctOrder),
-            $this->getUserData(),
-            CTEnumEasyCredit::EVENTTOKEN_INIT
-        );
-        $myEC->setUserData($this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']));
-        // ToDo this works only in >SW 5.2 -> refactor
-        $myEC->setDateOfBirth($user['additional']['user']['birthday']);
+        $payment = $this->getPaymentClass($ctOrder);
 
-        $this->redirect($myEC->getHTTPGetURL());
+        $payment->setDateOfBirth($this->utils->getUserDoB($user));
+
+        $this->redirect($payment->getHTTPGetURL());
     }
 
     /**
@@ -250,11 +237,11 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         return $easyCreditInformation;
     }
 
-    public function getPaymentClass($config, $order) {
+    public function getPaymentClass($order) {
         $router = $this->Front()->Router();
 
-        return new \Fatchip\CTPayment\CTPaymentMethodsIframe\EasyCredit(
-          $config,
+        return new EasyCredit(
+          $this->config,
           $order,
           $router->assemble(['action' => 'success', 'forceSecure' => true]),
           $router->assemble(['action' => 'failure', 'forceSecure' => true]),

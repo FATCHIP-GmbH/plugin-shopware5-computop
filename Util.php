@@ -33,8 +33,8 @@ class Util
             $splitAddress['houseNumber'],
             $swAddress['zipcode'],
             $swAddress['city'],
-            $this->getCTCountryIso($swAddress['countryId']),
-            $this->getCTCountryIso3($swAddress['countryId']),
+            $this->getCTCountryIso($this->getCountryIdFromAddress($swAddress)),
+            $this->getCTCountryIso3($this->getCountryIdFromAddress($swAddress)),
             // ToDo does this correspond to additional_address_lines?
             $swAddress['additional_address_line1']
         );
@@ -72,6 +72,59 @@ class Util
         return $customerNumber;
     }
 
+    // SW 5.0 - 5.3 Compatibility
+    public function getUserDoB($user)
+    {
+        $birthdate = null;
+        if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
+            $birthdate = $user['billing']['birthday'];
+        } else {
+            $birthdate = $user['billingaddress']['birthday'];
+        }
+        return $birthdate;
+    }
+
+    // SW 5.0 - 5.3 Compatibility
+    public function getCountryIdFromAddress($swAddress)
+    {
+        $countryId = null;
+        if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
+            $countryId = $swAddress['countryId'];
+        } else {
+            $countryId = $swAddress['countryID'];
+        }
+        return $countryId;
+    }
+
+    // SW 5.0 - 5.3 Compatibility
+    public function updateUserDoB($userId, $birthday)
+    {
+        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
+
+        if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
+            $user->$user->setBirthday($birthday);
+            Shopware()->Models()->persist($user);
+            Shopware()->Models()->flush($user);
+
+        } else {
+            $billing = $user->getBilling();
+            $billing->setBirthday($birthday);
+            Shopware()->Models()->persist($billing);
+            Shopware()->Models()->flush($billing);
+        }
+    }
+
+    /**
+     * returns payment name
+     *
+     * @param string $paymentID
+     * @return string
+     */
+    public function getPaymentNameFromId($paymentID)
+    {
+        $sql         = 'SELECT `name` FROM `s_core_paymentmeans` WHERE id = ?';
+        return  Shopware()->Db()->fetchOne($sql, $paymentID);
+    }
 }
 
 
