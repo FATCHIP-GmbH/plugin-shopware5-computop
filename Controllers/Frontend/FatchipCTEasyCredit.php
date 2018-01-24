@@ -28,7 +28,6 @@ use Fatchip\CTPayment\CTResponse\CTResponseIframe\CTResponseCreditCard;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Fatchip\CTPayment\CTEnums\CTEnumEasyCredit;
-use Shopware\FatchipCTPayment\Util;
 use Fatchip\CTPayment\CTPaymentMethodsIframe\EasyCredit;
 
 // add baseclass via require_once so we can extend
@@ -40,6 +39,11 @@ require_once 'FatchipCTPayment.php';
  */
 class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
+
+    public function indexAction()
+    {
+        $this->forward('confirm');
+    }
 
     /**
      * @return void
@@ -103,10 +107,12 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
 
                 if (!($decision['entscheidung']['entscheidungsergebnis'] === 'GRUEN')){
                     $this->forward('failure');
-                    break; // forward
+                    break;
                 }
 
                 $session->offsetSet('FatchipComputopEasyCreditInformation', $this->getConfirmPageInformation($responseObject));
+                $session->offsetSet('fatchipComputopEasyCreditPayId', $response->getPayID());
+
                 $this->redirect(['controller' => 'checkout', 'action' => 'confirm']);
                 break;
             default:
@@ -122,18 +128,24 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
      */
     public function confirmAction()
     {
-        $requestParams = $this->Request()->getParams();
-        $user = $this->getUser();
+        $user = Shopware()->Modules()->Admin()->sGetUserData();
         $session = Shopware()->Session();
 
-        /** @var CTResponseCreditCard $response */
-        $response = $this->paymentService->createPaymentResponse($requestParams);
-        $token = $this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']);
+        // ToDo refactor ctOrder creation
+        $ctOrder = new CTOrder();
+        //important: multiply amount by 100
+        $ctOrder->setAmount($this->getAmount() * 100);
+        $ctOrder->setCurrency($this->getCurrencyShortName());
+        $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
+        $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
+        $ctOrder->setEmail($user['additional']['user']['email']);
 
-        if (!$this->paymentService->isValidToken($response, $token)) {
-            $this->forward('failure');
-            return;
-        }
+        $payment = $this->getPaymentClass($ctOrder, 'success', CTEnumEasyCredit::EVENTTOKEN_CON);
+
+        $payment->setDateOfBirth($this->utils->getUserDoB($user));
+
+        $response = $payment->confirm($session->offsetGet('fatchipComputopEasyCreditPayId'));
+
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
                 $this->saveOrder(
@@ -150,40 +162,6 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
                 $this->forward('failure');
                 break;
         }
-    }
-
-    /**
-     * @return void
-     * @throws Exception
-     */
-    public function successAction()
-    {
-        $user = Shopware()->Modules()->Admin()->sGetUserData();
-        $session = Shopware()->Session();
-
-        // ToDo refactor ctOrder creation
-        $ctOrder = new CTOrder();
-        //important: multiply amount by 100
-        $ctOrder->setAmount($this->getAmount() * 100);
-        $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
-        $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
-        $ctOrder->setEmail($user['additional']['user']['email']);
-
-        $payment = $this->getPaymentClass($ctOrder, 'return', CTEnumEasyCredit::EVENTTOKEN_CON);
-
-        $payment->setDateOfBirth($this->utils->getUserDoB($user));
-
-        $payment->confirm($session->offsetGet('fatchipComputopEasyCreditPayId'));
-        $payment->setUserData($this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']));
-
-        $this->saveOrder(
-            $session->offsetGet('fatchipComputopEasyCreditPayId'),
-            'Test',
-            self::PAYMENTSTATUSPAID
-        );
-
-        $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
     }
 
     /**
