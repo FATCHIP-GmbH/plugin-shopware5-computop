@@ -194,7 +194,7 @@ class Util
     }
 
     // SW 5.0 - 5.3 Compatibility
-    // 5.0 -
+    // 5.0 - check
     // 5.1 - check
     // 5.2 -
     // 5.3 -
@@ -248,7 +248,7 @@ class Util
     }
 
     // SW 5.0 - 5.3 Compatibility
-    // 5.0 -
+    // 5.0 - check
     // 5.1 - check
     // 5.2 -
     // 5.3 -
