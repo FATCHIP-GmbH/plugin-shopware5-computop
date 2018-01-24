@@ -58,7 +58,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
         $ctOrder->setEmail($user['additional']['user']['email']);
 
-        $payment = $this->getPaymentClass($ctOrder);
+        $payment = $this->getPaymentClass($ctOrder, 'return');
 
         $payment->setDateOfBirth($this->utils->getUserDoB($user));
 
@@ -66,83 +66,28 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
     }
 
     /**
+     *
+     * Action is trigerred when the user returns from Easycredit
      * @return void
-     * @throws Exception
      */
-    public function acceptedConditionsAction()
+    public function returnAction()
     {
-        $router = $this->Front()->Router();
-        $user = $this->getUser();
+        $user = Shopware()->Modules()->Admin()->sGetUserData();
         $session = Shopware()->Session();
-        $util = new Util();
-
-        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-        $config = $plugin->Config()->toArray();
-
-        // ToDo refactor ctOrder creation
-        $ctOrder = new CTOrder();
-        $ctOrder->setAmount($this->getAmount() * 10000);
-        $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
-        $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
-        $ctOrder->setEmail($user['additional']['user']['email']);
-
-        $myEC = new EasyCredit($config, $ctOrder,
-            $router->assemble(['action' => 'confirm_conditions', 'forceSecure' => true]),
-            $router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $router->assemble(['action' => 'notify', 'forceSecure' => true]),
-            $this->getOrderDesc($ctOrder),
-            $this->getUserData(),
-            CTEnumEasyCredit::EVENTTOKEN_CON
-        );
-        $myEC->confirm($session->offsetGet('fatchipComputopEasyCreditPayId'));
-        $myEC->setUserData($this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']));
-        // ToDo this works only in >SW 5.2 -> refactor
-        $myEC->setDateOfBirth($user['additional']['user']['birthday']);
-        $this->saveOrder(
-            $session->offsetGet('fatchipComputopEasyCreditPayId'),
-            'Test',
-            self::PAYMENTSTATUSPAID
-        );
-
-        $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
-    }
-
-    /**
-     * Cancel action method
-     * @return void
-     */
-    public function authSuccessAction()
-    {
-        $router = $this->Front()->Router();
         $requestParams = $this->Request()->getParams();
-        $user = $this->getUser();
-        $session = Shopware()->Session();
-        $util = new Util();
-
-        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-        $config = $plugin->Config()->toArray();
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
-        $ctOrder->setAmount($this->getAmount() * 10000);
+        //important: multiply amount by 100
+        $ctOrder->setAmount($this->getAmount() * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
-        $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
+        $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
+        $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
         $ctOrder->setEmail($user['additional']['user']['email']);
 
-        // set CC Params and request iFrame Url
-        // should this be done in the CTPaymentService?
-        $myEC = new EasyCredit($config, $ctOrder,
-            $router->assemble(['action' => 'success', 'forceSecure' => true]),
-            $router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $router->assemble(['action' => 'notify', 'forceSecure' => true]),
-            $this->getOrderDesc($ctOrder),
-            $this->getUserData(),
-            CTEnumEasyCredit::EVENTTOKEN_GET
-        );
-        $myEC->setUserData($this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']));
-        $myEC->setDateOfBirth($user['additional']['user']['birthday']);
+        $payment = $this->getPaymentClass($ctOrder, 'confirm', CTEnumEasyCredit::EVENTTOKEN_GET);
+
+        $payment->setDateOfBirth($this->utils->getUserDoB($user));
 
         /** @var CTResponseEasyCredit $response */
         $response = $this->paymentService->createECPaymentResponse($requestParams);
@@ -153,7 +98,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
                 // see https://www.computop.com/fileadmin/user_upload/Downloads_Content/deutsch/Handbuch/Manual_Computop_Paygate_easyCredit.pdf
                 // page 11
 
-                $responseObject = $myEC->getDecision($response->getPayID());
+                $responseObject = $payment ->getDecision($response->getPayID());
                 $decision = json_decode($responseObject->getDesicion(), true);
 
                 if (!($decision['entscheidung']['entscheidungsergebnis'] === 'GRUEN')){
@@ -175,7 +120,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
      * @return void
      * @throws Exception
      */
-    public function successAction()
+    public function confirmAction()
     {
         $requestParams = $this->Request()->getParams();
         $user = $this->getUser();
@@ -208,6 +153,40 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
     }
 
     /**
+     * @return void
+     * @throws Exception
+     */
+    public function successAction()
+    {
+        $user = Shopware()->Modules()->Admin()->sGetUserData();
+        $session = Shopware()->Session();
+
+        // ToDo refactor ctOrder creation
+        $ctOrder = new CTOrder();
+        //important: multiply amount by 100
+        $ctOrder->setAmount($this->getAmount() * 100);
+        $ctOrder->setCurrency($this->getCurrencyShortName());
+        $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
+        $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
+        $ctOrder->setEmail($user['additional']['user']['email']);
+
+        $payment = $this->getPaymentClass($ctOrder, 'return', CTEnumEasyCredit::EVENTTOKEN_CON);
+
+        $payment->setDateOfBirth($this->utils->getUserDoB($user));
+
+        $payment->confirm($session->offsetGet('fatchipComputopEasyCreditPayId'));
+        $payment->setUserData($this->paymentService->createPaymentToken($this->getAmount(), $user['billingaddress']['customernumber']));
+
+        $this->saveOrder(
+            $session->offsetGet('fatchipComputopEasyCreditPayId'),
+            'Test',
+            self::PAYMENTSTATUSPAID
+        );
+
+        $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
+    }
+
+    /**
      * notify action method
      * @return void
      * @throws Exception
@@ -237,18 +216,18 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         return $easyCreditInformation;
     }
 
-    public function getPaymentClass($order) {
+    public function getPaymentClass($order, $successAction = '', $eventToken = CTEnumEasyCredit::EVENTTOKEN_INIT ) {
         $router = $this->Front()->Router();
 
         return new EasyCredit(
           $this->config,
           $order,
-          $router->assemble(['action' => 'success', 'forceSecure' => true]),
+          $router->assemble(['action' => $successAction, 'forceSecure' => true]),
           $router->assemble(['action' => 'failure', 'forceSecure' => true]),
           $router->assemble(['action' => 'notify', 'forceSecure' => true]),
           $this->getUserData(),
           $this->getOrderDesc($order),
-          CTEnumEasyCredit::EVENTTOKEN_INIT
+          $eventToken
            );
     }
 }
