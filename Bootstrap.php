@@ -16,6 +16,10 @@
  *
  * - uninstall: Triggered when the plugin is reinstalled or uninstalled. Clean up your tables here.
  */
+
+require_once 'Util.php';
+
+
 class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
 
@@ -198,6 +202,14 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 'required' => true,
                 'description' => '',
             ],
+            'bonitaetinvalidateafterdays' => [
+            'name' => 'bonitaetinvalidateafterdays',
+            'type' => 'number',
+            'value' => '30',
+            'label' => 'Bonitätsprüfung - Wiederholen nach wieviele Tage',
+            'required' => true,
+            'description' => 'Verzögerung in Stunden wenn als Caption Methode "Verzögert" gewählt wurde',
+            ],
         ];
 
     private $formMobilePayBooleanElements =
@@ -312,6 +324,9 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         $this->createPayments();
         $this->subscribeEvent('Enlight_Controller_Front_DispatchLoopStartup', 'onStartDispatch');
+
+        $this->addAttributes();
+
         //$this->updateSchema();
         $this->createConfig();
 
@@ -543,6 +558,54 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 $payment['template'] = $paymentMethod['template'];
             }
             $this->createPayment($payment);
+        }
+    }
+
+    /**
+     * extend shpoware models with COMPUTOP specific attributes
+     */
+    protected function addAttributes()
+    {
+        $prefix = 'fatchipc_computop';
+        $util = new \Shopware\FatchipCTPayment\Util();
+
+        $tables = $util->fcComputopAttributeExtensionsArray($this->getId());
+
+        /** @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
+        $attributeService = $this->assertMinimumVersion('5.2') ?
+          Shopware()->Container()->get('shopware_attribute.crud_service') : null;
+
+        foreach ($tables as $table => $attributes) {
+            foreach ($attributes as $attribute => $options) {
+                $type = is_array($options) ? $options[0] : $options;
+                $data = is_array($options) ? $options[1] : [];
+                if ($this->assertMinimumVersion('5.2')) {
+                    $attributeService->update($table, $prefix . '_' . $attribute, $type, $data);
+                } else {
+                    $type = $util->unifiedToSQL($type);
+                    /** @noinspection PhpDeprecationInspection */
+                    Shopware()->Models()->addAttribute($table, $prefix, $attribute, $type, true, null);
+                }
+            }
+        }
+        Shopware()->Models()->generateAttributeModels(array_keys($tables));
+
+        // SW 5.2 Use Address Table instead of shipping and billing tables
+        if (\Shopware::VERSION === '___VERSION___' ||
+          version_compare(\Shopware::VERSION, '5.2.0', '>=')
+        ) {
+
+            $tables = $util->fcComputopAttributeExtensionsArray52();
+            $attributeService = Shopware()->Container()->get('shopware_attribute.crud_service');
+
+            foreach ($tables as $table => $attributes) {
+                foreach ($attributes as $attribute => $options) {
+                    $type = is_array($options) ? $options[0] : $options;
+                    $data = is_array($options) ? $options[1] : [];
+                    $attributeService->update($table, $prefix . '_' . $attribute, $type, $data);
+                }
+            }
+            Shopware()->Models()->generateAttributeModels(array_keys($tables));
         }
     }
 }

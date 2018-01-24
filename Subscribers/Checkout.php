@@ -78,6 +78,7 @@ class Checkout implements SubscriberInterface
 
     }
 
+
     /**
      * @param \Enlight_Controller_ActionEventArgs $args
      * @return void
@@ -104,6 +105,7 @@ class Checkout implements SubscriberInterface
             $data['birthday'] = $birthday[2];
             $data['birthmonth'] = $birthday[1];
             $data['birthyear'] = $birthday[0];
+            $data['phone'] = $userData['billingaddress']['phone'];
             $view->assign('data', $data);
 
             // assign payment errors and error template to view
