@@ -1,32 +1,25 @@
     {* The main container for filling in the birthday field *}
     <div class="fatchip-computop-payment-klarna-form payment--form-group">
-        {* A box for displaying general errors *}
-        <div class="fatchip-computop-payment-error-box alert is--error is--rounded" style="display: none;">
-            <div class="alert--icon">
-                <i class="icon--element icon--cross"></i>
-            </div>
-            <div class="alert--content error-content"></div>
-        </div>
 
-        {if !$sUserData.billingaddress.phone}
-            {block name="frontend_checkout_payment_fatchip_computop_telephone_label"}
+        {if !$data.phone}
+            {block name="frontend_checkout_payment_fatchip_computop_phone_label"}
                 <p class="none">
-                    <label for="fatchip_computop__klarna_telephone">{s name='klarnaTelephoneLabel'}Telefonnummer{/s}</label>
+                    <label for="fatchip_computop_klarna_phone">{s name='klarnaPhoneLabel'}Telefonnummer{/s}</label>
                 </p>
             {/block}
 
-            {block name="frontend_checkout_payment_payone_telephone_input"}
-                <input name="FatchipComputopPaymentData[fatchip_computop__klarna_telephone]" type="text"
-                       id="fatchip_computop__klarna_telephone"
-                       class="payment--field is--required{if $error_flags.fatchip_computop__klarna_telephone} has--error{/if}"
-                       placeholder="{s name='telephoneNumber'}Telefonnummer{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
+            {block name="frontend_checkout_payment_payone_phone_input"}
+                <input name="FatchipComputopPaymentData[fatchip_computop_klarna_phone]" type="text"
+                       id="fatchip_computop_klarna_phone"
+                       class="payment--field is--required{if $error_flags.fatchip_computop__klarna_phone} has--error{/if}"
+                       placeholder="{s name='klarnaPhoneNumber'}Telefonnummer{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
                        {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
-                       value="{$sUserData.billingaddress.phone}"
+                       value="{$data.phone}"
                         />
             {/block}
         {/if}
 
-        {if !$sUserData.additional.user.birthday && $sUserData.additional.user.birthday != '0000-00-00' }
+        {if !$data.birthday || $data.birthday == '00' }
             {* The main form field table *}
             {block name="frontend_checkout_payment_fatchip_computop_birthday_label"}
                 <p class="none">
@@ -88,14 +81,4 @@
                 {/block}
             </div>
         {/if}
-
-
-
-        {* A box for displaying validation errors *}
-        <div class="fatchip-computop-payment-validation-error-box alert is--error is--rounded" style="display: none;">
-            <div class="alert--icon">
-                <i class="icon--element icon--cross"></i>
-            </div>
-            <div class="alert--content error-content"></div>
-        </div>
     </div>

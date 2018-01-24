@@ -6,7 +6,6 @@
 
         {* The main form field table *}
         {block name="frontend_checkout_payment_fatchip_computop_birthday_label"}
-            Birthday: {$Birthday} <BR>
             <p class="none">
                 <label for="fatchip_computop_easycredit_birthday">{s name='birthdate'}Bitte geben Sie Ihr Geburtsdatum an:{/s}</label>
             </p>
@@ -66,11 +65,4 @@
             {/block}
         </div>
         {/if}
-        {* A box for displaying validation errors *}
-        <div class="fatchip-computop-payment-validation-error-box alert is--error is--rounded" style="display: none;">
-            <div class="alert--icon">
-                <i class="icon--element icon--cross"></i>
-            </div>
-            <div class="alert--content error-content"></div>
-        </div>
     </div>
