@@ -78,28 +78,6 @@ class Checkout implements SubscriberInterface
 
     }
 
-
-    /**
-     * ToDo refactor , this is only for SW 5.2 yet
-     * @param array $paymentData
-     * @return void
-     */
-    private function saveUserBirthday(array $paymentData)
-    {
-        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
-        $session = Shopware()->Session();
-        $userId = $session->get('sUserId');
-        /* @var \Shopware\Models\Customer\Customer $user */
-        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
-        $user->setBirthday(
-            $paymentData['fatchip_computop_easycredit_birthyear'] . '-' .
-            $paymentData['fatchip_computop_easycredit_birthmonth'] . '-' .
-            $paymentData['fatchip_computop_easycredit_birthday']
-        );
-        Shopware()->Models()->persist($user);
-        Shopware()->Models()->flush();
-    }
-
     /**
      * @param \Enlight_Controller_ActionEventArgs $args
      * @return void

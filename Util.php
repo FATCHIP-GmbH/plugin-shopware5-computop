@@ -41,9 +41,8 @@ class Util
     }
 
     /**
-     * ToDo check if we can reliably get country from user object in all SW versions
-     * (SW5.2: user['additional']['country']['countryiso'])
-     * (SW5.0-5.1: )
+     * Use getCountryIdFromAddress() to get the countryId
+     * for all Shopware Versions
      * @param $countryId
      * @return string
      */
@@ -60,7 +59,11 @@ class Util
     }
 
 
-    // SW 5.0 - 5.3 Comppatibility
+    // SW 5.0 - 5.3 Compatibility
+    // 5.0 - check
+    // 5.1 - check
+    // 5.2 - check
+    // 5.3 - check
     public function getUserCustomerNumber($user)
     {
         $customerNumber = null;
@@ -73,6 +76,10 @@ class Util
     }
 
     // SW 5.0 - 5.3 Compatibility
+    // 5.0 - check
+    // 5.1 - check
+    // 5.2 - check
+    // 5.3 - check
     public function getUserDoB($user)
     {
         $birthdate = null;
@@ -85,6 +92,10 @@ class Util
     }
 
     // SW 5.0 - 5.3 Compatibility
+    // 5.0 - check
+    // 5.1 - check
+    // 5.2 - check
+    // 5.3 - check
     public function getCountryIdFromAddress($swAddress)
     {
         $countryId = null;
@@ -97,6 +108,10 @@ class Util
     }
 
     // SW 5.0 - 5.3 Compatibility
+    // 5.0 - check
+    // 5.1 - check
+    // 5.2 - check
+    // 5.3 - check
     public function updateUserDoB($userId, $birthday)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
