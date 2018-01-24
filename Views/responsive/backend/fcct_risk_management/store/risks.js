@@ -8,22 +8,22 @@ Ext.define('Shopware.apps.RiskManagement.store.fcct__Risks', {
     {
       var me = this;
       
-      if(!me.mopt_payone__isExtended())
+      if(!me.fatchip_computop__isExtended())
       {
-        me.data.push({ description: '{s name=risks_store/comboBox/moptTrafficLight}Ampel IST{/s}', value: 'MOPT_PAYONE__TRAFFIC_LIGHT_IS' });
-        me.data.push({ description: '{s name=risks_store/comboBox/moptTrafficLightNot}Ampel IST NICHT{/s}', value: 'MOPT_PAYONE__TRAFFIC_LIGHT_IS_NOT' });
+        me.data.push({ description: '{s name=risks_store/comboBox/computopTrafficLight}Computop Risikoampel IST{/s}', value: 'FATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS' });
+        me.data.push({ description: '{s name=risks_store/comboBox/computopTrafficLightNot}Computop Risikoampel IST NICHT{/s}', value: 'FATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS_NOT' });
       }
       
       me.callParent(arguments);
     },
             
-    mopt_payone__isExtended: function()
+    fatchip_computop__isExtended: function()
     {
       var me = this;
       
       for (var i = 0; i < me.data.length; i++)
       {
-        if (me.data[i].value.indexOf('MOPT_PAYONE__') == 0)
+        if (me.data[i].value.indexOf('FATCHIP_COMPUTOP__') == 0)
         {
           return true;
         }

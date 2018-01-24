@@ -40,25 +40,65 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends Shopware_Controllers
     public function getPaymentClass($config, $order) {
         $router = $this->Front()->Router();
 
+        $user = $this->getUser();
+        //TODO: Check if this works for shopware < 5.2.0
+        $phone = $user['billingaddress']['phone'];
+        $birthday = $user['additional']['user']['birthday'];
+        $isFirm = !is_null($user['billingaddress']['company']);
+
         return new \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna(
             $config,
             $order,
             $router->assemble(['action' => 'notify', 'forceSecure' => true]),
             $this->getOrderDesc(),
             $this->getUserData(),
-            'stefnq@sdflj.de',  //TODO
-            '030 34989384938', //TODO
-            '01511 838757577', //TODO
-            '1960-07-07', //TODO
-            'M', //TODO
-            FALSE, //TODO
+            $phone,
+            $phone, //TODO remove mobile
+            $birthday,
+            $isFirm,
             '-1'
         );
     }
 
+    /**
+     * Beschreibung der gebuchten Artikel:
+     * Menge, ArtikelNr, Bezeichnung, Preis, Arti-kelkennung. Rabatt und MwSt. als Prozentzahl angeben.
+     * Felder durch ";" und Rechnungspositionen durch "+" trennen.
+     * Preise ohne Komma in kleinster Wäh-rungseinheit angeben:
+     * <qty>;<artno>; <title>; <price>; <vat>;<discount>;<Artic-leFlag> +
+     *
+     * Beispiel: 25;12345;Kugelschreiber;890;19;1.5;0 + 1;11223;Versandkosten;490;19;0;8
+     *
+     * Werte und Wirkung des <ArticleFlag>:
+     * <0> keine Kennzeichnung,
+     * <1> Mengen-angabe in 1/1000,
+     * <2> Menge in 1/100,
+     * <4> Menge in 1/10,
+     * <8> Artikel ist eine Versandgebühr,
+     * <16> Artikel ist eine Bearbeitungsgebühr,
+     * <32> Preisangabe erfolgt inkl. MwSt.
+     *
+     * @return string
+     */
     public function getOrderDesc() {
-        //TODO: Implementieren
-        return '2;1234;TestProdukt;450;19;0;0';
+        $basket =  $this->getBasket();
+        $orderDesc = '';
+        foreach($basket['content'] as $position) {
+            if (!empty($orderDesc)) {
+                $orderDesc .= ' + ';
+            }
+            $orderDesc .= $position['quantity'] . ';' . $position['articleID'] . ';' . $position['articlename'] . ';'
+              . $position['amount'] * 100 . ';' . $position['tax_rate'] . ';0;0';
+        }
+        //add shipping if > 0
+        if ($basket['sShippingcosts'] != 0) {
+            if (!empty($orderDesc)) {
+                $orderDesc .= ' + ';
+            }
+            $orderDesc .= '1;shipping;Versandkosten;' . $basket['sShippingcosts'] * 100 . ';' . $basket['sShippingcostsTax'] . ';0;8';
+        }
+
+        return $orderDesc;
     }
 
 }
