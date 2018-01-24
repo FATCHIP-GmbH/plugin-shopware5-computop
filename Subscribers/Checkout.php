@@ -84,6 +84,7 @@ class Checkout implements SubscriberInterface
      */
     public function onPostdispatchFrontendCheckout(\Enlight_Controller_ActionEventArgs $args)
     {
+        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
         $subject = $args->getSubject();
         $view = $subject->View();
         $request = $subject->Request();
@@ -99,7 +100,7 @@ class Checkout implements SubscriberInterface
         if ($request->getActionName() == 'shippingPayment') {
             $userData = Shopware()->Modules()->Admin()->sGetUserData();
 
-            $birthday = explode('-', $userData['additional']['user']['birthday']);
+            $birthday = explode('-', $this->utils->getUserDoB($userData));
             $data['birthday'] = $birthday[2];
             $data['birthmonth'] = $birthday[1];
             $data['birthyear'] = $birthday[0];
