@@ -1,15 +1,8 @@
 
     {* The main container for filling in the birthday field *}
     <div class="fatchip-computop-payment-easycredit-form payment--form-group">
-        {* A box for displaying general errors *}
-        <div class="fatchip-computop-payment-error-box alert is--error is--rounded" style="display: none;">
-            <div class="alert--icon">
-                <i class="icon--element icon--cross"></i>
-            </div>
-            <div class="alert--content error-content"></div>
-        </div>
 
-        {if ! $data.birthday }
+        {if !$data.birthday || $data.birthday=='00' }
 
         {* The main form field table *}
         {block name="frontend_checkout_payment_fatchip_computop_birthday_label"}
