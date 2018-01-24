@@ -203,12 +203,12 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 'description' => '',
             ],
             'bonitaetinvalidateafterdays' => [
-            'name' => 'bonitaetinvalidateafterdays',
-            'type' => 'number',
-            'value' => '30',
-            'label' => 'Bonitätsprüfung - Wiederholen nach wieviele Tage',
-            'required' => true,
-            'description' => 'Verzögerung in Stunden wenn als Caption Methode "Verzögert" gewählt wurde',
+                'name' => 'bonitaetinvalidateafterdays',
+                'type' => 'number',
+                'value' => '30',
+                'label' => 'Bonitätsprüfung - Wiederholen nach wieviele Tage',
+                'required' => true,
+                'description' => 'Verzögerung in Stunden wenn als Caption Methode "Verzögert" gewählt wurde',
             ],
         ];
 
@@ -329,6 +329,9 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         //$this->updateSchema();
         $this->createConfig();
+
+        // payment specific
+        $this->createEasyCreditRiskRule();
 
         return ['success' => true, 'invalidateCache' => ['backend', 'config', 'proxy']];
     }
@@ -484,16 +487,16 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $this->createFormTextElements($this->formBonitaetElements);
 
         //CRIF-Bonitätsprüfung. Globally set to inactive, Quickcheck or Creditcheck
-        $this->Form()->setElement('select', 'crifmethod' , array(
-          'value' => 'inactive',
-          'store' => array(
-            array('inactive', 'Inkativ'),
-            array('QuickCheck', 'QuickCheck'),
-            array('CreditCheck', 'CreditCheck'),
-          ),
-          'label' => 'Bonitätsprüfung CRIF',
-          'required' => true,
-          'editable' => false,
+        $this->Form()->setElement('select', 'crifmethod', array(
+            'value' => 'inactive',
+            'store' => array(
+                array('inactive', 'Inkativ'),
+                array('QuickCheck', 'QuickCheck'),
+                array('CreditCheck', 'CreditCheck'),
+            ),
+            'label' => 'Bonitätsprüfung CRIF',
+            'required' => true,
+            'editable' => false,
         ));
     }
 
@@ -561,6 +564,48 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         }
     }
 
+    protected function createEasyCreditRiskRule()
+    {
+        /** @var \Shopware\Components\Model\ModelManager $manager */
+        $manager = $this->get('models');
+        $payment = $this->getEasyCreditPayment();
+
+        // ToDo refactor rules array in case we have more rules for other payments
+        $rules = [];
+        $valueRule = new \Shopware\Models\Payment\RuleSet();
+        $valueRule->setRule1('ORDERVALUELESS');
+        $valueRule->setValue1('200');
+        $valueRule->setRule2('');
+        $valueRule->setValue2('');
+        $valueRule->setPayment($payment);
+        $rules[] = $valueRule;
+
+        // only add risk rules if no rules are set
+
+        if ($payment->getRuleSets() !== null &&
+            $payment->getRuleSets()->count() === 0)
+        {
+            $payment->setRuleSets($rules);
+            foreach ($rules as $rule) {
+                $manager->persist($rule);
+            }
+            $manager->flush($payment);
+        }
+    }
+
+    private function getEasyCreditPayment()
+    {
+        /** @var Shopware\Models\Payment\Payment $result */
+        $result = $this->Payments()->findOneBy(
+            [
+                'name' => [
+                    'fatchip_computop_easycredit',
+                ]
+            ]
+        );
+        return $result;
+    }
+
     /**
      * extend shpoware models with COMPUTOP specific attributes
      */
@@ -573,7 +618,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         /** @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
         $attributeService = $this->assertMinimumVersion('5.2') ?
-          Shopware()->Container()->get('shopware_attribute.crud_service') : null;
+            Shopware()->Container()->get('shopware_attribute.crud_service') : null;
 
         foreach ($tables as $table => $attributes) {
             foreach ($attributes as $attribute => $options) {
@@ -592,7 +637,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         // SW 5.2 Use Address Table instead of shipping and billing tables
         if (\Shopware::VERSION === '___VERSION___' ||
-          version_compare(\Shopware::VERSION, '5.2.0', '>=')
+            version_compare(\Shopware::VERSION, '5.2.0', '>=')
         ) {
 
             $tables = $util->fcComputopAttributeExtensionsArray52();
