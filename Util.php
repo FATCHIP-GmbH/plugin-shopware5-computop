@@ -196,17 +196,11 @@ class Util
     // SW 5.0 - 5.3 Compatibility
     // 5.0 - check
     // 5.1 - check
-    // 5.2 -
-    // 5.3 -
+    // 5.2 - check
+    // 5.3 - check
     public function getUserPhone($user)
     {
-        $phone = null;
-        if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
-            $phone = $user['billingaddress']['phone'];
-        } else {
-            $phone = $user['billingaddress']['phone'];
-        }
-        return $phone;
+        return $user['billingaddress']['phone'];
     }
 
     // SW 5.0 - 5.3 Compatibility
@@ -256,17 +250,10 @@ class Util
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
 
-        if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
-            $user->setPhone($phone);
-            Shopware()->Models()->persist($user);
-            Shopware()->Models()->flush($user);
-
-        } else {
-            $billing = $user->getBilling();
-            $billing->setPhone($phone);
-            Shopware()->Models()->persist($billing);
-            Shopware()->Models()->flush($billing);
-        }
+        $billing = $user->getBilling();
+        $billing->setPhone($phone);
+        Shopware()->Models()->persist($billing);
+        Shopware()->Models()->flush($billing);
     }
 
     /**
