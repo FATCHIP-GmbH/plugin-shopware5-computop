@@ -39,10 +39,13 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     const PAYMENTSTATUSPAID = 12;
 
     /** @var \Fatchip\CTPayment\CTPaymentService $service */
-    protected $paymentService = null;
+    protected $paymentService;
 
     public $paymentClass = '';
 
+    /**
+     * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     */
     protected $plugin;
 
     protected $config;
