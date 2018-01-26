@@ -14,6 +14,9 @@ use Shopware\FatchipCTPayment\Util;
  */
 class FrontendRiskManagement implements SubscriberInterface
 {
+    /** @var Util $utils **/
+    protected $utils;
+
 
     /**
     * di container
@@ -52,6 +55,8 @@ class FrontendRiskManagement implements SubscriberInterface
             'Shopware_Controllers_Frontend_Address::ajaxSaveAction::after' => 'onUpdateAddress',
             // hook for saving shipmentaddresscheck result
             'sAdmin::sUpdateShipping::after' => 'onUpdateShipping',
+            // hook for saving addresscheck result
+          'sAdmin::sUpdateBilling::after' => 'onUpdateBilling',
             // check if consumerscore is valid if activated
             'Shopware_Controllers_Frontend_Checkout::shippingPaymentAction::after' => 'onShippingPaymentAction',
         ];
@@ -88,6 +93,8 @@ class FrontendRiskManagement implements SubscriberInterface
      */
     public function sAdmin__executeRiskRule(\Enlight_Hook_HookArgs $arguments)
     {
+        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+
         $rule = $arguments->get('rule');
 
         // execute parent call if rule is not payone
@@ -110,8 +117,7 @@ class FrontendRiskManagement implements SubscriberInterface
                 return;
             }
 
-            $user = Shopware()->Session()->sOrderVariables['sUserData'];
-            $util = new Util();
+
 
             //$value contains the value that we want to compare with, as set in the SW Riskmanagment Backend Rule
             $value = $arguments->get('value');
@@ -119,9 +125,24 @@ class FrontendRiskManagement implements SubscriberInterface
             $user = $arguments->get('user');
 
             $userId = $user['additional']['user']['id'] ? $user['additional']['user']['id'] : null;
+
+            /**@var \Shopware\Models\Customer\Customer $userObject */
             $userObject = $userId ? Shopware()->Models()
               ->getRepository('Shopware\Models\Customer\Customer')
               ->find($userId) : null;
+
+            //$user['billingaddress']['id'] enthallt die ID vom Aktuell ausgewählte Rechnungsaddresse
+            //Die ist immer aktuell wenn so geladen
+            /**@var \Shopware\Models\Customer\Address $billingObject */
+            $billingObject = $user['billingaddress']['id'] ? Shopware()->Models()
+              ->getRepository('Shopware\Models\Customer\Address')
+              ->find($user['billingaddress']['id']) : null;
+
+            /**@var \Shopware\Models\Customer\Address $shippingObject */
+            $shippingObject = $user['shippingaddress']['id'] ? Shopware()->Models()
+              ->getRepository('Shopware\Models\Customer\Address')
+              ->find($user['shippingaddress']['id']) : null;
+
 
             //If we don't have a userobject yet, there is no point in doing a risk check
             if (!$userObject){
@@ -137,12 +158,22 @@ class FrontendRiskManagement implements SubscriberInterface
             $ctOrder = new CTOrder();
             $ctOrder->setAmount($basket['AmountNumeric'] * 100);
             $ctOrder->setCurrency('EUR'); //TODO: auslesen
-            $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
-            $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
+            $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
+            $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
             $ctOrder->setEmail($user['additional']['user']['email']);
 
+            if (\Shopware::VERSION === '___VERSION___' ||
+              version_compare(\Shopware::VERSION, '5.2.0', '>=')
+            ) {
+                $shipping = $userObject->getDefaultShippingAddress();
+                $billing = $userObject->getDefaultBillingAddress();
+            } else {
+                $shipping = $user->getShipping();
+                $billing   = $user->getBilling();
+            }
+
             //only make a call to the CRIF service if Necessary
-            if ($this->newCRIFCheckIsNecessary($userId)) {
+            if ($this->newCRIFCheckIsNecessary($shippingObject, $billingObject)) {
 
                 //TODO: Set orderDesc and Userdata
                 $crif = $service->getCRIFClass($config, $ctOrder, 'testOrder', 'testUserData');
@@ -150,16 +181,31 @@ class FrontendRiskManagement implements SubscriberInterface
                 $rawResp = $crif->callCRFDirect();
                 /** @var \Fatchip\CTPayment\CTResponse\CTResponseIframe\CTResponseCRIF $crifResponse*/
                 $crifResponse = $service->createCRIFResponse($rawResp);
-                $status = $crifResponse->getStatus();
                 $callResult = $crifResponse->getResult();
-                //write the result to the session for this billingaddressID
-                $crifInformation[$billingAddressData['id']] =  $this->getCRIFResponseArray($crifResponse);
                 //and save the result
-                $util->saveCRIFResult('billing', $userId, $crifResponse);
-                $util->saveCRIFResult('shipping', $userId, $crifResponse);
+                $billingAttribute = $this->utils-> getOrCreateShippingAttribute($billingObject);
+                $billingAttribute->setFatchipcComputopCrifResult($crifResponse->getResult());
+                $billingAttribute->setFatchipcComputopCrifDescription($crifResponse->getDescription());
+                $billingAttribute->setfatchipcComputopCrifDate(date('Y-m-d'));
+                $billingAttribute->setFatchipcComputopCrifStatus($crifResponse->getStatus());
+
+                $shippingAttribute = $this->utils-> getOrCreateShippingAttribute($billingObject);
+                $shippingAttribute->setFatchipcComputopCrifResult($crifResponse->getResult());
+                $shippingAttribute->setFatchipcComputopCrifDescription($crifResponse->getDescription());
+                $shippingAttribute->setfatchipcComputopCrifDate(date('Y-m-d'));
+                $shippingAttribute->setFatchipcComputopCrifStatus($crifResponse->getStatus());
+
+
+                Shopware()->Models()->persist($billingObject);
+                Shopware()->Models()->persist($shippingObject);
+                Shopware()->Models()->flush();
+
+
+                $this->utils->saveCRIFResult('billing', $userId, $crifResponse);
+                $this->utils->saveCRIFResult('shipping', $userId, $crifResponse);
             } else {
-                $crifBillingResultFromDB = $util->getBillingCRIFResultFromDB($userId);
-                $callResult = $crifBillingResultFromDB['FatchipcComputopCrifResult'];
+                $attribute = $this->utils-> getOrCreateShippingAttribute($shipping);
+                $callResult = $attribute->getFatchipcComputopCrifResult();
             }
 
             if ($this->$rule($callResult, $value)) {
@@ -181,47 +227,6 @@ class FrontendRiskManagement implements SubscriberInterface
 
 
     /**
-     * Checks in the Billing and Shipping attributes if a CRIF Check have already been made in the past.
-     * If yes, it is checked if it is older then the number of days after which saved CRIF results should be invalidated
-     * (set in the plugin-setttings)
-     *
-     * Returns true if we have to make the CRIF call to Computop, or false if we can use the saved values.
-     *
-     * @param $userID
-     * @return bool
-     */
-    private function newCRIFCheckIsNecessary($userID) {
-        $util = new Util();
-        $crifBillingResultFromDB = $util->getBillingCRIFResultFromDB($userID);
-        $crifShippingResultFromDB = $util->getShippingCRIFResultFromDB($userID);
-        // if no CRIF data is saved in Billing ord Shippingaddress, return true
-        if (!isset($crifBillingResultFromDB['FatchipcComputopCrifResult'])
-            || !isset($crifBillingResultFromDB['FatchipcComputopCrifDate'])
-            || !isset($crifShippingResultFromDB['FatchipcComputopCrifResult'])
-            || !isset($crifBillingResultFromDB['FatchipcComputopCrifDate'])
-        ) {
-            return true;
-        }
-        //if CRIF data IS saved in both addresses, check if the are expired,
-        //that means, they are older then the number of days set in Pluginsettings
-        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-        $config = $plugin->Config()->toArray();
-        $invalidateAfterDays = $config['bonitaetinvalidateafterdays'];
-        if (is_numeric($invalidateAfterDays) && $invalidateAfterDays > 0) {
-            /** @var \DateTime $lastTimeBillingChecked */
-            $lastTimeBillingChecked =  $crifBillingResultFromDB['FatchipcComputopCrifDate'];
-            $daysPassedBilling = $lastTimeBillingChecked->diff(new \DateTime('now'), true)->days;
-            $lastTimeShippingChecked =  $crifShippingResultFromDB['FatchipcComputopCrifDate'];
-            $daysPassedShipping = $lastTimeShippingChecked->diff(new \DateTime('now'), true)->days;
-            if ($daysPassedBilling > $invalidateAfterDays || $daysPassedShipping > $invalidateAfterDays) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * invalidate all check results on address change
      *
      * @param \Enlight_Hook_HookArgs $arguments
@@ -229,12 +234,18 @@ class FrontendRiskManagement implements SubscriberInterface
     public function onUpdateAddress(\Enlight_Hook_HookArgs $arguments)
     {
 
-        //TODO: CHECK WHY THIS DOESNT WORK! Test: Click Change Address. After that newCRIFCheckIsNecessary still returns false,
-        //should be true
         try {
+            //TODO: SHOULD ALSO WORK FOR ADDRESSES THAT ARE NOT DEFAULT BILLING OR SHIPPING ADDRESS
+            //Wenn über ajax, Dann über Response object, additional data
+            //$subject = $arguments->getSbubject();
+            //dort view oder response, in response gibts json mit activeBillingID oder so
+
             $userId = Shopware()->Session()->sUserId;
             $util = new Util();
             $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
+
+            $userData = Shopware()->Modules()->Admin()->sGetUserData();
+
             $userAttribute = $util->getOrCreateUserAttribute($user);
             $userAttribute->setFatchipcComputopCrifDate(0);
             Shopware()->Models()->persist($userAttribute);
@@ -252,6 +263,46 @@ class FrontendRiskManagement implements SubscriberInterface
         } catch (\Exception $exception) {
             unset($exception); // Ignore errors
         }
+    }
+
+    /**
+     * Checks in the Billing and Shipping attributes if a CRIF Check have already been made in the past.
+     * If yes, it is checked if it is older then the number of days after which saved CRIF results should be invalidated
+     * (set in the plugin-setttings)
+     *
+     * Returns true if we have to make the CRIF call to Computop, or false if we can use the saved values.
+     *
+     * @param \Shopware\Models\Customer\Shipping $shipping
+     * @param \Shopware\Models\Customer\Billing $billing
+     * @return bool
+     */
+    private function newCRIFCheckIsNecessary($shipping, $billing) {
+
+        $shippingAttr = $this->utils->getOrCreateShippingAttribute($shipping);
+        $billingAttr = $this->utils->getOrCreateBillingAttribute($billing);
+
+        if ($shippingAttr->getfatchipcComputopCrifDate() == null || $shippingAttr->getFatchipcComputopCrifDate() == null
+        || $billingAttr->getFatchipcComputopCrifDate() == null || $billingAttr->getFatchipcComputopCrifDate() == null) {
+            return true;
+        }
+
+        //if CRIF data IS saved in both addresses, check if the are expired,
+        //that means, they are older then the number of days set in Pluginsettings
+        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $config = $plugin->Config()->toArray();
+        $invalidateAfterDays = $config['bonitaetinvalidateafterdays'];
+        if (is_numeric($invalidateAfterDays) && $invalidateAfterDays > 0) {
+            /** @var \DateTime $lastTimeBillingChecked */
+            $lastTimeBillingChecked =  $billingAttr->getfatchipcComputopCrifDate();
+            $daysPassedBilling = $lastTimeBillingChecked->diff(new \DateTime('now'), true)->days;
+            $lastTimeShippingChecked =  $shippingAttr->getfatchipcComputopCrifDate();
+            $daysPassedShipping = $lastTimeShippingChecked->diff(new \DateTime('now'), true)->days;
+            if ($daysPassedBilling > $invalidateAfterDays || $daysPassedShipping > $invalidateAfterDays) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -302,6 +353,7 @@ class FrontendRiskManagement implements SubscriberInterface
      */
     public function onUpdateBilling(\Enlight_Hook_HookArgs $arguments)
     {
+        return;
         $session = Shopware()->Session();
 
         if (!($result = unserialize($session->moptPayoneBillingAddresscheckResult))) {
