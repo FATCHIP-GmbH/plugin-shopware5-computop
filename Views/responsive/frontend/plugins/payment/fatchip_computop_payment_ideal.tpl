@@ -17,7 +17,7 @@
                         <option disabled="disabled" value="">--</option>
                         {foreach from=$FatchipCTPaymentData.idealIssuerList item=idealIssuer}
                             <option value="{$idealIssuer->getIssuerId()}"
-                                    {if $form_data.fatchip_computop_ideal_issuer == $idealIssuer->geTIssuerId()}selected="selected"{/if}>
+                                    {if $idealIssuer->getIssuerId() == $FatchipCTPaymentData.idealIssuer}selected="selected"{/if}>
                                 {$idealIssuer->getName()}
                             </option>
                         {/foreach}
