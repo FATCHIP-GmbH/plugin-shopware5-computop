@@ -71,7 +71,6 @@ class Checkout implements SubscriberInterface
                 );
         }
 
-        // save klarna additional input fields
         if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_birthyear']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna') {
             $this->utils->updateUserDoB($session->get('sUserId'),
                 $params['FatchipComputopPaymentData']['fatchip_computop_klarna_birthyear'] . '-' .
@@ -83,6 +82,12 @@ class Checkout implements SubscriberInterface
         if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_phone']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna') {
             $this->utils->updateUserPhone($session->get('sUserId'),
                 $params['FatchipComputopPaymentData']['fatchip_computop_klarna_phone']
+            );
+        }
+
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_ideal_issuer']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_ideal') {
+                $session->offsetSet('FatchipComputopIdealIssuer',
+                $params['FatchipComputopPaymentData']['fatchip_computop_ideal_issuer']
             );
         }
 
@@ -117,11 +122,13 @@ class Checkout implements SubscriberInterface
             $userData = Shopware()->Modules()->Admin()->sGetUserData();
 
             $birthday = explode('-', $this->utils->getUserDoB($userData));
-            $data['birthday'] = $birthday[2];
-            $data['birthmonth'] = $birthday[1];
-            $data['birthyear'] = $birthday[0];
-            $data['phone'] = $this->utils->getUserPhone($userData);
-            $view->assign('data', $data);
+            $paymentData['birthday'] = $birthday[2];
+            $paymentData['birthmonth'] = $birthday[1];
+            $paymentData['birthyear'] = $birthday[0];
+            $paymentData['phone'] = $this->utils->getUserPhone($userData);
+            $paymentData['idealIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
+            $paymentData['idealIssuer'] = $session->offsetGet('FatchipComputopIdealIssuer');
+            $view->assign('FatchipCTPaymentData', $paymentData);
 
             // assign payment errors and error template to view
             $view->extendsTemplate('frontend/checkout/shipping_payment.tpl');

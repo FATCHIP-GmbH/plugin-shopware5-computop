@@ -2,17 +2,17 @@
     {* The main container for filling in the birthday field *}
     <div class="fatchip-computop-payment-easycredit-form payment--form-group">
 
-        {if !$data.birthday || $data.birthday=='00' }
+    {if !$FatchipCTPaymentData.birthday || $FatchipCTPaymentData.birthday=='00' }
 
         {* The main form field table *}
-        {block name="frontend_checkout_payment_fatchip_computop_birthday_label"}
+        {block name="frontend_checkout_payment_fatchip_computop_easycredit_birthday_label"}
             <p class="none">
                 <label for="fatchip_computop_easycredit_birthday">{s name='birthdate'}Bitte geben Sie Ihr Geburtsdatum an:{/s}</label>
             </p>
         {/block}
 
         <div class="select-field">
-            {block name="frontend_checkout_payment_fatchip_computop_birthday_day_input"}
+        {block name="frontend_checkout_payment_fatchip_computop_easycredit_birthday_day_input"}
                 <select name="FatchipComputopPaymentData[fatchip_computop_easycredit_birthday]"
                         id="fatchip_computop_easycredit_birthday"
                         class="is--required"
@@ -20,17 +20,17 @@
                 >
                     <option disabled="disabled" value="">--</option>
                     {section name="birthdate" start=1 loop=32 step=1}
-                        {$isSelected = $smarty.section.birthdate.index == $data.birthday}
+                        {$isSelected = $smarty.section.birthdate.index == $FatchipCTPaymentData.birthday}
                         <option value="{$smarty.section.birthdate.index}" {if $isSelected}selected{/if}>
                             {$smarty.section.birthdate.index}
                         </option>
                     {/section}
                 </select>
-            {/block}
+        {/block}
         </div>
 
         <div class="select-field">
-            {block name="frontend_checkout_payment_fatchip_computop_birthday_birthday_month_input"}
+        {block name="frontend_checkout_payment_fatchip_computop_easycredit_birthday_month_input"}
                 <select name="FatchipComputopPaymentData[fatchip_computop_easycredit_birthmonth]"
                         id="fatchip_computop_easycredit_birthmonth"
                         class="is--required"
@@ -38,17 +38,17 @@
                 >
                     <option disabled="disabled" value="">-</option>
                     {section name="birthmonth" start=1 loop=13 step=1}
-                        {$isSelected = $smarty.section.birthmonth.index == $data.birthmonth}
+                        {$isSelected = $smarty.section.birthmonth.index == $FatchipCTPaymentData.birthmonth}
                         <option value="{$smarty.section.birthmonth.index}" {if $isSelected}selected{/if}>
                             {$smarty.section.birthmonth.index}
                         </option>
                     {/section}
                 </select>
-            {/block}
+        {/block}
         </div>
 
         <div class="select-field">
-            {block name="frontend_checkout_payment_fatchip_computop_birthday_year_input"}
+        {block name="frontend_checkout_payment_fatchip_computop_easycredit_birthday_year_input"}
                 <select name="FatchipComputopPaymentData[fatchip_computop_easycredit_birthyear]"
                         id="fatchip_computop_easycredit_birthyear"
                         class="is--required"
@@ -56,13 +56,13 @@
                 >
                     <option disabled="disabled" value="">----</option>
                     {section name="birthyear" loop=2000 max=100 step=-1}
-                        {$isSelected = $smarty.section.birthyear.index == $data.birthyear}
+                        {$isSelected = $smarty.section.birthyear.index == $FatchipCTPaymentData.birthyear}
                         <option value="{$smarty.section.birthyear.index}" {if $isSelected}selected{/if}>
                             {$smarty.section.birthyear.index}
                         </option>
                     {/section}
                 </select>
-            {/block}
+        {/block}
         </div>
-        {/if}
-    </div>
+    {/if}
+</div>
