@@ -91,6 +91,12 @@ class Checkout implements SubscriberInterface
             );
         }
 
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_sofort_issuer']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_sofort') {
+            $session->offsetSet('FatchipComputopSofortIssuer',
+                $params['FatchipComputopPaymentData']['fatchip_computop_sofort_issuer']
+            );
+        }
+
         // ToDo should check here all Session vars?
         if ($paymentName === 'fatchip_computop_easycredit' && $request->getActionName() === 'saveShippingPayment' && !$session->offsetExists('fatchipComputopEasyCreditPayId')) {
             $subject->redirect(['controller' => 'FatchipCTEasyCredit','action' => 'gateway', 'forceSecure' => true]);
@@ -128,6 +134,8 @@ class Checkout implements SubscriberInterface
             $paymentData['phone'] = $this->utils->getUserPhone($userData);
             $paymentData['idealIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
             $paymentData['idealIssuer'] = $session->offsetGet('FatchipComputopIdealIssuer');
+            $paymentData['sofortIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
+            $paymentData['sofortIssuer'] = $session->offsetGet('FatchipComputopSofortIssuer');
             $view->assign('FatchipCTPaymentData', $paymentData);
 
             // assign payment errors and error template to view
