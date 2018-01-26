@@ -33,7 +33,7 @@ use Fatchip\CTPayment\CTOrder\CTOrder;
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTIdeal
  *
- * Direkt
+ * IdeaL
  * SW 5.0 - check
  * SW 5.1 -
  * SW 5.2 -
@@ -55,6 +55,7 @@ class Shopware_Controllers_Frontend_FatchipCTIdeal extends Shopware_Controllers_
     public function gatewayAction()
     {
         $user = Shopware()->Modules()->Admin()->sGetUserData();
+        $session = Shopware()->Session();
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
@@ -67,11 +68,7 @@ class Shopware_Controllers_Frontend_FatchipCTIdeal extends Shopware_Controllers_
 
         /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Ideal $payment */
         $payment = $this->getPaymentClass($ctOrder);
-        // ToDO how to handle issuer? from backend Config?
-        // for now just use the first one from db model
-        /** @var \Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers $issuer */
-        $issuer = Shopware()->Models()->find('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers',1);
-        $payment->setIssuerID($issuer->getIssuerId());
+        $payment->setIssuerID($session->offsetGet('FatchipComputopIdealIssuer'));
 
         $this->redirect($payment->getHTTPGetURL());
     }
