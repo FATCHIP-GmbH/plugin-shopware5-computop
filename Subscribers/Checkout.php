@@ -60,15 +60,30 @@ class Checkout implements SubscriberInterface
         $paymentName = $this->utils->getPaymentNameFromId($params['payment']);
         $test = $request->getActionName();
 
-        // save birthday
         // ToDo prevent forward to checkout confirm if params are missing
-        // dont know where to do this (yet)
+
+        // save easycredit additional input fields
         if (!empty($params['FatchipComputopPaymentData']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_easycredit') {
             $this->utils->updateUserDoB($session->get('sUserId'),
                 $params['FatchipComputopPaymentData']['fatchip_computop_easycredit_birthyear'].'-'.
                 $params['FatchipComputopPaymentData']['fatchip_computop_easycredit_birthmonth'].'-'.
                 $params['FatchipComputopPaymentData']['fatchip_computop_easycredit_birthday']
                 );
+        }
+
+        // save klarna additional input fields
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_birthyear']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna') {
+            $this->utils->updateUserDoB($session->get('sUserId'),
+                $params['FatchipComputopPaymentData']['fatchip_computop_klarna_birthyear'] . '-' .
+                $params['FatchipComputopPaymentData']['fatchip_computop_klarna_birthmonth'] . '-' .
+                $params['FatchipComputopPaymentData']['fatchip_computop_klarna_birthday']
+            );
+        }
+
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_phone']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna') {
+            $this->utils->updateUserPhone($session->get('sUserId'),
+                $params['FatchipComputopPaymentData']['fatchip_computop_klarna_phone']
+            );
         }
 
         // ToDo should check here all Session vars?
@@ -105,7 +120,7 @@ class Checkout implements SubscriberInterface
             $data['birthday'] = $birthday[2];
             $data['birthmonth'] = $birthday[1];
             $data['birthyear'] = $birthday[0];
-            $data['phone'] = $userData['billingaddress']['phone'];
+            $data['phone'] = $this->utils->getUserPhone($userData);
             $view->assign('data', $data);
 
             // assign payment errors and error template to view

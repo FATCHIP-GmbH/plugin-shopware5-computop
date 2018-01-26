@@ -39,10 +39,13 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     const PAYMENTSTATUSPAID = 12;
 
     /** @var \Fatchip\CTPayment\CTPaymentService $service */
-    protected $paymentService = null;
+    protected $paymentService;
 
     public $paymentClass = '';
 
+    /**
+     * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     */
     protected $plugin;
 
     protected $config;
@@ -91,7 +94,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     public function gatewayAction()
     {
-        $user = $this->getUser();
+        $user = Shopware()->Modules()->Admin()->sGetUserData();
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
@@ -139,7 +142,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     {
         $requestParams = $this->Request()->getParams();
 
-        /** @var CTResponseCreditCard $response */
+        /** @var CTResponseFatchipCTKlarnaCreditCard $response */
         $response = $this->paymentService->createPaymentResponse($requestParams);
         $token = $this->paymentService->createPaymentToken($this->getAmount(), $this->utils->getUserCustomerNumber($this->getUser()));
 
@@ -162,9 +165,18 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         }
     }
 
+    /**
+     * notify action method
+     * @return void
+     * @throws Exception
+     */
+    public function notifyAction()
+    {
+        $requestParams = $this->Request()->getParams();
+    }
+
     public function getOrderDesc($order) {
-        //TODO: Implementieren
-        return 'ORderDesc';
+        return 'OrderDescription';
     }
 
     public function getUserData() {
@@ -179,8 +191,6 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     public function getPaymentClass($order) {
         $router = $this->Front()->Router();
 
-        $userData = $this->getUserDataToken();
-
         return $this->paymentService->getPaymentClass(
              $this->paymentClass,
              $this->config,
@@ -188,9 +198,9 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
              $router->assemble(['action' => 'success', 'forceSecure' => true]),
              $router->assemble(['action' => 'failure', 'forceSecure' => true]),
              $router->assemble(['action' => 'notify', 'forceSecure' => true]),
-             'orderdesc', //todo
-             $userData);
-
+             $this->getOrderDesc(),
+             $this->getUserData()
+        );
     }
 
 }

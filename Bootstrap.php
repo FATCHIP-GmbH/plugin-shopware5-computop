@@ -97,7 +97,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             ],
         ];
 
-    private $formIdealoSelectElements =
+    private $formIdealSelectElements =
         [
             'idealDirektOderUeberSofort' => [
                 'name' => 'idealDirektOderUeberSofort',
@@ -148,7 +148,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 'name' => 'payDirektCaption',
                 'type' => 'select',
                 'value' => 'AUTO',
-                'label' => 'iDEAL - iDEAL Direkt oder über Sofort',
+                'label' => 'Paydirekt Capture Modus',
                 'required' => true,
                 'editable' => false,
                 'store' =>
@@ -311,6 +311,26 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         return $this->invalidateCaches(true);
     }
 
+
+    /**
+     * registers the custom plugin models and plugin namespaces
+     */
+    public function afterInit()
+    {
+        $this->registerCustomModels();
+    }
+
+    /**
+     * Register the custom model dir
+     */
+    protected function registerCustomModels()
+    {
+        Shopware()->Loader()->registerNamespace(
+            'Shopware\CustomModels',
+            $this->Path() . 'Models/'
+        );
+    }
+
     /**
      * @return array|bool
      * @throws Exception
@@ -327,13 +347,32 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         $this->addAttributes();
 
+        $this->createTables();
+
         //$this->updateSchema();
         $this->createConfig();
 
-        // payment specific
+        // payment specific risk rules
         $this->createEasyCreditRiskRule();
 
         return ['success' => true, 'invalidateCache' => ['backend', 'config', 'proxy']];
+    }
+
+    /**
+     * create tables
+     */
+    protected function createTables()
+    {
+        $em = $this->Application()->Models();
+        $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($em);
+
+        try {
+                $schemaTool->createSchema(array(
+                $em->getClassMetadata('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers'),
+            ));
+        } catch (\Exception $e) {
+            // ignore
+        }
     }
 
     /**
@@ -470,8 +509,13 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $this->createFormSelectElements($this->formCreditCardSelectElements);
         $this->createFormTextElements($this->formCreditCardNumberElements);
 
-        // idealo and Sofort
-        $this->createFormSelectElements($this->formIdealoSelectElements);
+        // ideal and Sofort
+        $this->Form()->setElement('button', 'fatchip_computop_ideal_button', [
+            'label' => '<strong>iDeal Banken aktualisieren <strong>',
+            'handler' => "function(btn) {" . file_get_contents(__DIR__ . '/Views/common/backend/ideal/ideal_button_handler.js') . "}"
+        ]);
+
+        $this->createFormSelectElements($this->formIdealSelectElements);
 
         // Mobilepay
         $this->createFormTextElements($this->formMobilePayBooleanElements);

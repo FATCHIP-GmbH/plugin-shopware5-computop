@@ -84,6 +84,8 @@ class ControllerPath implements SubscriberInterface
             => 'onGetControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTSofort'
             => 'onGetControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipCTIdeal'
+            => 'onGetBackendControllerPath',
 
 
         );
@@ -97,6 +99,16 @@ class ControllerPath implements SubscriberInterface
     {
         $controllerName = $args->getRequest()->getControllerName();
         return $this->path . 'Controllers/Frontend/' . $controllerName . '.php';
+    }
+
+    /**
+     * @param \Enlight_Event_EventArgs $args
+     * @return string
+     */
+    public function onGetBackendControllerPath(\Enlight_Event_EventArgs $args)
+    {
+        $controllerName = $args->getRequest()->getControllerName();
+        return $this->path . 'Controllers/Backend/' . $controllerName . '.php';
     }
 
 }

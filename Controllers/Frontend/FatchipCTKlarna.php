@@ -37,17 +37,17 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends Shopware_Controllers
 
     public $paymentClass = 'Klarna';
 
-    public function getPaymentClass($config, $order) {
+    public function getPaymentClass($order) {
         $router = $this->Front()->Router();
 
-        $user = $this->getUser();
-        //TODO: Check if this works for shopware < 5.2.0
-        $phone = $user['billingaddress']['phone'];
-        $birthday = $user['additional']['user']['birthday'];
+        $user = Shopware()->Modules()->Admin()->sGetUserData();
+
+        $phone = $this->utils->getUserPhone($user);
+        $birthday =$this->utils->getUserDoB($user);
         $isFirm = !is_null($user['billingaddress']['company']);
 
         return new \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna(
-            $config,
+            $this->config,
             $order,
             $router->assemble(['action' => 'notify', 'forceSecure' => true]),
             $this->getOrderDesc(),
