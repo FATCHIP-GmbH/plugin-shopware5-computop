@@ -19,7 +19,6 @@
 
 require_once 'Util.php';
 
-
 class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
 
@@ -600,12 +599,24 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 'active' => 0,
                 'position' => $paymentMethod['position'],
                 'additionalDescription' => '',
+
             );
 
             if (!is_null($paymentMethod['template'])) {
                 $payment['template'] = $paymentMethod['template'];
             }
-            $this->createPayment($payment);
+
+            $paymentObject = $this->createPayment($payment);
+            if (!empty($paymentMethod['countries'])) {
+                $countryCollection = new Doctrine\Common\Collections\ArrayCollection();
+                foreach($paymentMethod['countries'] as $iso) {
+                    $country = Shopware()->Models()->getRepository('Shopware\Models\Country\Country')->findOneBy(['iso'=> $iso]);
+                    if ($country != null) {
+                        $countryCollection->add($country);
+                    }
+                }
+                $paymentObject->setCountries($countryCollection);
+            }
         }
     }
 
