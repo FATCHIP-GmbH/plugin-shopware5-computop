@@ -37,11 +37,11 @@ class Shopware_Controllers_Frontend_FatchipCTMobilepay extends Shopware_Controll
 
     public $paymentClass = 'Mobilepay';
 
-    public function getPaymentClass($config, $order) {
+    public function getPaymentClass($order) {
         $router = $this->Front()->Router();
 
         return new \Fatchip\CTPayment\CTPaymentMethodsIframe\Mobilepay(
-          $config,
+          $this->config,
           $order, $router->assemble(['action' => 'success', 'forceSecure' => true]),
           $router->assemble(['action' => 'failure', 'forceSecure' => true]),
           $router->assemble(['action' => 'notify', 'forceSecure' => true]),
