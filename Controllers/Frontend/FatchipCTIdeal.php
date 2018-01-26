@@ -65,6 +65,7 @@ class Shopware_Controllers_Frontend_FatchipCTIdeal extends Shopware_Controllers_
         $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
         $ctOrder->setEmail($user['additional']['user']['email']);
+        $ctOrder->setCustomerID($user['additional']['user']['id']);
 
         /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Ideal $payment */
         $payment = $this->getPaymentClass($ctOrder);
