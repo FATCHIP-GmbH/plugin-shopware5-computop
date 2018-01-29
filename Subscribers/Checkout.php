@@ -112,6 +112,7 @@ class Checkout implements SubscriberInterface
     public function onPostdispatchFrontendCheckout(\Enlight_Controller_ActionEventArgs $args)
     {
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
         $subject = $args->getSubject();
         $view = $subject->View();
         $request = $subject->Request();
@@ -144,6 +145,12 @@ class Checkout implements SubscriberInterface
             // logic shouldnt be here or in the template ...
             $view->assign('CTError', $params['CTError']);
         }
+
+        // assign plugin Config to View
+        $view->assign('fatchipCTPaymentConfig', $pluginConfig);
+        // extend cart and ajax cart with Amazon Button
+        $view->extendsTemplate('frontend/checkout/ajax_cart_amazon.tpl');
+        //$view->extendsTemplate('frontend/checkout/mopt_cart_amazon.tpl');
 
         if ($request->getActionName() == 'confirm') {
 
