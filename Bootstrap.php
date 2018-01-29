@@ -211,6 +211,25 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             ],
         ];
 
+    private $formBonitaetSelectElements =
+        [
+            'crifmethod' => [
+                'name' => 'crifmethod',
+                'type' => 'select',
+                'value' => 'inactive',
+                'label' => 'CRIF Bonitätsprüfung',
+                'required' => true,
+                'editable' => false,
+                'store' =>
+                    [
+                        ['inactive', 'Inaktiv'],
+                        ['QuickCheck', 'QuickCheck'],
+                        ['CreditCheck', 'CreditCheck'],
+                    ],
+                'description' => '',
+            ],
+        ];
+
     private $formMobilePayBooleanElements =
         [
             'mobilePaySendMobileNr' => [
@@ -535,17 +554,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $this->createFormTextElements($this->formBonitaetElements);
 
         //CRIF-Bonitätsprüfung. Globally set to inactive, Quickcheck or Creditcheck
-        $this->Form()->setElement('select', 'crifmethod', array(
-            'value' => 'inactive',
-            'store' => array(
-                array('inactive', 'Inkativ'),
-                array('QuickCheck', 'QuickCheck'),
-                array('CreditCheck', 'CreditCheck'),
-            ),
-            'label' => 'Bonitätsprüfung CRIF',
-            'required' => true,
-            'editable' => false,
-        ));
+
+        $this->createFormSelectElements($this->formBonitaetSelectElements);
     }
 
 
