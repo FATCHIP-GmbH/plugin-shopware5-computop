@@ -61,6 +61,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
         $ctOrder->setEmail($user['additional']['user']['email']);
+        $ctOrder->setCustomerID($user['additional']['user']['id']);
 
         $payment = $this->getPaymentClass($ctOrder, 'return');
 
@@ -88,6 +89,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
         $ctOrder->setEmail($user['additional']['user']['email']);
+        $ctOrder->setCustomerID($user['additional']['user']['id']);
 
         $payment = $this->getPaymentClass($ctOrder, 'confirm', CTEnumEasyCredit::EVENTTOKEN_GET);
 
@@ -139,6 +141,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
         $ctOrder->setEmail($user['additional']['user']['email']);
+        $ctOrder->setCustomerID($user['additional']['user']['id']);
 
         $payment = $this->getPaymentClass($ctOrder, 'success', CTEnumEasyCredit::EVENTTOKEN_CON);
 

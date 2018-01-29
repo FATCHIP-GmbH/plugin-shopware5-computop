@@ -353,6 +353,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         // payment specific risk rules
         $this->createEasyCreditRiskRule();
+        $this->createPrzelewy24RiskRule();
+
 
         return ['success' => true, 'invalidateCache' => ['backend', 'config', 'proxy']];
     }
@@ -638,8 +640,40 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         // only add risk rules if no rules are set
 
-        if ($payment->getRuleSets() !== null &&
+        if ($payment->getRuleSets() == null ||
             $payment->getRuleSets()->count() === 0)
+        {
+            $payment->setRuleSets($rules);
+            foreach ($rules as $rule) {
+                $manager->persist($rule);
+            }
+            $manager->flush($payment);
+        }
+    }
+
+    /***
+     * Crates a riskrule that disables Przelewy24 if the currency <> PLN
+     */
+    protected function createPrzelewy24RiskRule()
+    {
+        /** @var \Shopware\Components\Model\ModelManager $manager */
+        $manager = $this->get('models');
+        $payment = $this->getPrzelewy24Payment();
+
+        // ToDo refactor rules array in case we have more rules for other payments
+        $rules = [];
+        $valueRule = new \Shopware\Models\Payment\RuleSet();
+        $valueRule->setRule1('CURRENCIESISOISNOT');
+        $valueRule->setValue1('PLN');
+        $valueRule->setRule2('');
+        $valueRule->setValue2('');
+        $valueRule->setPayment($payment);
+        $rules[] = $valueRule;
+
+        // only add risk rules if no rules are set
+
+        if ($payment->getRuleSets() == null ||
+          $payment->getRuleSets()->count() === 0)
         {
             $payment->setRuleSets($rules);
             foreach ($rules as $rule) {
@@ -658,6 +692,19 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                     'fatchip_computop_easycredit',
                 ]
             ]
+        );
+        return $result;
+    }
+
+    private function getPrzelewy24Payment()
+    {
+        /** @var Shopware\Models\Payment\Payment $result */
+        $result = $this->Payments()->findOneBy(
+          [
+            'name' => [
+              'fatchip_computop_przelewy24',
+            ]
+          ]
         );
         return $result;
     }

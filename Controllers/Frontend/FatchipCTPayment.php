@@ -104,6 +104,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
         $ctOrder->setEmail($user['additional']['user']['email']);
+        $ctOrder->setCustomerID($user['additional']['user']['id']);
         // Mandatory for paypalStandard
         $ctOrder->setOrderDesc('TestBestellung');
 

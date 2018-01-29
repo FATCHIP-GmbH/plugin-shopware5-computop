@@ -51,6 +51,7 @@ class Shopware_Controllers_Frontend_FatchipCTSofort extends Shopware_Controllers
         $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
         $ctOrder->setEmail($user['additional']['user']['email']);
+        $ctOrder->setCustomerID($user['additional']['user']['id']);
 
         /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Ideal $payment */
         $payment = $this->getPaymentClass($ctOrder);
@@ -69,7 +70,7 @@ class Shopware_Controllers_Frontend_FatchipCTSofort extends Shopware_Controllers
             $router->assemble(['action' => 'success', 'forceSecure' => true]),
             $router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $router->assemble(['action' => 'notify', 'forceSecure' => true]),
-            $this->getOrderDesc(),
+            $this->getOrderDesc($order),
             $this->getUserData()
         );
     }
