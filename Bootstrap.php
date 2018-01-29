@@ -352,8 +352,10 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $this->createConfig();
 
         // payment specific risk rules
-        $this->createEasyCreditRiskRule();
-        $this->createPrzelewy24RiskRule();
+        $this->createComputopRiskRule('fatchip_computop_easycredit',
+            'ORDERVALUELESS', '200');
+        $this->createComputopRiskRule('fatchip_computop_przelewy24',
+            'CURRENCIESISOISNOT', 'PLN');
 
 
         return ['success' => true, 'invalidateCache' => ['backend', 'config', 'proxy']];
@@ -622,17 +624,17 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         }
     }
 
-    protected function createEasyCreditRiskRule()
+    protected function createComputopRiskRule($paymentName, $rule1, $value1)
     {
         /** @var \Shopware\Components\Model\ModelManager $manager */
         $manager = $this->get('models');
-        $payment = $this->getEasyCreditPayment();
+        $payment =$this->getComputopPaymentByName($paymentName);
 
         // ToDo refactor rules array in case we have more rules for other payments
         $rules = [];
         $valueRule = new \Shopware\Models\Payment\RuleSet();
-        $valueRule->setRule1('ORDERVALUELESS');
-        $valueRule->setValue1('200');
+        $valueRule->setRule1($rule1);
+        $valueRule->setValue1($value1);
         $valueRule->setRule2('');
         $valueRule->setValue2('');
         $valueRule->setPayment($payment);
@@ -651,60 +653,14 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         }
     }
 
-    /***
-     * Crates a riskrule that disables Przelewy24 if the currency <> PLN
-     */
-    protected function createPrzelewy24RiskRule()
-    {
-        /** @var \Shopware\Components\Model\ModelManager $manager */
-        $manager = $this->get('models');
-        $payment = $this->getPrzelewy24Payment();
-
-        // ToDo refactor rules array in case we have more rules for other payments
-        $rules = [];
-        $valueRule = new \Shopware\Models\Payment\RuleSet();
-        $valueRule->setRule1('CURRENCIESISOISNOT');
-        $valueRule->setValue1('PLN');
-        $valueRule->setRule2('');
-        $valueRule->setValue2('');
-        $valueRule->setPayment($payment);
-        $rules[] = $valueRule;
-
-        // only add risk rules if no rules are set
-
-        if ($payment->getRuleSets() == null ||
-          $payment->getRuleSets()->count() === 0)
-        {
-            $payment->setRuleSets($rules);
-            foreach ($rules as $rule) {
-                $manager->persist($rule);
-            }
-            $manager->flush($payment);
-        }
-    }
-
-    private function getEasyCreditPayment()
-    {
+    private function getComputopPaymentByName($paymentName){
         /** @var Shopware\Models\Payment\Payment $result */
         $result = $this->Payments()->findOneBy(
             [
                 'name' => [
-                    'fatchip_computop_easycredit',
+                    $paymentName,
                 ]
             ]
-        );
-        return $result;
-    }
-
-    private function getPrzelewy24Payment()
-    {
-        /** @var Shopware\Models\Payment\Payment $result */
-        $result = $this->Payments()->findOneBy(
-          [
-            'name' => [
-              'fatchip_computop_przelewy24',
-            ]
-          ]
         );
         return $result;
     }
