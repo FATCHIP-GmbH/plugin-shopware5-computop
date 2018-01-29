@@ -1,15 +1,17 @@
 {extends file="parent:frontend/checkout/ajax_cart.tpl"}
 
-
 {block name='frontend_checkout_ajax_cart_button_container'}
     {$smarty.block.parent}
     <div class="button--container">
         <div id="LoginWithAmazon">
+            RemoveMe: <BR>
             smarty.server.REQUEST_SCHEME: {$smarty.server.REQUEST_SCHEME}<BR>
             smarty.server.HTTP_REFERER: {$smarty.server.HTTP_REFERER}<BR>
         </div>
         <div class="clear"></div>
         <script>
+            // Todo clear old credentials find  a better handling
+
             window.onAmazonLoginReady = function () {
                 amazon.Login.setClientId("{$fatchipCTPaymentConfig.amazonClientId}");
             };
