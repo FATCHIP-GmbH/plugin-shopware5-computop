@@ -44,7 +44,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends Shopware_Controllers
 
         $phone = $this->utils->getUserPhone($user);
         $birthday =$this->utils->getUserDoB($user);
-        $isFirm = !is_null($user['billingaddress']['company']);
+        $isFirm = !empty($user['billingaddress']['company']);
 
         return new \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna(
             $this->config,
