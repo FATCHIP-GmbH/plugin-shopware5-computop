@@ -25,7 +25,6 @@
  */
 
 use Shopware\FatchipCTPayment\Util;
-use Fatchip\CTPayment\CTOrder\CTOrder;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTAmazonRegister
@@ -59,23 +58,62 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
     }
 
+    /*
+     * Amazon redirects here after Login
+     */
+    public function loginAction()
+    {
+        // Debug:
+        $request = $this->Request();
+        $params = $request->getParams();
+
+        // either use session or $params. decisions decisions ...
+        $this->saveParamsToSession($params);
+        $response = $this->loginComputopAmazon();
+        $keyVal = explode('=',$response[1]);
+        $payID = $keyVal[1];
+        // save PayID in session
+        $this->session->offsetSet('fatchipCTPaymentPayID', $payID);
+        // forward to index this will display registration page with Amazon wallet widget
+        $this->forward('index', null , null , ['fatchipCTResponse' => $response]);
+    }
+
     public function indexAction()
     {
         // Debug:
         $request = $this->Request();
         $params = $request->getParams();
 
-        // ToDo setting all params in session for later use in Templates
-        // check if all are neccessary
-
-        $this->saveParamsToSession($params);
-        // $this->initComputopamazon();
-
-        $test = new \Fatchip\CTPayment\CTAmazonLoginService($this->config);
-        $response = $test->computopInit($params["access_token"], $params["token_type"], $params["expires_in"],$params["scope"]);
-        // ToDo check: for now we only use Information we get returned from Paygate in view
-        //$this->view->assign('')
+        $this->view->assign('fatchipCTResponse', $params['fatchipCTResponse']);
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
+
+    }
+
+    public function loginComputopAmazon(){
+        $basket = Shopware()->Modules()->Basket()->sGetBasket();
+        $user = Shopware()->Modules()->Admin()->sGetUserData();
+        $countryIso = $user['additional']['country']['countryiso'];
+        $amount = $basket['AmountNumeric'] * 100;
+        $currency = 'EUR';
+
+        // generate transID for payment and save in Session
+        mt_srand((double)microtime() * 1000000);
+        $transID = (string)mt_rand();
+        $transID .= date('yzGis');
+        $this->session->offsetSet('fatchipCTPaymentTransID', $transID);
+
+
+        $service = new \Fatchip\CTPayment\CTAmazon($this->config);
+        $requestParams =  $service->getAmazonLGNParams(
+            $this->session->fatchipCTPaymentTransID,
+            $this->session->fatchipCTAmazonAccessToken,
+            $this->session->fatchipCTAmazonAccessTokenType,
+            $this->session->fatchipCTAmazonAccessTokenExpire,
+            $this->session->fatchipCTAmazonAccessTokenScope,
+            $countryIso,
+            'https://testshop.de/FatchipCTPayment/notify'
+        );
+        return $service->callComputopAmazon($requestParams);
     }
 
     public function saveParamsToSession($params)

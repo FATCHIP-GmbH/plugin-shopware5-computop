@@ -33,7 +33,7 @@
                                     popup: false
                                 {/if}
                             };
-                            var shopReturnUrl = '{url controller='FatchipCTAmazonRegister' action='index'}';
+                            var shopReturnUrl = '{url controller='FatchipCTAmazonRegister' action='login'}';
 
                             {if $smarty.server.REQUEST_SCHEME === 'https' && $smarty.server.HTTP_REFERER|strpos:'https://'=== 0}
                                 // Do nothing
