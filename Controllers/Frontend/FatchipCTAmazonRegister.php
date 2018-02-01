@@ -25,11 +25,11 @@
  */
 
 use Shopware\FatchipCTPayment\Util;
-
+use Shopware\Components\CSRFWhitelistAware;
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTAmazonRegister
  */
-class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Controllers_Frontend_Register
+class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Controllers_Frontend_Register implements CSRFWhitelistAware
 {
 
     /** @var \Fatchip\CTPayment\CTPaymentService $service */
@@ -45,17 +45,21 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
     /** @var Util $utils **/
     protected $utils;
 
+    protected $session;
     /**
      * init payment controller
      */
     public function init()
     {
-        parent::init();
+        // does not exist in SW 5.3.4
+        // parent::init();
         // ToDo handle possible Exception
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $this->config = $this->plugin->Config()->toArray();
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        // SW 5.3.4 only
+        $this->session = Shopware()->Session();
     }
 
     /*
@@ -96,7 +100,8 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
      */
     public function saveRegisterAction()
     {
-        if ($this->request->isPost()) {
+        parent::saveRegisterAction();
+    /*    if ($this->request->isPost()) {
             $this->savePersonalAction();
             $this->saveBillingAction();
             if (!empty($this->post['billing']['shippingAddress'])) {
@@ -115,6 +120,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
             }
         }
         $this->forward('login');
+    */
     }
 
     public function loginComputopAmazon(){
@@ -158,6 +164,14 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         if (!empty($params["scope"])) {
             $this->session->offsetSet('fatchipCTAmazonAccessTokenScope', $params["scope"]);
         }
+    }
+
+    public function getWhitelistedCSRFActions()
+    {
+        $returnArray = array(
+            'saveRegister',
+        );
+        return $returnArray;
     }
 }
 

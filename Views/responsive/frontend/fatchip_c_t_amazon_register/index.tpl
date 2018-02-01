@@ -186,6 +186,10 @@
 
 {block name="frontend_index_header_javascript_jquery" append}
     <script>
+        // SW < 5.3: $(document).ready
+        // -> put all js stuff into less compiler or use true SW Jquery Plugin
+        document.asyncReady(function() {
+
         $(document).ready("#formSubmit").click(function() {
             var customerType="private";
             var salutation = 'mr';
@@ -213,41 +217,64 @@
 
 
             var frm = $('<form>', {
-                'action': "{url controller='FatchipCTAmazonRegister' action='saveRegister' forceSecure}",
+                'action': "{url controller='FatchipCTAmazonRegister' action='saveRegister' forceSecure}?sTarget=FatchipCTAmazonCheckout&sTargetAction=shippingPayment",
                 'method': 'post'
             });
 
+            // SW 5.0 - 5.1
             frm.append(
-                '<input type="hidden" name="register[personal][customer_type]" id="customer_type" value="'+customerType+'"/>'+
-                '<input type="hidden" name="register[personal][salutation]" id="salutation" value="'+salutation+'"/>'+
-                '<input type="hidden" name="register[personal][firstname]" id="firstname" value="'+firstname+'"/>'+
-                '<input type="hidden" name="register[personal][lastname]" id="lastname" value="'+lastname+'"/>'+
-                '<input type="hidden" name="register[personal][skipLogin]" id="register_personal_skipLogin" value="1"/>'+
-                '<input type="hidden" name="register[personal][email]" id="register_personal_email" value="'+email+'"/>'+
-                '<input type="hidden" name="register[personal][emailConfirmation]" id="register_personal_emailConfirmation" value="'+email+'"/>'+
-                '<input type="hidden" name="register[personal][phone]" id="phone" value="'+phone+'"/>'+
-                '<input type="hidden" name="register[personal][birthday]" id="register_personal_birthdate" value="'+birthdayDay+'"/>'+
-                '<input type="hidden" name="register[personal][birthmonth]" id="register_personal_birthmonth" value="'+birthdayMonth+'"/>'+
-                '<input type="hidden" name="register[personal][birthyear]" id="register_personal_birthyear" value="'+birthdayYear+'"/>'+
-                '<input type="hidden" name="register[billing][street]" id="street" value="'+street+'"/>'+
-                '<input type="hidden" name="register[billing][city]" id="zipcode" value="'+zip+'"/>'+
-                '<input type="hidden" name="register[billing][zipcode]" id="city" value="'+city+'"/>'+
-                '<input type="hidden" name="register[billing][country]" id="country" value="'+countryID+'"/>'+
-                '<input type="hidden" name="register[billing][shippingAddress]" id="register_billing_shippingAddress" value="'+differentShipping+'"/>'+
-                '<input type="hidden" name="register[shipping][salutation]" id="salutation2" value="'+salutation2+'"/>'+
-                '<input type="hidden" name="register[shipping][firstname]" id="firstname2" value="'+firstname2+'"/>'+
-                '<input type="hidden" name="register[shipping][lastname]" id="lastname" value="'+lastname2+'"/>'+
-                '<input type="hidden" name="register[shipping][company]" id="company2" value="'+company2+'"/>'+
-                '<input type="hidden" name="register[shipping][department]" id="department2" value="'+department2+'"/>'+
-                '<input type="hidden" name="register[shipping][street]" id="street2" value="'+street2+'"/>'+
-                '<input type="hidden" name="register[shipping][city]" id="zipcode2" value="'+zip2+'"/>'+
-                '<input type="hidden" name="register[shipping][zipcode]" id="city2" value="'+city2+'"/>'+
-                '<input type="hidden" name="register[shipping][country]" id="country_shipping" value="'+countryShippingID+'"/>'
+                '<input type="hidden" name="register[personal][customer_type]" value="'+customerType+'"/>'+
+                '<input type="hidden" name="register[personal][salutation]" value="'+salutation+'"/>'+
+                '<input type="hidden" name="register[personal][firstname]" value="'+firstname+'"/>'+
+                '<input type="hidden" name="register[personal][lastname]" value="'+lastname+'"/>'+
+                // SW > 5.2
+                '<input type="hidden" name="register[personal][accountmode]" value="1"/>'+
+
+                '<input type="hidden" name="register[personal][skipLogin]" value="1"/>'+
+                '<input type="hidden" name="register[personal][email]" value="'+email+'"/>'+
+                '<input type="hidden" name="register[personal][emailConfirmation]" value="'+email+'"/>'+
+                '<input type="hidden" name="register[personal][phone]" value="'+phone+'"/>'+
+                    // has to be removed for > SW 5.2 ??
+                '<input type="hidden" name="register[personal][birthday]" value="'+birthdayDay+'"/>'+
+
+                '<input type="hidden" name="register[personal][birthmonth]" value="'+birthdayMonth+'"/>'+
+                '<input type="hidden" name="register[personal][birthyear]" value="'+birthdayYear+'"/>'+
+                    // SW > 5.2
+                '<input type="hidden" name="register[personal][birthday][day]" value="'+birthdayDay+'"/>'+
+                '<input type="hidden" name="register[personal][birthday][month]" value="'+birthdayMonth+'"/>'+
+                '<input type="hidden" name="register[personal][birthday][year]" value="'+birthdayYear+'"/>'+
+
+                '<input type="hidden" name="register[billing][street]" value="'+street+'"/>'+
+                '<input type="hidden" name="register[billing][city]" value="'+city+'"/>'+
+                '<input type="hidden" name="register[billing][zipcode]" value="'+zip+'"/>'+
+                '<input type="hidden" name="register[billing][country]" value="'+countryID+'"/>'+
+                '<input type="hidden" name="register[billing][shippingAddress]" value="'+differentShipping+'"/>'+
+                '<input type="hidden" name="register[billing][customer_type]" value="'+customerType+'"/>'+
+                    // SW > 5.2
+                '<input type="hidden" name="register[billing][accountmode]" value="1"/>'+
+                '<input type="hidden" name="register[billing][phone]" value="'+phone+'"/>'+
+                '<input type="hidden" name="register[billing][birthday][day] value="'+birthdayDay+'"/>'+
+                '<input type="hidden" name="register[billing][birthday][month]" value="'+birthdayMonth+'"/>'+
+                '<input type="hidden" name="register[billing][birthday][year]" value="'+birthdayYear+'"/>'+
+                '<input type="hidden" name="register[billing][additional][customer_type]" value="'+customerType+'"/>'+
+
+                '<input type="hidden" name="register[shipping][salutation]" value="'+salutation2+'"/>'+
+                '<input type="hidden" name="register[shipping][firstname]" value="'+firstname2+'"/>'+
+                '<input type="hidden" name="register[shipping][lastname]" value="'+lastname2+'"/>'+
+                '<input type="hidden" name="register[shipping][company]" value="'+company2+'"/>'+
+                '<input type="hidden" name="register[shipping][department]" value="'+department2+'"/>'+
+                '<input type="hidden" name="register[shipping][street]" value="'+street2+'"/>'+
+                '<input type="hidden" name="register[shipping][city]" value="'+city2+'"/>'+
+                '<input type="hidden" name="register[shipping][zipcode]" value="'+zip2+'"/>'+
+                '<input type="hidden" name="register[shipping][country]" value="'+countryShippingID+'"/>'+
+                '<input type="hidden" name="register[shipping][phone]" value="'+phone+'"/>'
             );
 
             $(document.body).append(frm);
+            CSRF.updateForms();
             frm.submit();
 
+        });
         });
 </script>
 {/block}
