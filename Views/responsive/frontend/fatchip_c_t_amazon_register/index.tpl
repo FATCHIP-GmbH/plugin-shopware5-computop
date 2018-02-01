@@ -62,7 +62,7 @@
     </div>
     {* Submit button *}
     <div>
-        <button type="submit" onClick="postAddressData()"  name="Submit">Weiter<i class="icon--arrow-right"></i></button>
+        <input type="button"  id="formSubmit">Weiter<i class="icon--arrow-right"></i></input>
     </div>
 
     <script>
@@ -166,8 +166,6 @@
                     designMode: 'responsive'
                 },
                 onReady: function(billingAgreement) {
-                    var billingAgreementId = billingAgreement.
-                    getAmazonBillingAgreementId();
                 },
                 onError: function (error) {
                     // Your error handling code.
@@ -180,25 +178,76 @@
             }).bind("fatchipCTAddressBookWidgetDiv");
         };
 
-        function postAddressData()
-        {
-            $.post
-            (
-                "{url controller="Register" action="saveRegister" forceSecure}",
-
-                {
-                    'personal' {
-                        'choices[]': [ "Jon", "Susan" ]
-                    }
-
-                }
-            );
-
-        }
-
-
     </script>
     <script async="async"
             src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/sandbox/lpa/js/Widgets.js'>
     </script>
+{/block}
+
+{block name="frontend_index_header_javascript_jquery" append}
+    <script>
+        $(document).ready("#formSubmit").click(function() {
+            var customerType="private";
+            var salutation = 'mr';
+            var firstname = 'Stefan';
+            var lastname = 'Müller';
+            var email = 'stefan.mueller@fatchip.de';
+            var phone = '012345678';
+            var birthdayDay = '12';
+            var birthdayMonth = '12';
+            var birthdayYear = '1977';
+            var street = 'Speyerer Str. 13';
+            var zip = '10779';
+            var city = 'Berlin';
+            var countryID = '2';
+            var differentShipping = '1';
+            var salutation2 = 'mr';
+            var firstname2 = 'Liefer';
+            var lastname2 = 'LieferNN';
+            var company2 = '';
+            var department2 = '';
+            var street2 = 'Liefer Str. 13';
+            var zip2 = '14167';
+            var city2 = 'Lieferstadt';
+            var countryShippingID = '2';
+
+
+            var frm = $('<form>', {
+                'action': "{url controller='FatchipCTAmazonRegister' action='saveRegister' forceSecure}",
+                'method': 'post'
+            });
+
+            frm.append(
+                '<input type="hidden" name="register[personal][customer_type]" id="customer_type" value="'+customerType+'"/>'+
+                '<input type="hidden" name="register[personal][salutation]" id="salutation" value="'+salutation+'"/>'+
+                '<input type="hidden" name="register[personal][firstname]" id="firstname" value="'+firstname+'"/>'+
+                '<input type="hidden" name="register[personal][lastname]" id="lastname" value="'+lastname+'"/>'+
+                '<input type="hidden" name="register[personal][skipLogin]" id="register_personal_skipLogin" value="1"/>'+
+                '<input type="hidden" name="register[personal][email]" id="register_personal_email" value="'+email+'"/>'+
+                '<input type="hidden" name="register[personal][emailConfirmation]" id="register_personal_emailConfirmation" value="'+email+'"/>'+
+                '<input type="hidden" name="register[personal][phone]" id="phone" value="'+phone+'"/>'+
+                '<input type="hidden" name="register[personal][birthday]" id="register_personal_birthdate" value="'+birthdayDay+'"/>'+
+                '<input type="hidden" name="register[personal][birthmonth]" id="register_personal_birthmonth" value="'+birthdayMonth+'"/>'+
+                '<input type="hidden" name="register[personal][birthyear]" id="register_personal_birthyear" value="'+birthdayYear+'"/>'+
+                '<input type="hidden" name="register[billing][street]" id="street" value="'+street+'"/>'+
+                '<input type="hidden" name="register[billing][city]" id="zipcode" value="'+zip+'"/>'+
+                '<input type="hidden" name="register[billing][zipcode]" id="city" value="'+city+'"/>'+
+                '<input type="hidden" name="register[billing][country]" id="country" value="'+countryID+'"/>'+
+                '<input type="hidden" name="register[billing][shippingAddress]" id="register_billing_shippingAddress" value="'+differentShipping+'"/>'+
+                '<input type="hidden" name="register[shipping][salutation]" id="salutation2" value="'+salutation2+'"/>'+
+                '<input type="hidden" name="register[shipping][firstname]" id="firstname2" value="'+firstname2+'"/>'+
+                '<input type="hidden" name="register[shipping][lastname]" id="lastname" value="'+lastname2+'"/>'+
+                '<input type="hidden" name="register[shipping][company]" id="company2" value="'+company2+'"/>'+
+                '<input type="hidden" name="register[shipping][department]" id="department2" value="'+department2+'"/>'+
+                '<input type="hidden" name="register[shipping][street]" id="street2" value="'+street2+'"/>'+
+                '<input type="hidden" name="register[shipping][city]" id="zipcode2" value="'+zip2+'"/>'+
+                '<input type="hidden" name="register[shipping][zipcode]" id="city2" value="'+city2+'"/>'+
+                '<input type="hidden" name="register[shipping][country]" id="country_shipping" value="'+countryShippingID+'"/>'
+            );
+
+            $(document.body).append(frm);
+            frm.submit();
+
+        });
+</script>
 {/block}

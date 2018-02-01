@@ -89,6 +89,34 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
 
     }
 
+    /**
+     * Checks the registration
+     *
+     * @return void
+     */
+    public function saveRegisterAction()
+    {
+        if ($this->request->isPost()) {
+            $this->savePersonalAction();
+            $this->saveBillingAction();
+            if (!empty($this->post['billing']['shippingAddress'])) {
+                $this->saveShippingAction();
+            }
+            if (isset($this->post['payment'])) {
+                $this->savePaymentAction();
+            }
+            if (empty($this->error)) {
+                $this->saveRegister();
+
+                    return $this->redirect(array(
+                        'action' => 'shippingPayment',
+                        'controller' => 'FatchipCTAmazonCheckout',
+                    ));
+            }
+        }
+        $this->forward('login');
+    }
+
     public function loginComputopAmazon(){
         $basket = Shopware()->Modules()->Basket()->sGetBasket();
         $user = Shopware()->Modules()->Admin()->sGetUserData();
