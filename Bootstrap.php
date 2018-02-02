@@ -620,6 +620,10 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 $payment['template'] = $paymentMethod['template'];
             }
 
+            if (!empty($paymentMethod['additionalDescription'])) {
+                $payment['additionalDescription'] = $paymentMethod['additionalDescription'];
+            }
+
             $paymentObject = $this->createPayment($payment);
             if (!empty($paymentMethod['countries'])) {
                 $countryCollection = new Doctrine\Common\Collections\ArrayCollection();
