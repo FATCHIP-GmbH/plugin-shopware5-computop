@@ -41,6 +41,15 @@
             displayMode: "Read";
         {/if}
         }
+
+        #fatchipCTWalletWidgetDiv {
+            min-width: 300px;
+            width: 100%;
+            max-width: 550px;
+            min-height: 228px;
+            height: 240px;
+            max-height: 400px;
+        }
     </style>
 
     {* Error Messages Javascript*}
@@ -59,6 +68,7 @@
         <div id="debug">Amazon LGN:<BR>{$fatchipCTResponse|var_dump}</div>
         <!-- Place this code in your HTML where you would like the address widget to appear. -->
         <div id="fatchipCTAddressBookWidgetDiv"  style="float:left;margin-right:5%;"></div>
+        <div id="fatchipCTWalletWidgetDiv" style="float:left;"></div>
     </div>
     {* Submit button *}
     <div>
@@ -98,28 +108,27 @@
                             console.log(responseData.data);
                             $('#fatchipCTAddressBookWidgetDiv').show();
                         }
-                    })
 
-                    // ToDO: only if above is successfull
-                    // Commeted out, this is done anyway on initial onaddresselect
-                    /* var call = '{url controller="FatchipCTAjax" action="ctGetOrderDetails" forceSecure}';
-                    $.ajax({
-                        url: call ,
-                        type: 'post',
-                        data: { referenceId: fatchipCTAmazonReferenceId}
-                    })
-                        .success(function(response){
-                            var responseData = $.parseJSON(response);
-                            if (responseData.status == "error"){
-                                $('#amazonErrors').show();
-                                $('#AmazonErrorContent').html(responseData.errormessage);
-                            } else {
-                                console.log("onAmazonPayReady GOD:");
-                                console.log(responseData.data);
-                                $('#fatchipCTAddressBookWidgetDiv').show();
-                            }
+
+                        var call = '{url controller="FatchipCTAjax" action="ctGetOrderDetails" forceSecure}';
+                        $.ajax({
+                            url: call ,
+                            type: 'post',
+                            data: { referenceId: fatchipCTAmazonReferenceId}
                         })
-                        */
+                            .success(function(response){
+                                var responseData = $.parseJSON(response);
+                                if (responseData.status == "error"){
+                                    $('#amazonErrors').show();
+                                    $('#AmazonErrorContent').html(responseData.errormessage);
+                                } else {
+                                    console.log("onAmazonPayReady GOD:");
+                                    console.log(responseData.data);
+                                    $('#fatchipCTAddressBookWidgetDiv').show();
+                                }
+                            })
+
+                    });
 
                 },
                 onAddressSelect: function (orderReference) {
@@ -140,26 +149,28 @@
                                 console.log(responseData.data);
                                 $('#fatchipCTAddressBookWidgetDiv').show();
                             }
-                        })
 
-                    var call = '{url controller="FatchipCTAjax" action="ctSetOrderDetails" forceSecure}';
-                    $.ajax({
-                        url: call ,
-                        type: 'post',
-                        data: { referenceId: fatchipCTAmazonReferenceId}
-                    })
-                        .success(function(response){
-                            var responseData = $.parseJSON(response);
-                            if (responseData.status == "error"){
-                                $('#amazonErrors').show();
-                                $('#AmazonErrorContent').html(responseData.errormessage);
-                            } else {
-                                console.log("onAddressSelect SOD:");
-                                console.log(responseData.data);
-                                $('#fatchipCTAddressBookWidgetDiv').show();
-                            }
-                        })
 
+                            // in success to make sure call is made after GOD
+                            var call = '{url controller="FatchipCTAjax" action="ctSetOrderDetails" forceSecure}';
+                            $.ajax({
+                                url: call ,
+                                type: 'post',
+                                data: { referenceId: fatchipCTAmazonReferenceId}
+                            })
+                                .success(function(response){
+                                    var responseData = $.parseJSON(response);
+                                    if (responseData.status == "error"){
+                                        $('#amazonErrors').show();
+                                        $('#AmazonErrorContent').html(responseData.errormessage);
+                                    } else {
+                                        console.log("onAddressSelect SOD:");
+                                        console.log(responseData.data);
+                                        $('#fatchipCTAddressBookWidgetDiv').show();
+                                    }
+                                })
+
+                        });
 
                 },
                 design: {
@@ -176,6 +187,24 @@
                     console.log(error.getErrorCode() + ': ' + error.getErrorMessage());
                 }
             }).bind("fatchipCTAddressBookWidgetDiv");
+
+/*
+            new OffAmazonPayments.Widgets.Wallet({
+                sellerId: "{$fatchipCTPaymentConfig.amazonSellerId}",
+                scope: 'profile payments:widget payments:shipping_address payments:billing_address',
+                onPaymentSelect: function (orderReference) {
+
+                },
+                design: {
+                    designMode: 'responsive'
+                },
+                onError: function (error) {
+                    console.log(error.getErrorCode() + ': ' + error.getErrorMessage());
+                    // See "Handling Errors" for more information.
+                }
+            }).bind("fatchipCTWalletWidgetDiv");
+            */
+
         };
 
     </script>
@@ -188,7 +217,7 @@
     <script>
         // SW < 5.3: $(document).ready
         // -> put all js stuff into less compiler or use true SW Jquery Plugin
-        document.asyncReady(function() {
+        //document.ready(function() {
 
         $(document).ready("#formSubmit").click(function() {
             var customerType="private";
@@ -253,9 +282,10 @@
                     // SW > 5.2
                 '<input type="hidden" name="register[billing][accountmode]" value="1"/>'+
                 '<input type="hidden" name="register[billing][phone]" value="'+phone+'"/>'+
-                '<input type="hidden" name="register[billing][birthday][day] value="'+birthdayDay+'"/>'+
+                '<input type="hidden" name="register[billing][birthday][day]" value="'+birthdayDay+'"/>'+
                 '<input type="hidden" name="register[billing][birthday][month]" value="'+birthdayMonth+'"/>'+
                 '<input type="hidden" name="register[billing][birthday][year]" value="'+birthdayYear+'"/>'+
+                    // SW > 5.2 check this, shouldnt be neccessary ->Register::getPostData
                 '<input type="hidden" name="register[billing][additional][customer_type]" value="'+customerType+'"/>'+
 
                 '<input type="hidden" name="register[shipping][salutation]" value="'+salutation2+'"/>'+
@@ -271,10 +301,11 @@
             );
 
             $(document.body).append(frm);
-            CSRF.updateForms();
+            // needed for SW > 5.2 ??
+            //CSRF.updateForms();
             frm.submit();
 
         });
-        });
+        //});
 </script>
 {/block}

@@ -27,6 +27,7 @@ namespace Shopware\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 use Shopware\FatchipCTPayment\Util;
+use Fatchip\CTPayment\CTAmazon;
 
 class Checkout implements SubscriberInterface
 {
@@ -57,8 +58,8 @@ class Checkout implements SubscriberInterface
         $request = $subject->Request();
         $params = $request->getParams();
         $session = Shopware()->Session();
-        $paymentName = $this->utils->getPaymentNameFromId($params['payment']);
         $test = $request->getActionName();
+        $paymentName = $this->utils->getPaymentNameFromId($session->offsetGet('sPaymentID'));
 
         // ToDo prevent forward to checkout confirm if params are missing
 
@@ -97,11 +98,9 @@ class Checkout implements SubscriberInterface
             );
         }
 
-        // ToDo should check here all Session vars?
         if ($paymentName === 'fatchip_computop_easycredit' && $request->getActionName() === 'saveShippingPayment' && !$session->offsetExists('fatchipComputopEasyCreditPayId')) {
             $subject->redirect(['controller' => 'FatchipCTEasyCredit','action' => 'gateway', 'forceSecure' => true]);
         }
-
     }
 
 
@@ -120,6 +119,7 @@ class Checkout implements SubscriberInterface
         $session = Shopware()->Session();
         $params = $request->getParams();
 
+        $paymentName = $this->utils->getPaymentNameFromId($session->offsetGet('sPaymentID'));
 
         if (!$request->isDispatched() || $response->isException()) {
             return;
@@ -160,6 +160,30 @@ class Checkout implements SubscriberInterface
             if ($session->offsetGet('FatchipComputopEasyCreditInformation')) {
                 $view->assign('FatchipComputopEasyCreditInformation', $session->offsetGet('FatchipComputopEasyCreditInformation'));
             }
+
+            if ($paymentName === 'fatchip_computop_amazonpay') {
+                // ToDO Better do this in own fatchipCTAmazonCheckout controller
+                $response = $this->ctGetOrderDetails();
+            }
+
         }
+    }
+
+
+    public function ctGetOrderDetails(){
+
+        $session = Shopware()->Session();
+        $orderDesc = "Test";
+        $payservice = Shopware()->Container()->get('FatchipCTPaymentApiClient');
+        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $config = $plugin->Config()->toArray();
+
+        $service = new CTAmazon($config);
+        $requestParams =  $service->getAmazonGODParams(
+            $session->offsetGet('fatchipCTPaymentPayID'),
+            $orderDesc,
+            $session->offsetGet('fatchipCTAmazonReferenceID')
+        );
+        $response = $service->callComputopAmazon($requestParams);
     }
 }

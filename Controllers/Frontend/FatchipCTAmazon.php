@@ -26,7 +26,7 @@
 
 // add baseclass via require_once so we can extend
 // ToDo find a better solution for this
-require_once 'FatchipCTPayment.php';
+// require_once 'FatchipCTPayment.php';
 
 
 /**
@@ -34,34 +34,6 @@ require_once 'FatchipCTPayment.php';
  */
 class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
-
-    private $session;
-
-    /**
-     * Init method that get called automatically
-     *
-     * Set class properties
-     */
-    public function init()
-    {
-        $this->session = Shopware()->Session();
-    }
-
-    public function loginAction()
-    {
-        // Debug:
-        $request = $this->Request();
-        $params = $request->getParams();
-        $cookie = $request->getCookie('amazon_Login_accessToken');
-        if (!empty($this->Request()->getParam("access_token"))) {
-            $this->session->offsetSet('fatchipCTAmazonAccessToken', $this->Request()->getParam("access_token"));
-        }
-
-        // this is set in register template in javascript when returning from amazon Login
-        if (!empty($this->Request()->getCookie("fatchipCTAmazon_Login_accessToken"))) {
-            $this->session->offsetSet('fatchipCTAmazonAccessToken', $this->Request()->getCookie("amazon_Login_accessToken"));
-        }
-    }
 
 }
 

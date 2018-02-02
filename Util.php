@@ -267,6 +267,20 @@ class Util
         $sql         = 'SELECT `name` FROM `s_core_paymentmeans` WHERE id = ?';
         return  Shopware()->Db()->fetchOne($sql, $paymentID);
     }
+
+    /**
+     * returns payment name
+     *
+     * @param string $paymentID
+     * @return string
+     */
+    public function getPaymentIdFromName($paymentName)
+    {
+        $sql         = 'SELECT `id` FROM `s_core_paymentmeans` WHERE name = ?';
+        return  Shopware()->Db()->fetchOne($sql, $paymentName);
+    }
+
+
     /**
      * get or create attribute data for given object
      *

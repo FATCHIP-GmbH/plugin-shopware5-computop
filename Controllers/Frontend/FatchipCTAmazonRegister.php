@@ -45,21 +45,21 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
     /** @var Util $utils **/
     protected $utils;
 
-    protected $session;
     /**
      * init payment controller
      */
     public function init()
     {
-        // does not exist in SW 5.3.4
-        // parent::init();
+        // init method does not exist in SW 5.2?, SW 5.3
+        // also session property was removed in SW5.? 5.3
+        if (method_exists(parent::init())){
+        parent::init();
+        }
         // ToDo handle possible Exception
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $this->config = $this->plugin->Config()->toArray();
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
-        // SW 5.3.4 only
-        $this->session = Shopware()->Session();
     }
 
     /*
@@ -71,13 +71,15 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         $request = $this->Request();
         $params = $request->getParams();
 
+        $session = Shopware()->Session();
+
         // either use session or $params. decisions decisions ...
         $this->saveParamsToSession($params);
         $response = $this->loginComputopAmazon();
         $keyVal = explode('=',$response[1]);
         $payID = $keyVal[1];
         // save PayID in session
-        $this->session->offsetSet('fatchipCTPaymentPayID', $payID);
+        $session->offsetSet('fatchipCTPaymentPayID', $payID);
         // forward to index this will display registration page with Amazon wallet widget
         $this->forward('index', null , null , ['fatchipCTResponse' => $response]);
     }
@@ -87,6 +89,13 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         // Debug:
         $request = $this->Request();
         $params = $request->getParams();
+        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $this->config = $this->plugin->Config()->toArray();
+        $fatchipCTAmazonpayID = $this->utils->getPaymentIdFromName('fatchip_computop_amazonpay');
+        // set AmazonPaymentId PaymentId in Session
+        // this get lost when dipatvh select is triggered
+         $session = Shopware()->Session();
+         $session->offsetSet('sPaymentID', $fatchipCTAmazonpayID);
 
         $this->view->assign('fatchipCTResponse', $params['fatchipCTResponse']);
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
@@ -98,10 +107,10 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
      *
      * @return void
      */
-    public function saveRegisterAction()
+/*    public function saveRegisterAction()
     {
         parent::saveRegisterAction();
-    /*    if ($this->request->isPost()) {
+        if ($this->request->isPost()) {
             $this->savePersonalAction();
             $this->saveBillingAction();
             if (!empty($this->post['billing']['shippingAddress'])) {
@@ -120,13 +129,20 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
             }
         }
         $this->forward('login');
-    */
     }
+    */
 
     public function loginComputopAmazon(){
         $basket = Shopware()->Modules()->Basket()->sGetBasket();
         $user = Shopware()->Modules()->Admin()->sGetUserData();
         $countryIso = $user['additional']['country']['countryiso'];
+
+
+        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $this->config = $this->plugin->Config()->toArray();
+        $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
+        $session = Shopware()->Session();
+
         $amount = $basket['AmountNumeric'] * 100;
         $currency = 'EUR';
 
@@ -134,16 +150,16 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         mt_srand((double)microtime() * 1000000);
         $transID = (string)mt_rand();
         $transID .= date('yzGis');
-        $this->session->offsetSet('fatchipCTPaymentTransID', $transID);
+        $session->offsetSet('fatchipCTPaymentTransID', $transID);
 
 
         $service = new \Fatchip\CTPayment\CTAmazon($this->config);
         $requestParams =  $service->getAmazonLGNParams(
-            $this->session->fatchipCTPaymentTransID,
-            $this->session->fatchipCTAmazonAccessToken,
-            $this->session->fatchipCTAmazonAccessTokenType,
-            $this->session->fatchipCTAmazonAccessTokenExpire,
-            $this->session->fatchipCTAmazonAccessTokenScope,
+            $session->fatchipCTPaymentTransID,
+            $session->fatchipCTAmazonAccessToken,
+            $session->fatchipCTAmazonAccessTokenType,
+            $session->fatchipCTAmazonAccessTokenExpire,
+            $session->fatchipCTAmazonAccessTokenScope,
             $countryIso,
             'https://testshop.de/FatchipCTPayment/notify'
         );
@@ -152,17 +168,19 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
 
     public function saveParamsToSession($params)
     {
+        $session = Shopware()->Session();
+
         if (!empty($params["access_token"])) {
-            $this->session->offsetSet('fatchipCTAmazonAccessToken', $params["access_token"]);
+            $session->offsetSet('fatchipCTAmazonAccessToken', $params["access_token"]);
         }
         if (!empty($params["token_type"])) {
-            $this->session->offsetSet('fatchipCTAmazonAccessTokenType', $params["token_type"]);
+            $session->offsetSet('fatchipCTAmazonAccessTokenType', $params["token_type"]);
         }
         if (!empty($params["expires_in"])) {
-            $this->session->offsetSet('fatchipCTAmazonAccessTokenExpire', $params["expires_in"]);
+            $session->offsetSet('fatchipCTAmazonAccessTokenExpire', $params["expires_in"]);
         }
         if (!empty($params["scope"])) {
-            $this->session->offsetSet('fatchipCTAmazonAccessTokenScope', $params["scope"]);
+            $session->offsetSet('fatchipCTAmazonAccessTokenScope', $params["scope"]);
         }
     }
 

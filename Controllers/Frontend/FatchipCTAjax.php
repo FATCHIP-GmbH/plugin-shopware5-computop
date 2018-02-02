@@ -27,6 +27,9 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
     }
 
+
+
+    // ToDo leave Actions here, but move request response handling to payment service
     public function ctSetOrderDetailsAction(){
         // disable templates for all controller actions
         // ToDO move to predispatch?
@@ -66,6 +69,8 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         $session = Shopware()->Session();
         $params = $this->Request()->getParams();
         $referenceId = $params['referenceId'];
+        // save referencID to Session
+        $session->offsetSet('fatchipCTAmazonReferenceID', $referenceId);
         $orderDesc = "Test";
 
         $service = new \Fatchip\CTPayment\CTAmazon($this->config);
