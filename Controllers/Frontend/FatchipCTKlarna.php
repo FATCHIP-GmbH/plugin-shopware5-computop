@@ -37,6 +37,9 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends Shopware_Controllers
 
     public $paymentClass = 'Klarna';
 
+    /**
+     * @inheritdoc
+     */
     public function getPaymentClass($order) {
         $router = $this->Front()->Router();
 
@@ -45,6 +48,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends Shopware_Controllers
         $phone = $this->utils->getUserPhone($user);
         $birthday =$this->utils->getUserDoB($user);
         $isFirm = !empty($user['billingaddress']['company']);
+        $usesInvoice = ($user['additional']['payment']['name'] === 'fatchip_computop_klarna_invoice');
 
         return new \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna(
             $this->config,
@@ -56,7 +60,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends Shopware_Controllers
             $phone, //TODO remove mobile
             $birthday,
             $isFirm,
-            '-1'
+            $usesInvoice ? '-1' : '0'
         );
     }
 
