@@ -94,6 +94,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     public function gatewayAction()
     {
+        //TODO: aus order holen, NICHT aus $user, weil dann immer Default Billing und Shipping geschickt wird
         $user = Shopware()->Modules()->Admin()->sGetUserData();
 
         // ToDo refactor ctOrder creation
