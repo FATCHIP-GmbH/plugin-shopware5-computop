@@ -457,6 +457,27 @@ class Util
         return $mapping['sql'];
     }
 
+    /***
+     * @param @param \Shopware\Models\Customer\Address $address $address
+     * @param $response
+     */
+    public function saveCRIFResultInAddress($addressID, $response) {
+        if (!$addressID) {
+            return;
+        }
+
+        $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Address')->find($addressID);
+        if ($attribute = $address->getAttribute()) {
+            $attribute->setFatchipcComputopCrifDate(date('Y-m-d H:i:s'));
+            $attribute->setFatchipcComputopCrifDescription($response->getDescription());
+            $attribute->setFatchipcComputopCrifResult($response->getResult());
+            $attribute->setFatchipcComputopCrifStatus($response->getStatus());
+            Shopware()->Models()->persist($attribute);
+            Shopware()->Models()->flush();
+        }
+
+    }
+
     public function saveCRIFResult($addressType, $userId, $response)
     {
         if (!$userId) {
@@ -486,7 +507,7 @@ class Util
                 $attribute = $this->getOrCreateShippingAttribute($shipping);
             }
         }
-        $attribute->setFatchipcComputopCrifDate(date('Y-m-d'));
+        $attribute->setFatchipcComputopCrifDate(date('Y-m-d H:i:s'));
         $attribute->setFatchipcComputopCrifDescription($response->getDescription());
         $attribute->setFatchipcComputopCrifResult($response->getResult());
         $attribute->setFatchipcComputopCrifStatus($response->getStatus());
