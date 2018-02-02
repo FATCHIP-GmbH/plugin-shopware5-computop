@@ -256,6 +256,23 @@ class Util
         Shopware()->Models()->flush($billing);
     }
 
+
+    /**
+     * @param $id
+     * @param $type
+     * @return null|object
+     */
+    public function getCustomerAddressById($id, $type) {
+        $address = null;
+        if (version_compare(\Shopware::VERSION, '5.3.0', '<')) {
+            $address = $type == 'shipping' ? $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Shipping')->find($id) :
+              $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Billing')->find($id);
+        } else {
+            $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Address')->find($id);
+        }
+        return $address;
+    }
+
     /**
      * returns payment name
      *
@@ -458,15 +475,16 @@ class Util
     }
 
     /***
-     * @param @param \Shopware\Models\Customer\Address $address $address
+     * @param $addressID
+     * @param $type - billing or shipping
      * @param $response
      */
-    public function saveCRIFResultInAddress($addressID, $response) {
+    public function saveCRIFResultInAddress($addressID, $type, $response) {
         if (!$addressID) {
             return;
         }
 
-        $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Address')->find($addressID);
+        $address = $this->getCustomerAddressById($addressID, $type);
         if ($attribute = $address->getAttribute()) {
             $attribute->setFatchipcComputopCrifDate(date('Y-m-d H:i:s'));
             $attribute->setFatchipcComputopCrifDescription($response->getDescription());
