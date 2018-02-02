@@ -42,6 +42,16 @@ class FrontendRiskManagement implements SubscriberInterface {
         if (\Shopware::VERSION === '___VERSION___' || version_compare(\Shopware::VERSION, '5.2.0', '>='))
         {
           $events['Shopware\Models\Customer\Address::postUpdate'] = 'afterAddressUpdate';
+        } else {
+            //Checken, aber wie es aussieht, reichen die validatestep2s, werden immer gefeuert. Deswegen können dann
+            // onUpdateShipping und onUpdateBilling raus. Grosser vorteil ist auch, dass in validateStep2 uach geprüft werden
+            //kann, ob sich was wichtiges geändert hat.
+            $events['sAdmin::sUpdateShipping::after'] = 'onUpdateShipping';
+            $events['sAdmin::sUpdateBilling::after'] = 'onUpdateBilling';
+            $events['Shopware_Modules_Admin_ValidateStep2Shipping_FilterResult'] = 'onValidateStep2ShippingAddress';
+            $events['Shopware_Modules_Admin_ValidateStep2_FilterResult'] = 'onValidateStep2BillingAddress';
+
+
         }
 
         return $events;
@@ -50,23 +60,14 @@ class FrontendRiskManagement implements SubscriberInterface {
           'Shopware\Models\Customer\Customer::postUpdate' => 'afterCustomerUpdate',
 
 
-            //Versuche die sinnlos oder nicht mehr notwendig waren:
-            //Version >= 5.2, events that are fired after updating Billing or Shipping in Order. Unfortunately only from Backend.
-            //'Shopware\Models\Order\Billing::postUpdate' =>'afterOrderBillingUpdate',
-            //'Shopware\Models\Order\Shipping::postUpdate' =>'afterOrderShippingUpdate',
-            // this is fired after choosing another address as on confirm 'Andere adresse wählen' Not necessary because riskrules are fired again after this change and
-            // $args->get('user') contains right data
-            //'Shopware_Controllers_Frontend_Address::handleExtraAction::after' => 'onChooseOtherAddress',
-            // hook for invalidating a changed address in Shopware versions > 5.2//not necessary because doctrine afterAddressUpdate is fired
-            //'Shopware_Controllers_Frontend_Address::ajaxSaveAction::after' => 'onAjaxUpdateAddress',
+
 
             // hook for saving shipmentaddresscheck result WERDEN NICHT GEFEUERT SW >= 5.2.
             //'sAdmin::sUpdateShipping::after' => 'onUpdateShipping',
             // hook for saving addresscheck result
             //'sAdmin::sUpdateBilling::after' => 'onUpdateBilling',
 
-            //sollte für SW 5.0 sein, funktioniert aber nicht.
-            //'Shopware\Models\Customer\Billing::postUpdate' =>'afterBillingUpdate',
+
 
 
             /*
@@ -88,18 +89,10 @@ class FrontendRiskManagement implements SubscriberInterface {
     }
 
 
-    public function afterCustomerUpdate(\Enlight_Event_EventArgs $args) {
-        $modelManager = $args->getEntityManager();
-        $model = $args->getEntity();
-
-
-        $args->setReturn($args->getReturn());
-    }
-
     /***
      * @param \Enlight_Event_EventArgs $args
      *
-     * Fired after a user updates an address. If a CRIF result is available, it will be
+     * Fired after a user updates an address in SW >=5.2 If a CRIF result is available, it will be
      * invalidated / deleted
      */
     public function afterAddressUpdate(\Enlight_Event_EventArgs $args) {
@@ -110,36 +103,80 @@ class FrontendRiskManagement implements SubscriberInterface {
         $this->invalidateCrifFOrAddress($model);
     }
 
-    /***
-     * @param \Enlight_Event_EventArgs $args
+    /**
+     * save addresscheck result
      *
-     * Fired after a user updates the billing address of an order.
-     * If a crif result is availabele, it will be invalidated/deleted
+     * @param \Enlight_Hook_HookArgs $arguments
      */
-    public function afterOrderBillingUpdate(\Enlight_Event_EventArgs $args) {
-        $modelManager = $args->getEntityManager();
 
-        $model = $args->getEntity();
-        /** @var \Shopware\Models\Customer\Customer $subject */
-        $subject = $args->getSubject();
+    public function onUpdateBilling(\Enlight_Hook_HookArgs $arguments)
+    {
+        $session = Shopware()->Session();
+        $orderVars = Shopware()->Session()->sOrderVariables;
+        $userData = $orderVars['sUserData'];
+        $customerBillingId = $userData['billingaddress']['customerBillingId'];
+        if (!empty($customerShippingId)) {
+            $this->invalidateCrifResult($customerBillingId, 'billing');
+        }
 
-        $return = $args->getReturn();
-
-        $args->setReturn($return);
     }
 
+    /**
+     * save addresscheck result
+     *
+     * @param \Enlight_Hook_HookArgs $arguments
+     */
 
-    public function afterOrderShippingUpdate(\Enlight_Event_EventArgs $args) {
-        $modelManager = $args->getEntityManager();
+    public function onUpdateShipping(\Enlight_Hook_HookArgs $arguments)
+    {
+        $session = Shopware()->Session();
+        $orderVars = Shopware()->Session()->sOrderVariables;
+        $userData = $orderVars['sUserData'];
+        $customerShippingId = $userData['shipingaddress']['customerShippingId'];
+        if (!empty($customerShippingId)) {
+            $this->invalidateCrifResult($customerShippingId, 'shipping');
+        }
 
-        $model = $args->getEntity();
-        /** @var \Shopware\Models\Customer\Customer $subject */
-        $subject = $args->getSubject();
-
-        $return = $args->getReturn();
-
-        $args->setReturn($return);
     }
+
+    public function onValidateStep2BillingAddress(\Enlight_Hook_HookArgs $arguments) {
+        $session = Shopware()->Session();
+        $orderVars = Shopware()->Session()->sOrderVariables;
+        $userData = $orderVars['sUserData'];
+        $oldBillingAddress = $userData['billingaddress'];
+        $customerBillingId = $userData['billingaddress']['customerBillingId'];
+
+        //postdata contains the new addressdata that the user just entered
+        $postData       = $arguments->get('post');
+
+        if (!empty($customerBillingId) && $this->addressChanged($postData, $oldBillingAddress)) {
+            $this->invalidateCrifResult($customerBillingId, 'billing');
+        }
+    }
+
+    public function onValidateStep2ShippingAddress(\Enlight_Hook_HookArgs $arguments)
+    {
+        $session = Shopware()->Session();
+        $orderVars = Shopware()->Session()->sOrderVariables;
+        $userData = $orderVars['sUserData'];
+        $oldShippingAddress = $userData['shippingaddress'];
+        $customerShippingId = $userData['shippingaddress']['customerShippingId'];
+
+        //postdata contains the new addressdata that the user just entered
+        $postData       = $arguments->get('post');
+
+        if (!empty($customerShippingId) && $this->addressChanged($postData, $oldShippingAddress)) {
+            $this->invalidateCrifResult($customerShippingId, 'shipping');
+        }
+
+    }
+
+    public function addressChanged($oldAddress, $newAddress) {
+        //we consider the address changed if street, zipcode, city or country changed
+        return ($oldAddress['city'] !== $newAddress['city'] || $oldAddress['street'] !== $newAddress['street'] ||
+          $oldAddress['zipcode'] !== $newAddress['zipcode'] || $oldAddress['country'] !== $newAddress['countryID']);
+    }
+
 
     public function onChooseOtherAddress(\Enlight_Hook_HookArgs $arguments) {
         $test = 34;
@@ -179,6 +216,19 @@ class FrontendRiskManagement implements SubscriberInterface {
         /* @var \Shopware\Models\Customer\Address $address */
         if ($attribute = $address->getAttribute()) {
             $attribute->setFatchipcComputopCrifDate(0);
+            $attribute->setFatchipcComputopCrifResult(null);
+            $attribute->setFatchipcComputopCrifStatus(null);
+            Shopware()->Models()->persist($attribute);
+            Shopware()->Models()->flush();
+        }
+    }
+
+    private function invalidateCrifResult($addressID, $type) {
+        $util = new Util();
+        $address = $util->getCustomerAddressById($addressID, $type);
+        if ($attribute = $address->getAttribute()) {
+            $attribute->setFatchipcComputopCrifDate(0);
+            $attribute->setFatchipcComputopCrifDescription(null);
             $attribute->setFatchipcComputopCrifResult(null);
             $attribute->setFatchipcComputopCrifStatus(null);
             Shopware()->Models()->persist($attribute);
@@ -240,7 +290,8 @@ class FrontendRiskManagement implements SubscriberInterface {
 
             //only make a call to the CRIF service if Necessary
             //if ($this->newCRIFCheckIsNecessary($userId)) {
-            if ($this->crifCheckNecessary($user['billingaddress']) || $this->crifCheckNecessary($user['shippingaddress'])) {
+            if ($this->crifCheckNecessary($user['billingaddress'], 'billing') ||
+                $this->crifCheckNecessary($user['shippingaddress'], 'shipping')) {
 
                 $billingAddressData = $user['billingaddress'];
                 $billingAddressData['country'] = $billingAddressData['countryId'];
@@ -269,14 +320,18 @@ class FrontendRiskManagement implements SubscriberInterface {
                 $crifInformation[$billingAddressData['id']] = $this->getCRIFResponseArray($crifResponse);
                 //and save the result
                 //TODO: Save anhand von AddressID
-                $util->saveCRIFResultInAddress($billingAddressData['id'], $crifResponse);
-                $util->saveCRIFResultInAddress($shippingAddressData['id'], $crifResponse);
+                $util->saveCRIFResultInAddress($billingAddressData['id'], 'billing', $crifResponse);
+                $util->saveCRIFResultInAddress($shippingAddressData['id'], 'shipping', $crifResponse);
 
                 //$util->saveCRIFResult('billing', $userId, $crifResponse);
                 //$util->saveCRIFResult('shipping', $userId, $crifResponse);
             }
             else {
-                $callResult = $user['billingaddress']['attributes']['fatchipcComputopCrifResult'];
+                if (version_compare(\Shopware::VERSION, '5.3.0', '>=')) {
+                    $callResult = $user['billingaddress']['attributes']['fatchipcComputopCrifResult'];
+                } else {
+                    $callResult = $user['billingaddress']['fatchipcComputopCrifResult'];
+                }
             }
 
             if ($this->$rule($callResult, $value)) {
@@ -284,7 +339,6 @@ class FrontendRiskManagement implements SubscriberInterface {
 
                 return;
             }
-
         }
     }
 
@@ -299,7 +353,12 @@ class FrontendRiskManagement implements SubscriberInterface {
     }
 
 
-    private function crifCheckNecessary($addressArray) {
+    /***
+     * @param $addressArray
+     * @param null $type: billing or shipping
+     * @return bool
+     */
+    private function crifCheckNecessary($addressArray, $type = null) {
 
         //if crif is not responding (FAILED), we try again after one hour to prevent making hundreds of calls
        /*
@@ -309,13 +368,14 @@ class FrontendRiskManagement implements SubscriberInterface {
             return $hoursPassed > 1;
         }*/
 
+        $util = new Util();
         //check in Session if CRIF data are missing.
         if (!isset($addressArray['attributes']['fatchipcComputopCrifResult']) ||
           !isset($addressArray['attributes']['fatchipcComputopCrifDate'])
         ) {
             //If it is not in the session, we also check in the database to prevent multiple calls
             if (isset($addressArray['id'])) {
-                $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Address')->find($addressArray['id']);
+                $address = $util->getCustomerAddressById($addressArray['id'], $type);
                 if ($attribute = $address->getAttribute()) {
                     $attributeData = Shopware()->Models()->toArray($address->getAttribute());
                     if (!isset($attributeData['fatchipcComputopCrifResult'])|| !isset($attributeData['fatchipcComputopCrifDate'])) {
@@ -323,8 +383,8 @@ class FrontendRiskManagement implements SubscriberInterface {
                     }
                     else {
                         //write the values from the database in the addressarray
-                        $addressArray['attribute']['fatchipcComputopCrifResult'] = $attribute['fatchipcComputopCrifResult'];
-                        $addressArray['attribute']['fatchipcComputopCrifDate'] = $attribute['fatchipcComputopCrifDate'];
+                        $addressArray['attribute']['fatchipcComputopCrifResult'] = $attributeData['fatchipcComputopCrifResult'];
+                        $addressArray['attribute']['fatchipcComputopCrifDate'] = $attributeData['fatchipcComputopCrifDate'];
                     }
                 }
             }
@@ -360,6 +420,7 @@ class FrontendRiskManagement implements SubscriberInterface {
      * @param $userID
      * @return bool
      */
+    /*
     private function newCRIFCheckIsNecessary($userID) {
         $util = new Util();
         $crifBillingResultFromDB = $util->getBillingCRIFResultFromDB($userID);
@@ -378,7 +439,7 @@ class FrontendRiskManagement implements SubscriberInterface {
         $config = $plugin->Config()->toArray();
         $invalidateAfterDays = $config['bonitaetinvalidateafterdays'];
         if (is_numeric($invalidateAfterDays) && $invalidateAfterDays > 0) {
-            /** @var \DateTime $lastTimeBillingChecked */
+
             $lastTimeBillingChecked = $crifBillingResultFromDB['FatchipcComputopCrifDate'];
             $daysPassedBilling = $lastTimeBillingChecked->diff(new \DateTime('now'), TRUE)->days;
             $lastTimeShippingChecked = $crifShippingResultFromDB['FatchipcComputopCrifDate'];
@@ -390,6 +451,7 @@ class FrontendRiskManagement implements SubscriberInterface {
 
         return FALSE;
     }
+    */
 
     /**
      * invalidate all check results on address change
