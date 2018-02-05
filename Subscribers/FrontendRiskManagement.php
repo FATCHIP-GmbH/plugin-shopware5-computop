@@ -41,103 +41,31 @@ class FrontendRiskManagement implements SubscriberInterface {
 
         if (\Shopware::VERSION === '___VERSION___' || version_compare(\Shopware::VERSION, '5.2.0', '>='))
         {
-          $events['Shopware\Models\Customer\Address::postUpdate'] = 'afterAddressUpdate';
+            $events['Shopware\Models\Customer\Address::postUpdate'] = 'afterAddressUpdate';
         } else {
-            //Checken, aber wie es aussieht, reichen die validatestep2s, werden immer gefeuert. Deswegen können dann
-            // onUpdateShipping und onUpdateBilling raus. Grosser vorteil ist auch, dass in validateStep2 uach geprüft werden
-            //kann, ob sich was wichtiges geändert hat.
-            $events['sAdmin::sUpdateShipping::after'] = 'onUpdateShipping';
-            $events['sAdmin::sUpdateBilling::after'] = 'onUpdateBilling';
             $events['Shopware_Modules_Admin_ValidateStep2Shipping_FilterResult'] = 'onValidateStep2ShippingAddress';
             $events['Shopware_Modules_Admin_ValidateStep2_FilterResult'] = 'onValidateStep2BillingAddress';
-
-
         }
 
         return $events;
-        return [
-            //Sw >= 5.2, if user changes default Billing or Shipping address, also after register
-          'Shopware\Models\Customer\Customer::postUpdate' => 'afterCustomerUpdate',
-
-
-
-
-            // hook for saving shipmentaddresscheck result WERDEN NICHT GEFEUERT SW >= 5.2.
-            //'sAdmin::sUpdateShipping::after' => 'onUpdateShipping',
-            // hook for saving addresscheck result
-            //'sAdmin::sUpdateBilling::after' => 'onUpdateBilling',
-
-
-
-
-            /*
-
-              // hook for saving addresscheck result during registration process
-              'Shopware_Controllers_Frontend_Register::saveRegisterAction::after' => 'onSaveRegister',
-              // hook for invalidating a changed address in Shopware versions > 5.2
-              'Shopware_Controllers_Frontend_Address::ajaxSaveAction::after' => 'onUpdateAddress',
-              // hook for saving shipmentaddresscheck result
-              'sAdmin::sUpdateShipping::after' => 'onUpdateShipping',
-              // hook for saving addresscheck result
-            'sAdmin::sUpdateBilling::after' => 'onUpdateBilling',
-              // check if consumerscore is valid if activated
-              'Shopware_Controllers_Frontend_Checkout::shippingPaymentAction::after' => 'onShippingPaymentAction',
-
-             */
-
-        ];
     }
 
 
     /***
-     * @param \Enlight_Event_EventArgs $args
+     * @param LifecycleEventArgs $args
      *
      * Fired after a user updates an address in SW >=5.2 If a CRIF result is available, it will be
      * invalidated / deleted
      */
-    public function afterAddressUpdate(\Enlight_Event_EventArgs $args) {
+    public function afterAddressUpdate(LifecycleEventArgs $args) {
+
         $modelManager = $args->getEntityManager();
 
         /** @var \Shopware\Models\Customer\Address $model */
-        $model = $args->getEntity();
+        $model = $args->getObject();
         $this->invalidateCrifFOrAddress($model);
     }
 
-    /**
-     * save addresscheck result
-     *
-     * @param \Enlight_Hook_HookArgs $arguments
-     */
-
-    public function onUpdateBilling(\Enlight_Hook_HookArgs $arguments)
-    {
-        $session = Shopware()->Session();
-        $orderVars = Shopware()->Session()->sOrderVariables;
-        $userData = $orderVars['sUserData'];
-        $customerBillingId = $userData['billingaddress']['customerBillingId'];
-        if (!empty($customerShippingId)) {
-            $this->invalidateCrifResult($customerBillingId, 'billing');
-        }
-
-    }
-
-    /**
-     * save addresscheck result
-     *
-     * @param \Enlight_Hook_HookArgs $arguments
-     */
-
-    public function onUpdateShipping(\Enlight_Hook_HookArgs $arguments)
-    {
-        $session = Shopware()->Session();
-        $orderVars = Shopware()->Session()->sOrderVariables;
-        $userData = $orderVars['sUserData'];
-        $customerShippingId = $userData['shipingaddress']['customerShippingId'];
-        if (!empty($customerShippingId)) {
-            $this->invalidateCrifResult($customerShippingId, 'shipping');
-        }
-
-    }
 
     public function onValidateStep2BillingAddress(\Enlight_Hook_HookArgs $arguments) {
         $session = Shopware()->Session();
@@ -171,18 +99,10 @@ class FrontendRiskManagement implements SubscriberInterface {
 
     }
 
-    public function addressChanged($oldAddress, $newAddress) {
+    private function addressChanged($oldAddress, $newAddress) {
         //we consider the address changed if street, zipcode, city or country changed
         return ($oldAddress['city'] !== $newAddress['city'] || $oldAddress['street'] !== $newAddress['street'] ||
           $oldAddress['zipcode'] !== $newAddress['zipcode'] || $oldAddress['country'] !== $newAddress['countryID']);
-    }
-
-
-    public function onChooseOtherAddress(\Enlight_Hook_HookArgs $arguments) {
-        $test = 34;
-        $subject = $arguments->getSubject();
-
-
     }
 
 
@@ -289,7 +209,6 @@ class FrontendRiskManagement implements SubscriberInterface {
             }
 
             //only make a call to the CRIF service if Necessary
-            //if ($this->newCRIFCheckIsNecessary($userId)) {
             if ($this->crifCheckNecessary($user['billingaddress'], 'billing') ||
                 $this->crifCheckNecessary($user['shippingaddress'], 'shipping')) {
 
@@ -319,12 +238,9 @@ class FrontendRiskManagement implements SubscriberInterface {
                 //write the result to the session for this billingaddressID
                 $crifInformation[$billingAddressData['id']] = $this->getCRIFResponseArray($crifResponse);
                 //and save the result
-                //TODO: Save anhand von AddressID
                 $util->saveCRIFResultInAddress($billingAddressData['id'], 'billing', $crifResponse);
                 $util->saveCRIFResultInAddress($shippingAddressData['id'], 'shipping', $crifResponse);
 
-                //$util->saveCRIFResult('billing', $userId, $crifResponse);
-                //$util->saveCRIFResult('shipping', $userId, $crifResponse);
             }
             else {
                 if (version_compare(\Shopware::VERSION, '5.3.0', '>=')) {
@@ -411,86 +327,6 @@ class FrontendRiskManagement implements SubscriberInterface {
     }
 
     /**
-     * Checks in the Billing and Shipping attributes if a CRIF Check have already been made in the past.
-     * If yes, it is checked if it is older then the number of days after which saved CRIF results should be invalidated
-     * (set in the plugin-setttings)
-     *
-     * Returns true if we have to make the CRIF call to Computop, or false if we can use the saved values.
-     *
-     * @param $userID
-     * @return bool
-     */
-    /*
-    private function newCRIFCheckIsNecessary($userID) {
-        $util = new Util();
-        $crifBillingResultFromDB = $util->getBillingCRIFResultFromDB($userID);
-        $crifShippingResultFromDB = $util->getShippingCRIFResultFromDB($userID);
-        // if no CRIF data is saved in Billing ord Shippingaddress, return true
-        if (!isset($crifBillingResultFromDB['FatchipcComputopCrifResult'])
-          || !isset($crifBillingResultFromDB['FatchipcComputopCrifDate'])
-          || !isset($crifShippingResultFromDB['FatchipcComputopCrifResult'])
-          || !isset($crifBillingResultFromDB['FatchipcComputopCrifDate'])
-        ) {
-            return TRUE;
-        }
-        //if CRIF data IS saved in both addresses, check if the are expired,
-        //that means, they are older then the number of days set in Pluginsettings
-        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-        $config = $plugin->Config()->toArray();
-        $invalidateAfterDays = $config['bonitaetinvalidateafterdays'];
-        if (is_numeric($invalidateAfterDays) && $invalidateAfterDays > 0) {
-
-            $lastTimeBillingChecked = $crifBillingResultFromDB['FatchipcComputopCrifDate'];
-            $daysPassedBilling = $lastTimeBillingChecked->diff(new \DateTime('now'), TRUE)->days;
-            $lastTimeShippingChecked = $crifShippingResultFromDB['FatchipcComputopCrifDate'];
-            $daysPassedShipping = $lastTimeShippingChecked->diff(new \DateTime('now'), TRUE)->days;
-            if ($daysPassedBilling > $invalidateAfterDays || $daysPassedShipping > $invalidateAfterDays) {
-                return TRUE;
-            }
-        }
-
-        return FALSE;
-    }
-    */
-
-    /**
-     * invalidate all check results on address change
-     *
-     * @param \Enlight_Hook_HookArgs $arguments
-     */
-    /*
-    public function onUpdateAddress(\Enlight_Hook_HookArgs $arguments)
-    {
-
-        //TODO: CHECK WHY THIS DOESNT WORK! Test: Click Change Address. After that newCRIFCheckIsNecessary still returns false,
-        //should be true
-        try {
-            $userId = Shopware()->Session()->sUserId;
-            $util = new Util();
-            $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
-            $userAttribute = $util->getOrCreateUserAttribute($user);
-            $userAttribute->setFatchipcComputopCrifDate(0);
-            Shopware()->Models()->persist($userAttribute);
-            Shopware()->Models()->flush();
-            $billing = $user->getBilling();
-            $billingAttribute = $util->getOrCreateBillingAttribute($billing);
-            $billingAttribute->setFatchipcComputopCrifDate(0);
-            Shopware()->Models()->persist($billingAttribute);
-            Shopware()->Models()->flush();
-            $shipping = $user->getShipping();
-            $shippingAttribute = $util->getOrCreateShippingAttribute($shipping);
-            $shippingAttribute->setFatchipcComputopCrifDate(0);
-            Shopware()->Models()->persist($shippingAttribute);
-            Shopware()->Models()->flush();
-        } catch (\Exception $exception) {
-            unset($exception); // Ignore errors
-        }
-    }
-
-
-*/
-
-    /**
      * check if user score equals configured score to block payment method
      *
      * @param $scoring
@@ -512,272 +348,4 @@ class FrontendRiskManagement implements SubscriberInterface {
     public function sRiskFATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS_NOT($scoring, $value) {
         return !$this->sRiskFATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS($scoring, $value);
     }
-
-
-    /**
-     * save addresscheck result
-     *
-     * @param \Enlight_Hook_HookArgs $arguments
-     */
-    /*
-    public function onSaveRegister(\Enlight_Hook_HookArgs $arguments)
-    {
-        $this->onUpdateBilling($arguments);
-        $this->onUpdateShipping($arguments);
-    }
-*/
-
-    /**
-     * save addresscheck result
-     *
-     * @param \Enlight_Hook_HookArgs $arguments
-     */
-    /*
-    public function onUpdateBilling(\Enlight_Hook_HookArgs $arguments)
-    {
-        $modelManager = $arguments->getEntityManager();
-
-        $model = $arguments->getEntity();
-        return;
-        $session = Shopware()->Session();
-
-        if (!($result = unserialize($session->moptPayoneBillingAddresscheckResult))) {
-            return;
-        }
-
-        $userId         = $session->sUserId;
-        $moptPayoneMain = $this->container->get('MoptPayoneMain');
-        $config         = $moptPayoneMain->getPayoneConfig();
-
-        if ($result->getStatus() === \Payone_Api_Enum_ResponseType::INVALID ||
-            $result->getStatus() === \Payone_Api_Enum_ResponseType::ERROR
-        ) {
-            $moptPayoneMain->getHelper()->saveBillingAddressError($userId, $result);
-        } else {
-            if ($result->getStatus() === \Payone_Api_Enum_ResponseType::VALID &&
-                $result->getSecstatus() === '20' &&
-                $config['adresscheckAutomaticCorrection'] === 0 &&
-                Shopware()->Modules()->Admin()->sSYSTEM->_GET['action'] === 'saveRegister'
-            ) {
-                $moptPayoneMain->getHelper()->saveCorrectedBillingAddress($userId, $result);
-            }
-            $mappedPersonStatus = $moptPayoneMain->getHelper()
-                ->getUserScoringValue($result->getPersonstatus(), $config);
-            $mappedPersonStatus = $moptPayoneMain->getHelper()
-                ->getUserScoringColorFromValue($mappedPersonStatus);
-            $moptPayoneMain->getHelper()
-                ->saveAddressCheckResult('billing', $userId, $result, $mappedPersonStatus);
-        }
-
-        unset($session->moptPayoneBillingAddresscheckResult);
-    }
-    */
-
-    /**
-     * save addresscheck result
-     *
-     * @param \Enlight_Hook_HookArgs $arguments
-     */
-    /*
-    public function onUpdateShipping(\Enlight_Hook_HookArgs $arguments)
-    {
-        //TODO: Check if this is needed
-        return;
-        $session = Shopware()->Session();
-
-        if (!($result = unserialize($session->moptPayoneShippingAddresscheckResult))) {
-            return;
-        }
-
-        $userId         = $session->sUserId;
-        $moptPayoneMain = $this->container->get('MoptPayoneMain');
-        $config         = $moptPayoneMain->getPayoneConfig();
-
-        if ($result->getStatus() === \Payone_Api_Enum_ResponseType::INVALID ||
-            $result->getStatus() === \Payone_Api_Enum_ResponseType::ERROR
-        ) {
-            $moptPayoneMain->getHelper()->saveShippingAddressError($userId, $result);
-        } else {
-            if ($result->getStatus() === \Payone_Api_Enum_ResponseType::VALID &&
-                $result->getSecstatus() === '20' &&
-                $config['adresscheckAutomaticCorrection'] === 0 &&
-                Shopware()->Modules()->Admin()->sSYSTEM->_GET['action'] === 'saveRegister'
-            ) {
-                $moptPayoneMain->getHelper()->saveCorrectedShippingAddress($userId, $result);
-            }
-
-            $mappedPersonStatus = $moptPayoneMain->getHelper()
-                ->getUserScoringValue($result->getPersonstatus(), $config);
-            $mappedPersonStatus = $moptPayoneMain->getHelper()
-                ->getUserScoringColorFromValue($mappedPersonStatus);
-            $moptPayoneMain->getHelper()
-                ->saveAddressCheckResult('shipping', $userId, $result, $mappedPersonStatus);
-        }
-        unset($session->moptPayoneShippingAddresscheckResult);
-    }
-
-    */
-
-    /**
-     * check consumer score before payment choice if configured
-     *
-     * @param \Enlight_Hook_HookArgs $arguments
-     */
-    /*
-    public function onShippingPaymentAction(\Enlight_Hook_HookArgs $arguments)
-    {
-        //TODO: Check if this is necessary
-        return;
-        $subject = $arguments->getSubject();
-
-        $moptPayoneMain = $this->container->get('MoptPayoneMain');
-        $config = $moptPayoneMain->getPayoneConfig(); // get global config
-
-        if (!$config['consumerscoreActive']) {
-            return;
-        }
-
-        $basketValue = $subject->View()->sAmount;
-        $userData = $subject->View()->sUserData;
-        $billingAddressData = $userData['billingaddress'];
-        $billingAddressData['country'] = $billingAddressData['countryID'];
-        $shippingAddressData = $userData['shippingaddress'];
-        $shippingAddressData['country'] = $shippingAddressData['countryID'];
-        $session = Shopware()->Session();
-        $userId = $session->sUserId;
-
-        if ($this->getCustomerCheckIsNeeded($config, $userId, $basketValue, false)) {
-            // perform check if prechoice is configured
-            if ($config['consumerscoreCheckMoment'] == 0) {
-                try {
-                    $response = $this->performConsumerScoreCheck($config, $billingAddressData, 0);
-                    if (!$this->handleConsumerScoreCheckResult($response, $config, $userId)) {
-                        // cancel, redirect to payment choice
-                        if (version_compare(\Shopware::VERSION, '5.3.0', '>=')
-                        ) {
-                            $subject->forward('shippingPayment', 'checkout');
-                        } else {
-                            $subject->forward('payment', 'account', null, ['sTarget' => 'checkout']);
-                        }
-                    }
-                } catch (\Exception $e) {
-                    if ($config['consumerscoreFailureHandling'] == 0) {
-                        // abort and delete payment data and set to payone prepayment
-                        $moptPayoneMain->getPaymentHelper()->deletePaymentData($userId);
-                        $moptPayoneMain->getPaymentHelper()->setConfiguredDefaultPaymentAsPayment($userId);
-                        if (version_compare(\Shopware::VERSION, '5.3.0', '>=')
-                        ) {
-                            $subject->forward('shippingPayment', 'checkout', null);
-                        } else {
-                            $subject->forward('payment', 'account', null, ['sTarget' => 'checkout']);
-                        }
-                        return;
-                    } else {
-                        // continue
-
-                        //$subject->forward('payment', 'account', null, ['sTarget' => 'checkout']);
-                        return;
-                    }
-                }
-            } else {
-                // set sessionflag if after paymentchoice is configured
-                $session->moptConsumerScoreCheckNeedsUserAgreement = true;
-                $session->moptPaymentId = $subject->View()->sPayment['id'];
-            }
-
-        }
-    }
-
-    /**
-     * Forward the request to the given controller, module and action with the given parameters.
-     * copied from Enlight_Controller_Action
-     * and customized
-     *
-     * @param mixed $request
-     * @param string $action
-     * @param string $controller
-     * @param string $module
-     * @param array  $params
-     */
-    /*
-    public function forward($request, $action, $controller = null, $module = null, array $params = null)
-    {
-        if ($params !== null) {
-            $request->setParams($params);
-        }
-        if ($controller !== null) {
-            $request->setControllerName($controller);
-            if ($module !== null) {
-                $request->setModuleName($module);
-            }
-        }
-
-        $request->setActionName($action)->setDispatched(false);
-    }
-
-
-       public function onUpdateShipping(\Enlight_Hook_HookArgs $arguments)
-    {
-        $test = 34;
-        //TODO: Check if this is needed
-        return;
-    }
-
-    public function onUpdateBilling(\Enlight_Hook_HookArgs $arguments)
-    {
-        $test = 34;
-        //TODO: Check if this is needed
-        return;
-    }
-
-
-    public function onAjaxUpdateAddress(\Enlight_Hook_HookArgs $args)
-    {
-        return;
-        $subject = $args->getSubject();
-        $resp = $subject->getResponse();
-
-        $test = $args->getBody();
-        $userData                       = $subject->View()->sUserData;
-        $billingAddressData             = $userData['billingaddress'];
-        $billingAddressData['country']  = $billingAddressData['countryID'];
-        $shippingAddressData            = $userData['shippingaddress'];
-        $shippingAddressData['country'] = $shippingAddressData['countryID'];
-        $session                        = Shopware()->Session();
-        $userId                         = $session->sUserId;
-
-        $test = 34;
-        return;
-        try {
-            //TODO: SHOULD ALSO WORK FOR ADDRESSES THAT ARE NOT DEFAULT BILLING OR SHIPPING ADDRESS
-            //Wenn über ajax, Dann über Response object, additional data
-            //$subject = $arguments->getSbubject();
-            //dort view oder response, in response gibts json mit activeBillingID oder so
-
-            $userId = Shopware()->Session()->sUserId;
-            $util = new Util();
-            $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
-
-            $userData = Shopware()->Modules()->Admin()->sGetUserData();
-
-            $userAttribute = $util->getOrCreateUserAttribute($user);
-            $userAttribute->setFatchipcComputopCrifDate(0);
-            Shopware()->Models()->persist($userAttribute);
-            Shopware()->Models()->flush();
-            $billing = $user->getBilling();
-            $billingAttribute = $util->getOrCreateBillingAttribute($billing);
-            $billingAttribute->setFatchipcComputopCrifDate(0);
-            Shopware()->Models()->persist($billingAttribute);
-            Shopware()->Models()->flush();
-            $shipping = $user->getShipping();
-            $shippingAttribute = $util->getOrCreateShippingAttribute($shipping);
-            $shippingAttribute->setFatchipcComputopCrifDate(0);
-            Shopware()->Models()->persist($shippingAttribute);
-            Shopware()->Models()->flush();
-        } catch (\Exception $exception) {
-            unset($exception); // Ignore errors
-        }
-    }
-
-    */
 }
