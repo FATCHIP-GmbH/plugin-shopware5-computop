@@ -215,8 +215,7 @@ class FrontendRiskManagement implements SubscriberInterface {
             }
 
             //only make a call to the CRIF service if Necessary
-            if ($this->crifCheckNecessary($user['billingaddress'], 'billing') ||
-                $this->crifCheckNecessary($user['shippingaddress'], 'shipping')) {
+            if ($this->crifCheckNecessary($user['billingaddress'], 'billing')) {
 
                 $billingAddressData = $user['billingaddress'];
                 $billingAddressData['country'] = $billingAddressData['countryId'];
