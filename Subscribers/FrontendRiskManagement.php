@@ -306,7 +306,7 @@ class FrontendRiskManagement implements SubscriberInterface {
             //If it is not in the session, we also check in the database to prevent multiple calls
             if (isset($addressArray['id'])) {
                 $address = $util->getCustomerAddressById($addressArray['id'], $type);
-                if ($attribute = $address->getAttribute()) {
+                if (!empty($address) && $attribute = $address->getAttribute()) {
                     $attributeData = Shopware()->Models()->toArray($address->getAttribute());
                     if (!isset($attributeData['fatchipcComputopCrifResult'])|| !isset($attributeData['fatchipcComputopCrifDate'])) {
                         return TRUE;
@@ -316,7 +316,11 @@ class FrontendRiskManagement implements SubscriberInterface {
                         $addressArray['attribute']['fatchipcComputopCrifResult'] = $attributeData['fatchipcComputopCrifResult'];
                         $addressArray['attribute']['fatchipcComputopCrifDate'] = $attributeData['fatchipcComputopCrifDate'];
                     }
+                } else {
+                    return FALSE;
                 }
+
+
             }
         }
 
@@ -369,22 +373,31 @@ class FrontendRiskManagement implements SubscriberInterface {
      */
     private function updateBillingAddressFromCrifResponse($addressID, $crifResponse) {
         $util = new Util();
-        if ($address = $util->getCustomerAddressById($addressID, 'billing')) {
-            $address->setFirstName($crifResponse->getFirstName());
-            $address->setLastName($crifResponse->getLastName());
-            $address->setStreet($crifResponse->getAddrStreet() . ' ' . $crifResponse->getAddrStreetNr());
-            $address->setCity($crifResponse->getAddrCity());
-            $address->setZipcode($crifResponse->getAddrZip());
-            //TODO: country
+        if ($address = $util->getCustomerAddressById($addressID, 'billing') ) {
+            //only update the address, if something changed. This check is important, because if nothing changed
+            //callin persist and flush does not result in calling afterAddressUpdate and the session variable
+            //fatchipComputopCrifAutoAddressUpdate woould not get cleared.
+            if ($address->getFirstName() !== $crifResponse->getFirstName() ||
+                $address->getLastName() !== $crifResponse->getLastName() ||
+                $address->getStreet() != $crifResponse->getAddrStreet() . ' ' . $crifResponse->getAddrStreetNr() ||
+                $address->getZipCode() !== $crifResponse->getAddrZip() ||
+                $address->getCity() !== $crifResponse->getAddrCity()
+            ) {
+                $address->setFirstName($crifResponse->getFirstName());
+                $address->setLastName($crifResponse->getLastName());
+                $address->setStreet($crifResponse->getAddrStreet() . ' ' . $crifResponse->getAddrStreetNr());
+                $address->setCity($crifResponse->getAddrCity());
+                $address->setZipcode($crifResponse->getAddrZip());
+                //TODO: country
 
-            //Write to session that this address is autmatically changed, so we do not fire a second CRIF request
-            $session = Shopware()->Session();
-            $session->offsetSet('fatchipComputopCrifAutoAddressUpdate', $addressID);
+                //Write to session that this address is autmatically changed, so we do not fire a second CRIF request
+                $session = Shopware()->Session();
+                $session->offsetSet('fatchipComputopCrifAutoAddressUpdate', $addressID);
 
-            Shopware()->Models()->persist($address);
-            Shopware()->Models()->flush();
+                Shopware()->Models()->persist($address);
+                Shopware()->Models()->flush();
+            }
         }
-        $user = Shopware()->Modules()->Admin()->sGetUserData();
     }
 
     private function addressWasAutoUpdated() {
