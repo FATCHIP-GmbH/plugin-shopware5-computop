@@ -256,7 +256,7 @@ class FrontendRiskManagement implements SubscriberInterface {
 
             }
             else {
-                if (version_compare(\Shopware::VERSION, '5.3.0', '>=')) {
+                if (version_compare(\Shopware::VERSION, '5.2.0', '>=')) {
                     $callResult = $user['billingaddress']['attributes']['fatchipcComputopCrifResult'];
                 } else {
                     $callResult = $user['billingaddress']['fatchipcComputopCrifResult'];

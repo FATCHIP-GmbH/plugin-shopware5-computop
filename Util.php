@@ -264,7 +264,7 @@ class Util
      */
     public function getCustomerAddressById($id, $type) {
         $address = null;
-        if (version_compare(\Shopware::VERSION, '5.3.0', '<')) {
+        if (version_compare(\Shopware::VERSION, '5.2.0', '<')) {
             $address = $type == 'shipping' ? $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Shipping')->find($id) :
               $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Billing')->find($id);
         } else {
