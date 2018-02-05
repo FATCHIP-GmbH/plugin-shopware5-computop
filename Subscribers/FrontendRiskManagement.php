@@ -4,6 +4,7 @@ namespace Shopware\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\CTPayment\CTResponse\CTResponseIframe\CTResponseCRIF;
 use Shopware\Components\DependencyInjection\Container;
 use Shopware\FatchipCTPayment\Util;
 
@@ -52,51 +53,56 @@ class FrontendRiskManagement implements SubscriberInterface {
 
 
     /***
-     * @param LifecycleEventArgs $args
+     * @param \Enlight_Hook_HookArgs $args
      *
      * Fired after a user updates an address in SW >=5.2 If a CRIF result is available, it will be
      * invalidated / deleted
      */
-    public function afterAddressUpdate(LifecycleEventArgs $args) {
-
-        $modelManager = $args->getEntityManager();
-
-        /** @var \Shopware\Models\Customer\Address $model */
-        $model = $args->getObject();
-        $this->invalidateCrifFOrAddress($model);
+    public function afterAddressUpdate(\Enlight_Hook_HookArgs $args) {
+        //check in Session if we autoupated the address with the corrected Address from CRIF
+        if (!$this->addressWasAutoUpdated()) {
+            /** @var \Shopware\Models\Customer\Address $model */
+            $model = $args->getEntity();
+            $this->invalidateCrifFOrAddress($model);
+        }
     }
 
 
     public function onValidateStep2BillingAddress(\Enlight_Hook_HookArgs $arguments) {
-        $session = Shopware()->Session();
-        $orderVars = Shopware()->Session()->sOrderVariables;
-        $userData = $orderVars['sUserData'];
-        $oldBillingAddress = $userData['billingaddress'];
-        $customerBillingId = $userData['billingaddress']['customerBillingId'];
+        //check in Session if we autoupated the address with the corrected Address from CRIF
+        if (!$this->addressWasAutoUpdated()) {
+            $session = Shopware()->Session();
+            $orderVars = Shopware()->Session()->sOrderVariables;
+            $userData = $orderVars['sUserData'];
+            $oldBillingAddress = $userData['billingaddress'];
+            $customerBillingId = $userData['billingaddress']['customerBillingId'];
 
-        //postdata contains the new addressdata that the user just entered
-        $postData       = $arguments->get('post');
+            //postdata contains the new addressdata that the user just entered
+            $postData       = $arguments->get('post');
 
-        if (!empty($customerBillingId) && $this->addressChanged($postData, $oldBillingAddress)) {
-            $this->invalidateCrifResult($customerBillingId, 'billing');
+            if (!empty($customerBillingId) && $this->addressChanged($postData, $oldBillingAddress)) {
+                $this->invalidateCrifResult($customerBillingId, 'billing');
+            }
         }
     }
 
     public function onValidateStep2ShippingAddress(\Enlight_Hook_HookArgs $arguments)
     {
-        $session = Shopware()->Session();
-        $orderVars = Shopware()->Session()->sOrderVariables;
-        $userData = $orderVars['sUserData'];
-        $oldShippingAddress = $userData['shippingaddress'];
-        $customerShippingId = $userData['shippingaddress']['customerShippingId'];
+        //check in Session if we autoupated the address with the corrected Address from CRIF
+        if (!$this->addressWasAutoUpdated()) {
+            $session = Shopware()->Session();
+            $orderVars = Shopware()->Session()->sOrderVariables;
+            $userData = $orderVars['sUserData'];
+            $oldShippingAddress = $userData['shippingaddress'];
+            $customerShippingId = $userData['shippingaddress']['customerShippingId'];
 
-        //postdata contains the new addressdata that the user just entered
-        $postData       = $arguments->get('post');
+            //postdata contains the new addressdata that the user just entered
+            $postData       = $arguments->get('post');
 
-        if (!empty($customerShippingId) && $this->addressChanged($postData, $oldShippingAddress)) {
-            $this->invalidateCrifResult($customerShippingId, 'shipping');
+            if (!empty($customerShippingId) && $this->addressChanged($postData, $oldShippingAddress)) {
+                $this->invalidateCrifResult($customerShippingId, 'shipping');
+            }
         }
-
     }
 
     private function addressChanged($oldAddress, $newAddress) {
@@ -237,9 +243,16 @@ class FrontendRiskManagement implements SubscriberInterface {
                 $callResult = $crifResponse->getResult();
                 //write the result to the session for this billingaddressID
                 $crifInformation[$billingAddressData['id']] = $this->getCRIFResponseArray($crifResponse);
-                //and save the result
+                //and save the resul in the billingaddress
                 $util->saveCRIFResultInAddress($billingAddressData['id'], 'billing', $crifResponse);
-                $util->saveCRIFResultInAddress($shippingAddressData['id'], 'shipping', $crifResponse);
+                //$util->saveCRIFResultInAddress($shippingAddressData['id'], 'shipping', $crifResponse);
+
+                //if set in Plugin settings, we have to update the address with the corrected Addressdate
+                $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+                $config = $plugin->Config()->toArray();
+                if ($config['bonitaetusereturnaddress']) {
+                    $this->updateBillingAddressFromCrifResponse($billingAddressData['id'], $crifResponse);
+                }
 
             }
             else {
@@ -277,12 +290,13 @@ class FrontendRiskManagement implements SubscriberInterface {
     private function crifCheckNecessary($addressArray, $type = null) {
 
         //if crif is not responding (FAILED), we try again after one hour to prevent making hundreds of calls
-       /*
-        if ($addressArray['attributes']['fatchipc_computop_crif_status'] == 'FAILED') {
-            $lastTimeChecked = new \DateTime($addressArray['attributes']['fatchipc_computop_crif_date']);
+
+        if ($addressArray['attributes']['fatchipcComputopCrifStatus'] == 'FAILED') {
+            $lastTimeChecked = $addressArray['attributes']['fatchipcComputopCrifDate'] instanceof \DateTime ?
+              $addressArray['attributes']['fatchipcComputopCrifDate'] : new \DateTime($addressArray['attributes']['fatchipcComputopCrifDate']);
             $hoursPassed = $lastTimeChecked->diff(new \DateTime('now'), TRUE)->hours;
             return $hoursPassed > 1;
-        }*/
+        }
 
         $util = new Util();
         //check in Session if CRIF data are missing.
@@ -347,5 +361,38 @@ class FrontendRiskManagement implements SubscriberInterface {
      */
     public function sRiskFATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS_NOT($scoring, $value) {
         return !$this->sRiskFATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS($scoring, $value);
+    }
+
+    /***
+     * @param $addressID
+     * @param $crifResponse CTResponseCRIF
+     */
+    private function updateBillingAddressFromCrifResponse($addressID, $crifResponse) {
+        $util = new Util();
+        if ($address = $util->getCustomerAddressById($addressID, 'billing')) {
+            $address->setFirstName($crifResponse->getFirstName());
+            $address->setLastName($crifResponse->getLastName());
+            $address->setStreet($crifResponse->getAddrStreet() . ' ' . $crifResponse->getAddrStreetNr());
+            $address->setCity($crifResponse->getAddrCity());
+            $address->setZipcode($crifResponse->getAddrZip());
+            //TODO: country
+
+            //Write to session that this address is autmatically changed, so we do not fire a second CRIF request
+            $session = Shopware()->Session();
+            $session->offsetSet('fatchipComputopCrifAutoAddressUpdate', $addressID);
+
+            Shopware()->Models()->persist($address);
+            Shopware()->Models()->flush();
+        }
+        $user = Shopware()->Modules()->Admin()->sGetUserData();
+    }
+
+    private function addressWasAutoUpdated() {
+        if (Shopware()->Session()->offsetExists('fatchipComputopCrifAutoAddressUpdate')) {
+            Shopware()->Session()->offsetUnset('fatchipComputopCrifAutoAddressUpdate');
+            return TRUE;
+        }
+
+        return FALSE;
     }
 }
