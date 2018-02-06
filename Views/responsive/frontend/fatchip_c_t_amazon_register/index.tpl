@@ -68,11 +68,16 @@
         <div id="debug">Amazon LGN:<BR>{$fatchipCTResponse|var_dump}</div>
         <!-- Place this code in your HTML where you would like the address widget to appear. -->
         <div id="fatchipCTAddressBookWidgetDiv"  style="float:left;margin-right:5%;"></div>
+
+        <!-- Hidden Input to store the amazonreferenceId -->
+
         <div id="fatchipCTWalletWidgetDiv" style="float:left;"></div>
     </div>
     {* Submit button *}
     <div>
-        <input type="button"  id="formSubmit">Weiter<i class="icon--arrow-right"></i></input>
+        <input data-fatchipCTAmazonOrderReferenceId id="fatchipCTAmazonReferenceId">
+        </input>
+
     </div>
 
     <script>
@@ -89,6 +94,17 @@
                     console.log("entering onOrderRefCreate:");
                     fatchipCTAmazonReferenceId = orderReference.getAmazonOrderReferenceId();
                     console.log(fatchipCTAmazonReferenceId);
+                    input = document.getElementById('fatchipCTAmazonReferenceId');
+                    input.value = fatchipCTAmazonReferenceId;
+                    console.log("double Check Reference:");
+                    console.log(input.value);
+                    // call the jqeury plugin to to handle ajax calls
+                    $('#fatchipCTAmazonReferenceId').fatchipCTAmazonSOD();
+                    $("#fatchipCTAmazonReferenceId").trigger("onAmazonOrderRef");
+
+                    $('#fatchipCTAddressBookWidgetDiv').show();
+
+                    /*
 
                     // Computop "Step 14" is done now do the SOD call with ordereference
                     // afterwards display the addressbook widget
@@ -129,9 +145,17 @@
                             })
 
                     });
+                    */
 
                 },
                 onAddressSelect: function (orderReference) {
+                    console.log("entered onAddressSElect");
+
+                    // only triggers init one Time!!!!
+                    //$('#fatchipCTAmazonReferenceId').fatchipCTAmazonSOD();
+                    // test with special event
+                    $("#fatchipCTAmazonReferenceId").trigger("onAmazonAddressSelect");
+                    /*
 
                     var call = '{url controller="FatchipCTAjax" action="ctGetOrderDetails" forceSecure}';
                     $.ajax({
@@ -171,6 +195,7 @@
                                 })
 
                         });
+                        */
 
                 },
                 design: {
@@ -213,8 +238,12 @@
     </script>
 {/block}
 
-{block name="frontend_index_header_javascript_jquery" append}
+{block name="frontend_index_header_javascript_jquery"}
+    {$smarty.block.parent}
     <script>
+
+
+
         // SW < 5.3: $(document).ready
         // -> put all js stuff into less compiler or use true SW Jquery Plugin
         //document.ready(function() {

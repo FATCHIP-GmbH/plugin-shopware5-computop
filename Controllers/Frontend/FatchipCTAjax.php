@@ -55,8 +55,8 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         $response = $service->callComputopAmazon($requestParams);
         $data = [];
         $data['data'] = $response;
-        $data['status'] = ($response[7] == 'Status=FAILED' ) ? 'error' : 'success';
-        $data['errormessage'] = $response[5];
+        $data['status'] = ($response['Status'] == 'FAILED' ) ? 'error' : 'success';
+        $data['errormessage'] = $response['Description'];
         $encoded = json_encode($data);
         echo $encoded;
     }
@@ -82,8 +82,8 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         $response = $service->callComputopAmazon($requestParams);
         $data = [];
         $data['data'] = $response;
-        $data['status'] = ($response[7] == 'Status=FAILED' ) ? 'error' : 'success';
-        $data['errormessage'] = $response[5];
+        $data['status'] = ($response['Status'] == 'FAILED' ) ? 'error' : 'success';
+        $data['errormessage'] = $response['Description'];
         $encoded = json_encode($data);
         echo $encoded;
     }

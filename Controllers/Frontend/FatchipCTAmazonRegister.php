@@ -76,8 +76,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         // either use session or $params. decisions decisions ...
         $this->saveParamsToSession($params);
         $response = $this->loginComputopAmazon();
-        $keyVal = explode('=',$response[1]);
-        $payID = $keyVal[1];
+        $payID = $response['PayID'];
         // save PayID in session
         $session->offsetSet('fatchipCTPaymentPayID', $payID);
         // forward to index this will display registration page with Amazon wallet widget

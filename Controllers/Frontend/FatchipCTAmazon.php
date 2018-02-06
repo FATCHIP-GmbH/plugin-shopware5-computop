@@ -26,7 +26,12 @@
 
 // add baseclass via require_once so we can extend
 // ToDo find a better solution for this
-// require_once 'FatchipCTPayment.php';
+require_once 'FatchipCTPayment.php';
+
+use Shopware\FatchipCTPayment\Util;
+use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\CTPayment\CTAmazon;
+use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 
 
 /**
@@ -34,6 +39,68 @@
  */
 class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function gatewayAction()
+    {
+        $user = Shopware()->Modules()->Admin()->sGetUserData();
+        $response = $this->ctSetAndConfirmOrderDetails();
+        switch ($response['Status']) {
+            case CTEnumStatus::OK:
+                $this->saveOrder(
+                    $response['TransID'],
+                    $response['orderid'],
+                    self::PAYMENTSTATUSPAID
+                );
+                $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
+                break;
+            default:
+                $this->forward('failure');
+                break;
+        }
+
+    }
+
+    /**
+     * @return void
+     * Cancel action method
+     */
+    public function failureAction()
+    {
+        $requestParams = $this->Request()->getParams();
+        $session = Shopware()->Session();
+        $ctError = [];
+
+        $response = $this->paymentService->createPaymentResponse($requestParams);
+
+        $ctError['CTErrorMessage'] = $response->getDescription();
+        $ctError['CTErrorCode'] = $response->getCode();
+
+        return $this->forward('index', 'FatchipCTAmazonRegister', null, array('CTError' => $ctError));
+    }
+
+    public function ctSetAndConfirmOrderDetails(){
+
+        $user = Shopware()->Modules()->Admin()->sGetUserData();
+        $session = Shopware()->Session();
+        $orderDesc = "Test";
+
+        $service = new CTAmazon($this->config);
+        $requestParams =  $service->getAmazonSCOParams(
+            $session->offsetGet('fatchipCTPaymentPayID'),
+            $session->offsetGet('fatchipCTPaymentTransID'),
+            $this->getAmount() * 100,
+            $this->getCurrencyShortName(),
+            $orderDesc,
+            $session->offsetGet('fatchipCTAmazonReferenceID')
+        );
+        $response = $service->callComputopAmazon($requestParams);
+        return $response;
+    }
+
 
 }
 

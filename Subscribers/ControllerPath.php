@@ -84,14 +84,13 @@ class ControllerPath implements SubscriberInterface
             => 'onGetControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTSofort'
             => 'onGetControllerPath',
-            // Amazon Registration
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTAmazonRegister'
             => 'onGetControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTAmazonCheckout'
             => 'onGetControllerPath',
-            // Ajax Controller
-            // used only for Amazon for now
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTAjax'
+            => 'onGetControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTAmazon'
             => 'onGetControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipCTIdeal'
             => 'onGetBackendControllerPath',

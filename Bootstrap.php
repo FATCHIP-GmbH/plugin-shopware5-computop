@@ -436,6 +436,11 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         $this->createPayments();
         $this->subscribeEvent('Enlight_Controller_Front_DispatchLoopStartup', 'onStartDispatch');
+        // add amazon javascript to
+        $this->subscribeEvent(
+            'Theme_Compiler_Collect_Plugin_Javascript',
+            'addJsFiles'
+        );
 
         $this->addAttributes();
 
@@ -452,6 +457,14 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
 
         return ['success' => true, 'invalidateCache' => ['backend', 'config', 'proxy']];
+    }
+
+    public function addJsFiles(Enlight_Event_EventArgs $args)
+    {
+        $jsFiles = [
+            $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCT_amazon.js',
+        ];
+        return new Doctrine\Common\Collections\ArrayCollection($jsFiles);
     }
 
     /**
