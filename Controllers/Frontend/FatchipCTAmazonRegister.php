@@ -50,10 +50,17 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
      */
     public function init()
     {
-        // init method does not exist in SW 5.2?, SW 5.3
-        // also session property was removed in SW5.? 5.3
-        if (method_exists(parent::init())){
-        parent::init();
+        // init method does not exist in
+        // SW >5.2
+        // SW 5.4 check
+        // SW 5.3 check
+        // SW 5.2 check
+        // SW 5.1 check
+        // SW 5.0 check
+        // also session property was removed in SW5.2? 5.3
+
+        if (method_exists('Shopware_Controllers_Frontend_Register','init')){
+            parent::init();
         }
         // ToDo handle possible Exception
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
