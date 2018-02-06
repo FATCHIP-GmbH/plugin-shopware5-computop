@@ -31,12 +31,15 @@
 use Shopware\FatchipCTPayment\Util;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
+use Shopware\Components\CSRFWhitelistAware;
 
 
-abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controllers_Frontend_Payment
+abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controllers_Frontend_Payment implements CSRFWhitelistAware
 {
 
     const PAYMENTSTATUSPAID = 12;
+
+    const PAYMENTSTATUSRESERVED = 18;
 
     /** @var \Fatchip\CTPayment\CTPaymentService $service */
     protected $paymentService;
@@ -94,7 +97,6 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     public function gatewayAction()
     {
-        //TODO: aus order holen, NICHT aus $user, weil dann immer Default Billing und Shipping geschickt wird
         $user = Shopware()->Modules()->Admin()->sGetUserData();
 
         // ToDo refactor ctOrder creation
@@ -157,7 +159,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 $this->saveOrder(
                     $response->getTransID(),
                     $response->getUserData(),
-                    self::PAYMENTSTATUSPAID
+                    self::PAYMENTSTATUSRESERVED
                 );
                 $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
                 break;
@@ -174,7 +176,42 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     public function notifyAction()
     {
+        $this->Front()->Plugins()->ViewRenderer()->setNoRender();
+
         $requestParams = $this->Request()->getParams();
+        $response = $this->paymentService->createPaymentResponse($requestParams);
+        $token = $this->paymentService->createPaymentToken($this->getAmount(), $this->utils->getUserCustomerNumber($this->getUser()));
+
+        switch ($response->getStatus()) {
+            case CTEnumStatus::OK:
+                $transactionId = $response->getTransID();
+                $order = $this->loadOrderByTransactionId($transactionId);
+                if ($order){
+                    $this->savePaymentStatus($transactionId, $order['temporaryID'], self::PAYMENTSTATUSPAID);
+                }
+                // else do nothing notify got here before success
+                break;
+            default:
+                $this->forward('failure');
+                break;
+        }
+    }
+
+    /**
+     * try to load order via transaction id
+     *
+     * @param string $transactionId
+     * @return order
+     */
+    protected function loadOrderByTransactionId($transactionId)
+    {
+        $sql = '
+            SELECT id, ordernumber, paymentID, temporaryID, transactionID  FROM s_order
+            WHERE transactionID=?';
+
+        $order = Shopware()->Db()->fetchRow($sql, [$transactionId]);
+
+        return $order;
     }
 
     public function getOrderDesc($order) {
