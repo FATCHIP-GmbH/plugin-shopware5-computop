@@ -18,6 +18,8 @@
  */
 
 require_once 'Util.php';
+// needed for CSRF Protection compatibility SW versions < 5.2
+require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
 
 class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
