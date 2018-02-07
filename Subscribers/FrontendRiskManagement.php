@@ -293,7 +293,7 @@ class FrontendRiskManagement implements SubscriberInterface {
         if ($addressArray['attributes']['fatchipcComputopCrifStatus'] == 'FAILED') {
             $lastTimeChecked = $addressArray['attributes']['fatchipcComputopCrifDate'] instanceof \DateTime ?
               $addressArray['attributes']['fatchipcComputopCrifDate'] : new \DateTime($addressArray['attributes']['fatchipcComputopCrifDate']);
-            $hoursPassed = $lastTimeChecked->diff(new \DateTime('now'), TRUE)->hours;
+            $hoursPassed = $lastTimeChecked->diff(new \DateTime('now'), true)->hours;
             return $hoursPassed > 1;
         }
 
@@ -308,7 +308,7 @@ class FrontendRiskManagement implements SubscriberInterface {
                 if (!empty($address) && $attribute = $address->getAttribute()) {
                     $attributeData = Shopware()->Models()->toArray($address->getAttribute());
                     if (!isset($attributeData['fatchipcComputopCrifResult'])|| !isset($attributeData['fatchipcComputopCrifDate'])) {
-                        return TRUE;
+                        return true;
                     }
                     else {
                         //write the values from the database in the addressarray
@@ -316,10 +316,8 @@ class FrontendRiskManagement implements SubscriberInterface {
                         $addressArray['attribute']['fatchipcComputopCrifDate'] = $attributeData['fatchipcComputopCrifDate'];
                     }
                 } else {
-                    return FALSE;
+                    return false;
                 }
-
-
             }
         }
 
@@ -333,14 +331,14 @@ class FrontendRiskManagement implements SubscriberInterface {
             $lastTimeChecked = $addressArray['attributes']['fatchipcComputopCrifDate'] instanceof \DateTime ?
               $addressArray['attributes']['fatchipcComputopCrifDate'] : new \DateTime($addressArray['attributes']['fatchipcComputopCrifDate']);
 
-            $daysPassed = $lastTimeChecked->diff(new \DateTime('now'), TRUE)->days;
+            $daysPassed = $lastTimeChecked->diff(new \DateTime('now'), true)->days;
 
             if ($daysPassed > $invalidateAfterDays) {
-                return TRUE;
+                return true;
             }
         }
 
-        return FALSE;
+        return false;
     }
 
     /**
@@ -372,7 +370,7 @@ class FrontendRiskManagement implements SubscriberInterface {
      */
     private function updateBillingAddressFromCrifResponse($addressID, $crifResponse) {
         $util = new Util();
-        if ($address = $util->getCustomerAddressById($addressID, 'billing') ) {
+        if ($address = $util->getCustomerAddressById($addressID, 'billing')) {
             //only update the address, if something changed. This check is important, because if nothing changed
             //callin persist and flush does not result in calling afterAddressUpdate and the session variable
             //fatchipComputopCrifAutoAddressUpdate woould not get cleared.
@@ -402,9 +400,9 @@ class FrontendRiskManagement implements SubscriberInterface {
     private function addressWasAutoUpdated() {
         if (Shopware()->Session()->offsetExists('fatchipComputopCrifAutoAddressUpdate')) {
             Shopware()->Session()->offsetUnset('fatchipComputopCrifAutoAddressUpdate');
-            return TRUE;
+            return true;
         }
 
-        return FALSE;
+        return false;
     }
 }
