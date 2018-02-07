@@ -55,7 +55,6 @@ class Shopware_Controllers_Frontend_FatchipCTIdeal extends Shopware_Controllers_
     public function gatewayAction()
     {
 
-        //$user = Shopware()->Modules()->Admin()->sGetUserData();
         $session = Shopware()->Session();
         $orderVars = Shopware()->Session()->sOrderVariables;
         $userData = $orderVars['sUserData'];

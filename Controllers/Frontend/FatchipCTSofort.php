@@ -40,18 +40,19 @@ class Shopware_Controllers_Frontend_FatchipCTSofort extends Shopware_Controllers
 
     public function gatewayAction()
     {
-        $user = Shopware()->Modules()->Admin()->sGetUserData();
         $session = Shopware()->Session();
+        $orderVars = Shopware()->Session()->sOrderVariables;
+        $userData = $orderVars['sUserData'];
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
         //important: multiply amount by 100
         $ctOrder->setAmount($this->getAmount() * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
-        $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
-        $ctOrder->setEmail($user['additional']['user']['email']);
-        $ctOrder->setCustomerID($user['additional']['user']['id']);
+        $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
+        $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
+        $ctOrder->setEmail($userData['additional']['user']['email']);
+        $ctOrder->setCustomerID($userData['additional']['user']['id']);
 
         /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Ideal $payment */
         $payment = $this->getPaymentClass($ctOrder);

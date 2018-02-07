@@ -51,21 +51,24 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
      */
     public function gatewayAction()
     {
-        $user = Shopware()->Modules()->Admin()->sGetUserData();
+        $session = Shopware()->Session();
+        $orderVars = Shopware()->Session()->sOrderVariables;
+        $userData = $orderVars['sUserData'];
+
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
         //important: multiply amount by 100
         $ctOrder->setAmount($this->getAmount() * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
-        $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
-        $ctOrder->setEmail($user['additional']['user']['email']);
-        $ctOrder->setCustomerID($user['additional']['user']['id']);
+        $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
+        $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
+        $ctOrder->setEmail($userData['additional']['user']['email']);
+        $ctOrder->setCustomerID($userData['additional']['user']['id']);
 
         $payment = $this->getPaymentClass($ctOrder, 'return');
 
-        $payment->setDateOfBirth($this->utils->getUserDoB($user));
+        $payment->setDateOfBirth($this->utils->getUserDoB($userData));
 
         $this->redirect($payment->getHTTPGetURL());
     }
@@ -77,7 +80,9 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
      */
     public function returnAction()
     {
-        $user = Shopware()->Modules()->Admin()->sGetUserData();
+        $orderVars = Shopware()->Session()->sOrderVariables;
+        $userData = $orderVars['sUserData'];
+
         $session = Shopware()->Session();
         $requestParams = $this->Request()->getParams();
 
@@ -86,14 +91,14 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         //important: multiply amount by 100
         $ctOrder->setAmount($this->getAmount() * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
-        $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
-        $ctOrder->setEmail($user['additional']['user']['email']);
-        $ctOrder->setCustomerID($user['additional']['user']['id']);
+        $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
+        $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
+        $ctOrder->setEmail($userData['additional']['user']['email']);
+        $ctOrder->setCustomerID($userData['additional']['user']['id']);
 
         $payment = $this->getPaymentClass($ctOrder, 'confirm', CTEnumEasyCredit::EVENTTOKEN_GET);
 
-        $payment->setDateOfBirth($this->utils->getUserDoB($user));
+        $payment->setDateOfBirth($this->utils->getUserDoB($userData));
 
         /** @var CTResponseEasyCredit $response */
         $response = $this->paymentService->createECPaymentResponse($requestParams);
@@ -130,22 +135,23 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
      */
     public function confirmAction()
     {
-        $user = Shopware()->Modules()->Admin()->sGetUserData();
         $session = Shopware()->Session();
+        $orderVars = Shopware()->Session()->sOrderVariables;
+        $userData = $orderVars['sUserData'];
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
         //important: multiply amount by 100
         $ctOrder->setAmount($this->getAmount() * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
-        $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
-        $ctOrder->setEmail($user['additional']['user']['email']);
-        $ctOrder->setCustomerID($user['additional']['user']['id']);
+        $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
+        $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
+        $ctOrder->setEmail($userData['additional']['user']['email']);
+        $ctOrder->setCustomerID($userData['additional']['user']['id']);
 
         $payment = $this->getPaymentClass($ctOrder, 'success', CTEnumEasyCredit::EVENTTOKEN_CON);
 
-        $payment->setDateOfBirth($this->utils->getUserDoB($user));
+        $payment->setDateOfBirth($this->utils->getUserDoB($userData));
 
         $response = $payment->confirm($session->offsetGet('fatchipComputopEasyCreditPayId'));
 

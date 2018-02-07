@@ -97,17 +97,18 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     public function gatewayAction()
     {
-        $user = Shopware()->Modules()->Admin()->sGetUserData();
+        $orderVars = Shopware()->Session()->sOrderVariables;
+        $userData = $orderVars['sUserData'];
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
         //important: multiply amount by 100
         $ctOrder->setAmount($this->getAmount() * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
-        $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
-        $ctOrder->setEmail($user['additional']['user']['email']);
-        $ctOrder->setCustomerID($user['additional']['user']['id']);
+        $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
+        $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
+        $ctOrder->setEmail($userData['additional']['user']['email']);
+        $ctOrder->setCustomerID($userData['additional']['user']['id']);
         // Mandatory for paypalStandard
         $ctOrder->setOrderDesc($this->getOrderDesc());
 
