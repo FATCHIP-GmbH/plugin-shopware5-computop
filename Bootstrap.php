@@ -377,6 +377,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             'ORDERVALUELESS', '200');
         $this->createComputopRiskRule('fatchip_computop_przelewy24',
             'CURRENCIESISOISNOT', 'PLN');
+        $this->createComputopRiskRule('fatchip_computop_ideal',
+          'BILLINGLANDISNOT', 'NL');
 
 
         return ['success' => true, 'invalidateCache' => ['backend', 'config', 'proxy']];
