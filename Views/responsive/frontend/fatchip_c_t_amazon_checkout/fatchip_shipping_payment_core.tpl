@@ -52,7 +52,7 @@
                         <div id="fatchipCTWalletWidgetDiv" style="float:left;"></div>
                     </div>
 
-                    <script>
+<!--                    <script>
                         window.onAmazonLoginReady = function() {
                             amazon.Login.setClientId("{$fatchipCTPaymentConfig.amazonClientId}");
                         };
@@ -78,7 +78,7 @@
                     <script async="async"
                             src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/sandbox/lpa/js/Widgets.js'>
                     </script>
-
+-->
                     <input type="hidden" name="payment" value="{$fatchipCTAmazonpayID}" />
 
                 {/block}

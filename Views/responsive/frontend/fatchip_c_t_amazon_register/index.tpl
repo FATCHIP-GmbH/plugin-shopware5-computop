@@ -37,9 +37,6 @@
             height: 240px;
             max-height: 400px;
             display: none;
-        {if $payoneAmazonReadOnly}
-            displayMode: "Read";
-        {/if}
         }
 
         #fatchipCTWalletWidgetDiv {
@@ -69,16 +66,26 @@
         <!-- Place this code in your HTML where you would like the address widget to appear. -->
         <div id="fatchipCTAddressBookWidgetDiv"  style="float:left;margin-right:5%;"></div>
 
-        <!-- Hidden Input to store the amazonreferenceId -->
+        <!-- Hidden fiv to store amazonreferenceId -->
 
         <div id="fatchipCTWalletWidgetDiv" style="float:left;"></div>
     </div>
-    {* Submit button *}
-    <div>
-        <input data-fatchipCTAmazonOrderReferenceId id="fatchipCTAmazonReferenceId">
-        </input>
+    <div id="fatchipCTAmazonInformation" hidden
+         data-fatchipCTAmazonOrderReferenceId=''
+         data-fatchipCTAmazonSODUrl='{url controller="FatchipCTAjax" action="ctSetOrderDetails" forceSecure}'
+         data-fatchipCTAmazonGODUrl='{url controller="FatchipCTAjax" action="ctGetOrderDetails" forceSecure}'
+         data-fatchipCTAmazonRegisterUrl='{url controller="FatchipCTAmazonRegister" action="saveRegister" forceSecure}?sTarget=FatchipCTAmazonCheckout&sTargetAction=shippingPayment'
+    ></div>
 
+    {* Submit button *}
+    <div class="register--action">
+        <button onclick="$('#fatchipCTAmazonInformation').trigger('fatchipCTAmazonButtonClick');"
+                id="fatchipCTAmazonButton" class="btn is--primary is--large right is--icon-right" name="Submit"
+                >Weiter<i class="icon--arrow-right"></i>
+        </button>
     </div>
+
+
 
     <script>
 
@@ -94,109 +101,17 @@
                     console.log("entering onOrderRefCreate:");
                     fatchipCTAmazonReferenceId = orderReference.getAmazonOrderReferenceId();
                     console.log(fatchipCTAmazonReferenceId);
-                    input = document.getElementById('fatchipCTAmazonReferenceId');
-                    input.value = fatchipCTAmazonReferenceId;
+                    var el = document.querySelector('#fatchipCTAmazonInformation');
+                    el.setAttribute('data-fatchipCTAmazonOrderReferenceId', fatchipCTAmazonReferenceId );
                     console.log("double Check Reference:");
-                    console.log(input.value);
-                    // call the jqeury plugin to to handle ajax calls
-                    $('#fatchipCTAmazonReferenceId').fatchipCTAmazonSOD();
-                    $("#fatchipCTAmazonReferenceId").trigger("onAmazonOrderRef");
-
+                    console.log(el.getAttribute('data-fatchipCTAmazonOrderReferenceId'));
+                    $("#fatchipCTAmazonInformation").trigger("onAmazonOrderRef");
                     $('#fatchipCTAddressBookWidgetDiv').show();
-
-                    /*
-
-                    // Computop "Step 14" is done now do the SOD call with ordereference
-                    // afterwards display the addressbook widget
-                    var call = '{url controller="FatchipCTAjax" action="ctSetOrderDetails" forceSecure}';
-                    $.ajax({
-                        url: call ,
-                        type: 'post',
-                        data: { referenceId: fatchipCTAmazonReferenceId}
-                    })
-                    .success(function(response){
-                        var responseData = $.parseJSON(response);
-                        if (responseData.status == "error"){
-                            $('#amazonErrors').show();
-                            $('#AmazonErrorContent').html(responseData.errormessage);
-                        } else {
-                            console.log("onAmazonPayReady SOD:");
-                            console.log(responseData.data);
-                            $('#fatchipCTAddressBookWidgetDiv').show();
-                        }
-
-
-                        var call = '{url controller="FatchipCTAjax" action="ctGetOrderDetails" forceSecure}';
-                        $.ajax({
-                            url: call ,
-                            type: 'post',
-                            data: { referenceId: fatchipCTAmazonReferenceId}
-                        })
-                            .success(function(response){
-                                var responseData = $.parseJSON(response);
-                                if (responseData.status == "error"){
-                                    $('#amazonErrors').show();
-                                    $('#AmazonErrorContent').html(responseData.errormessage);
-                                } else {
-                                    console.log("onAmazonPayReady GOD:");
-                                    console.log(responseData.data);
-                                    $('#fatchipCTAddressBookWidgetDiv').show();
-                                }
-                            })
-
-                    });
-                    */
 
                 },
                 onAddressSelect: function (orderReference) {
-                    console.log("entered onAddressSElect");
 
-                    // only triggers init one Time!!!!
-                    //$('#fatchipCTAmazonReferenceId').fatchipCTAmazonSOD();
-                    // test with special event
-                    $("#fatchipCTAmazonReferenceId").trigger("onAmazonAddressSelect");
-                    /*
-
-                    var call = '{url controller="FatchipCTAjax" action="ctGetOrderDetails" forceSecure}';
-                    $.ajax({
-                        url: call ,
-                        type: 'post',
-                        data: { referenceId: fatchipCTAmazonReferenceId}
-                    })
-                        .success(function(response){
-                            var responseData = $.parseJSON(response);
-                            if (responseData.status == "error"){
-                                $('#amazonErrors').show();
-                                $('#AmazonErrorContent').html(responseData.errormessage);
-                            } else {
-                                console.log("onAddressSelect GOD:");
-                                console.log(responseData.data);
-                                $('#fatchipCTAddressBookWidgetDiv').show();
-                            }
-
-
-                            // in success to make sure call is made after GOD
-                            var call = '{url controller="FatchipCTAjax" action="ctSetOrderDetails" forceSecure}';
-                            $.ajax({
-                                url: call ,
-                                type: 'post',
-                                data: { referenceId: fatchipCTAmazonReferenceId}
-                            })
-                                .success(function(response){
-                                    var responseData = $.parseJSON(response);
-                                    if (responseData.status == "error"){
-                                        $('#amazonErrors').show();
-                                        $('#AmazonErrorContent').html(responseData.errormessage);
-                                    } else {
-                                        console.log("onAddressSelect SOD:");
-                                        console.log(responseData.data);
-                                        $('#fatchipCTAddressBookWidgetDiv').show();
-                                    }
-                                })
-
-                        });
-                        */
-
+                    $("#fatchipCTAmazonInformation").trigger("onAmazonAddressSelect");
                 },
                 design: {
                     designMode: 'responsive'
@@ -213,7 +128,8 @@
                 }
             }).bind("fatchipCTAddressBookWidgetDiv");
 
-/*
+
+
             new OffAmazonPayments.Widgets.Wallet({
                 sellerId: "{$fatchipCTPaymentConfig.amazonSellerId}",
                 scope: 'profile payments:widget payments:shipping_address payments:billing_address',
@@ -228,8 +144,6 @@
                     // See "Handling Errors" for more information.
                 }
             }).bind("fatchipCTWalletWidgetDiv");
-            */
-
         };
 
     </script>
@@ -247,7 +161,7 @@
         // SW < 5.3: $(document).ready
         // -> put all js stuff into less compiler or use true SW Jquery Plugin
         //document.ready(function() {
-
+/*
         $(document).ready("#formSubmit").click(function() {
             var customerType="private";
             var salutation = 'mr';
@@ -336,5 +250,6 @@
 
         });
         //});
+        */
 </script>
 {/block}
