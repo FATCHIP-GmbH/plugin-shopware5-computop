@@ -207,7 +207,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
           $router->assemble(['action' => 'failure', 'forceSecure' => true]),
           $router->assemble(['action' => 'notify', 'forceSecure' => true]),
           $this->getUserData(),
-          $this->getOrderDesc($order),
+          $this->getOrderDesc(),
           $eventToken
            );
     }

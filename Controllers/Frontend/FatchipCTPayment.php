@@ -109,7 +109,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $ctOrder->setEmail($user['additional']['user']['email']);
         $ctOrder->setCustomerID($user['additional']['user']['id']);
         // Mandatory for paypalStandard
-        $ctOrder->setOrderDesc('TestBestellung');
+        $ctOrder->setOrderDesc($this->getOrderDesc());
 
         $payment = $this->getPaymentClass($ctOrder);
 
@@ -214,8 +214,15 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         return $order;
     }
 
-    public function getOrderDesc($order) {
-        return 'OrderDescription';
+    /***
+     * @return mixed
+     *
+     * The order description as sent to Computop.
+     * Default it contains the shopname. If a paymentmethod needs a different Orderdescription, override this function.
+     *
+     */
+    public function getOrderDesc() {
+        return Shopware()->Config()->shopName;
     }
 
     public function getUserData() {
