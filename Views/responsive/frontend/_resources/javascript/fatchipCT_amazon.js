@@ -247,7 +247,7 @@ $.plugin('fatchipCTAmazon', {
 
                 $(document.body).append(frm);
                 // needed for SW > 5.2 ??
-                if (typeof CSRF.updateForms !== 'undefined'){
+                if (typeof CSRF !== 'undefined' && typeof CSRF.updateForms !== 'undefined'){
                     CSRF.updateForms();
                 }
                 frm.submit();
