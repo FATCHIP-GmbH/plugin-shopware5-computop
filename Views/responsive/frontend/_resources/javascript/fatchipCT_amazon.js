@@ -291,7 +291,7 @@ $.plugin('fatchipCTAmazon', {
         console.log("firstname2:" + me.opts.firstname2);
         me.opts.lastname2 = sname[1];
         console.log("lastname2:" + me.opts.lastname2);
-        me.opts.street2 = data.addrstreet2;
+        me.opts.street2 = data.AddrStreet2;
         console.log("street2:" + me.opts.street2);
         me.opts.zip2 = data.AddrZip;
         console.log("zip2:" + me.opts.zip2);

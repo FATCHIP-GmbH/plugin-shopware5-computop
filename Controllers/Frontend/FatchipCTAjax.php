@@ -76,6 +76,9 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         );
         $response = $service->callComputopAmazon($requestParams);
 
+        if ( !$response['AddrStreet2'] && !empty($response['addrstreet2'])){
+            $response['AddrStreet2'] = $response['addrstreet'];
+        }
         // replace country code with shopware countryId
         $response['AddrCountryCodeID'] = $this->utils->getCountryIdFromIso($response['AddrCountryCode']);
         $response['bdaddrcountrycodeID'] = $this->utils->getCountryIdFromIso($response['bdaddrcountrycode']);
