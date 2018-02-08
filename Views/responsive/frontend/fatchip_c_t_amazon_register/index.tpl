@@ -36,7 +36,7 @@
             min-height: 228px;
             height: 240px;
             max-height: 400px;
-            display: none;
+            /*display: none;*/
         }
 
         #fatchipCTWalletWidgetDiv {
@@ -106,7 +106,7 @@
                     console.log("double Check Reference:");
                     console.log(el.getAttribute('data-fatchipCTAmazonOrderReferenceId'));
                     $("#fatchipCTAmazonInformation").trigger("onAmazonOrderRef");
-                    $('#fatchipCTAddressBookWidgetDiv').show();
+                    //$('#fatchipCTAddressBookWidgetDiv').show();
 
                 },
                 onAddressSelect: function (orderReference) {
