@@ -36,47 +36,6 @@ $.plugin('fatchipCTAmazon', {
         console.log("Jquery Plugin received Init:");
         console.log(me.opts);
 
-        me._on(me.$el, 'onAmazonAddressSelect', function(event) {
-            event.preventDefault();
-            me.applyDataAttributes();
-            console.log("Jquery Plugin received onAmazonAddressSelect Event:");
-            console.log(me.opts);
-
-            // only the following GOD response will have the complete address data we need
-            $.ajax({
-                type: 'POST',
-                async: false,
-                url: me.opts.fatchipCTAmazonGODUrl,
-                data: { referenceId: me.opts.fatchipCTAmazonOrderReferenceId},
-                dataType: "json"
-            }).done(function (msg) {
-                if (msg.status == 'success') {
-                    console.log('GOD returned successful:');
-                    console.log(msg.data);
-                    me.updateAddressData(msg.data);
-
-                    $.ajax({
-                        type: 'POST',
-                        async: false,
-                        url: me.opts.fatchipCTAmazonSODUrl,
-                        data: { referenceId: me.opts.fatchipCTAmazonOrderReferenceId},
-                        dataType: "json"
-                    }).done(function (msg) {
-                        if (msg.status == 'success') {
-                            console.log('SOD returned successful:');
-                            console.log(msg.data);
-                        } else {
-                            console.log('Shit happed during SOD:');
-                            console.log(msg.errormessage);
-                        }
-                    });
-                } else {
-                    console.log('Shit happed during GOD:');
-                    console.log(msg.errormessage);
-                }
-            });
-        });
-
         me._on(me.$el, 'onAmazonOrderRef', function(event) {
             event.preventDefault();
             me.applyDataAttributes();
@@ -115,12 +74,56 @@ $.plugin('fatchipCTAmazon', {
             });
         });
 
+        me._on(me.$el, 'onAmazonAddressSelect', function(event) {
+            event.preventDefault();
+            me.applyDataAttributes();
+            console.log("Jquery Plugin received onAmazonAddressSelect Event:");
+            console.log(me.opts);
+
+            $.ajax({
+                type: 'POST',
+                async: false,
+                url: me.opts.fatchipCTAmazonGODUrl,
+                data: { referenceId: me.opts.fatchipCTAmazonOrderReferenceId},
+                dataType: "json"
+            }).done(function (msg) {
+                if (msg.status == 'success') {
+                    console.log('GOD returned successful:');
+                    console.log(msg.data);
+                    me.updateAddressData(msg.data);
+
+                    $.ajax({
+                        type: 'POST',
+                        async: false,
+                        url: me.opts.fatchipCTAmazonSODUrl,
+                        data: { referenceId: me.opts.fatchipCTAmazonOrderReferenceId},
+                        dataType: "json"
+                    }).done(function (msg) {
+                        if (msg.status == 'success') {
+                            console.log('SOD returned successful:');
+                            console.log(msg.data);
+                        } else {
+                            console.log('Shit happed during SOD:');
+                            console.log(msg.errormessage);
+                        }
+                    });
+                } else {
+                    console.log('Shit happed during GOD:');
+                    console.log(msg.errormessage);
+                }
+            });
+        });
+
         me._on(me.$el, 'fatchipCTAmazonButtonClick', function(event) {
             event.preventDefault();
             console.log("Jquery Plugin received fatchipCTAmazonButton Event:");
             console.log(me.opts);
 
 /*
+            // these are nicer solutions than building the complete from
+            // but after posting to register controller the redirects in
+            // saveRegister will not work!
+
             $.ajax({
                 type: 'POST',
                 async: true,
@@ -242,6 +245,9 @@ $.plugin('fatchipCTAmazon', {
                     '<input type="hidden" name="register[shipping][zipcode]" value="'+me.opts.zip2+'"/>'+
                     '<input type="hidden" name="register[shipping][country]" value="'+me.opts.countryShippingID+'"/>'+
                     '<input type="hidden" name="register[shipping][phone]" value="'+me.opts.phone+'"/>'
+
+                    // needed for SW 5.1.6 to prevent field missing exception
+                    //'<input type="hidden" name="register[payment][object][id]" value="'+me.opts.paymentId+'"/>'
                 );
 
 
@@ -278,6 +284,8 @@ $.plugin('fatchipCTAmazon', {
         console.log("zip:" + me.opts.zip);
         me.opts.city = data.bdaddrcity;
         console.log("city:" + me.opts.city);
+        me.opts.countryBillingID = data.bdaddrcountrycode;
+        console.log("CountryCode:" + me.opts.countryBillingID);
 
         console.log("Shipping Data");
         console.log("Name:");
@@ -292,6 +300,8 @@ $.plugin('fatchipCTAmazon', {
         console.log("zip2:" + me.opts.zip2);
         me.opts.city2 = data.AddrCity;
         console.log("city2:" + me.opts.city2);
+        me.opts.countryShippingID = data.AddrCountryCode;
+        console.log("CountryCode:" + me.opts.countryShippingID);
     },
 
     destroy: function() {

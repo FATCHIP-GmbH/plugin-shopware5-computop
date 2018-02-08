@@ -160,6 +160,11 @@ class Util
         return Shopware()->Db()->fetchOne($countrySql, [$countryId]);
     }
 
+    public function getCountryIdFromIso($countryIso)
+    {
+        $countrySql = 'SELECT id FROM s_core_countries WHERE countryiso=?';
+        return Shopware()->Db()->fetchOne($countrySql, [$countryIso]);
+    }
 
     // SW 5.0 - 5.3 Compatibility
     // 5.0 - check
