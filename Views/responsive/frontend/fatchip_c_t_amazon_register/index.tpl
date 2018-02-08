@@ -109,11 +109,6 @@
                 onReady: function(billingAgreement) {
                 },
                 onError: function (error) {
-                    // Your error handling code.
-                    // During development you can use the following
-                    // code to view error messages:
-                    // console.log(error.getErrorCode() + ': ' + error.getErrorMessage());
-                    // See "Handling Errors" for more information.
                     console.log(error.getErrorCode() + ': ' + error.getErrorMessage());
                 }
             }).bind("fatchipCTAddressBookWidgetDiv");
