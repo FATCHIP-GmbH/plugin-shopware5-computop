@@ -618,6 +618,19 @@ class Util
         }
         return $shippingAttributes;
     }
+
+    /**
+     * checks if AmazonPay is enabled
+     *
+     * @return bool
+     */
+    public function isAmazonPayActive()
+    {
+        $paymentAmazonPay = Shopware()->Models()->getRepository('Shopware\Models\Payment\Payment')->findOneBy(
+            ['name' => 'fatchip_computop_amazonpay']
+        );
+        return $paymentAmazonPay->getActive();
+    }
 }
 
 

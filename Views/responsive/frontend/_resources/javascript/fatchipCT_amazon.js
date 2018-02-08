@@ -245,9 +245,6 @@ $.plugin('fatchipCTAmazon', {
                     '<input type="hidden" name="register[shipping][zipcode]" value="'+me.opts.zip2+'"/>'+
                     '<input type="hidden" name="register[shipping][country]" value="'+me.opts.countryShippingID+'"/>'+
                     '<input type="hidden" name="register[shipping][phone]" value="'+me.opts.phone+'"/>'
-
-                    // needed for SW 5.1.6 to prevent field missing exception
-                    //'<input type="hidden" name="register[payment][object][id]" value="'+me.opts.paymentId+'"/>'
                 );
 
 
