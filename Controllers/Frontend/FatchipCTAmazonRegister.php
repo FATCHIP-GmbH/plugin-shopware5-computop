@@ -74,83 +74,35 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
      */
     public function loginAction()
     {
-        // Debug:
         $request = $this->Request();
         $params = $request->getParams();
-
+        // ToDO  move paymentID saving to saveParamsToSession
         $session = Shopware()->Session();
 
-        // either use session or $params. decisions decisions ...
         $this->saveParamsToSession($params);
         $response = $this->loginComputopAmazon();
         $payID = $response['PayID'];
-        // save PayID in session
         $session->offsetSet('fatchipCTPaymentPayID', $payID);
-        // forward to index this will display registration page with Amazon wallet widget
         $this->forward('index', null , null , ['fatchipCTResponse' => $response]);
     }
 
     public function indexAction()
     {
-        // Debug:
         $request = $this->Request();
         $params = $request->getParams();
-        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-        $this->config = $this->plugin->Config()->toArray();
-        $fatchipCTAmazonpayID = $this->utils->getPaymentIdFromName('fatchip_computop_amazonpay');
-        // set AmazonPaymentId PaymentId in Session
-        // this get lost when dipatvh select is triggered
-         $session = Shopware()->Session();
-         $session->offsetSet('sPaymentID', $fatchipCTAmazonpayID);
+        $session = Shopware()->Session();
+        $session->offsetSet('sPaymentID', $this->utils->getPaymentIdFromName('fatchip_computop_amazonpay'));
 
         $this->view->assign('fatchipCTResponse', $params['fatchipCTResponse']);
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
 
     }
 
-    /**
-     * Checks the registration
-     *
-     * @return void
-     */
-/*    public function saveRegisterAction()
-    {
-        parent::saveRegisterAction();
-        if ($this->request->isPost()) {
-            $this->savePersonalAction();
-            $this->saveBillingAction();
-            if (!empty($this->post['billing']['shippingAddress'])) {
-                $this->saveShippingAction();
-            }
-            if (isset($this->post['payment'])) {
-                $this->savePaymentAction();
-            }
-            if (empty($this->error)) {
-                $this->saveRegister();
-
-                    return $this->redirect(array(
-                        'action' => 'shippingPayment',
-                        'controller' => 'FatchipCTAmazonCheckout',
-                    ));
-            }
-        }
-        $this->forward('login');
-    }
-    */
-
     public function loginComputopAmazon(){
-        $basket = Shopware()->Modules()->Basket()->sGetBasket();
+        // ToDO  get countryIso from session instead by calling sGetUserData
         $user = Shopware()->Modules()->Admin()->sGetUserData();
         $countryIso = $user['additional']['country']['countryiso'];
-
-
-        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-        $this->config = $this->plugin->Config()->toArray();
-        $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
         $session = Shopware()->Session();
-
-        $amount = $basket['AmountNumeric'] * 100;
-        $currency = 'EUR';
 
         // generate transID for payment and save in Session
         mt_srand((double)microtime() * 1000000);

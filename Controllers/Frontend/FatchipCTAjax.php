@@ -25,15 +25,14 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $this->config = $this->plugin->Config()->toArray();
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        Shopware()->Plugins()->Controller()->ViewRenderer()->setNoRender();
+
     }
 
 
 
     // ToDo leave Actions here, but move request response handling to payment service
     public function ctSetOrderDetailsAction(){
-        // disable templates for all controller actions
-        // ToDO move to predispatch?
-        Shopware()->Plugins()->Controller()->ViewRenderer()->setNoRender();
 
         $session = Shopware()->Session();
         $params = $this->Request()->getParams();
@@ -62,10 +61,6 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
     }
 
     public function ctGetOrderDetailsAction(){
-        // disable templates for all controller actions
-        // ToDO move to predispatch?
-        Shopware()->Plugins()->Controller()->ViewRenderer()->setNoRender();
-
         $session = Shopware()->Session();
         $params = $this->Request()->getParams();
         $referenceId = $params['referenceId'];
@@ -82,8 +77,8 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         $response = $service->callComputopAmazon($requestParams);
 
         // replace country code with shopware countryId
-        $response['AddrCountryCode'] = $this->utils->getCountryIdFromIso($response['AddrCountryCode']);
-        $response['bdaddrcountrycode'] = $this->utils->getCountryIdFromIso($response['bdaddrcountrycode']);
+        $response['AddrCountryCodeID'] = $this->utils->getCountryIdFromIso($response['AddrCountryCode']);
+        $response['bdaddrcountrycodeID'] = $this->utils->getCountryIdFromIso($response['bdaddrcountrycode']);
         $data = [];
         $data['data'] = $response;
         $data['status'] = ($response['Code'] == '00000000' ? 'success' : 'error');

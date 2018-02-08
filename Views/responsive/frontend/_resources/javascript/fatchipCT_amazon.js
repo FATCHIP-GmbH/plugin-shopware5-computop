@@ -48,7 +48,7 @@ $.plugin('fatchipCTAmazon', {
                 data: { referenceId: me.opts.fatchipCTAmazonOrderReferenceId},
                 dataType: "json"
             }).done(function (msg) {
-                if (msg.status == 'success') {
+/*                if (msg.status == 'success') {
                     console.log('SOD returned successful:');
                     console.log(msg.data);
 
@@ -70,7 +70,7 @@ $.plugin('fatchipCTAmazon', {
                 } else {
                     console.log('Shit happed during SOD:');
                     console.log(msg.errormessage);
-                }
+*/
             });
         });
 
@@ -281,7 +281,7 @@ $.plugin('fatchipCTAmazon', {
         console.log("zip:" + me.opts.zip);
         me.opts.city = data.bdaddrcity;
         console.log("city:" + me.opts.city);
-        me.opts.countryBillingID = data.bdaddrcountrycode;
+        me.opts.countryBillingID = data.bdaddrcountrycodeID;
         console.log("CountryCode:" + me.opts.countryBillingID);
 
         console.log("Shipping Data");
@@ -297,7 +297,7 @@ $.plugin('fatchipCTAmazon', {
         console.log("zip2:" + me.opts.zip2);
         me.opts.city2 = data.AddrCity;
         console.log("city2:" + me.opts.city2);
-        me.opts.countryShippingID = data.AddrCountryCode;
+        me.opts.countryShippingID = data.AddrCountryCodeID;
         console.log("CountryCode:" + me.opts.countryShippingID);
     },
 
