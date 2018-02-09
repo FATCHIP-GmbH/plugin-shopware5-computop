@@ -4,6 +4,7 @@ $.plugin('fatchipCTAmazon', {
         fatchipCTAmazonSODUrl: false,
         fatchipCTAmazonGODUrl: false,
         fatchipCTAmazonRegisterUrl: false,
+        fatchipCTAmazonShippingCheckUrl: false,
 
         customerType: 'private',
         salutation: 'mr', // there is no way to know the gender
@@ -52,12 +53,12 @@ $.plugin('fatchipCTAmazon', {
                 if (msg.status == 'success') {
                     console.log('SOD returned successful:');
                     console.log(msg.data);
-                    console.log("delaying");
+//                    console.log("delaying");
 
                     // had to delay the SOD call a bit
                     // because GOD returned  only partial
                     // billing address data
-                    setTimeout(function() {
+//                  setTimeout(function() {
 
                         $.ajax({
                             type: 'POST',
@@ -74,7 +75,7 @@ $.plugin('fatchipCTAmazon', {
                                 console.log(msg.errormessage);
                             }
                         });
-                    }, 3000);
+//                    }, 2000);
                     console.log("after delay")
 
                 } else {
@@ -87,6 +88,8 @@ $.plugin('fatchipCTAmazon', {
         me._on(me.$el, 'onAmazonAddressSelect', function (event) {
             event.preventDefault();
             me.applyDataAttributes();
+            $('#AmazonErrors').hide();
+            //$.loadingIndicator.open();
             console.log("Jquery Plugin received onAmazonAddressSelect Event:");
             console.log(me.opts);
                 console.log("delaying Addres Select calls");
@@ -109,6 +112,29 @@ $.plugin('fatchipCTAmazon', {
                     console.log(msg.data);
                     me.updateAddressData(msg.data);
 
+                    // check shipping country,
+                    // disable button in case shipping Country is not supported
+                    // and show error message in amazonError Div
+                    console.log("calling shipping country check:");
+                    $.ajax({
+                        type: 'POST',
+                        async: false,
+                        url: me.opts.fatchipCTAmazonShippingCheckUrl,
+                        data: {shippingCountryID: me.opts.countryCodeShippingID},
+                        dataType: "json"
+                    }).done(function (msg) {
+                        if (msg.status == 'success') {
+                            console.log('ShippingCountry Check returned successful:');
+                            console.log(msg.data);
+                            $('#fatchipCTAmazonButton').removeAttr("disabled");
+                        } else {
+                            console.log('ShippingCountry Check returned with error:');
+                            console.log(msg.errormessage);
+                            $('#AmazonErrors').show();
+                            $('#AmazonErrorContent').text(msg.errormessage);
+                        }
+                    });
+
                     $.ajax({
                         type: 'POST',
                         async: false,
@@ -129,8 +155,9 @@ $.plugin('fatchipCTAmazon', {
                     console.log(msg.errormessage);
                 }
             });
-                }, 3000);
+                }, 1000);
             console.log("after delay")
+            //$.loadingIndicator.close();
         });
 
         me._on(me.$el, 'fatchipCTAmazonButtonClick', function (event) {

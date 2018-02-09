@@ -44,7 +44,7 @@
     </style>
 
     {* Error Messages Javascript*}
-    <div id="amazonErrors" style="display:none">
+    <div id="AmazonErrors" style="display:none">
         <div class="alert is--error is--rounded">
             <div class="alert--icon">
                 <i class="icon--element icon--cross"></i>
@@ -56,7 +56,7 @@
 
     <div id="amazonContentWrapper" class="content confirm--content content-main--inner" style="margin-top:2%;margin-bottom: 0px; padding-bottom: 1%;">
 
-        <div id="debug">Amazon LGN:<BR>{$fatchipCTResponse|var_dump}</div>
+        <!-- <div id="debug">Amazon LGN:<BR>{$fatchipCTResponse|var_dump}</div> -->
         <div id="fatchipCTAddressBookWidgetDiv"  style="float:left;margin-right:5%;"></div>
         <div id="fatchipCTWalletWidgetDiv" style="float:left;"></div>
     </div>
@@ -64,6 +64,7 @@
          data-fatchipCTAmazonOrderReferenceId=''
          data-fatchipCTAmazonSODUrl='{url controller="FatchipCTAjax" action="ctSetOrderDetails" forceSecure}'
          data-fatchipCTAmazonGODUrl='{url controller="FatchipCTAjax" action="ctGetOrderDetails" forceSecure}'
+         data-fatchipCTAmazonShippingCheckUrl='{url controller="FatchipCTAjax" action="ctIsShippingCountrySupported" forceSecure}'
          data-fatchipCTAmazonRegisterUrl='{url controller="FatchipCTAmazonRegister" action="saveRegister" forceSecure}?sTarget=FatchipCTAmazonCheckout&sTargetAction=shippingPayment'
     ></div>
 
@@ -101,7 +102,8 @@
 
                 },
                 onAddressSelect: function (orderReference) {
-
+                    $('#fatchipCTAmazonButton').attr("disabled", "disabled");
+                    // Button will be re-enabled after success in jsquery Plugin
                     $("#fatchipCTAmazonInformation").trigger("onAmazonAddressSelect");
                 },
                 design: {
@@ -131,6 +133,7 @@
                 }
             }).bind("fatchipCTWalletWidgetDiv");
         };
+
 
     </script>
     <script async="async"
