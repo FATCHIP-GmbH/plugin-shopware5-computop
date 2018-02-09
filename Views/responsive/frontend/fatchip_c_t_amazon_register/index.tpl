@@ -29,7 +29,7 @@
             min-height: 228px;
             height: 240px;
             max-height: 400px;
-            /*display: none;*/
+            display: none;
         }
 
         #fatchipCTWalletWidgetDiv {
@@ -39,6 +39,7 @@
             min-height: 228px;
             height: 240px;
             max-height: 400px;
+            display: none;
         }
     </style>
 
@@ -57,7 +58,6 @@
 
         <div id="debug">Amazon LGN:<BR>{$fatchipCTResponse|var_dump}</div>
         <div id="fatchipCTAddressBookWidgetDiv"  style="float:left;margin-right:5%;"></div>
-
         <div id="fatchipCTWalletWidgetDiv" style="float:left;"></div>
     </div>
     <div id="fatchipCTAmazonInformation" hidden
@@ -96,7 +96,8 @@
                     console.log("double Check Reference:");
                     console.log(el.getAttribute('data-fatchipCTAmazonOrderReferenceId'));
                     $("#fatchipCTAmazonInformation").trigger("onAmazonOrderRef");
-                    //$('#fatchipCTAddressBookWidgetDiv').show();
+                    $('#fatchipCTAddressBookWidgetDiv').show();
+                    $('#fatchipCTWalletWidgetDiv').show();
 
                 },
                 onAddressSelect: function (orderReference) {
