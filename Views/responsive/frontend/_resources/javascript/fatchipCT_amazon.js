@@ -17,7 +17,8 @@ $.plugin('fatchipCTAmazon', {
         street: false,
         zip: false,
         city: false,
-        countryBillingID: '2',
+        countryCodeBillingID: false,
+        countryCodeBilling: false,
         differentShipping: '1',
         salutation2: 'mr',
         firstname2: false,
@@ -27,7 +28,8 @@ $.plugin('fatchipCTAmazon', {
         street2: false,
         zip2: false,
         city2: false,
-        countryShippingID: '2'
+        countryCodeShipping: false,
+        countryCodeShippingID: false
     },
 
     init: function () {
@@ -72,7 +74,7 @@ $.plugin('fatchipCTAmazon', {
                                 console.log(msg.errormessage);
                             }
                         });
-                    }, 2000);
+                    }, 3000);
                     console.log("after delay")
 
                 } else {
@@ -87,8 +89,15 @@ $.plugin('fatchipCTAmazon', {
             me.applyDataAttributes();
             console.log("Jquery Plugin received onAmazonAddressSelect Event:");
             console.log(me.opts);
+                console.log("delaying Addres Select calls");
 
-            $.ajax({
+                // had to delay the SOD call a bit
+                // because GOD returned  only partial
+                // billing address data
+                setTimeout(function() {
+
+
+                $.ajax({
                 type: 'POST',
                 async: false,
                 url: me.opts.fatchipCTAmazonGODUrl,
@@ -120,6 +129,8 @@ $.plugin('fatchipCTAmazon', {
                     console.log(msg.errormessage);
                 }
             });
+                }, 3000);
+            console.log("after delay")
         });
 
         me._on(me.$el, 'fatchipCTAmazonButtonClick', function (event) {
@@ -233,7 +244,7 @@ $.plugin('fatchipCTAmazon', {
                 '<input type="hidden" name="register[billing][street]" value="' + me.opts.street + '"/>' +
                 '<input type="hidden" name="register[billing][city]" value="' + me.opts.city + '"/>' +
                 '<input type="hidden" name="register[billing][zipcode]" value="' + me.opts.zip + '"/>' +
-                '<input type="hidden" name="register[billing][country]" value="' + me.opts.countryBillingID + '"/>' +
+                '<input type="hidden" name="register[billing][country]" value="' + me.opts.countryCodeBillingID + '"/>' +
                 '<input type="hidden" name="register[billing][shippingAddress]" value="' + me.opts.differentShipping + '"/>' +
                 '<input type="hidden" name="register[billing][customer_type]" value="' + me.opts.customerType + '"/>' +
                 // SW > 5.2
@@ -251,7 +262,7 @@ $.plugin('fatchipCTAmazon', {
                 '<input type="hidden" name="register[shipping][street]" value="' + me.opts.street2 + '"/>' +
                 '<input type="hidden" name="register[shipping][city]" value="' + me.opts.city2 + '"/>' +
                 '<input type="hidden" name="register[shipping][zipcode]" value="' + me.opts.zip2 + '"/>' +
-                '<input type="hidden" name="register[shipping][country]" value="' + me.opts.countryShippingID + '"/>' +
+                '<input type="hidden" name="register[shipping][country]" value="' + me.opts.countryCodeShippingID + '"/>' +
                 '<input type="hidden" name="register[shipping][phone]" value="' + me.opts.phone + '"/>'
             );
 
@@ -289,8 +300,10 @@ $.plugin('fatchipCTAmazon', {
         console.log("zip:" + me.opts.zip);
         me.opts.city = data.bdaddrcity;
         console.log("city:" + me.opts.city);
-        me.opts.countryBillingID = data.bdaddrcountrycodeID;
-        console.log("CountryCode:" + me.opts.countryBillingID);
+        me.opts.countryCodeBilling = data.bdaddrcountrycode;
+        console.log("CountryCode:" + me.opts.countryCodeBilling);
+        me.opts.countryCodeBillingID = data.bdaddrcountrycodeID;
+        console.log("CountryCodeID:" + me.opts.countryCodeBillingID);
 
         console.log("Shipping Data");
         console.log("Name:");
@@ -305,8 +318,10 @@ $.plugin('fatchipCTAmazon', {
         console.log("zip2:" + me.opts.zip2);
         me.opts.city2 = data.AddrCity;
         console.log("city2:" + me.opts.city2);
-        me.opts.countryShippingID = data.AddrCountryCodeID;
-        console.log("CountryCode:" + me.opts.countryShippingID);
+        me.opts.countryCodeShipping = data.AddrCountryCode;
+        console.log("CountryCode:" + me.opts.countryCodeShipping);
+        me.opts.countryCodeShippingID = data.AddrCountryCodeID;
+        console.log("CountryCodeID:" + me.opts.countryCodeShippingID);
     },
 
     destroy: function () {

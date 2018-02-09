@@ -25,7 +25,7 @@
         #fatchipCTAddressBookWidgetDiv {
             min-width: 300px;
             width: 100%;
-            max-width: 550px;
+            max-width: 500px;
             min-height: 228px;
             height: 240px;
             max-height: 400px;
@@ -35,7 +35,7 @@
         #fatchipCTWalletWidgetDiv {
             min-width: 300px;
             width: 100%;
-            max-width: 550px;
+            max-width: 500px;
             min-height: 228px;
             height: 240px;
             max-height: 400px;
