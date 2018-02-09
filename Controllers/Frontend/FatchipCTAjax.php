@@ -76,8 +76,14 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         );
         $response = $service->callComputopAmazon($requestParams);
 
+        // Test data IT, Rome, Guiseppe Rossi needs this
         if ( !$response['AddrStreet2'] && !empty($response['addrstreet2'])){
-            $response['AddrStreet2'] = $response['addrstreet'];
+            $response['AddrStreet2'] = $response['addrstreet2'];
+        }
+
+        // Test data GB, London, Elisabeth Harrison needs this
+        if ( !$response['AddrStreet2'] && !empty($response['AddrStreet'])){
+            $response['AddrStreet2'] = $response['AddrStreet'];
         }
         // replace country code with shopware countryId
         $response['AddrCountryCodeID'] = $this->utils->getCountryIdFromIso($response['AddrCountryCode']);
