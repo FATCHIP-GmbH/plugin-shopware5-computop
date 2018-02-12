@@ -152,6 +152,7 @@ class Checkout implements SubscriberInterface
             $view->assign('fatchipCTPaymentConfig', $pluginConfig);
             // extend cart and ajax cart with Amazon Button
             $view->extendsTemplate('frontend/checkout/ajax_cart_amazon.tpl');
+            $view->extendsTemplate('frontend/checkout/cart_amazon.tpl');
         }
 
         if ($request->getActionName() == 'confirm') {
