@@ -26,6 +26,8 @@
 
 use Shopware\FatchipCTPayment\Util;
 use Shopware\Components\CSRFWhitelistAware;
+use Fatchip\CTPayment\CTAmazon;
+
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTAmazonRegister
  */
@@ -122,11 +124,8 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
 
         $session = Shopware()->Session();
         $orderDesc = "Test";
-        $payservice = Shopware()->Container()->get('FatchipCTPaymentApiClient');
-        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-        $config = $plugin->Config()->toArray();
 
-        $service = new CTAmazon($config);
+        $service = new CTAmazon($this->config);
         $requestParams =  $service->getAmazonGODParams(
             $session->offsetGet('fatchipCTPaymentPayID'),
             $orderDesc,

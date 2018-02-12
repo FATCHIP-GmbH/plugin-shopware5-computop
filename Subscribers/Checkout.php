@@ -27,7 +27,6 @@ namespace Shopware\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 use Shopware\FatchipCTPayment\Util;
-use Fatchip\CTPayment\CTAmazon;
 
 class Checkout implements SubscriberInterface
 {
