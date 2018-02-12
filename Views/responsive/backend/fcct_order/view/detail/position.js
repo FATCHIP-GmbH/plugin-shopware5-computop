@@ -45,7 +45,6 @@ Ext.define('Shopware.apps.Order.view.detail.fcctPosition', {
       params: { id:  me.record.get('id')},
       success: function(response) {
         var response = Ext.JSON.decode(response.responseText);
-        console.debug(response);
         if(response.success) {
           if (response.isOrderCapturable) {
             toolbar.items.get('btnCapture').enable();
