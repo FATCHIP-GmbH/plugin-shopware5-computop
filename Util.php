@@ -301,23 +301,52 @@ class Util
     {
         return [
             's_user_attributes' => [
-                'crif_result'              => 'string',
-                'crif_date'                => 'date',
-                'crif_status'               => 'string',
-                'crif_description'               => 'string',
+                'CrifResult'       => 'string',
+                'CrifDate'         => 'date',
+                'CrifStatus'       => 'string',
+                'CrifDescription'  => 'string',
             ],
             's_user_billingaddress_attributes' => [
-                'crif_result'              => 'string',
-                'crif_date'                => 'date',
-                'crif_status'               => 'string',
-                'crif_description'               => 'string',
+                'CrifResult'       => 'string',
+                'CrifDate'         => 'date',
+                'CrifStatus'       => 'string',
+                'CrifDescription'  => 'string',
             ],
             's_user_shippingaddress_attributes' => [
-                'crif_result'              => 'string',
-                'crif_date'                => 'date',
-                'crif_status'               => 'string',
-                'crif_description'         => 'string',
-            ]
+                'CrifResult'       => 'string',
+                'CrifDate'         => 'date',
+                'CrifStatus'       => 'string',
+                'CrifDescription'  => 'string',
+            ],
+            's_order_attributes' => [
+                'Status'       => 'string',
+                'TransID'      => 'string',
+                'PayID'        => 'string',
+                'XID'               => 'string',
+                'ShipCaptured'                     => ['float',
+                [
+                  'label' => 'Versandkosten bisher eingezogen:',
+                  'helpText' => '',
+                  'displayInBackend' => true,
+                  'pluginId' => $pluginId
+                ]
+                ],
+                'fcctShipDebit'                        => ['float',
+                [
+                  'label' => 'Versandkosten bisher gutgeschrieben:',
+                  'helpText' => '',
+                  'displayInBackend' => true,
+                  'pluginId' => $pluginId
+                ]
+                ],
+            ],
+            's_order_details_attributes' => [
+                'PaymentStatus'    => 'string',
+                'ShipmentDate'     => 'date',
+                'Captured'          => 'float',
+                'Debit'             => 'float',
+            ],
+
         ];
     }
 
@@ -331,10 +360,10 @@ class Util
     {
         return [
             's_user_addresses_attributes' => [
-                'crif_result'              => 'string',
-                'crif_date'                => 'date',
-                'crif_status'              => 'string',
-                'crif_description'         => 'string',
+                'CrifResult'              => 'string',
+                'CrifDate'                => 'date',
+                'CrifStatus'              => 'string',
+                'CrifDescription'         => 'string',
             ]
         ];
     }
@@ -371,17 +400,14 @@ class Util
 
         $address = $this->getCustomerAddressById($addressID, $type);
         if ($attribute = $address->getAttribute()) {
-            $attribute->setFatchipcComputopCrifDate(date('Y-m-d H:i:s'));
-            $attribute->setFatchipcComputopCrifDescription($response->getDescription());
-            $attribute->setFatchipcComputopCrifResult($response->getResult());
-            $attribute->setFatchipcComputopCrifStatus($response->getStatus());
+            $attribute->setFcctCrifDate(date('Y-m-d H:i:s'));
+            $attribute->setFcctCrifDescription($response->getDescription());
+            $attribute->setFcctCrifResult($response->getResult());
+            $attribute->setFcctCrifStatus($response->getStatus());
             Shopware()->Models()->persist($attribute);
             Shopware()->Models()->flush();
         }
-
     }
-
-
 }
 
 

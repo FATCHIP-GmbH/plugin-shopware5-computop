@@ -159,9 +159,10 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             case CTEnumStatus::OK:
                 $this->saveOrder(
                     $response->getTransID(),
-                    $response->getUserData(),
+                    $response->getXID(),
                     self::PAYMENTSTATUSRESERVED
                 );
+                $this->saveTransactionResult($response);
                 $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
                 break;
             default:
@@ -250,4 +251,18 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         );
     }
 
+    public function saveTransactionResult($response) {
+        $transactionId = $response->getTransID();
+        if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId'=> $transactionId])) {
+            if ($atrribute = $order->getAttribute()) {
+                $atrribute->setFcctStatus($response->getStatus());
+                $atrribute->setFcctTransid($response->getTransID());
+                $atrribute->setFcctPayid($response->getPayID());
+                $atrribute->setFcctXid($response->getXID());
+
+                Shopware()->Models()->persist($atrribute);
+                Shopware()->Models()->flush();
+            }
+        }
+    }
 }

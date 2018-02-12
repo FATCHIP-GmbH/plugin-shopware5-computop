@@ -141,9 +141,10 @@ class FrontendRiskManagement implements SubscriberInterface {
     private function invalidateCrifFOrAddress($address) {
         /* @var \Shopware\Models\Customer\Address $address */
         if ($attribute = $address->getAttribute()) {
-            $attribute->setFatchipcComputopCrifDate(0);
-            $attribute->setFatchipcComputopCrifResult(null);
-            $attribute->setFatchipcComputopCrifStatus(null);
+            $attribute->setFcctCrifDate(0);
+            $attribute->setFcctCrifDescription(null);
+            $attribute->setFcctCrifResult(null);
+            $attribute->setFcctCrifStatus(null);
             Shopware()->Models()->persist($attribute);
             Shopware()->Models()->flush();
         }
@@ -153,10 +154,10 @@ class FrontendRiskManagement implements SubscriberInterface {
         $util = new Util();
         $address = $util->getCustomerAddressById($addressID, $type);
         if ($attribute = $address->getAttribute()) {
-            $attribute->setFatchipcComputopCrifDate(0);
-            $attribute->setFatchipcComputopCrifDescription(null);
-            $attribute->setFatchipcComputopCrifResult(null);
-            $attribute->setFatchipcComputopCrifStatus(null);
+            $attribute->setFcctCrifDate(0);
+            $attribute->setFcctCrifDescription(null);
+            $attribute->setFcctCrifResult(null);
+            $attribute->setFcctCrifStatus(null);
             Shopware()->Models()->persist($attribute);
             Shopware()->Models()->flush();
         }
@@ -255,11 +256,7 @@ class FrontendRiskManagement implements SubscriberInterface {
 
             }
             else {
-                if (version_compare(\Shopware::VERSION, '5.2.0', '>=')) {
-                    $callResult = $user['billingaddress']['attributes']['fatchipcComputopCrifResult'];
-                } else {
-                    $callResult = $user['billingaddress']['fatchipcComputopCrifResult'];
-                }
+                $callResult = $this->getCrifResultFromAddressArray($user['billingaddress']);
             }
 
             if ($this->$rule($callResult, $value)) {
@@ -288,32 +285,34 @@ class FrontendRiskManagement implements SubscriberInterface {
      */
     private function crifCheckNecessary($addressArray, $type = null) {
 
+        $crifStatus = $this->getCrifStatusFromAddressArray($addressArray);
+        $crifDate =  $this->getCrifDateFromAddressArray($addressArray);
+        $crifResult = $this->getCrifResultFromAddressArray($addressArray);
         //if crif is not responding (FAILED), we try again after one hour to prevent making hundreds of calls
-
-        if ($addressArray['attributes']['fatchipcComputopCrifStatus'] == 'FAILED') {
-            $lastTimeChecked = $addressArray['attributes']['fatchipcComputopCrifDate'] instanceof \DateTime ?
-              $addressArray['attributes']['fatchipcComputopCrifDate'] : new \DateTime($addressArray['attributes']['fatchipcComputopCrifDate']);
+        //In Adressarray there are underscores in attribute nmaes
+        if ($crifStatus == 'FAILED') {
+            $lastTimeChecked = $this->getCrifDateFromAddressArray($addressArray);
             $hoursPassed = $lastTimeChecked->diff(new \DateTime('now'), true)->hours;
             return $hoursPassed > 1;
         }
 
         $util = new Util();
         //check in Session if CRIF data are missing.
-        if (!isset($addressArray['attributes']['fatchipcComputopCrifResult']) ||
-          !isset($addressArray['attributes']['fatchipcComputopCrifDate'])
-        ) {
+        if (!isset($crifResult))
+        {
             //If it is not in the session, we also check in the database to prevent multiple calls
             if (isset($addressArray['id'])) {
                 $address = $util->getCustomerAddressById($addressArray['id'], $type);
                 if (!empty($address) && $attribute = $address->getAttribute()) {
                     $attributeData = Shopware()->Models()->toArray($address->getAttribute());
-                    if (!isset($attributeData['fatchipcComputopCrifResult'])|| !isset($attributeData['fatchipcComputopCrifDate'])) {
+                    //in attributeData there are NO underscores in attribute names and Shopware ads CamelCase after fcct prefix
+                    if (!isset($attributeData['fcctCrifresult'])|| !isset($attributeData['fcctCrifdate'])) {
                         return true;
                     }
                     else {
                         //write the values from the database in the addressarray
-                        $addressArray['attribute']['fatchipcComputopCrifResult'] = $attributeData['fatchipcComputopCrifResult'];
-                        $addressArray['attribute']['fatchipcComputopCrifDate'] = $attributeData['fatchipcComputopCrifDate'];
+                        $addressArray['attribute']['fcct_crifresult'] = $attributeData['fcctCrifresult'];
+                        $addressArray['attribute']['fcct_crifdate'] = $attributeData['fcctCrifdate'];
                     }
                 } else {
                     return false;
@@ -328,8 +327,7 @@ class FrontendRiskManagement implements SubscriberInterface {
         $invalidateAfterDays = $config['bonitaetinvalidateafterdays'];
         if (is_numeric($invalidateAfterDays) && $invalidateAfterDays > 0) {
             /** @var \DateTime $lastTimeChecked */
-            $lastTimeChecked = $addressArray['attributes']['fatchipcComputopCrifDate'] instanceof \DateTime ?
-              $addressArray['attributes']['fatchipcComputopCrifDate'] : new \DateTime($addressArray['attributes']['fatchipcComputopCrifDate']);
+            $lastTimeChecked = $this->getCrifDateFromAddressArray($addressArray);
 
             $daysPassed = $lastTimeChecked->diff(new \DateTime('now'), true)->days;
 
@@ -340,6 +338,46 @@ class FrontendRiskManagement implements SubscriberInterface {
 
         return false;
     }
+
+    private function getCrifStatusFromAddressArray($aAddress) {
+        if (array_key_exists('fcctCrifStatus' , $aAddress)) {
+            return $aAddress['fcctCrifStatus'];
+        } else if (array_key_exists('fcct_crifstatus', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fcct_crifstatus'];
+        } else if (array_key_exists('fcctCrifstatus', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fcctCrifstatus'];
+        }
+        return null;
+    }
+
+    private function getCrifResultFromAddressArray($aAddress) {
+        if (array_key_exists('fcctCrifResult' , $aAddress)) {
+            return $aAddress['fcctCrifResult'];
+        } else if (array_key_exists('fcct_crifresult', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fcct_crifresult'];
+        } else if (array_key_exists('fcctCrifresult', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fcctCrifresult'];
+        }
+        return null;
+    }
+
+    private function getCrifDateFromAddressArray($aAddress) {
+
+
+        if (array_key_exists('fcctCrifDate' , $aAddress)) {
+            return $aAddress['fcctCrifDate'] instanceof \DateTime ?
+              $aAddress['fcctCrifDate'] : new \DateTime($aAddress['fcctCrifDate']);
+        } else if (array_key_exists('fcct_crifdate', $aAddress['attributes'])) {
+            return  $aAddress['attributes']['fcct_crifdate'] instanceof \DateTime ?
+              $aAddress['attributes']['fcct_crifdate'] : new \DateTime($aAddress['attributes']['fcct_crifdate']);
+
+        } else if (array_key_exists('fcctCrifdate', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fcctCrifdate'] instanceof \DateTime ?
+              $aAddress['attributes']['fcctCrifdate'] : new \DateTime($aAddress['attributes']['fcctCrifdate']);
+        }
+        return null;
+    }
+
 
     /**
      * check if user score equals configured score to block payment method
@@ -375,10 +413,10 @@ class FrontendRiskManagement implements SubscriberInterface {
             //callin persist and flush does not result in calling afterAddressUpdate and the session variable
             //fatchipComputopCrifAutoAddressUpdate woould not get cleared.
             if ($address->getFirstName() !== $crifResponse->getFirstName() ||
-                $address->getLastName() !== $crifResponse->getLastName() ||
-                $address->getStreet() != $crifResponse->getAddrStreet() . ' ' . $crifResponse->getAddrStreetNr() ||
-                $address->getZipCode() !== $crifResponse->getAddrZip() ||
-                $address->getCity() !== $crifResponse->getAddrCity()
+              $address->getLastName() !== $crifResponse->getLastName() ||
+              $address->getStreet() != $crifResponse->getAddrStreet() . ' ' . $crifResponse->getAddrStreetNr() ||
+              $address->getZipCode() !== $crifResponse->getAddrZip() ||
+              $address->getCity() !== $crifResponse->getAddrCity()
             ) {
                 $address->setFirstName($crifResponse->getFirstName());
                 $address->setLastName($crifResponse->getLastName());

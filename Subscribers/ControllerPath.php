@@ -57,7 +57,6 @@ class ControllerPath implements SubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        
         return array(
             //Frontend
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPayment'
@@ -86,7 +85,8 @@ class ControllerPath implements SubscriberInterface
             => 'onGetControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipCTIdeal'
             => 'onGetBackendControllerPath',
-
+            'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipCTOrder'
+            => 'onGetBackendControllerPath',
 
         );
     }

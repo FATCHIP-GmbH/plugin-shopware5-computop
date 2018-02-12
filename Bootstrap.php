@@ -488,6 +488,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             new \Shopware\FatchipCTPayment\Subscribers\Checkout(),
             new \Shopware\FatchipCTPayment\Subscribers\BackendRiskManagement($container),
             new \Shopware\FatchipCTPayment\Subscribers\FrontendRiskManagement($container),
+            new \Shopware\FatchipCTPayment\Subscribers\BackendOrder($container),
         ];
 
         foreach ($subscribers as $subscriber) {
@@ -688,7 +689,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      */
     protected function addAttributes()
     {
-        $prefix = 'fatchipc_computop';
+        $prefix = 'fcct';
         $util = new \Shopware\FatchipCTPayment\Util();
 
         $tables = $util->fcComputopAttributeExtensionsArray($this->getId());
