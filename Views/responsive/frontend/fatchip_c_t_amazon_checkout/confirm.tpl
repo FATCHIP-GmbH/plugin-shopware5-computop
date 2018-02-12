@@ -1,25 +1,37 @@
 {extends file="parent:frontend/checkout/confirm.tpl"}
 
-{* Disable BillingAddress Action Buttons *}
+{* SW 5.0, 5.1 Disable BillingAddress Action Buttons *}
 {block name="frontend_checkout_confirm_left_billing_address_actions"}
 {/block}
 
-{* Disable ShippingAddress Action Buttons *}
+{* SW 5.2 - 5.3, 5.4? Change PaymentMean Selection Action Button to FatchipCTAmazonCheckout Controller *}
+{* for shippingAddress != billingAddress *}
+{* Billing: *}
+{block name="frontend_checkout_confirm_information_addresses_billing_panel_actions"}
+{/block}
+
+{* SW 5.2 - 5.3, 5.4? Change PaymentMean Selection Action Button to FatchipCTAmazonCheckout Controller *}
+{* for shippingAddress = billingAddress *}
+{* Billing and Shipping: *}
+{block name="frontend_checkout_confirm_information_addresses_equal_panel_shipping"}
+{/block}
+
+{* SW 5.0 , 5.1 Disable ShippingAddress Action Buttons *}
 {block name="frontend_checkout_confirm_left_shipping_address_actions"}
 {/block}
 
-{block name='frontend_checkout_confirm_left_payment_method_headline'}
-    <div class="panel--title is--underline payment--title">
-        {s name="ConfirmHeaderPaymentShipping" namespace="frontend/checkout/confirm_left"}{/s}
-    </div>
+{* SW 5.2 - 5.3, 5.4? Change PaymentMean Selection Action Button to FatchipCTAmazonCheckout Controller *}
+{* for shippingAddress != billingAddress *}
+{block name="frontend_checkout_confirm_information_addresses_shipping_panel_actions"}
 {/block}
 
-{* Change PaymentMean Selection Action Button to FatchipCTAmazonCheckout Controller *}
+
+{* SW 5.0 - 5.4 Change PaymentMean Selection Action Button to FatchipCTAmazonCheckout Controller *}
 {block name='frontend_checkout_confirm_left_payment_method_actions'}
-    <div class="panel--actions payment--actions">
+    <div class="panel--actions is--wide">
+        {* Action buttons *}
         <a href="{url controller=FatchipCTAmazonCheckout action=shippingPayment sTarget=checkout}" class="btn is--small btn--change-payment">
-            {s name="ConfirmLinkChangePayment" namespace="frontend/checkout/confirm_left"}{/s}
+            {s name="ConfirmLinkChangePayment" namespace="frontend/checkout/confirm"}{/s}
         </a>
     </div>
 {/block}
-
