@@ -72,7 +72,7 @@
     <div class="register--action">
         <button onclick="$('#fatchipCTAmazonInformation').trigger('fatchipCTAmazonButtonClick');"
                 id="fatchipCTAmazonButton" class="btn is--primary is--large right is--icon-right" name="Submit"
-                >Weiter<i class="icon--arrow-right"></i>
+                disabled="disabled">Weiter<i class="icon--arrow-right"></i>
         </button>
     </div>
 
