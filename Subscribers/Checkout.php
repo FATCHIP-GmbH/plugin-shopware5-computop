@@ -146,20 +146,14 @@ class Checkout implements SubscriberInterface
             $view->assign('CTError', $params['CTError']);
         }
 
-        if ($this->utils->isAmazonPayActive()) {
 
+        // ToDo find a better way, it would be nice to move this to the Amazon Controller
+        if ($this->utils->isAmazonPayActive()) {
             // assign plugin Config to View
             $view->assign('fatchipCTPaymentConfig', $pluginConfig);
             // extend cart and ajax cart with Amazon Button
             $view->extendsTemplate('frontend/checkout/ajax_cart_amazon.tpl');
         }
-
-        /* ToDO remove me moved to AmazonCTCheckout for better visibility
-        if ($this->utils->isAmazonPayActive() && $request->getActionName() == 'finish') {
-            $view->extendsTemplate('frontend/checkout/finish.tpl');
-        }
-        */
-        //$view->extendsTemplate('frontend/checkout/mopt_cart_amazon.tpl');
 
         if ($request->getActionName() == 'confirm') {
 
@@ -169,30 +163,6 @@ class Checkout implements SubscriberInterface
             if ($session->offsetGet('FatchipComputopEasyCreditInformation')) {
                 $view->assign('FatchipComputopEasyCreditInformation', $session->offsetGet('FatchipComputopEasyCreditInformation'));
             }
-
-            if ($paymentName === 'fatchip_computop_amazonpay') {
-                // ToDO Better do this in own fatchipCTAmazonCheckout controller
-                $response = $this->ctGetOrderDetails();
-            }
-
         }
-    }
-
-
-    public function ctGetOrderDetails(){
-
-        $session = Shopware()->Session();
-        $orderDesc = "Test";
-        $payservice = Shopware()->Container()->get('FatchipCTPaymentApiClient');
-        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-        $config = $plugin->Config()->toArray();
-
-        $service = new CTAmazon($config);
-        $requestParams =  $service->getAmazonGODParams(
-            $session->offsetGet('fatchipCTPaymentPayID'),
-            $orderDesc,
-            $session->offsetGet('fatchipCTAmazonReferenceID')
-        );
-        $response = $service->callComputopAmazon($requestParams);
     }
 }

@@ -105,6 +105,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
     public function confirmAction()
     {
         parent::confirmAction();
+        $response = $this->ctGetOrderDetails();
     }
 
     public function finishAction()
@@ -115,6 +116,24 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         Shopware()->Modules()->Basket()->sRefreshBasket();
     }
 
+
+    // ToDo think about what to do if errors occur in this step
+    public function ctGetOrderDetails(){
+
+        $session = Shopware()->Session();
+        $orderDesc = "Test";
+        $payservice = Shopware()->Container()->get('FatchipCTPaymentApiClient');
+        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $config = $plugin->Config()->toArray();
+
+        $service = new CTAmazon($config);
+        $requestParams =  $service->getAmazonGODParams(
+            $session->offsetGet('fatchipCTPaymentPayID'),
+            $orderDesc,
+            $session->offsetGet('fatchipCTAmazonReferenceID')
+        );
+        $response = $service->callComputopAmazon($requestParams);
+    }
 }
 
 
