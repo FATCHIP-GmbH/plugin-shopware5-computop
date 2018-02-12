@@ -55,7 +55,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
                     $response['orderid'],
                     self::PAYMENTSTATUSPAID
                 );
-                $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
+                $this->redirect(['controller' => 'FatchipCTAmazonCheckout', 'action' => 'finish']);
                 break;
             default:
                 $this->forward('failure');

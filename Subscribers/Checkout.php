@@ -153,6 +153,10 @@ class Checkout implements SubscriberInterface
             // extend cart and ajax cart with Amazon Button
             $view->extendsTemplate('frontend/checkout/ajax_cart_amazon.tpl');
         }
+
+        if ($this->utils->isAmazonPayActive() && $request->getActionName() == 'finish') {
+            $view->extendsTemplate('frontend/checkout/finish.tpl');
+        }
         //$view->extendsTemplate('frontend/checkout/mopt_cart_amazon.tpl');
 
         if ($request->getActionName() == 'confirm') {

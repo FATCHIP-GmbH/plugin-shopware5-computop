@@ -100,6 +100,15 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         );
         return $returnArray;
     }
+
+    public function finishAction()
+    {
+        parent::finishAction();
+
+        Shopware()->Session()->unsetAll();
+        Shopware()->Modules()->Basket()->sRefreshBasket();
+    }
+
 }
 
 
