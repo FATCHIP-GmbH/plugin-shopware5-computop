@@ -4,7 +4,7 @@
 {/block}
 
 <div class="confirm--outer-container">
-    <form id="shippingPaymentForm" name="shippingPaymentForm" method="post" action="{url controller='FatchipCTAmazonCheckout' action='saveShippingPayment' sTarget='checkout' sTargetAction='index'}" class="payment">
+    <form id="shippingPaymentForm" name="shippingPaymentForm" method="post" action="{url controller='FatchipCTAmazonCheckout' action='saveShippingPayment' sTarget='FatchipCTAmazonCheckout' sTargetAction='index'}" class="payment">
 
         {* Action top *}
         {block name='frontend_checkout_shipping_payment_core_buttons'}

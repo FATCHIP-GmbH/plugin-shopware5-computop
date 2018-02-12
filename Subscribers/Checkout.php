@@ -154,9 +154,11 @@ class Checkout implements SubscriberInterface
             $view->extendsTemplate('frontend/checkout/ajax_cart_amazon.tpl');
         }
 
+        /* ToDO remove me moved to AmazonCTCheckout for better visibility
         if ($this->utils->isAmazonPayActive() && $request->getActionName() == 'finish') {
             $view->extendsTemplate('frontend/checkout/finish.tpl');
         }
+        */
         //$view->extendsTemplate('frontend/checkout/mopt_cart_amazon.tpl');
 
         if ($request->getActionName() == 'confirm') {

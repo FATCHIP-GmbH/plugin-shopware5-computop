@@ -75,6 +75,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         $this->view->assign('fatchipCTAmazonpayID', $fatchipCTAmazonpayID);
         $this->view->assign('fatchipCTResponse', $params['fatchipCTResponse']);
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
+        // ToDo Why only xhr? where no tempalte is needed??? check tihs
         if ($this->Request()->getParam('isXHR')) {
             return $this->view->loadTemplate('frontend/fatchip_c_t_amazon_checkout/fatchip_shipping_payment_core.tpl');
         }
@@ -99,6 +100,11 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
             'shippingPayment',
         );
         return $returnArray;
+    }
+
+    public function confirmAction()
+    {
+        parent::confirmAction();
     }
 
     public function finishAction()
