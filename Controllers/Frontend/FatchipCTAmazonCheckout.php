@@ -82,8 +82,11 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
 
         // override template with ours for xhr requests
         if ($this->Request()->getParam('isXHR')) {
-            return $this->view->loadTemplate('frontend/fatchip_c_t_amazon_checkout/fatchip_shipping_payment_core.tpl');
+            return $this->view->loadTemplate('frontend/fatchipCTAmazonCheckout/fatchip_shipping_payment_core.tpl');
         }
+
+        // load Template to avoid annoying uppercase to _lowercase conversion
+        $this->view->loadTemplate('frontend/fatchipCTAmazonCheckout/shipping_payment.tpl');
     }
 
     public function saveShippingPaymentAction()

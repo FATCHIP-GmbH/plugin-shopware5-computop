@@ -100,6 +100,8 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
 
         $this->view->assign('fatchipCTResponse', $params['fatchipCTResponse']);
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
+        // load Template to avoid annoying uppercase to _lowercase conversion
+        $this->view->loadTemplate('frontend/fatchipCTAmazonRegister/index.tpl');
 
     }
 
