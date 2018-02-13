@@ -24,6 +24,62 @@ require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
 class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
 
+    private $orderAttributes = [
+
+        // What is the Status field for?
+        'Status' => [
+            'type' => 'VARCHAR(255)',
+        ],
+        'TransID' => [
+            'type' => 'VARCHAR(255)',
+        ],
+        'PayID' => [
+            'type' => 'VARCHAR(255)',
+        ],
+        'XID' => [
+            'type' => 'VARCHAR(255)',
+        ],
+        'ShipCaptured' => [
+            'type' => 'DOUBLE',
+        ],
+        'ShipDebit' => [
+            'type' => 'DOUBLE',
+        ],
+    ];
+
+    private $orderDetailsAttributes = [
+
+        'PaymentStatus' => [
+            'type' => 'VARCHAR(255)',
+        ],
+        // what is this for?
+        'ShipmentDate' => [
+            'type' => 'DATE',
+        ],
+        'Captured' => [
+            'type' => 'DOUBLE',
+        ],
+        'Debit' => [
+            'type' => 'DOUBLE',
+        ]
+    ];
+
+    private $userAddressAttributes = [
+
+        'CrifResult' => [
+            'type' => 'VARCHAR(255)',
+        ],
+        'CrifDate' => [
+            'type' => 'DATE',
+        ],
+        'CrifStatus' => [
+            'type' => 'DOUBLE',
+        ],
+        'CrifDescription' => [
+            'type' => 'VARCHAR(255)',
+        ]
+    ];
+
     /**
      * Returns plugin info
      *
@@ -149,7 +205,17 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             'addJsFiles'
         );
 
-        $this->addAttributes();
+
+        //$this->addAttributes();
+        $this->addOrderAttributes();
+        $this->addOrderDetailsAttributes();
+
+        if ($this->assertMinimumVersion('5.2')) {
+            $this->addUserAddressAttributes($this->userAddressAttributes);
+        } else {
+            $this->addUserBillingAddressAttributes($this->userAddressAttributes);
+            $this->addUserShippingAddressAttributes($this->userAddressAttributes);
+        }
 
         $this->createTables();
 
@@ -491,51 +557,119 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         return $result;
     }
 
+
     /**
      * extend shpoware models with COMPUTOP specific attributes
      */
-    protected function addAttributes()
+    protected function addOrderAttributes()
     {
-        $prefix = 'fcct';
-        $util = new \Shopware\FatchipCTPayment\Util();
+        $prefix = 'fatchipCT';
+        $table = 's_order_attributes';
 
-        $tables = $util->fcComputopAttributeExtensionsArray($this->getId());
+        foreach ($this->orderAttributes as $name => $attribute){
+            try {
+                $this->get('models')->addAttribute($table, $prefix, $name, $attribute['type']);
 
-        /** @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
-        $attributeService = $this->assertMinimumVersion('5.2') ?
-            Shopware()->Container()->get('shopware_attribute.crud_service') : null;
-
-        foreach ($tables as $table => $attributes) {
-            foreach ($attributes as $attribute => $options) {
-                $type = is_array($options) ? $options[0] : $options;
-                $data = is_array($options) ? $options[1] : [];
-                if ($this->assertMinimumVersion('5.2')) {
-                    $attributeService->update($table, $prefix . '_' . $attribute, $type, $data);
-                } else {
-                    $type = $util->unifiedToSQL($type);
-                    /** @noinspection PhpDeprecationInspection */
-                    Shopware()->Models()->addAttribute($table, $prefix, $attribute, $type, true, null);
-                }
+            } catch (Exception $e) {
             }
         }
-        Shopware()->Models()->generateAttributeModels(array_keys($tables));
 
-        // SW 5.2 Use Address Table instead of shipping and billing tables
-        if (\Shopware::VERSION === '___VERSION___' ||
-            version_compare(\Shopware::VERSION, '5.2.0', '>=')
-        ) {
+        $this->get('models')->generateAttributeModels(
+            [
+                $table
+            ]
+        );
+    }
 
-            $tables = $util->fcComputopAttributeExtensionsArray52();
-            $attributeService = Shopware()->Container()->get('shopware_attribute.crud_service');
+    /**
+     * extend shpoware models with COMPUTOP specific attributes
+     */
+    protected function addOrderDetailsAttributes()
+    {
+        $prefix = 'fatchipCT';
+        $table = 's_order_details_attributes';
 
-            foreach ($tables as $table => $attributes) {
-                foreach ($attributes as $attribute => $options) {
-                    $type = is_array($options) ? $options[0] : $options;
-                    $data = is_array($options) ? $options[1] : [];
-                    $attributeService->update($table, $prefix . '_' . $attribute, $type, $data);
-                }
+        foreach ($this->orderDetailsAttributes as $name => $attribute){
+            try {
+                $this->get('models')->addAttribute($table, $prefix, $name, $attribute['type']);
+
+            } catch (Exception $e) {
             }
-            Shopware()->Models()->generateAttributeModels(array_keys($tables));
         }
+
+        $this->get('models')->generateAttributeModels(
+            [
+                $table
+            ]
+        );
+    }
+
+    /**
+     * extend shpoware models with COMPUTOP specific attributes
+     */
+    protected function addUserAddressAttributes($attributes)
+    {
+        $prefix = 'fatchipCT';
+        $table = 's_user_addresses_attributes';
+
+        foreach ($attributes as $name => $attribute){
+            try {
+                $this->get('models')->addAttribute($table, $prefix, $name, $attribute['type']);
+
+            } catch (Exception $e) {
+            }
+        }
+
+        $this->get('models')->generateAttributeModels(
+            [
+                $table
+            ]
+        );
+    }
+
+    /**
+     * extend shpoware models with COMPUTOP specific attributes
+     */
+    protected function addUserShippingAddressAttributes($attributes)
+    {
+        $prefix = 'fatchipCT';
+        $table = 's_user_billingaddress_attributes';
+
+        foreach ($attributes as $name => $attribute){
+            try {
+                $this->get('models')->addAttribute($table, $prefix, $name, $attribute['type']);
+
+            } catch (Exception $e) {
+            }
+        }
+
+        $this->get('models')->generateAttributeModels(
+            [
+                $table
+            ]
+        );
+    }
+
+    /**
+     * extend shpoware models with COMPUTOP specific attributes
+     */
+    protected function addUserBillingAddressAttributes($attributes)
+    {
+        $prefix = 'fatchipCT';
+        $table = 's_user_shippingaddress_attributes';
+
+        foreach ($attributes as $name => $attribute){
+            try {
+                $this->get('models')->addAttribute($table, $prefix, $name, $attribute['type']);
+
+            } catch (Exception $e) {
+            }
+        }
+
+        $this->get('models')->generateAttributeModels(
+            [
+                $table
+            ]
+        );
     }
 }
