@@ -113,12 +113,14 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
     {
         parent::confirmAction();
         $response = $this->ctGetOrderDetails();
+        $this->view->loadTemplate('frontend/fatchipCTAmazonCheckout/confirm.tpl');
     }
 
     public function finishAction()
     {
         parent::finishAction();
 
+        $this->view->loadTemplate('frontend/fatchipCTAmazonCheckout/finish.tpl');
         Shopware()->Session()->unsetAll();
         Shopware()->Modules()->Basket()->sRefreshBasket();
     }
