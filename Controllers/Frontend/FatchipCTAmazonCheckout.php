@@ -89,7 +89,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         $this->view->loadTemplate('frontend/fatchipCTAmazonCheckout/shipping_payment.tpl');
     }
 
-    public function saveShippingPaymentAction()
+    /*public function saveShippingPaymentAction()
     {
         $request = $this->Request();
         $params = $request->getParams();
@@ -100,6 +100,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         $post = $request->getPost();
 
     }
+*/
 
     public function getWhitelistedCSRFActions()
     {
