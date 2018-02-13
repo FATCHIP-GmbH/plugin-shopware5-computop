@@ -24,7 +24,7 @@
 {block name='frontend_register_steps_basket'}
     <li class="steps--entry step--basket{if $sStepActive=='address'} is--active{/if}">
         <span class="icon">1</span>
-        <span class="text"><span class="text--inner">Ihre Adresse und Zahlart</span></span>
+        <span class="text"><span class="text--inner">Adresse und Zahlart</span></span>
     </li>
 {/block}
 
@@ -32,7 +32,7 @@
 {block name='frontend_register_steps_register'}
     <li class="steps--entry step--register{if $sStepActive=='paymentShipping'} is--active{/if}">
         <span class="icon">2</span>
-        <span class="text"><span class="text--inner">Versand</span></span>
+        <span class="text"><span class="text--inner">Versandart</span></span>
     </li>
 {/block}
 
@@ -55,7 +55,6 @@
             min-height: 228px;
             height: 240px;
             max-height: 400px;
-            display: none;
         }
 
         #fatchipCTWalletWidgetDiv {
@@ -80,7 +79,7 @@
         </div>
     </div>
 
-    <div id="amazonContentWrapper" class="content confirm--content content-main--inner" style="margin-top:2%;margin-bottom: 0px; padding-bottom: 1%;">
+    <div id="amazonContentWrapper" class="content confirm--content content-main--inner" style="width:100%;height: 100%; margin-top:5%;margin-bottom: 30px; padding-bottom: 4%;">
 
         <!-- <div id="debug">Amazon LGN:<BR>{$fatchipCTResponse|var_dump}</div> -->
         <div id="fatchipCTAddressBookWidgetDiv"  style="float:left;margin-right:5%;"></div>
