@@ -112,4 +112,5 @@
     {block name="frontend_checkout_footer"}
         {include file="frontend/checkout/table_footer.tpl"}
     {/block}
+
 </div>

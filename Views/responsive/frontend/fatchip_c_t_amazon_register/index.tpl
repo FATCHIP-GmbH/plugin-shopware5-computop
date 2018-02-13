@@ -18,6 +18,32 @@
 {block name='frontend_register_index_advantages'}
 {/block}
 
+{* change register Steps to 1 Ihre Adresse, 2 Versandart, 3 Prüfen und Bestellen *}
+
+{* First Step - Address *}
+{block name='frontend_register_steps_basket'}
+    <li class="steps--entry step--basket{if $sStepActive=='address'} is--active{/if}">
+        <span class="icon">1</span>
+        <span class="text"><span class="text--inner">Ihre Adresse und Zahlart</span></span>
+    </li>
+{/block}
+
+{* Second Step - Payment *}
+{block name='frontend_register_steps_register'}
+    <li class="steps--entry step--register{if $sStepActive=='paymentShipping'} is--active{/if}">
+        <span class="icon">2</span>
+        <span class="text"><span class="text--inner">Versand</span></span>
+    </li>
+{/block}
+
+{* Third Step - Confirmation *}
+{block name='frontend_register_steps_confirm'}
+    <li class="steps--entry step--confirm{if $sStepActive=='finished'} is--active{/if}">
+        <span class="icon">3</span>
+        <span class="text"><span class="text--inner">Prüfen und Bestellen</span></span>
+    </li>
+{/block}
+
 {* Replace Register content with Amazon Widget SW 5.0 *}
 {block name='frontend_register_index_registration'}
 
