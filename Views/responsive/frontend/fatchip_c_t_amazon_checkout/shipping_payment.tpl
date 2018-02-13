@@ -10,10 +10,6 @@
 {* change register Steps to 1 Ihre Adresse, 2 Versandart, 3 Prüfen und Bestellen *}
 {* Step box *}
 {block name='frontend_index_navigation_categories_top'}
-    {if !$theme.checkoutHeader}
-        {$smarty.block.parent}
-    {/if}
-
     {* Step box *}
     <div class="steps--container container">
         <div class="steps--content panel--body center">
@@ -24,7 +20,7 @@
                     {block name='frontend_register_steps_basket'}
                         <li class="steps--entry step--basket{if $sStepActive=='address'} is--active{/if}">
                             <span class="icon">1</span>
-                            <span class="text"><span class="text--inner">Ihre Adresse und Zahlart </span></span>
+                            <span class="text"><span class="text--inner">Adresse und Zahlart </span></span>
                         </li>
                     {/block}
 
@@ -39,7 +35,7 @@
                     {block name='frontend_register_steps_register'}
                         <li class="steps--entry step--register{if $sStepActive=='paymentShipping'} is--active{/if}">
                             <span class="icon">2</span>
-                            <span class="text"><span class="text--inner">Versand</span></span>
+                            <span class="text"><span class="text--inner">Versandart</span></span>
                         </li>
                     {/block}
 

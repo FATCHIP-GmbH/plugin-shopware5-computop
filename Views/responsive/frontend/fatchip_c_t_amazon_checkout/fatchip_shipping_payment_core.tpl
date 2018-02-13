@@ -21,7 +21,7 @@
 
 
                 {block name='frontend_checkout_shipping_payment_core_payment_fields'}
-                    <style type="text/css">
+<!--                    <style type="text/css">
 
                         #fatchipCTWalletWidgetDiv {
                             min-width: 300px;
@@ -45,12 +45,13 @@
                     </div>
 
                     <div id="amazonContentWrapper" class="content confirm--content content-main--inner" style="margin-top:2%;margin-bottom: 0px; padding-bottom: 1%;">
+-->
                         <!-- <div id="debug">Amazon LGN:<BR>{$fatchipCTResponse|var_dump}</div> -->
                         <!-- Place this code in your HTML where you would like the address widget to appear. -->
-                        <div id="fatchipCTAddressBookWidgetDiv"  style="float:left;margin-right:5%;"></div>
+<!--                        <div id="fatchipCTAddressBookWidgetDiv"  style="float:left;margin-right:5%;"></div>
                         <div id="fatchipCTWalletWidgetDiv" style="float:left;"></div>
                     </div>
-
+-->
 <!--                    <script>
                         window.onAmazonLoginReady = function() {
                             amazon.Login.setClientId("{$fatchipCTPaymentConfig.amazonClientId}");
