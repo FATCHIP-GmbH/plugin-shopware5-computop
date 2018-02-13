@@ -160,6 +160,11 @@ class Util
         return Shopware()->Db()->fetchOne($countrySql, [$countryId]);
     }
 
+    public function getCountryIdFromIso($countryIso)
+    {
+        $countrySql = 'SELECT id FROM s_core_countries WHERE countryiso=?';
+        return Shopware()->Db()->fetchOne($countrySql, [$countryIso]);
+    }
 
     // SW 5.0 - 5.3 Compatibility
     // 5.0 - check
@@ -284,6 +289,63 @@ class Util
         return  Shopware()->Db()->fetchOne($sql, $paymentID);
     }
 
+    /**
+     * returns payment name
+     *
+     * @param string $paymentID
+     * @return string
+     */
+    public function getPaymentIdFromName($paymentName)
+    {
+        $sql         = 'SELECT `id` FROM `s_core_paymentmeans` WHERE name = ?';
+        return  Shopware()->Db()->fetchOne($sql, $paymentName);
+    }
+
+
+    /**
+     * get or create attribute data for given object
+     *
+     * @param object $object
+     * @return \Shopware\Models\Attribute\OrderDetail
+     * @throws Exception
+     */
+    public function getOrCreateAttribute($object)
+    {
+        if (!empty($object) && $attribute = $object->getAttribute()) {
+            return $attribute;
+        }
+
+        if ($object instanceof Shopware\Models\Order\Order) {
+            if (!$attribute = Shopware()->Models()->getRepository('Shopware\Models\Attribute\Order')
+                ->findOneBy(array('orderId' => $object->getId()))) {
+                $attribute = new Shopware\Models\Attribute\Order();
+            }
+        } elseif ($object instanceof Shopware\Models\Order\Detail) {
+            if (!$attribute = Shopware()->Models()->getRepository('Shopware\Models\Attribute\OrderDetail')
+                ->findOneBy(array('orderDetailId' => $object->getId()))) {
+                $attribute = new Shopware\Models\Attribute\OrderDetail();
+            }
+        } else {
+            throw new Exception('Unknown attribute base class');
+        }
+
+        $object->setAttribute($attribute);
+        return $attribute;
+    }
+
+    /**
+     * get or create attribute data for given object
+     *
+     * @param \Shopware\Models\Customer\Billing $object
+     * @return \Shopware\Models\Attribute\CustomerBilling
+     * @throws Exception
+     */
+    public function getOrCreateBillingAttribute($object)
+    {
+        if (!empty($object) && $attribute = $object->getAttribute()) {
+            return $attribute;
+        }
+
 
 
 
@@ -407,6 +469,19 @@ class Util
             Shopware()->Models()->persist($attribute);
             Shopware()->Models()->flush();
         }
+    }
+
+    /**
+     * checks if AmazonPay is enabled
+     *
+     * @return bool
+     */
+    public function isAmazonPayActive()
+    {
+        $paymentAmazonPay = Shopware()->Models()->getRepository('Shopware\Models\Payment\Payment')->findOneBy(
+            ['name' => 'fatchip_computop_amazonpay']
+        );
+        return $paymentAmazonPay->getActive();
     }
 }
 

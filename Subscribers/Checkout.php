@@ -57,8 +57,8 @@ class Checkout implements SubscriberInterface
         $request = $subject->Request();
         $params = $request->getParams();
         $session = Shopware()->Session();
-        $paymentName = $this->utils->getPaymentNameFromId($params['payment']);
         $test = $request->getActionName();
+        $paymentName = $this->utils->getPaymentNameFromId($session->offsetGet('sPaymentID'));
 
         // ToDo prevent forward to checkout confirm if params are missing
 
@@ -97,11 +97,9 @@ class Checkout implements SubscriberInterface
             );
         }
 
-        // ToDo should check here all Session vars?
         if ($paymentName === 'fatchip_computop_easycredit' && $request->getActionName() === 'saveShippingPayment' && !$session->offsetExists('fatchipComputopEasyCreditPayId')) {
             $subject->redirect(['controller' => 'FatchipCTEasyCredit','action' => 'gateway', 'forceSecure' => true]);
         }
-
     }
 
 
@@ -112,6 +110,7 @@ class Checkout implements SubscriberInterface
     public function onPostdispatchFrontendCheckout(\Enlight_Controller_ActionEventArgs $args)
     {
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
         $subject = $args->getSubject();
         $view = $subject->View();
         $request = $subject->Request();
@@ -119,6 +118,7 @@ class Checkout implements SubscriberInterface
         $session = Shopware()->Session();
         $params = $request->getParams();
 
+        $paymentName = $this->utils->getPaymentNameFromId($session->offsetGet('sPaymentID'));
 
         if (!$request->isDispatched() || $response->isException()) {
             return;
@@ -143,6 +143,16 @@ class Checkout implements SubscriberInterface
             // ToDo DO not Display User canceled:22730703 at least for paydirekt
             // logic shouldnt be here or in the template ...
             $view->assign('CTError', $params['CTError']);
+        }
+
+
+        // ToDo find a better way, it would be nice to move this to the Amazon Controller
+        if ($this->utils->isAmazonPayActive()) {
+            // assign plugin Config to View
+            $view->assign('fatchipCTPaymentConfig', $pluginConfig);
+            // extend cart and ajax cart with Amazon Button
+            $view->extendsTemplate('frontend/checkout/ajax_cart_amazon.tpl');
+            $view->extendsTemplate('frontend/checkout/cart_amazon.tpl');
         }
 
         if ($request->getActionName() == 'confirm') {

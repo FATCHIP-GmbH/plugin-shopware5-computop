@@ -193,6 +193,78 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             ],
         ];
 
+    private $formAmazonTextElements =
+        [
+            'amazonSellerId' => [
+                'name' => 'amazonSellerId',
+                'type' => 'text',
+                'value' => '',
+                'label' => 'AmazonPay SellerId',
+                'required' => true,
+                'description' => 'Ihre SellerId',
+            ],
+            'amazonClientId' => [
+                'name' => 'amazonClientId',
+                'type' => 'text',
+                'value' => '',
+                'label' => 'AmazonPay ClientId',
+                'required' => true,
+                'description' => 'Ihre ClientId',
+            ],
+
+        ];
+
+    private $formAmazonSelectElements =
+        [
+            'amazonButtonType' => [
+                'name' => 'amazonButtonType',
+                'type' => 'select',
+                'value' => 'PwA',
+                'label' => 'AmazonPay Button Typ',
+                'required' => true,
+                'editable' => false,
+                'store' =>
+                    [
+                        ['PwA', 'Amazon Pay (Default)'],
+                        ['Pay', 'Pay'],
+                        ['A', 'A'],
+                        ['LwA', 'LwA'],
+                        ['Login', 'Login'],
+
+                    ],
+                'description' => 'Typ des AmazonPay Buttons',
+            ],
+            'amazonButtonColor' => [
+                'name' => 'amazonButtonColor',
+                'type' => 'select',
+                'value' => 'Gold',
+                'label' => 'AmazonPay Button Farbe',
+                'required' => 'true',
+                'editable' => false,
+                'store' =>
+                    [
+                        ['Gold', 'Gold'],
+                        ['LightGray', 'LightGray'],
+                        ['DarkGray', 'DarkGray'],
+                    ],
+                'description' => '',
+            ],
+            'amazonButtonSize' => [
+                'name' => 'amazonButtonSize',
+                'type' => 'select',
+                'value' => 'small',
+                'label' => 'AmazonPay Button Größe',
+                'required' => 'true',
+                'editable' => false,
+                'store' =>
+                    [
+                        ['small', 'small'],
+                        ['medium', 'medium'],
+                    ],
+                'description' => '',
+            ],
+        ];
+
     private $formBonitaetElements =
         [
             'bonitaetusereturnaddress' => [
@@ -364,6 +436,11 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         $this->createPayments();
         $this->subscribeEvent('Enlight_Controller_Front_DispatchLoopStartup', 'onStartDispatch');
+        // add amazon javascript to
+        $this->subscribeEvent(
+            'Theme_Compiler_Collect_Plugin_Javascript',
+            'addJsFiles'
+        );
 
         $this->addAttributes();
 
@@ -382,6 +459,14 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
 
         return ['success' => true, 'invalidateCache' => ['backend', 'config', 'proxy']];
+    }
+
+    public function addJsFiles(Enlight_Event_EventArgs $args)
+    {
+        $jsFiles = [
+            $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCT_amazon.js',
+        ];
+        return new Doctrine\Common\Collections\ArrayCollection($jsFiles);
     }
 
     /**
@@ -554,6 +639,10 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         //paypal
         $this->createFormSelectElements($this->formPayPalSelectElements);
+
+        //amazon
+        $this->createFormTextElements($this->formAmazonTextElements);
+        $this->createFormSelectElements($this->formAmazonSelectElements);
 
         //rating
         $this->createFormTextElements($this->formBonitaetElements);
