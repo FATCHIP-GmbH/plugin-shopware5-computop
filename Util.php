@@ -301,39 +301,6 @@ class Util
         return Shopware()->Db()->fetchOne($sql, $paymentName);
     }
 
-
-    /**
-     * get or create attribute data for given object
-     *
-     * @param object $object
-     * @return \Shopware\Models\Attribute\OrderDetail
-     * @throws Exception
-     */
-    public function getOrCreateAttribute($object)
-    {
-        if (!empty($object) && $attribute = $object->getAttribute()) {
-            return $attribute;
-        }
-
-        if ($object instanceof Shopware\Models\Order\Order) {
-            if (!$attribute = Shopware()->Models()->getRepository('Shopware\Models\Attribute\Order')
-                ->findOneBy(array('orderId' => $object->getId()))) {
-                $attribute = new Shopware\Models\Attribute\Order();
-            }
-        } elseif ($object instanceof Shopware\Models\Order\Detail) {
-            if (!$attribute = Shopware()->Models()->getRepository('Shopware\Models\Attribute\OrderDetail')
-                ->findOneBy(array('orderDetailId' => $object->getId()))) {
-                $attribute = new Shopware\Models\Attribute\OrderDetail();
-            }
-        } else {
-            throw new Exception('Unknown attribute base class');
-        }
-
-        $object->setAttribute($attribute);
-        return $attribute;
-    }
-
-
     /**
      * - returns the definition for attribute table extensions
      * - intended to be used with Shopware version >= 5.2.0
