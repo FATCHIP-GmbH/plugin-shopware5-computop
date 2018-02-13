@@ -12,6 +12,8 @@ use Fatchip\CTPayment\CTAddress\CTAddress;
 use VIISON\AddressSplitter\AddressSplitter;
 use Shopware;
 
+require_once 'Components/Api/vendor/autoload.php';
+
 class Util
 {
 
