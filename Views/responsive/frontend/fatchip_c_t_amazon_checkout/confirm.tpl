@@ -28,10 +28,10 @@
 
 {* SW 5.0 - 5.4 Change PaymentMean Selection Action Button to FatchipCTAmazonCheckout Controller *}
 {block name='frontend_checkout_confirm_left_payment_method_actions'}
-    <div class="panel--actions is--wide">
+    <div class="panel--actions is--wide payment--actions">
         {* Action buttons *}
         <a href="{url controller=FatchipCTAmazonCheckout action=shippingPayment sTarget=checkout}" class="btn is--small btn--change-payment">
-            {s name="ConfirmLinkChangePayment" namespace="frontend/checkout/confirm"}{/s}
+            Ändern
         </a>
     </div>
 {/block}
