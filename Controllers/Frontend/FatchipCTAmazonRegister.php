@@ -79,6 +79,11 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         // ToDO  move paymentID saving to saveParamsToSession
         $session = Shopware()->Session();
 
+        // unset logged in User Information so we can register
+        $session->offsetUnset('sUserId');
+        $session->offsetUnset('sRegisterFinished');
+        $session->offsetUnset('sRegister');
+
         $this->saveParamsToSession($params);
         $response = $this->loginComputopAmazon();
         $payID = $response['PayID'];
