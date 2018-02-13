@@ -24,299 +24,6 @@ require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
 class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
 
-    private $formGeneralTextElements =
-        [
-            'merchantID' => [
-                'name' => 'merchantID',
-                'type' => 'text',
-                'value' => '',
-                'label' => 'MerchantID',
-                'required' => true,
-                'description' => '',
-            ],
-            'mac' => [
-                'name' => 'mac',
-                'type' => 'text',
-                'value' => '',
-                'label' => 'MAC',
-                'required' => true,
-                'description' => '',
-            ],
-            'blowfishPassword' => [
-                'name' => 'blowfishPassword',
-                'type' => 'text',
-                'value' => '',
-                'label' => 'Blowfish Password',
-                'required' => true,
-                'description' => '',
-            ],
-        ];
-
-    private $formCreditCardSelectElements =
-        [
-            'creditCardCaption' => [
-                'name' => 'creditCardCaption',
-                'type' => 'select',
-                'value' => 'AUTO',
-                'label' => 'Kreditkarte - Caption Methode',
-                'required' => true,
-                'editable' => false,
-                'store' =>
-                    [
-                        ['AUTO', 'Automatisch'],
-                        ['MANUAL', 'Manuell'],
-                        ['DELAYED', 'Verzögert'],
-                    ],
-                'description' => '',
-            ],
-            'creditCardAcquirer' => [
-                'name' => 'creditCardAcquirer',
-                'type' => 'select',
-                'value' => 'GICC',
-                'label' => 'Kreditkarte - Acquirer',
-                'required' => 'true',
-                'editable' => false,
-                'store' =>
-                    [
-                        ['GICC', 'GICC: Concardis, B+S Card Service, EVO Payments, American Express, Elavon, SIX Payment Service'],
-                        ['CAPN', 'CAPN: American Express'],
-                        ['Omnipay', 'Omnipay: EMS payment solutions, Global Payments, Paysquare'],
-                    ],
-                'description' => '',
-            ],
-        ];
-
-    private $formCreditCardNumberElements =
-        [
-            'creditCardDelay' => [
-                'name' => 'creditCardDelay',
-                'type' => 'number',
-                'value' => '1',
-                'label' => 'creditCardDelay',
-                'required' => true,
-                'description' => 'Verzögerung in Stunden wenn als Caption Methode "Verzögert" gewählt wurde',
-            ],
-        ];
-
-    private $formIdealSelectElements =
-        [
-            'idealDirektOderUeberSofort' => [
-                'name' => 'idealDirektOderUeberSofort',
-                'type' => 'select',
-                'value' => 'DIREKT',
-                'label' => 'iDEAL - iDEAL Direkt oder über Sofort',
-                'required' => true,
-                'editable' => false,
-                'store' =>
-                    [
-                        ['DIREKT', 'iDEAL Direkt'],
-                        ['SOFORT', 'via Sofort'],
-                    ],
-                'description' => '',
-            ],
-            'lastschriftDienst' => [
-                'name' => 'lastschriftDienst',
-                'type' => 'select',
-                'value' => 'DIREKT',
-                'label' => 'Lastschrift - Anbinden über Dienst',
-                'required' => true,
-                'editable' => false,
-                'store' =>
-                    [
-                        ['DIREKT', 'Direktanbindung'],
-                        ['EVO', 'EVO Payments'],
-                        ['INTERCARD', 'Intercard'],
-                    ],
-                'description' => '',
-            ],
-        ];
-
-    private $formPayDirektTextElements =
-        [
-            'payDirektShopApiKey' => [
-                'name' => 'payDirektShopApiKey',
-                'type' => 'text',
-                'value' => '',
-                'label' => 'Paydirekt - Shop Api Key',
-                'required' => true,
-                'description' => '',
-            ],
-        ];
-
-    private $formPayDirektSelectElements =
-        [
-            'payDirektCaption' => [
-                'name' => 'payDirektCaption',
-                'type' => 'select',
-                'value' => 'AUTO',
-                'label' => 'Paydirekt Capture Modus',
-                'required' => true,
-                'editable' => false,
-                'store' =>
-                    [
-                        ['AUTO', 'Automatisch'],
-                        ['MANUAL', 'Manuell'],
-                        ['DELAYED', 'Verzögert'],
-                    ],
-                'description' => '',
-            ],
-        ];
-
-    private $formPayDirektNumberElements =
-        [
-            'payDirektCardDelay' => [
-                'name' => 'payDirektCardDelay',
-                'type' => 'number',
-                'value' => '1',
-                'label' => 'Paydirekt - Verzögerung Einzug',
-                'required' => true,
-                'description' => 'Verzögerung in Stunden wenn als Caption Methode "Verzögert" gewählt wurde',
-            ],
-        ];
-
-    private $formPayPalSelectElements =
-        [
-            'paypalCaption' => [
-                'name' => 'paypalCaption',
-                'type' => 'select',
-                'value' => 'AUTO',
-                'label' => 'Paypal - Caption Methode',
-                'required' => true,
-                'editable' => false,
-                'store' =>
-                    [
-                        ['AUTO', 'Automatisch'],
-                        ['MANUAL', 'Manuell'],
-                    ],
-                'description' => 'bestimmt, ob der angefragte Betrag sofort oder erst später abgebucht wird. <br>
-                                  <b>Wichtig:<br>Bitte kontaktieren Sie den Computop Support für Manual, um die unterschiedlichen Einsatzmöglichkeiten abzuklären.</b>',
-            ],
-        ];
-
-    private $formAmazonTextElements =
-        [
-            'amazonSellerId' => [
-                'name' => 'amazonSellerId',
-                'type' => 'text',
-                'value' => '',
-                'label' => 'AmazonPay SellerId',
-                'required' => true,
-                'description' => 'Ihre SellerId',
-            ],
-            'amazonClientId' => [
-                'name' => 'amazonClientId',
-                'type' => 'text',
-                'value' => '',
-                'label' => 'AmazonPay ClientId',
-                'required' => true,
-                'description' => 'Ihre ClientId',
-            ],
-
-        ];
-
-    private $formAmazonSelectElements =
-        [
-            'amazonButtonType' => [
-                'name' => 'amazonButtonType',
-                'type' => 'select',
-                'value' => 'PwA',
-                'label' => 'AmazonPay Button Typ',
-                'required' => true,
-                'editable' => false,
-                'store' =>
-                    [
-                        ['PwA', 'Amazon Pay (Default)'],
-                        ['Pay', 'Pay'],
-                        ['A', 'A'],
-                        ['LwA', 'LwA'],
-                        ['Login', 'Login'],
-
-                    ],
-                'description' => 'Typ des AmazonPay Buttons',
-            ],
-            'amazonButtonColor' => [
-                'name' => 'amazonButtonColor',
-                'type' => 'select',
-                'value' => 'Gold',
-                'label' => 'AmazonPay Button Farbe',
-                'required' => 'true',
-                'editable' => false,
-                'store' =>
-                    [
-                        ['Gold', 'Gold'],
-                        ['LightGray', 'LightGray'],
-                        ['DarkGray', 'DarkGray'],
-                    ],
-                'description' => '',
-            ],
-            'amazonButtonSize' => [
-                'name' => 'amazonButtonSize',
-                'type' => 'select',
-                'value' => 'small',
-                'label' => 'AmazonPay Button Größe',
-                'required' => 'true',
-                'editable' => false,
-                'store' =>
-                    [
-                        ['small', 'small'],
-                        ['medium', 'medium'],
-                    ],
-                'description' => '',
-            ],
-        ];
-
-    private $formBonitaetElements =
-        [
-            'bonitaetusereturnaddress' => [
-                'name' => 'bonitaetusereturnaddress',
-                'type' => 'boolean',
-                'value' => false,
-                'label' => 'Bonitätsprüfung - Zurückgelieferte Adressdaten verwenden',
-                'required' => true,
-                'description' => '',
-            ],
-            'bonitaetinvalidateafterdays' => [
-                'name' => 'bonitaetinvalidateafterdays',
-                'type' => 'number',
-                'value' => '30',
-                'label' => 'Bonitätsprüfung - Wiederholen nach wieviele Tage',
-                'required' => true,
-                'description' => 'Verzögerung in Stunden wenn als Caption Methode "Verzögert" gewählt wurde',
-            ],
-        ];
-
-    private $formBonitaetSelectElements =
-        [
-            'crifmethod' => [
-                'name' => 'crifmethod',
-                'type' => 'select',
-                'value' => 'inactive',
-                'label' => 'CRIF Bonitätsprüfung',
-                'required' => true,
-                'editable' => false,
-                'store' =>
-                    [
-                        ['inactive', 'Inaktiv'],
-                        ['QuickCheck', 'QuickCheck'],
-                        ['CreditCheck', 'CreditCheck'],
-                    ],
-                'description' => '',
-            ],
-        ];
-
-    private $formMobilePayBooleanElements =
-        [
-            'mobilePaySendMobileNr' => [
-                'name' => 'mobilePaySendMobileNr',
-                'type' => 'boolean',
-                'value' => false,
-                'label' => 'MobilePay - Handynummer übermitteln',
-                'required' => false,
-                'description' => '',
-            ],
-        ];
-
-
     /**
      * Returns plugin info
      *
@@ -449,16 +156,21 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         //$this->updateSchema();
         $this->createConfig();
 
-        // payment specific risk rules
-        $this->createComputopRiskRule('fatchip_computop_easycredit',
-            'ORDERVALUELESS', '200');
-        $this->createComputopRiskRule('fatchip_computop_przelewy24',
-            'CURRENCIESISOISNOT', 'PLN');
-        $this->createComputopRiskRule('fatchip_computop_ideal',
-          'BILLINGLANDISNOT', 'NL');
-
+        $this->createRiskRules();
 
         return ['success' => true, 'invalidateCache' => ['backend', 'config', 'proxy']];
+    }
+
+    public function createRiskRules()
+    {
+        $this->createComputopRiskRule('fatchip_computop_easycredit',
+            'ORDERVALUELESS', '200');
+
+        $this->createComputopRiskRule('fatchip_computop_przelewy24',
+            'CURRENCIESISOISNOT', 'PLN');
+
+        $this->createComputopRiskRule('fatchip_computop_ideal',
+            'BILLINGLANDISNOT', 'NL');
     }
 
     public function addJsFiles(Enlight_Event_EventArgs $args)
@@ -478,7 +190,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($em);
 
         try {
-                $schemaTool->createSchema(array(
+            $schemaTool->createSchema(array(
                 $em->getClassMetadata('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers'),
             ));
         } catch (\Exception $e) {
@@ -614,12 +326,18 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      */
     private function createConfig()
     {
+        // ToDO still gotta find a better way than require refactor also createPayments
+        require_once __DIR__ . DIRECTORY_SEPARATOR . 'Components/Api/vendor/autoload.php';
+        /** @var \Fatchip\CTPayment\CTPaymentService $service */
+        $service = new \Fatchip\CTPayment\CTPaymentService(null);
+        $paymentConfigForms = $service->getPaymentConfigForms();
+
         // general
-        $this->createFormTextElements($this->formGeneralTextElements);
+        $this->createFormTextElements($paymentConfigForms->formGeneralTextElements);
 
         // credit cards
-        $this->createFormSelectElements($this->formCreditCardSelectElements);
-        $this->createFormTextElements($this->formCreditCardNumberElements);
+        $this->createFormSelectElements($paymentConfigForms->formCreditCardSelectElements);
+        $this->createFormTextElements($paymentConfigForms->formCreditCardNumberElements);
 
         // ideal and Sofort
         $this->Form()->setElement('button', 'fatchip_computop_ideal_button', [
@@ -627,29 +345,29 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             'handler' => "function(btn) {" . file_get_contents(__DIR__ . '/Views/common/backend/ideal/ideal_button_handler.js') . "}"
         ]);
 
-        $this->createFormSelectElements($this->formIdealSelectElements);
+        $this->createFormSelectElements($paymentConfigForms->formIdealSelectElements);
 
         // Mobilepay
-        $this->createFormTextElements($this->formMobilePayBooleanElements);
+        $this->createFormTextElements($paymentConfigForms->formMobilePayBooleanElements);
 
         //paydirekt
-        $this->createFormTextElements($this->formPayDirektTextElements);
-        $this->createFormSelectElements($this->formPayDirektSelectElements);
-        $this->createFormTextElements($this->formPayDirektNumberElements);
+        $this->createFormTextElements($paymentConfigForms->formPayDirektTextElements);
+        $this->createFormSelectElements($paymentConfigForms->formPayDirektSelectElements);
+        $this->createFormTextElements($paymentConfigForms->formPayDirektNumberElements);
 
         //paypal
-        $this->createFormSelectElements($this->formPayPalSelectElements);
+        $this->createFormSelectElements($paymentConfigForms->formPayPalSelectElements);
 
         //amazon
-        $this->createFormTextElements($this->formAmazonTextElements);
-        $this->createFormSelectElements($this->formAmazonSelectElements);
+        $this->createFormTextElements($paymentConfigForms->formAmazonTextElements);
+        $this->createFormSelectElements($paymentConfigForms->formAmazonSelectElements);
 
         //rating
-        $this->createFormTextElements($this->formBonitaetElements);
+        $this->createFormTextElements($paymentConfigForms->formBonitaetElements);
 
         //CRIF-Bonitätsprüfung. Globally set to inactive, Quickcheck or Creditcheck
 
-        $this->createFormSelectElements($this->formBonitaetSelectElements);
+        $this->createFormSelectElements($paymentConfigForms->formBonitaetSelectElements);
     }
 
 
@@ -721,8 +439,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             $paymentObject = $this->createPayment($payment);
             if (!empty($paymentMethod['countries'])) {
                 $countryCollection = new Doctrine\Common\Collections\ArrayCollection();
-                foreach($paymentMethod['countries'] as $iso) {
-                    $country = Shopware()->Models()->getRepository('Shopware\Models\Country\Country')->findOneBy(['iso'=> $iso]);
+                foreach ($paymentMethod['countries'] as $iso) {
+                    $country = Shopware()->Models()->getRepository('Shopware\Models\Country\Country')->findOneBy(['iso' => $iso]);
                     if ($country != null) {
                         $countryCollection->add($country);
                     }
@@ -736,7 +454,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     {
         /** @var \Shopware\Components\Model\ModelManager $manager */
         $manager = $this->get('models');
-        $payment =$this->getComputopPaymentByName($paymentName);
+        $payment = $this->getComputopPaymentByName($paymentName);
 
         // ToDo refactor rules array in case we have more rules for other payments
         $rules = [];
@@ -751,8 +469,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         // only add risk rules if no rules are set
 
         if ($payment->getRuleSets() == null ||
-            $payment->getRuleSets()->count() === 0)
-        {
+            $payment->getRuleSets()->count() === 0) {
             $payment->setRuleSets($rules);
             foreach ($rules as $rule) {
                 $manager->persist($rule);
@@ -761,7 +478,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         }
     }
 
-    private function getComputopPaymentByName($paymentName){
+    private function getComputopPaymentByName($paymentName)
+    {
         /** @var Shopware\Models\Payment\Payment $result */
         $result = $this->Payments()->findOneBy(
             [
