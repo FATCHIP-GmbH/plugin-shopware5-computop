@@ -12,7 +12,6 @@ use Fatchip\CTPayment\CTAddress\CTAddress;
 use VIISON\AddressSplitter\AddressSplitter;
 use Shopware;
 
-
 class Util
 {
 
@@ -37,83 +36,83 @@ class Util
      * @var array
      */
     private $types = [
-      self::TYPE_STRING   => [
-        'sql' => 'VARCHAR(500)',
-        'dbal' => 'string',
-        'allowDefaultValue' => true,
-        'quoteDefaultValue' => true,
-        'elastic' => ['type' => 'string']
-      ],
-      self::TYPE_TEXT     => [
-        'sql' => 'TEXT',
-        'dbal' => 'text',
-        'allowDefaultValue' => false,
-        'quoteDefaultValue' => false,
-        'elastic' => ['type' => 'string']
-      ],
-      self::TYPE_HTML     => [
-        'sql' => 'MEDIUMTEXT',
-        'dbal' => 'text',
-        'allowDefaultValue' => false,
-        'quoteDefaultValue' => false,
-        'elastic' => ['type' => 'string']
-      ],
-      self::TYPE_INTEGER  => [
-        'sql' => 'INT(11)',
-        'dbal' => 'integer',
-        'allowDefaultValue' => true,
-        'quoteDefaultValue' => false,
-        'elastic' => ['type' => 'long']
-      ],
-      self::TYPE_FLOAT    => [
-        'sql' => 'DOUBLE',
-        'dbal' => 'float',
-        'allowDefaultValue' => true,
-        'quoteDefaultValue' => false,
-        'elastic' => ['type' => 'double']
-      ],
-      self::TYPE_BOOLEAN  => [
-        'sql' => 'INT(1)',
-        'dbal' => 'boolean',
-        'allowDefaultValue' => true,
-        'quoteDefaultValue' => false,
-        'elastic' => ['type' => 'boolean']
-      ],
-      self::TYPE_DATE     => [
-        'sql' => 'DATE',
-        'dbal' => 'date',
-        'allowDefaultValue' => true,
-        'quoteDefaultValue' => true,
-        'elastic' => ['type' => 'date', 'format' => 'yyyy-MM-dd']
-      ],
-      self::TYPE_DATETIME => [
-        'sql' => 'DATETIME',
-        'dbal' => 'datetime',
-        'allowDefaultValue' => true,
-        'quoteDefaultValue' => true,
-        'elastic' => ['type' => 'date', 'format' => 'yyyy-MM-dd HH:mm:ss']
-      ],
-      self::TYPE_COMBOBOX => [
-        'sql' => 'MEDIUMTEXT',
-        'dbal' => 'text',
-        'allowDefaultValue' => false,
-        'quoteDefaultValue' => false,
-        'elastic' => ['type' => 'string']
-      ],
-      self::TYPE_SINGLE_SELECTION => [
-        'sql' => 'VARCHAR(500)',
-        'dbal' => 'text',
-        'allowDefaultValue' => true,
-        'quoteDefaultValue' => true,
-        'elastic' => ['type' => 'string']
-      ],
-      self::TYPE_MULTI_SELECTION => [
-        'sql' => 'MEDIUMTEXT',
-        'dbal' => 'text',
-        'allowDefaultValue' => false,
-        'quoteDefaultValue' => false,
-        'elastic' => ['type' => 'string']
-      ]
+        self::TYPE_STRING => [
+            'sql' => 'VARCHAR(500)',
+            'dbal' => 'string',
+            'allowDefaultValue' => true,
+            'quoteDefaultValue' => true,
+            'elastic' => ['type' => 'string']
+        ],
+        self::TYPE_TEXT => [
+            'sql' => 'TEXT',
+            'dbal' => 'text',
+            'allowDefaultValue' => false,
+            'quoteDefaultValue' => false,
+            'elastic' => ['type' => 'string']
+        ],
+        self::TYPE_HTML => [
+            'sql' => 'MEDIUMTEXT',
+            'dbal' => 'text',
+            'allowDefaultValue' => false,
+            'quoteDefaultValue' => false,
+            'elastic' => ['type' => 'string']
+        ],
+        self::TYPE_INTEGER => [
+            'sql' => 'INT(11)',
+            'dbal' => 'integer',
+            'allowDefaultValue' => true,
+            'quoteDefaultValue' => false,
+            'elastic' => ['type' => 'long']
+        ],
+        self::TYPE_FLOAT => [
+            'sql' => 'DOUBLE',
+            'dbal' => 'float',
+            'allowDefaultValue' => true,
+            'quoteDefaultValue' => false,
+            'elastic' => ['type' => 'double']
+        ],
+        self::TYPE_BOOLEAN => [
+            'sql' => 'INT(1)',
+            'dbal' => 'boolean',
+            'allowDefaultValue' => true,
+            'quoteDefaultValue' => false,
+            'elastic' => ['type' => 'boolean']
+        ],
+        self::TYPE_DATE => [
+            'sql' => 'DATE',
+            'dbal' => 'date',
+            'allowDefaultValue' => true,
+            'quoteDefaultValue' => true,
+            'elastic' => ['type' => 'date', 'format' => 'yyyy-MM-dd']
+        ],
+        self::TYPE_DATETIME => [
+            'sql' => 'DATETIME',
+            'dbal' => 'datetime',
+            'allowDefaultValue' => true,
+            'quoteDefaultValue' => true,
+            'elastic' => ['type' => 'date', 'format' => 'yyyy-MM-dd HH:mm:ss']
+        ],
+        self::TYPE_COMBOBOX => [
+            'sql' => 'MEDIUMTEXT',
+            'dbal' => 'text',
+            'allowDefaultValue' => false,
+            'quoteDefaultValue' => false,
+            'elastic' => ['type' => 'string']
+        ],
+        self::TYPE_SINGLE_SELECTION => [
+            'sql' => 'VARCHAR(500)',
+            'dbal' => 'text',
+            'allowDefaultValue' => true,
+            'quoteDefaultValue' => true,
+            'elastic' => ['type' => 'string']
+        ],
+        self::TYPE_MULTI_SELECTION => [
+            'sql' => 'MEDIUMTEXT',
+            'dbal' => 'text',
+            'allowDefaultValue' => false,
+            'quoteDefaultValue' => false,
+            'elastic' => ['type' => 'string']
+        ]
     ];
 
 
@@ -177,7 +176,7 @@ class Util
         if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
             $customerNumber = $user['billing']['customernumber'];
         } else {
-            $customerNumber =$user['billingaddress']['customernumber'];
+            $customerNumber = $user['billingaddress']['customernumber'];
         }
         return $customerNumber;
     }
@@ -267,10 +266,11 @@ class Util
      * @param $type
      * @return null|object
      */
-    public function getCustomerAddressById($id, $type) {
+    public function getCustomerAddressById($id, $type)
+    {
         if (version_compare(\Shopware::VERSION, '5.2.0', '<')) {
             $address = $type == 'shipping' ? $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Shipping')->find($id) :
-              $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Billing')->find($id);
+                $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Billing')->find($id);
         } else {
             $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Address')->find($id);
         }
@@ -285,8 +285,8 @@ class Util
      */
     public function getPaymentNameFromId($paymentID)
     {
-        $sql         = 'SELECT `name` FROM `s_core_paymentmeans` WHERE id = ?';
-        return  Shopware()->Db()->fetchOne($sql, $paymentID);
+        $sql = 'SELECT `name` FROM `s_core_paymentmeans` WHERE id = ?';
+        return Shopware()->Db()->fetchOne($sql, $paymentID);
     }
 
     /**
@@ -297,8 +297,8 @@ class Util
      */
     public function getPaymentIdFromName($paymentName)
     {
-        $sql         = 'SELECT `id` FROM `s_core_paymentmeans` WHERE name = ?';
-        return  Shopware()->Db()->fetchOne($sql, $paymentName);
+        $sql = 'SELECT `id` FROM `s_core_paymentmeans` WHERE name = ?';
+        return Shopware()->Db()->fetchOne($sql, $paymentName);
     }
 
 
@@ -333,22 +333,6 @@ class Util
         return $attribute;
     }
 
-    /**
-     * get or create attribute data for given object
-     *
-     * @param \Shopware\Models\Customer\Billing $object
-     * @return \Shopware\Models\Attribute\CustomerBilling
-     * @throws Exception
-     */
-    public function getOrCreateBillingAttribute($object)
-    {
-        if (!empty($object) && $attribute = $object->getAttribute()) {
-            return $attribute;
-        }
-
-
-
-
 
     /**
      * - returns the definition for attribute table extensions
@@ -363,50 +347,50 @@ class Util
     {
         return [
             's_user_attributes' => [
-                'CrifResult'       => 'string',
-                'CrifDate'         => 'date',
-                'CrifStatus'       => 'string',
-                'CrifDescription'  => 'string',
+                'CrifResult' => 'string',
+                'CrifDate' => 'date',
+                'CrifStatus' => 'string',
+                'CrifDescription' => 'string',
             ],
             's_user_billingaddress_attributes' => [
-                'CrifResult'       => 'string',
-                'CrifDate'         => 'date',
-                'CrifStatus'       => 'string',
-                'CrifDescription'  => 'string',
+                'CrifResult' => 'string',
+                'CrifDate' => 'date',
+                'CrifStatus' => 'string',
+                'CrifDescription' => 'string',
             ],
             's_user_shippingaddress_attributes' => [
-                'CrifResult'       => 'string',
-                'CrifDate'         => 'date',
-                'CrifStatus'       => 'string',
-                'CrifDescription'  => 'string',
+                'CrifResult' => 'string',
+                'CrifDate' => 'date',
+                'CrifStatus' => 'string',
+                'CrifDescription' => 'string',
             ],
             's_order_attributes' => [
-                'Status'       => 'string',
-                'TransID'      => 'string',
-                'PayID'        => 'string',
-                'XID'               => 'string',
-                'ShipCaptured'                     => ['float',
-                [
-                  'label' => 'Versandkosten bisher eingezogen:',
-                  'helpText' => '',
-                  'displayInBackend' => true,
-                  'pluginId' => $pluginId
-                ]
+                'Status' => 'string',
+                'TransID' => 'string',
+                'PayID' => 'string',
+                'XID' => 'string',
+                'ShipCaptured' => ['float',
+                    [
+                        'label' => 'Versandkosten bisher eingezogen:',
+                        'helpText' => '',
+                        'displayInBackend' => true,
+                        'pluginId' => $pluginId
+                    ]
                 ],
-                'fcctShipDebit'                        => ['float',
-                [
-                  'label' => 'Versandkosten bisher gutgeschrieben:',
-                  'helpText' => '',
-                  'displayInBackend' => true,
-                  'pluginId' => $pluginId
-                ]
+                'fcctShipDebit' => ['float',
+                    [
+                        'label' => 'Versandkosten bisher gutgeschrieben:',
+                        'helpText' => '',
+                        'displayInBackend' => true,
+                        'pluginId' => $pluginId
+                    ]
                 ],
             ],
             's_order_details_attributes' => [
-                'PaymentStatus'    => 'string',
-                'ShipmentDate'     => 'date',
-                'Captured'          => 'float',
-                'Debit'             => 'float',
+                'PaymentStatus' => 'string',
+                'ShipmentDate' => 'date',
+                'Captured' => 'float',
+                'Debit' => 'float',
             ],
 
         ];
@@ -422,10 +406,10 @@ class Util
     {
         return [
             's_user_addresses_attributes' => [
-                'CrifResult'              => 'string',
-                'CrifDate'                => 'date',
-                'CrifStatus'              => 'string',
-                'CrifDescription'         => 'string',
+                'CrifResult' => 'string',
+                'CrifDate' => 'date',
+                'CrifStatus' => 'string',
+                'CrifDescription' => 'string',
             ]
         ];
     }
@@ -455,7 +439,8 @@ class Util
      * @param $type - billing or shipping
      * @param $response
      */
-    public function saveCRIFResultInAddress($addressID, $type, $response) {
+    public function saveCRIFResultInAddress($addressID, $type, $response)
+    {
         if (!$addressID) {
             return;
         }
