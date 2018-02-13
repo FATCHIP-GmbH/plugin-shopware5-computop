@@ -424,30 +424,30 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 'action' => $paymentMethod['action'],
                 'active' => 0,
                 'position' => $paymentMethod['position'],
-                'additionalDescription' => '',
+                'template' => $paymentMethod['template'],
+                'additionalDescription' => $paymentMethod['additionalDescription'],
 
             );
 
-            if (!is_null($paymentMethod['template'])) {
-                $payment['template'] = $paymentMethod['template'];
-            }
-
-            if (!empty($paymentMethod['additionalDescription'])) {
-                $payment['additionalDescription'] = $paymentMethod['additionalDescription'];
-            }
-
             $paymentObject = $this->createPayment($payment);
+
             if (!empty($paymentMethod['countries'])) {
-                $countryCollection = new Doctrine\Common\Collections\ArrayCollection();
-                foreach ($paymentMethod['countries'] as $iso) {
-                    $country = Shopware()->Models()->getRepository('Shopware\Models\Country\Country')->findOneBy(['iso' => $iso]);
-                    if ($country != null) {
-                        $countryCollection->add($country);
-                    }
-                }
-                $paymentObject->setCountries($countryCollection);
+                $this->restrictPaymentShippingCountries($paymentObject, $paymentMethod['countries']);
             }
         }
+    }
+
+    protected function restrictPaymentShippingCountries($paymentObject, $countries)
+    {
+        $countryCollection = new Doctrine\Common\Collections\ArrayCollection();
+        foreach ($countries as $countryIso) {
+            $country =
+                Shopware()->Models()->getRepository('Shopware\Models\Country\Country')->findOneBy(['iso' => $countryIso]);
+            if ($country !== null) {
+                $countryCollection->add($country);
+            }
+        }
+        $paymentObject->setCountries($countryCollection);
     }
 
     protected function createComputopRiskRule($paymentName, $rule1, $value1)
