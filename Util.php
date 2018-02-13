@@ -292,7 +292,7 @@ class Util
     /**
      * returns payment name
      *
-     * @param string $paymentID
+     * @param string $paymentName
      * @return string
      */
     public function getPaymentIdFromName($paymentName)
