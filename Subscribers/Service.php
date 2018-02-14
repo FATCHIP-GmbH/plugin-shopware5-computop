@@ -30,8 +30,6 @@ class Service implements SubscriberInterface
      */
     public function onInitApiClient()
     {
-
-        require_once __DIR__ . DIRECTORY_SEPARATOR . '../Components/Api/vendor/autoload.php';
         $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $config = $plugin->Config()->toArray();
         return new CTPaymentService($config['blowfishPassword']);

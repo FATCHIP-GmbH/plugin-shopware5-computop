@@ -12,110 +12,10 @@ use Fatchip\CTPayment\CTAddress\CTAddress;
 use VIISON\AddressSplitter\AddressSplitter;
 use Shopware;
 
+require_once 'Components/Api/vendor/autoload.php';
 
 class Util
 {
-
-    /**
-     * Type mapping from Shopware 5.2 to improve legacy compatibility,
-     * as engine/Shopware/Bundle/AttributeBundle/Service/TypeMapping.php
-     * is not present in Shopware versions < 5.2.0
-     */
-    const TYPE_STRING = 'string';
-    const TYPE_TEXT = 'text';
-    const TYPE_HTML = 'html';
-    const TYPE_INTEGER = 'integer';
-    const TYPE_FLOAT = 'float';
-    const TYPE_BOOLEAN = 'boolean';
-    const TYPE_DATE = 'date';
-    const TYPE_DATETIME = 'datetime';
-    const TYPE_COMBOBOX = 'combobox';
-    const TYPE_SINGLE_SELECTION = 'single_selection';
-    const TYPE_MULTI_SELECTION = 'multi_selection';
-
-    /**
-     * @var array
-     */
-    private $types = [
-      self::TYPE_STRING   => [
-        'sql' => 'VARCHAR(500)',
-        'dbal' => 'string',
-        'allowDefaultValue' => true,
-        'quoteDefaultValue' => true,
-        'elastic' => ['type' => 'string']
-      ],
-      self::TYPE_TEXT     => [
-        'sql' => 'TEXT',
-        'dbal' => 'text',
-        'allowDefaultValue' => false,
-        'quoteDefaultValue' => false,
-        'elastic' => ['type' => 'string']
-      ],
-      self::TYPE_HTML     => [
-        'sql' => 'MEDIUMTEXT',
-        'dbal' => 'text',
-        'allowDefaultValue' => false,
-        'quoteDefaultValue' => false,
-        'elastic' => ['type' => 'string']
-      ],
-      self::TYPE_INTEGER  => [
-        'sql' => 'INT(11)',
-        'dbal' => 'integer',
-        'allowDefaultValue' => true,
-        'quoteDefaultValue' => false,
-        'elastic' => ['type' => 'long']
-      ],
-      self::TYPE_FLOAT    => [
-        'sql' => 'DOUBLE',
-        'dbal' => 'float',
-        'allowDefaultValue' => true,
-        'quoteDefaultValue' => false,
-        'elastic' => ['type' => 'double']
-      ],
-      self::TYPE_BOOLEAN  => [
-        'sql' => 'INT(1)',
-        'dbal' => 'boolean',
-        'allowDefaultValue' => true,
-        'quoteDefaultValue' => false,
-        'elastic' => ['type' => 'boolean']
-      ],
-      self::TYPE_DATE     => [
-        'sql' => 'DATE',
-        'dbal' => 'date',
-        'allowDefaultValue' => true,
-        'quoteDefaultValue' => true,
-        'elastic' => ['type' => 'date', 'format' => 'yyyy-MM-dd']
-      ],
-      self::TYPE_DATETIME => [
-        'sql' => 'DATETIME',
-        'dbal' => 'datetime',
-        'allowDefaultValue' => true,
-        'quoteDefaultValue' => true,
-        'elastic' => ['type' => 'date', 'format' => 'yyyy-MM-dd HH:mm:ss']
-      ],
-      self::TYPE_COMBOBOX => [
-        'sql' => 'MEDIUMTEXT',
-        'dbal' => 'text',
-        'allowDefaultValue' => false,
-        'quoteDefaultValue' => false,
-        'elastic' => ['type' => 'string']
-      ],
-      self::TYPE_SINGLE_SELECTION => [
-        'sql' => 'VARCHAR(500)',
-        'dbal' => 'text',
-        'allowDefaultValue' => true,
-        'quoteDefaultValue' => true,
-        'elastic' => ['type' => 'string']
-      ],
-      self::TYPE_MULTI_SELECTION => [
-        'sql' => 'MEDIUMTEXT',
-        'dbal' => 'text',
-        'allowDefaultValue' => false,
-        'quoteDefaultValue' => false,
-        'elastic' => ['type' => 'string']
-      ]
-    ];
-
 
     /**
      * @param array $swAddress
@@ -160,6 +60,11 @@ class Util
         return Shopware()->Db()->fetchOne($countrySql, [$countryId]);
     }
 
+    public function getCountryIdFromIso($countryIso)
+    {
+        $countrySql = 'SELECT id FROM s_core_countries WHERE countryiso=?';
+        return Shopware()->Db()->fetchOne($countrySql, [$countryIso]);
+    }
 
     // SW 5.0 - 5.3 Compatibility
     // 5.0 - check
@@ -172,7 +77,7 @@ class Util
         if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
             $customerNumber = $user['billing']['customernumber'];
         } else {
-            $customerNumber =$user['billingaddress']['customernumber'];
+            $customerNumber = $user['billingaddress']['customernumber'];
         }
         return $customerNumber;
     }
@@ -262,10 +167,11 @@ class Util
      * @param $type
      * @return null|object
      */
-    public function getCustomerAddressById($id, $type) {
+    public function getCustomerAddressById($id, $type)
+    {
         if (version_compare(\Shopware::VERSION, '5.2.0', '<')) {
             $address = $type == 'shipping' ? $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Shipping')->find($id) :
-              $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Billing')->find($id);
+                $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Billing')->find($id);
         } else {
             $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Address')->find($id);
         }
@@ -280,112 +186,20 @@ class Util
      */
     public function getPaymentNameFromId($paymentID)
     {
-        $sql         = 'SELECT `name` FROM `s_core_paymentmeans` WHERE id = ?';
-        return  Shopware()->Db()->fetchOne($sql, $paymentID);
-    }
-
-
-
-
-
-    /**
-     * - returns the definition for attribute table extensions
-     * - intended to be used with Shopware version >= 5.2.0
-     * - Shopware versions < 5.2.0 can use the definitions by mapping
-     * the types with unifiedToSQL() of this helper class
-     *
-     * @param int $pluginId
-     * @return array
-     */
-    public function fcComputopAttributeExtensionsArray($pluginId)
-    {
-        return [
-            's_user_attributes' => [
-                'CrifResult'       => 'string',
-                'CrifDate'         => 'date',
-                'CrifStatus'       => 'string',
-                'CrifDescription'  => 'string',
-            ],
-            's_user_billingaddress_attributes' => [
-                'CrifResult'       => 'string',
-                'CrifDate'         => 'date',
-                'CrifStatus'       => 'string',
-                'CrifDescription'  => 'string',
-            ],
-            's_user_shippingaddress_attributes' => [
-                'CrifResult'       => 'string',
-                'CrifDate'         => 'date',
-                'CrifStatus'       => 'string',
-                'CrifDescription'  => 'string',
-            ],
-            's_order_attributes' => [
-                'Status'       => 'string',
-                'TransID'      => 'string',
-                'PayID'        => 'string',
-                'XID'               => 'string',
-                'ShipCaptured'                     => ['float',
-                [
-                  'label' => 'Versandkosten bisher eingezogen:',
-                  'helpText' => '',
-                  'displayInBackend' => true,
-                  'pluginId' => $pluginId
-                ]
-                ],
-                'fcctShipDebit'                        => ['float',
-                [
-                  'label' => 'Versandkosten bisher gutgeschrieben:',
-                  'helpText' => '',
-                  'displayInBackend' => true,
-                  'pluginId' => $pluginId
-                ]
-                ],
-            ],
-            's_order_details_attributes' => [
-                'PaymentStatus'    => 'string',
-                'ShipmentDate'     => 'date',
-                'Captured'          => 'float',
-                'Debit'             => 'float',
-            ],
-
-        ];
+        $sql = 'SELECT `name` FROM `s_core_paymentmeans` WHERE id = ?';
+        return Shopware()->Db()->fetchOne($sql, $paymentID);
     }
 
     /**
-     * - returns the definition for attribute table extensions
-     * - intended to be used with Shopware version >= 5.2.0
+     * returns payment name
      *
-     * @return array
-     */
-    public function fcComputopAttributeExtensionsArray52()
-    {
-        return [
-            's_user_addresses_attributes' => [
-                'CrifResult'              => 'string',
-                'CrifDate'                => 'date',
-                'CrifStatus'              => 'string',
-                'CrifDescription'         => 'string',
-            ]
-        ];
-    }
-
-    /**
-     * returns mapped SQL type from unified type string
-     *
-     * Type mapping from Shopware 5.2 to improve legacy compatibility,
-     * as engine/Shopware/Bundle/AttributeBundle/Service/TypeMapping.php
-     * is not present in Shopware versions < 5.2.0
-     *
-     * @param string $type
+     * @param string $paymentName
      * @return string
      */
-    public function unifiedToSQL($type)
+    public function getPaymentIdFromName($paymentName)
     {
-        $type = strtolower($type);
-        if (!isset($this->types[$type])) {
-            return $this->types['string']['sql'];
-        }
-        $mapping = $this->types[$type];
-        return $mapping['sql'];
+        $sql = 'SELECT `id` FROM `s_core_paymentmeans` WHERE name = ?';
+        return Shopware()->Db()->fetchOne($sql, $paymentName);
     }
 
     /***
@@ -393,7 +207,8 @@ class Util
      * @param $type - billing or shipping
      * @param $response
      */
-    public function saveCRIFResultInAddress($addressID, $type, $response) {
+    public function saveCRIFResultInAddress($addressID, $type, $response)
+    {
         if (!$addressID) {
             return;
         }
@@ -408,6 +223,17 @@ class Util
             Shopware()->Models()->flush();
         }
     }
+
+    /**
+     * checks if AmazonPay is enabled
+     *
+     * @return bool
+     */
+    public function isAmazonPayActive()
+    {
+        $paymentAmazonPay = Shopware()->Models()->getRepository('Shopware\Models\Payment\Payment')->findOneBy(
+            ['name' => 'fatchip_computop_amazonpay']
+        );
+        return $paymentAmazonPay->getActive();
+    }
 }
-
-
