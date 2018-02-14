@@ -37,8 +37,9 @@ use Shopware\Components\CSRFWhitelistAware;
 abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controllers_Frontend_Payment implements CSRFWhitelistAware
 {
 
+    const PAYMENTSTATUSPARTIALLYPAID = 11;
     const PAYMENTSTATUSPAID = 12;
-
+    const PAYMENTSTATUSOPEN= 17;
     const PAYMENTSTATUSRESERVED = 18;
 
     /** @var \Fatchip\CTPayment\CTPaymentService $service */
@@ -252,7 +253,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     // SW 5.0 - 5.3 Compatibility
-    // 5.0 -
+    // 5.0 - check
     // 5.1 -
     // 5.2 -
     // 5.3 - check

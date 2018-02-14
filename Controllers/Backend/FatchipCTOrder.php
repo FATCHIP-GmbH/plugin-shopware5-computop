@@ -2,6 +2,12 @@
 
 class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_Backend_ExtJs
 {
+
+    const PAYMENTSTATUSPARTIALLYPAID = 11;
+    const PAYMENTSTATUSPAID = 12;
+    const PAYMENTSTATUSOPEN= 17;
+    const PAYMENTSTATUSRESERVED = 18;
+
     /**
      * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
@@ -130,6 +136,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
             if ($captureResponse->getStatus() == 'OK') {
                 $this->markPositionsAsCaptured($order, $positionIds, $includeShipment);
+                $this->inquireAndupdatePaymentStatus($order,$paymentClass);
                 $response = array('success' => true);
             } else {
                 $errorMessage = 'Capture (zur Zeit) nicht möglich: ' . $captureResponse->getDescription();// . $captureResponse->get ;
@@ -418,5 +425,30 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
           Shopware()->Config()->shopName,
           ''
         );
+    }
+
+    private function inquireAndupdatePaymentStatus($order, $paymentClass) {
+
+        $currentPaymentStatus = $order->getPaymentStatus()->getId();
+
+        //Only when the current payment status = reserved or partly paid, we update the payment status
+        if ($currentPaymentStatus == self::PAYMENTSTATUSRESERVED || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID) {
+            $payID = $order->getAttribute()->getfatchipctPayid();
+            $inquireResponse = $paymentClass->inquire($payID);
+
+            if ($inquireResponse->getStatus() == 'OK') {
+                if ($inquireResponse->getAmountAuth() == $inquireResponse->getAmountCap()) {
+                    //Fully paid
+                    $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', self::PAYMENTSTATUSPAID);
+                    $order->setPaymentStatus($paymentStatus);
+                    $this->get('models')->flush($order);
+                } else if ($inquireResponse->getAmountCap() > 0){
+                    //partially paid
+                    $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', self::PAYMENTSTATUSPARTIALLYPAID);
+                    $order->setPaymentStatus($paymentStatus);
+                    $this->get('models')->flush($order);
+                }
+            }
+        }
     }
 }

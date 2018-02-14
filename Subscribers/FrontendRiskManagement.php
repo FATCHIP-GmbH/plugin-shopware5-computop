@@ -340,10 +340,10 @@ class FrontendRiskManagement implements SubscriberInterface {
     }
 
     // SW 5.0 - 5.3 Compatibility
-    // 5.0 -
+    // 5.0 - check
     // 5.1 -
     // 5.2 -
-    // 5.3 -
+    // 5.3 - check
     private function getCrifStatusFromAddressArray($aAddress) {
         if (array_key_exists('fatchipctCrifstatus' , $aAddress)) {
             return $aAddress['fatchipctCrifstatus'];

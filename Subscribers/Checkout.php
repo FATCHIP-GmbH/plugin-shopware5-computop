@@ -57,7 +57,6 @@ class Checkout implements SubscriberInterface
         $request = $subject->Request();
         $params = $request->getParams();
         $session = Shopware()->Session();
-        $test = $request->getActionName();
         $paymentName = $this->utils->getPaymentNameFromId($session->offsetGet('sPaymentID'));
 
         // ToDo prevent forward to checkout confirm if params are missing
