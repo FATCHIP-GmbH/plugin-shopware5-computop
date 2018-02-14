@@ -70,8 +70,8 @@ class BackendOrder implements SubscriberInterface
                 $attribute                         = $this->getOrderDetailAttributes($detailObj);
 
                 //TODO: check brutto/netto
-                $orderDetail['fcctcaptured'] = $attribute->getFcctCaptured();
-                $orderDetail['fcctdebit']    = $attribute->getFcctDebit();
+                $orderDetail['fcctcaptured'] = $attribute->getfatchipctCaptured();
+                $orderDetail['fcctdebit']    = $attribute->getfatchipctDebit();
 
             }
         }

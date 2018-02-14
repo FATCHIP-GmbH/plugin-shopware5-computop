@@ -141,10 +141,10 @@ class FrontendRiskManagement implements SubscriberInterface {
     private function invalidateCrifFOrAddress($address) {
         /* @var \Shopware\Models\Customer\Address $address */
         if ($attribute = $address->getAttribute()) {
-            $attribute->setFcctCrifDate(0);
-            $attribute->setFcctCrifDescription(null);
-            $attribute->setFcctCrifResult(null);
-            $attribute->setFcctCrifStatus(null);
+            $attribute->setFatchipctCrifdate(0);
+            $attribute->setFatchipctCrifdescription(null);
+            $attribute->setFatchipctCrifresult(null);
+            $attribute->setFatchipctCrifstatus(null);
             Shopware()->Models()->persist($attribute);
             Shopware()->Models()->flush();
         }
@@ -154,10 +154,10 @@ class FrontendRiskManagement implements SubscriberInterface {
         $util = new Util();
         $address = $util->getCustomerAddressById($addressID, $type);
         if ($attribute = $address->getAttribute()) {
-            $attribute->setFcctCrifDate(0);
-            $attribute->setFcctCrifDescription(null);
-            $attribute->setFcctCrifResult(null);
-            $attribute->setFcctCrifStatus(null);
+            $attribute->setFatchipctCrifdate(0);
+            $attribute->setFatchipctCrifdescription(null);
+            $attribute->setFatchipctCrifresult(null);
+            $attribute->setFatchipctCrifstatus(null);
             Shopware()->Models()->persist($attribute);
             Shopware()->Models()->flush();
         }
@@ -339,41 +339,55 @@ class FrontendRiskManagement implements SubscriberInterface {
         return false;
     }
 
+    // SW 5.0 - 5.3 Compatibility
+    // 5.0 -
+    // 5.1 -
+    // 5.2 -
+    // 5.3 -
     private function getCrifStatusFromAddressArray($aAddress) {
-        if (array_key_exists('fcctCrifStatus' , $aAddress)) {
-            return $aAddress['fcctCrifStatus'];
-        } else if (array_key_exists('fcct_crifstatus', $aAddress['attributes'])) {
-            return $aAddress['attributes']['fcct_crifstatus'];
-        } else if (array_key_exists('fcctCrifstatus', $aAddress['attributes'])) {
-            return $aAddress['attributes']['fcctCrifstatus'];
+        if (array_key_exists('fatchipctCrifstatus' , $aAddress)) {
+            return $aAddress['fatchipctCrifstatus'];
+        } else if (array_key_exists('fatchipct_crifstatus', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fatchipct_crifstatus'];
+        } else if (array_key_exists('fatchipctCrifstatus', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fatchipctCrifstatus'];
         }
         return null;
     }
 
+    // SW 5.0 - 5.3 Compatibility
+    // 5.0 -
+    // 5.1 -
+    // 5.2 -
+    // 5.3 -
     private function getCrifResultFromAddressArray($aAddress) {
-        if (array_key_exists('fcctCrifResult' , $aAddress)) {
-            return $aAddress['fcctCrifResult'];
-        } else if (array_key_exists('fcct_crifresult', $aAddress['attributes'])) {
-            return $aAddress['attributes']['fcct_crifresult'];
-        } else if (array_key_exists('fcctCrifresult', $aAddress['attributes'])) {
-            return $aAddress['attributes']['fcctCrifresult'];
+        if (array_key_exists('fatchipctCrifresult' , $aAddress)) {
+            return $aAddress['fatchipctCrifresult'];
+        } else if (array_key_exists('fatchipct_crifresult', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fatchipct_crifresult'];
+        } else if (array_key_exists('fatchipctCrifresult', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fatchipctCrifresult'];
         }
         return null;
     }
 
+    // SW 5.0 - 5.3 Compatibility
+    // 5.0 -
+    // 5.1 -
+    // 5.2 -
+    // 5.3 -
     private function getCrifDateFromAddressArray($aAddress) {
 
+        if (array_key_exists('fatchipctCrifdate' , $aAddress)) {
+            return $aAddress['fatchipctCrifdate'] instanceof \DateTime ?
+              $aAddress['fatchipctCrifdate'] : new \DateTime($aAddress['fatchipctCrifdate']);
+        } else if (array_key_exists('fatchipct_crifdate', $aAddress['attributes'])) {
+            return  $aAddress['attributes']['fatchipct_crifdate'] instanceof \DateTime ?
+              $aAddress['attributes']['fatchipct_crifdate'] : new \DateTime($aAddress['attributes']['fatchipct_crifdate']);
 
-        if (array_key_exists('fcctCrifDate' , $aAddress)) {
-            return $aAddress['fcctCrifDate'] instanceof \DateTime ?
-              $aAddress['fcctCrifDate'] : new \DateTime($aAddress['fcctCrifDate']);
-        } else if (array_key_exists('fcct_crifdate', $aAddress['attributes'])) {
-            return  $aAddress['attributes']['fcct_crifdate'] instanceof \DateTime ?
-              $aAddress['attributes']['fcct_crifdate'] : new \DateTime($aAddress['attributes']['fcct_crifdate']);
-
-        } else if (array_key_exists('fcctCrifdate', $aAddress['attributes'])) {
-            return $aAddress['attributes']['fcctCrifdate'] instanceof \DateTime ?
-              $aAddress['attributes']['fcctCrifdate'] : new \DateTime($aAddress['attributes']['fcctCrifdate']);
+        } else if (array_key_exists('fatchipctCrifdate', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fatchipctCrifdate'] instanceof \DateTime ?
+              $aAddress['attributes']['fatchipctCrifdate'] : new \DateTime($aAddress['attributes']['fatchipctCrifdate']);
         }
         return null;
     }

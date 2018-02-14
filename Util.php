@@ -215,10 +215,10 @@ class Util
 
         $address = $this->getCustomerAddressById($addressID, $type);
         if ($attribute = $address->getAttribute()) {
-            $attribute->setFcctCrifDate(date('Y-m-d H:i:s'));
-            $attribute->setFcctCrifDescription($response->getDescription());
-            $attribute->setFcctCrifResult($response->getResult());
-            $attribute->setFcctCrifStatus($response->getStatus());
+            $attribute->setFatchipctCrifdate(date('Y-m-d H:i:s'));
+            $attribute->setFatchipctCrifdescription($response->getDescription());
+            $attribute->setFatchipctCrifresult($response->getResult());
+            $attribute->setFatchipctCrifstatus($response->getStatus());
             Shopware()->Models()->persist($attribute);
             Shopware()->Models()->flush();
         }

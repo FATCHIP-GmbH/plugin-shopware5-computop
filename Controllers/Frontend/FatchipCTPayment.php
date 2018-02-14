@@ -251,14 +251,19 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         );
     }
 
+    // SW 5.0 - 5.3 Compatibility
+    // 5.0 -
+    // 5.1 -
+    // 5.2 -
+    // 5.3 - check
     public function saveTransactionResult($response) {
         $transactionId = $response->getTransID();
         if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId'=> $transactionId])) {
             if ($atrribute = $order->getAttribute()) {
-                $atrribute->FatchipCT_Status = $response->getStatus();
-                $atrribute->FatchipCT_TransID = $response->getTransID();
-                $atrribute->FatchipCT_PayID = $response->getPayID();
-                $atrribute->FatchipCT_Xid = $response->getXID();
+                $atrribute->setfatchipctStatus($response->getStatus());
+                $atrribute->setfatchipctTransid($response->getTransID());
+                $atrribute->setfatchipctPayid($response->getPayID());
+                $atrribute->setfatchipctXid($response->getXID());
 
                 Shopware()->Models()->persist($atrribute);
                 Shopware()->Models()->flush();

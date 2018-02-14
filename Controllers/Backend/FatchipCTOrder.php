@@ -58,7 +58,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             $paymentClass->setAmount($amount);
             $paymentClass->setCurrency($order->getCurrency());
 
-            $captureResponse = $paymentClass->refund($order->getAttribute()->getFcctPayid(), $amount, $order->getCurrency());
+            $captureResponse = $paymentClass->refund($order->getAttribute()->getfatchipctPayid(), $amount, $order->getCurrency());
 
             if ($captureResponse->getStatus() == 'OK') {
                 $this->markPositionsAsRefunded($order, $positionIds, $includeShipment);
@@ -126,7 +126,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             $amount = $this->getCaptureAmount($order, $positionIds, $includeShipment);
             $paymentClass->setAmount($amount);
             $paymentClass->setCurrency($order->getCurrency());
-            $captureResponse = $paymentClass->capture($order->getAttribute()->getFcctPayid(), $amount, $order->getCurrency());
+            $captureResponse = $paymentClass->capture($order->getAttribute()->getfatchipctPayid(), $amount, $order->getCurrency());
 
             if ($captureResponse->getStatus() == 'OK') {
                 $this->markPositionsAsCaptured($order, $positionIds, $includeShipment);
@@ -208,6 +208,9 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         $ctOrder = new \Fatchip\CTPayment\CTOrder\CTOrder();
         $ctOrder->setBillingAddress($ctBillingAddress);
         $ctOrder->setShippingAddress($ctShippingAddress);
+        if ($email = $swOrder->getCustomer()->getEmail()) {
+            $ctOrder->setEmail($email);
+        }
         return $ctOrder;
     }
 
@@ -230,7 +233,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
             $positionAttribute = $position->getAttribute();
 
-            $alreadyCapturedAmount = $positionAttribute ? $positionAttribute->getFcctCaptured() : 0;
+            $alreadyCapturedAmount = $positionAttribute ? $positionAttribute->getfatchipctCaptured() : 0;
             //add difference between total price and already captured amount
             $positionPrice = round($position->getPrice(), 2);
 
@@ -269,7 +272,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             }
 
             $positionAttribute = $position->getAttribute();
-            $alreadyRefundedAmount = $positionAttribute ? $positionAttribute->getFcctDebit() : 0;
+            $alreadyRefundedAmount = $positionAttribute ? $positionAttribute->getfatchipctDebit() : 0;
             //add difference between total price and already captured amount
             $positionPrice = round($position->getPrice(), 2);
 
@@ -298,7 +301,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             }
 
             $positionAttribute = $position->getAttribute();
-            $positionAttribute->setFcctCaptured($position->getPrice() * $position->getQuantity());
+            $positionAttribute->setfatchipctCaptured($position->getPrice() * $position->getQuantity());
 
             Shopware()->Models()->persist($positionAttribute);
             Shopware()->Models()->flush();
@@ -311,7 +314,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
         if ($includeShipment) {
             $orderAttribute = $order->getAttribute();
-            $orderAttribute->setFcctShipCaptured($order->getInvoiceShipping());
+            $orderAttribute->setfatchipctShipcaptured($order->getInvoiceShipping());
             Shopware()->Models()->persist($orderAttribute);
             Shopware()->Models()->flush();
         }
@@ -325,7 +328,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             }
 
             $positionAttribute = $position->getAttribute();
-            $positionAttribute->setFcctDebit($position->getPrice() * $position->getQuantity());
+            $positionAttribute->setfatchipctDebit($position->getPrice() * $position->getQuantity());
 
             Shopware()->Models()->persist($positionAttribute);
             Shopware()->Models()->flush();
@@ -338,7 +341,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
         if ($includeShipment) {
             $orderAttribute = $order->getAttribute();
-            $orderAttribute->setFcctShipDebit($order->getInvoiceShipping());
+            $orderAttribute->setfatchipctShipdebit($order->getInvoiceShipping());
             Shopware()->Models()->persist($orderAttribute);
             Shopware()->Models()->flush();
         }
