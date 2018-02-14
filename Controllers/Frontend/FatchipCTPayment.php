@@ -255,10 +255,10 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $transactionId = $response->getTransID();
         if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId'=> $transactionId])) {
             if ($atrribute = $order->getAttribute()) {
-                $atrribute->setFcctStatus($response->getStatus());
-                $atrribute->setFcctTransid($response->getTransID());
-                $atrribute->setFcctPayid($response->getPayID());
-                $atrribute->setFcctXid($response->getXID());
+                $atrribute->FatchipCT_Status = $response->getStatus();
+                $atrribute->FatchipCT_TransID = $response->getTransID();
+                $atrribute->FatchipCT_PayID = $response->getPayID();
+                $atrribute->FatchipCT_Xid = $response->getXID();
 
                 Shopware()->Models()->persist($atrribute);
                 Shopware()->Models()->flush();
