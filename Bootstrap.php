@@ -28,6 +28,10 @@ use Fatchip\CTPayment\CTPaymentService;
 class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
 
+    const labelParentFind = ['label' => 'Einstellungen'];
+    const labelComputopMenu = 'Computop';
+    const labelComputopApiLog = 'Apilog';
+
     /**
      * registers the custom plugin models and plugin namespaces
      */
@@ -72,8 +76,29 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $this->createTables();
         //$this->updateSchema();
         $this->createConfig();
+        $this->createMenu();
         $this->createRiskRules();
         return ['success' => true, 'invalidateCache' => ['backend', 'config', 'proxy']];
+    }
+
+    /**
+     * Create menu items to access configuration, logs and support page
+     */
+    protected function createMenu()
+    {
+        $item = $this->createMenuItem(array(
+            'label'      => self::labelComputopMenu,
+            'class'      => 'computop-icon',
+            'active'     => 1,
+            'parent'     => $this->Menu()->findOneBy(self::labelParentFind),
+        ));
+        $this->createMenuItem(array(
+            'label'      => self::labelComputopApiLog,
+            'active'     => 1,
+            'action'     => 'index',
+            'controller' => 'FatchipCTApilog',
+            'parent'     => $item,
+        ));
     }
 
     /**
@@ -103,7 +128,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     private function registerComponents()
     {
 
-       Shopware()->Loader()->registerNamespace(
+        Shopware()->Loader()->registerNamespace(
             'Shopware\FatchipCTPayment',
             $this->Path()
         );
@@ -142,11 +167,25 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     {
         $em = $this->Application()->Models();
         $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($em);
+        // ToDo foreach all folders in Models Folder
 
         try {
-            $schemaTool->createSchema(array(
-                $em->getClassMetadata('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers'),
-            ));
+            $schemaTool->createSchema(
+                [
+                    $em->getClassMetadata('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers'),
+                ]
+            );
+        } catch (\Exception $e) {
+            // ignore
+        }
+
+        try {
+            $schemaTool->createSchema(
+                [
+                    $em->getClassMetadata('Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog'),
+                ]
+            );
+
         } catch (\Exception $e) {
             // ignore
         }
@@ -223,7 +262,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         // Mobilepay
         $this->createFormTextElements(CTPaymentConfigForms::formMobilePayBooleanElements);
 
-        $this->createPayDirektConfigForm(CTPaymentConfigForms::formPayDirektTextElements, CTPaymentConfigForms::formPayDirektSelectElements, CTPaymentConfigForms::formPayDirektNumberElements );
+        $this->createPayDirektConfigForm(CTPaymentConfigForms::formPayDirektTextElements, CTPaymentConfigForms::formPayDirektSelectElements, CTPaymentConfigForms::formPayDirektNumberElements);
 
         //paypal
         $this->createFormSelectElements(CTPaymentConfigForms::formPayPalSelectElements);
@@ -367,20 +406,20 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $this->createFormTextElements($formGeneralTextElements);
     }
 
-    private function createCreditCardConfigForm($formCreditCardSelectElements, $formCreditCardNumberElements )
+    private function createCreditCardConfigForm($formCreditCardSelectElements, $formCreditCardNumberElements)
     {
         $this->createFormSelectElements($formCreditCardSelectElements);
         $this->createFormTextElements($formCreditCardNumberElements);
     }
 
-    private function createPayDirektConfigForm($formPayDirektTextElements, $formPayDirektSelectElements, $formPayDirektNumberElements )
+    private function createPayDirektConfigForm($formPayDirektTextElements, $formPayDirektSelectElements, $formPayDirektNumberElements)
     {
         $this->createFormTextElements($formPayDirektTextElements);
         $this->createFormSelectElements($formPayDirektSelectElements);
         $this->createFormTextElements($formPayDirektNumberElements);
     }
 
-    private function createAmazonPayConfigForm($formAmazonTextElements, $formAmazonSelectElements )
+    private function createAmazonPayConfigForm($formAmazonTextElements, $formAmazonSelectElements)
     {
         $this->createFormTextElements($formAmazonTextElements);
         $this->createFormSelectElements($formAmazonSelectElements);

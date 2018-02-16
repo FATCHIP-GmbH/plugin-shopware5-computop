@@ -88,6 +88,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         $response = $this->loginComputopAmazon();
         $payID = $response['PayID'];
         $session->offsetSet('fatchipCTPaymentPayID', $payID);
+        // Todo better redirect here?
         $this->forward('index', null , null , ['fatchipCTResponse' => $response]);
     }
 
@@ -128,7 +129,21 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
             $countryIso,
             'https://testshop.de/FatchipCTPayment/notify'
         );
-        return $service->callComputopAmazon($requestParams);
+
+        // log Request
+        $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
+        $log->setTransId($requestParams['TransID']);
+        $log->setPaymentName('AmazonPay');
+        $log->setRequest('LOGIN');
+        $log->setRequestDetails(json_encode($requestParams));
+        $response =  $service->callComputopAmazon($requestParams);
+        $log->setPayId($response['PayID']);
+        $log->setXId($response['XID']);
+        $log->setResponse($response['Status']);
+        $log->setResponseDetails(json_encode($response));
+        Shopware()->Models()->persist($log);
+        Shopware()->Models()->flush($log);
+        return $response;
     }
 
     public function saveParamsToSession($params)
