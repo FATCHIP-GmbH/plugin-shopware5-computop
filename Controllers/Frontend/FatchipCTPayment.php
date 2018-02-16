@@ -188,9 +188,9 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
                 $transactionId = $response->getTransID();
-                $order = $this->loadOrderByTransactionId($transactionId);
-                if ($order){
-                    $this->savePaymentStatus($transactionId, $order['temporaryID'], self::PAYMENTSTATUSPAID);
+                if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId'=> $response->getTransID()])) {
+                    $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSPAID);
+                    $this->markOrderDetailsAsFullyCaptured($order);
                 }
                 // else do nothing notify got here before success
                 break;
@@ -270,5 +270,29 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 Shopware()->Models()->flush();
             }
         }
+    }
+
+    private function markOrderDetailsAsFullyCaptured($order) {
+
+        //mark all orderDetails as fully captured
+        foreach ($order->getDetails() as $position) {
+
+            $positionAttribute = $position->getAttribute();
+            $positionAttribute->setfatchipctCaptured($position->getPrice() * $position->getQuantity());
+            Shopware()->Models()->persist($positionAttribute);
+        }
+        Shopware()->Models()->flush();
+
+        //and mark shipping as captured
+        $orderAttribute = $order->getAttribute();
+        $orderAttribute->setfatchipctShipcaptured($order->getInvoiceShipping());
+        Shopware()->Models()->persist($orderAttribute);
+        Shopware()->Models()->flush();
+    }
+
+    private function setOrderPaymentStatus($order, $statusID) {
+        $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', $statusID);
+        $order->setPaymentStatus($paymentStatus);
+        $this->get('models')->flush($order);
     }
 }
