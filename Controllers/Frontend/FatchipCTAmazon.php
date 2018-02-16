@@ -98,19 +98,9 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
             $session->offsetGet('fatchipCTAmazonReferenceID')
         );
 
-        // log Request
-        $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
-        $log->setPaymentName('AmazonPay');
-        $log->setRequest('ORDERCONFIRM');
-        $log->setRequestDetails(json_encode($requestParams));
-        $response = $service->callComputopAmazon($requestParams);
-        $log->setXId($response['XID']);
-        $log->setPayId($response['PayID']);
-        $log->setTransId($response['TransID']);
-        $log->setResponse($response['Status']);
-        $log->setResponseDetails(json_encode($response));
-        Shopware()->Models()->persist($log);
-        Shopware()->Models()->flush($log);
+        // wrap this in a method we can hook for central logging
+        // refactor Amazon to use central Paymentservice to get rid of service Param
+        $response = $this->plugin->callComputopService($requestParams, $service);
         return $response;
     }
 }

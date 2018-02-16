@@ -215,6 +215,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             new Shopware\FatchipCTPayment\Subscribers\BackendRiskManagement($container),
             new Shopware\FatchipCTPayment\Subscribers\FrontendRiskManagement($container),
             new Shopware\FatchipCTPayment\Subscribers\BackendOrder($container),
+            new Shopware\FatchipCTPayment\Subscribers\Logger(),
         ];
 
         foreach ($subscribers as $subscriber) {
@@ -579,4 +580,23 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         ];
     }
 
+
+    // this is wrapper which will be wrapped by the logger replace Hook
+    public function callComputopService($requestParams, $service){
+        $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
+        // Todo find a solution to get the paymentname from Classname
+        // ToDo implement getPaymentNameFromClassName
+        $log->setPaymentName('AmazonPay');
+        $log->setRequest($requestParams['EventToken']);
+        $log->setRequestDetails(json_encode($requestParams));
+        $response =  $service->callComputopAmazon($requestParams);
+        $log->setTransId($response['TransID']);
+        $log->setPayId($response['PayID']);
+        $log->setXId($response['XID']);
+        $log->setResponse($response['Status']);
+        $log->setResponseDetails(json_encode($response));
+        Shopware()->Models()->persist($log);
+        Shopware()->Models()->flush($log);
+        return $response;
+    }
 }

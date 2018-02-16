@@ -139,7 +139,9 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
             $orderDesc,
             $session->offsetGet('fatchipCTAmazonReferenceID')
         );
-        $response = $service->callComputopAmazon($requestParams);
+        // wrap this in a method we can hook for central logging
+        // refactor Amazon to use central Paymentservice to get rid of service Param
+        $response = $this->plugin->callComputopService($requestParams, $service);
     }
 }
 

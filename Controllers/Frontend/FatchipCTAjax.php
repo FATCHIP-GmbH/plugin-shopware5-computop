@@ -51,7 +51,10 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
             $orderDesc,
             $referenceId
         );
-        $response = $service->callComputopAmazon($requestParams);
+
+        // wrap this in a method we can hook for central logging
+        // refactor Amazon to use central Paymentservice to get rid of service Param
+        $response = $this->plugin->callComputopService($requestParams, $service);
         $data = [];
         $data['data'] = $response;
         $data['status'] = ($response['Code'] == '00000000' ? 'success' : 'error');
@@ -111,7 +114,9 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
             $orderDesc,
             $referenceId
         );
-        $response = $service->callComputopAmazon($requestParams);
+        // wrap this in a method we can hook for central logging
+        // refactor Amazon to use central Paymentservice to get rid of service Param
+        $response = $this->plugin->callComputopService($requestParams, $service);
 
         // Test data IT, Rome, Guiseppe Rossi needs this
         if (!$response['AddrStreet2'] && !empty($response['addrstreet2'])) {
