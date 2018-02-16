@@ -77,7 +77,7 @@ class Checkout implements SubscriberInterface
                 );
         }
 
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_birthyear']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna') {
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_birthyear']) && $request->getActionName() === 'saveShippingPayment' && strpos($paymentName, 'fatchip_computop_klarna_') === 0) {
             $this->utils->updateUserDoB($session->get('sUserId'),
                 $params['FatchipComputopPaymentData']['fatchip_computop_klarna_birthyear'] . '-' .
                 $params['FatchipComputopPaymentData']['fatchip_computop_klarna_birthmonth'] . '-' .
@@ -85,7 +85,7 @@ class Checkout implements SubscriberInterface
             );
         }
 
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_phone']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna') {
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_phone']) && $request->getActionName() === 'saveShippingPayment' && strpos($paymentName, 'fatchip_computop_klarna_') === 0) {
             $this->utils->updateUserPhone($session->get('sUserId'),
                 $params['FatchipComputopPaymentData']['fatchip_computop_klarna_phone']
             );

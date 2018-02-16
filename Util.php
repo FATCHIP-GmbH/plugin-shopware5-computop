@@ -105,7 +105,11 @@ class Util
     // 5.3 - check
     public function getUserPhone($user)
     {
-        return $user['billingaddress']['phone'];
+        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
+            ->find($user['additional']['user']['id']);
+        $billing = $user->getBilling();
+
+        return $billing->getPhone();
     }
 
     // SW 5.0 - 5.3 Compatibility
