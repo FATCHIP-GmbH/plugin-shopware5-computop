@@ -57,7 +57,14 @@ class Checkout implements SubscriberInterface
         $request = $subject->Request();
         $params = $request->getParams();
         $session = Shopware()->Session();
-        $paymentName = $this->utils->getPaymentNameFromId($session->offsetGet('sPaymentID'));
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        // Todo check in all sw versions
+        // sw 5.0
+        // sw 5.1
+        // sw 5.2
+        // sw 5.3
+        // sw 5.4
+        $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
         // ToDo prevent forward to checkout confirm if params are missing
 
@@ -116,8 +123,6 @@ class Checkout implements SubscriberInterface
         $response = $subject->Response();
         $session = Shopware()->Session();
         $params = $request->getParams();
-
-        $paymentName = $this->utils->getPaymentNameFromId($session->offsetGet('sPaymentID'));
 
         if (!$request->isDispatched() || $response->isException()) {
             return;
