@@ -57,37 +57,47 @@ class ControllerPath implements SubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        
         return array(
             //Frontend
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPayment'
-            => 'onGetControllerPath',
+            => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTCreditCard'
-            => 'onGetControllerPath',
+            => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTEasyCredit'
-            => 'onGetControllerPath',
+            => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTIdeal'
-            => 'onGetControllerPath',
+            => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTKlarna'
-            => 'onGetControllerPath',
+            => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTLastschrift'
-            => 'onGetControllerPath',
+            => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTMobilepay'
-            => 'onGetControllerPath',
+            => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaydirekt'
-            => 'onGetControllerPath',
+            => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaypalStandard'
-            => 'onGetControllerPath',
+            => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPostFinance'
-            => 'onGetControllerPath',
+            => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPrzelewy24'
-            => 'onGetControllerPath',
+            => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTSofort'
-            => 'onGetControllerPath',
+            => 'onGetFrontendControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTAmazonRegister'
+            => 'onGetFrontendControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTAmazonCheckout'
+            => 'onGetFrontendControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTAjax'
+            => 'onGetFrontendControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTAmazon'
+            => 'onGetFrontendControllerPath',
+            // Backend
             'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipCTIdeal'
             => 'onGetBackendControllerPath',
-
-
+            'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipCTOrder'
+            => 'onGetBackendControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipCTApilog'
+            => 'onGetBackendControllerPath',
         );
     }
 
@@ -95,7 +105,7 @@ class ControllerPath implements SubscriberInterface
      * @param \Enlight_Event_EventArgs $args
      * @return string
      */
-    public function onGetControllerPath(\Enlight_Event_EventArgs $args)
+    public function onGetFrontendControllerPath(\Enlight_Event_EventArgs $args)
     {
         $controllerName = $args->getRequest()->getControllerName();
         return $this->path . 'Controllers/Frontend/' . $controllerName . '.php';

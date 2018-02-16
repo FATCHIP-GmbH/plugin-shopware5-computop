@@ -31,12 +31,16 @@
 use Shopware\FatchipCTPayment\Util;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
+use Shopware\Components\CSRFWhitelistAware;
 
 
-abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controllers_Frontend_Payment
+abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controllers_Frontend_Payment implements CSRFWhitelistAware
 {
 
+    const PAYMENTSTATUSPARTIALLYPAID = 11;
     const PAYMENTSTATUSPAID = 12;
+    const PAYMENTSTATUSOPEN= 17;
+    const PAYMENTSTATUSRESERVED = 18;
 
     /** @var \Fatchip\CTPayment\CTPaymentService $service */
     protected $paymentService;
@@ -94,20 +98,20 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     public function gatewayAction()
     {
-        //TODO: aus order holen, NICHT aus $user, weil dann immer Default Billing und Shipping geschickt wird
-        $user = Shopware()->Modules()->Admin()->sGetUserData();
+        $orderVars = Shopware()->Session()->sOrderVariables;
+        $userData = $orderVars['sUserData'];
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
         //important: multiply amount by 100
         $ctOrder->setAmount($this->getAmount() * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
-        $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
-        $ctOrder->setEmail($user['additional']['user']['email']);
-        $ctOrder->setCustomerID($user['additional']['user']['id']);
+        $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
+        $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
+        $ctOrder->setEmail($userData['additional']['user']['email']);
+        $ctOrder->setCustomerID($userData['additional']['user']['id']);
         // Mandatory for paypalStandard
-        $ctOrder->setOrderDesc('TestBestellung');
+        $ctOrder->setOrderDesc($this->getOrderDesc());
 
         $payment = $this->getPaymentClass($ctOrder);
 
@@ -156,9 +160,10 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             case CTEnumStatus::OK:
                 $this->saveOrder(
                     $response->getTransID(),
-                    $response->getUserData(),
-                    self::PAYMENTSTATUSPAID
+                    $response->getXID(),
+                    self::PAYMENTSTATUSRESERVED
                 );
+                $this->saveTransactionResult($response);
                 $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
                 break;
             default:
@@ -174,11 +179,53 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     public function notifyAction()
     {
+        $this->Front()->Plugins()->ViewRenderer()->setNoRender();
+
         $requestParams = $this->Request()->getParams();
+        $response = $this->paymentService->createPaymentResponse($requestParams);
+        $token = $this->paymentService->createPaymentToken($this->getAmount(), $this->utils->getUserCustomerNumber($this->getUser()));
+
+        switch ($response->getStatus()) {
+            case CTEnumStatus::OK:
+                $transactionId = $response->getTransID();
+                $order = $this->loadOrderByTransactionId($transactionId);
+                if ($order){
+                    $this->savePaymentStatus($transactionId, $order['temporaryID'], self::PAYMENTSTATUSPAID);
+                }
+                // else do nothing notify got here before success
+                break;
+            default:
+                $this->forward('failure');
+                break;
+        }
     }
 
-    public function getOrderDesc($order) {
-        return 'OrderDescription';
+    /**
+     * try to load order via transaction id
+     *
+     * @param string $transactionId
+     * @return order
+     */
+    protected function loadOrderByTransactionId($transactionId)
+    {
+        $sql = '
+            SELECT id, ordernumber, paymentID, temporaryID, transactionID  FROM s_order
+            WHERE transactionID=?';
+
+        $order = Shopware()->Db()->fetchRow($sql, [$transactionId]);
+
+        return $order;
+    }
+
+    /***
+     * @return mixed
+     *
+     * The order description as sent to Computop.
+     * Default it contains the shopname. If a paymentmethod needs a different Orderdescription, override this function.
+     *
+     */
+    public function getOrderDesc() {
+        return Shopware()->Config()->shopName;
     }
 
     public function getUserData() {
@@ -209,4 +256,23 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         );
     }
 
+    // SW 5.0 - 5.3 Compatibility
+    // 5.0 - check
+    // 5.1 -
+    // 5.2 -
+    // 5.3 - check
+    public function saveTransactionResult($response) {
+        $transactionId = $response->getTransID();
+        if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId'=> $transactionId])) {
+            if ($atrribute = $order->getAttribute()) {
+                $atrribute->setfatchipctStatus($response->getStatus());
+                $atrribute->setfatchipctTransid($response->getTransID());
+                $atrribute->setfatchipctPayid($response->getPayID());
+                $atrribute->setfatchipctXid($response->getXID());
+
+                Shopware()->Models()->persist($atrribute);
+                Shopware()->Models()->flush();
+            }
+        }
+    }
 }

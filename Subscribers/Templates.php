@@ -56,6 +56,8 @@ class Templates implements SubscriberInterface
     {
         return array(
             'Enlight_Controller_Action_PostDispatchSecure' => 'onPostDispatchSecure',
+            // used for menu logos
+            'Enlight_Controller_Action_PostDispatch_Backend_Index' => 'addTemplateDir'
         );
     }
 
@@ -70,6 +72,14 @@ class Templates implements SubscriberInterface
      * @param \Enlight_Event_EventArgs $args
      */
     public function onPostDispatchSecure(\Enlight_Event_EventArgs $args)
+    {
+        // Add the template directory for the used template type
+        $this->templateManager->addTemplateDir(
+            $this->path . 'Views/' . 'responsive' . '/'
+        );
+    }
+
+    public function addTemplateDir(Enlight_Event_EventArgs $args)
     {
         // Add the template directory for the used template type
         $this->templateManager->addTemplateDir(

@@ -45,7 +45,7 @@ class Shopware_Controllers_Frontend_FatchipCTMobilepay extends Shopware_Controll
           $order, $router->assemble(['action' => 'success', 'forceSecure' => true]),
           $router->assemble(['action' => 'failure', 'forceSecure' => true]),
           $router->assemble(['action' => 'notify', 'forceSecure' => true]),
-          $this->getOrderDesc($order),
+          $this->getOrderDesc(),
           $this->getUserData());
     }
 
