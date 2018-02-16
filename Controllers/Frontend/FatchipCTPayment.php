@@ -237,6 +237,10 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         return $this->paymentService->createPaymentToken($this->getAmount(), $this->utils->getUserCustomerNumber($this->getUser()));
     }
 
+    /**
+     * @param CTOrder $order
+     * @return mixed
+     */
     public function getPaymentClass($order) {
         $router = $this->Front()->Router();
 
