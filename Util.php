@@ -91,7 +91,7 @@ class Util
     {
         $birthdate = null;
         if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
-            $birthdate = $user['billing']['birthday'];
+            $birthdate = isset($user['billing']['birthday']) ? $user['billing']['birthday'] : $user['additional']['user']['birthday'] ;
         } else {
             $birthdate = $user['billingaddress']['birthday'];
         }
