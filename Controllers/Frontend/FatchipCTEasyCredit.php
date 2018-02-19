@@ -24,7 +24,6 @@
  * @link      https://www.computop.com
  */
 
-use Fatchip\CTPayment\CTResponse\CTResponseIframe\CTResponseCreditCard;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Fatchip\CTPayment\CTEnums\CTEnumEasyCredit;
@@ -100,7 +99,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
 
         $payment->setDateOfBirth($this->utils->getUserDoB($userData));
 
-        /** @var CTResponseEasyCredit $response */
+        /** @var CTResponse $response */
         $response = $this->paymentService->createECPaymentResponse($requestParams);
         switch ($response->getStatus()) {
             case CTEnumStatus::AUTHORIZE_REQUEST:
@@ -110,7 +109,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
                 // page 11
 
                 $responseObject = $payment ->getDecision($response->getPayID());
-                $decision = json_decode($responseObject->getDesicion(), true);
+                $decision = json_decode($responseObject->getDecision(), true);
 
                 if (!($decision['entscheidung']['entscheidungsergebnis'] === 'GRUEN')){
                     $this->forward('failure');

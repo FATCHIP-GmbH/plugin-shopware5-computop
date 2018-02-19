@@ -4,7 +4,7 @@ namespace Shopware\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 use Fatchip\CTPayment\CTOrder\CTOrder;
-use Fatchip\CTPayment\CTResponse\CTResponseIframe\CTResponseCRIF;
+use Fatchip\CTPayment\CTResponse;
 use Shopware\Components\DependencyInjection\Container;
 use Shopware\FatchipCTPayment\Util;
 
@@ -237,8 +237,8 @@ class FrontendRiskManagement implements SubscriberInterface {
                 $crif = $service->getCRIFClass($config, $ctOrder, 'testOrder', 'testUserData');
                 //make the call to CRIF
                 $rawResp = $crif->callCRFDirect();
-                /** @var \Fatchip\CTPayment\CTResponse\CTResponseIframe\CTResponseCRIF $crifResponse */
-                $crifResponse = $service->createCRIFResponse($rawResp);
+                /** @var \Fatchip\CTPayment\CTResponse\CTResponse $crifResponse */
+                $crifResponse = $service->createPaymentResponse($rawResp);
                 $status = $crifResponse->getStatus();
                 $callResult = $crifResponse->getResult();
                 //write the result to the session for this billingaddressID
@@ -418,7 +418,7 @@ class FrontendRiskManagement implements SubscriberInterface {
 
     /***
      * @param $addressID
-     * @param $crifResponse CTResponseCRIF
+     * @param $crifResponse CTResponse
      */
     private function updateBillingAddressFromCrifResponse($addressID, $crifResponse) {
         $util = new Util();
