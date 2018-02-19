@@ -304,23 +304,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
             $paymentObject = $this->createPayment($payment);
 
-            if (!empty($paymentMethod['countries'])) {
-                $this->restrictPaymentShippingCountries($paymentObject, $paymentMethod['countries']);
-            }
         }
-    }
-
-    protected function restrictPaymentShippingCountries($paymentObject, $countries)
-    {
-        $countryCollection = new Doctrine\Common\Collections\ArrayCollection();
-        foreach ($countries as $countryIso) {
-            $country =
-                Shopware()->Models()->getRepository(Shopware\Models\Country\Country::class)->findOneBy(['iso' => $countryIso]);
-            if ($country !== null) {
-                $countryCollection->add($country);
-            }
-        }
-        $paymentObject->setCountries($countryCollection);
     }
 
     protected function createComputopRiskRule($paymentName, $rule1, $value1)
