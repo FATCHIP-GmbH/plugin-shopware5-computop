@@ -358,7 +358,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         foreach ($attributes as $name => $attribute) {
             try {
                 $this->get('models')->addAttribute($table, $prefix, $name, $attribute['type']);
-
             } catch (Exception $e) {
             }
         }
@@ -368,7 +367,29 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 $table
             ]
         );
+
+        $this->setAttributeVisibilityInBackend($prefix, $table, $attributes);
+
     }
+
+    private function setAttributeVisibilityInBackend($prefix, $table, $attributes) {
+        if ($this->assertMinimumVersion('5.2')) {
+            foreach ($attributes as $name => $attribute) {
+                try {
+                    if (isset($attribute['additionalInfo'])) {
+                        $updateType = $attribute['type'] == 'DOUBLE' ? 'float' : $attribute['type'];
+                        $service = $this->get('shopware_attribute.crud_service');
+                        $service->update($table, $prefix . '_' . $name, $updateType, [
+                          'label' => $attribute['additionalInfo']['label'],
+                          'displayInBackend' => $attribute['additionalInfo']['displayInBackend']
+                        ]);
+                    }
+                } catch (Exception $e) {
+                }
+            }
+        }
+    }
+
 
 /*    private function addShippingAttributes() {
         if ($this->assertMinimumVersion('5.2')) {
