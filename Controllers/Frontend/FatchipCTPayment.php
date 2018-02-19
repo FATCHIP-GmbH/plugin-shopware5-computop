@@ -158,12 +158,13 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         }
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
-                $this->saveOrder(
+                $orderNumber = $this->saveOrder(
                     $response->getTransID(),
                     $response->getXID(),
                     self::PAYMENTSTATUSRESERVED
                 );
                 $this->saveTransactionResult($response);
+                $this->handleDelayedCapture($orderNumber);
                 $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
                 break;
             default:
@@ -298,5 +299,28 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', $statusID);
         $order->setPaymentStatus($paymentStatus);
         $this->get('models')->flush($order);
+    }
+
+    /***
+     * @param $orderNumber
+     *
+     * For computop credit card and paydirekt it is possible to set Capture to delayed in the plugin settings.
+     * With delayed Captures, no Notify is sent to the shop. But because the capture is guaranteed to happen
+     * we mark the order as fully paid
+     */
+    private function handleDelayedCapture($orderNumber) {
+        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number'=> $orderNumber]);
+        if ($order)
+        {
+            $paymentName = $order->getPayment()->getName();
+            if (
+                ($paymentName == 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] == 'DELAYED') ||
+                ($paymentName == 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] == 'DELAYED')
+            ) {
+                $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSPAID);
+                $this->markOrderDetailsAsFullyCaptured($order);
+            }
+
+        }
     }
 }
