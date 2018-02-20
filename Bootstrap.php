@@ -581,7 +581,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     }
 
 
-    // this is wrapper which will be wrapped by the logger replace Hook
+    // this wrapper is used for logging requests and responses to our shopware model
     public function callComputopService($requestParams, $service){
         $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
         // Todo find a solution to get the paymentname from Classname
