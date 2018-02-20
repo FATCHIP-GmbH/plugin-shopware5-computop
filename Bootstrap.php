@@ -388,7 +388,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
     }
 
-    private function createGeneralConfigForm($formGeneralTextElements, $formGeneralSelectElements)
     private function setAttributeVisibilityInBackend($prefix, $table, $attributes) {
         if ($this->assertMinimumVersion('5.2')) {
             foreach ($attributes as $name => $attribute) {
