@@ -246,7 +246,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      */
     private function createConfig()
     {
-        $this->createGeneralConfigForm(CTPaymentConfigForms::formGeneralTextElements);
+        $this->createGeneralConfigForm(CTPaymentConfigForms::formGeneralTextElements, CTPaymentConfigForms::formGeneralSelectElements);
 
         $this->createCreditCardConfigForm(CTPaymentConfigForms::formCreditCardSelectElements, CTPaymentConfigForms::formCreditCardNumberElements);
 
@@ -406,9 +406,10 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         return true;
     }
 */
-    private function createGeneralConfigForm($formGeneralTextElements)
+    private function createGeneralConfigForm($formGeneralTextElements, $formGeneralSelectElements)
     {
         $this->createFormTextElements($formGeneralTextElements);
+        $this->createFormSelectElements($formGeneralSelectElements);
     }
 
     private function createCreditCardConfigForm($formCreditCardSelectElements, $formCreditCardNumberElements)
