@@ -34,12 +34,20 @@ class Logger implements SubscriberInterface
     }
 
     public function __construct(){
-        $rfh = new \Monolog\Handler\RotatingFileHandler('/srv/http/sw504-computop/logs/FatchipCTPayment_production.log', 14);
-        $this->logger = new \Shopware\Components\Logger('FatchipCTPayment');
-        $this->logger->pushHandler($rfh);
 
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $this->config = $this->plugin->Config()->toArray();
+
+        // ToDO use terniary operator here
+        $logPath = Shopware()->DocPath();
+        if (version_compare(Shopware()->Application()->Config()->version, '5.1', '>=')){
+            $logFile = $logPath . 'var/log/FatchipCTPayment_production.log';
+        } else {
+            $logFile = $logPath . 'logs/FatchipCTPayment_production.log';
+        }
+        $rfh = new \Monolog\Handler\RotatingFileHandler($logFile, 14);
+        $this->logger = new \Shopware\Components\Logger('FatchipCTPayment');
+        $this->logger->pushHandler($rfh);
     }
 
     public function isFatchipCTController($controllerName)
