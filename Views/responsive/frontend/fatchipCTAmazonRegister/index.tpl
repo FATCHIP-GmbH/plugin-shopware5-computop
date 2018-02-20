@@ -68,7 +68,9 @@
         }
     </style>
 
-    {* Error Messages Javascript*}
+
+    {* ToDo merge PHP and js error to one Block, beautify errors *}
+    {* Error Messages Javascript *}
     <div id="AmazonErrors" style="display:none">
         <div class="alert is--error is--rounded">
             <div class="alert--icon">
@@ -78,6 +80,23 @@
             </div>
         </div>
     </div>
+
+    {* Error Messages php *}
+    {if $errorMessage}
+        <div class="alert is--error is--rounded">
+            <div class="alert--icon">
+                <i class="icon--element icon--cross"></i>
+            </div>
+            <div id="AmazonErrorContent" class="alert--content">
+                {$errorMessage}
+                <ul>
+                    {foreach from=$errorFields item=error_field}
+                        <li>{$error_field}</li>
+                    {/foreach}
+                </ul>
+            </div>
+        </div>
+    {/if}
 
     <div id="amazonContentWrapper" class="content confirm--content content-main--inner" style="width:100%;height: 100%; margin-top:5%;margin-bottom: 30px; padding-bottom: 4%;">
 

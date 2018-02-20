@@ -26,6 +26,7 @@
 
 use Shopware\FatchipCTPayment\Util;
 use Shopware\Components\CSRFWhitelistAware;
+
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTAmazonRegister
  */
@@ -42,7 +43,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
 
     protected $config;
 
-    /** @var Util $utils **/
+    /** @var Util $utils * */
     protected $utils;
 
     /**
@@ -59,7 +60,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         // SW 5.0 check
         // also session property was removed in SW5.2? 5.3
 
-        if (method_exists('Shopware_Controllers_Frontend_Register','init')){
+        if (method_exists('Shopware_Controllers_Frontend_Register', 'init')) {
             parent::init();
         }
         // ToDo handle possible Exception
@@ -89,7 +90,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         $payID = $response['PayID'];
         $session->offsetSet('fatchipCTPaymentPayID', $payID);
         // Todo better redirect here?
-        $this->forward('index', null , null , ['fatchipCTResponse' => $response]);
+        $this->forward('index', null, null, ['fatchipCTResponse' => $response]);
     }
 
     public function indexAction()
@@ -97,16 +98,28 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         $request = $this->Request();
         $params = $request->getParams();
         $session = Shopware()->Session();
-        $session->offsetSet('sPaymentID', $this->utils->getPaymentIdFromName('fatchip_computop_amazonpay'));
+        // ToDo check if setting paymentid in sesion was necessary
+        //$session->offsetSet('sPaymentID', $this->utils->getPaymentIdFromName('fatchip_computop_amazonpay'));
 
+        $registerArrObj = $this->View()->getAssign('register')->getArrayCopy();
+        $register = $this->getArrayFromArrayObjs($registerArrObj);
+        $merged_errors = array_merge($register['personal'], $register['billing'], $register['shipping']);
+        if (!empty($merged_errors['error_flags'])) {
+            $errorMessage = 'Fehler bei der Shop Registrierung:<BR>' .
+                            'Bitte korrigieren Sie in Ihrem Amazon Konto folgende Angaben:<BR>';
+            $this->view->assign('errorMessage', $errorMessage);
+            $this->view->assign('errorFields',array_keys($merged_errors['error_flags']));
+        }
         $this->view->assign('fatchipCTResponse', $params['fatchipCTResponse']);
+        // add a config->toView method which removed sensitive data from view
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
         // load Template to avoid annoying uppercase to _lowercase conversion
         $this->view->loadTemplate('frontend/fatchipCTAmazonRegister/index.tpl');
 
     }
 
-    public function loginComputopAmazon(){
+    public function loginComputopAmazon()
+    {
         // ToDO  get countryIso from session instead by calling sGetUserData
         $user = Shopware()->Modules()->Admin()->sGetUserData();
         $countryIso = $user['additional']['country']['countryiso'];
@@ -120,7 +133,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
 
 
         $service = new \Fatchip\CTPayment\CTAmazon($this->config);
-        $requestParams =  $service->getAmazonLGNParams(
+        $requestParams = $service->getAmazonLGNParams(
             $session->fatchipCTPaymentTransID,
             $session->fatchipCTAmazonAccessToken,
             $session->fatchipCTAmazonAccessTokenType,
@@ -129,21 +142,50 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
             $countryIso,
             'https://testshop.de/FatchipCTPayment/notify'
         );
-
-        // log Request
-        $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
-        $log->setTransId($requestParams['TransID']);
-        $log->setPaymentName('AmazonPay');
-        $log->setRequest('LOGIN');
-        $log->setRequestDetails(json_encode($requestParams));
-        $response =  $service->callComputopAmazon($requestParams);
-        $log->setPayId($response['PayID']);
-        $log->setXId($response['XID']);
-        $log->setResponse($response['Status']);
-        $log->setResponseDetails(json_encode($response));
-        Shopware()->Models()->persist($log);
-        Shopware()->Models()->flush($log);
+        // wrap this in a method we can hook for central logging
+        // refactor Amazon to use central Paymentservice to get rid of service Param
+        $response = $this->plugin->callComputopService($requestParams, $service);
         return $response;
+    }
+
+    /**
+     * not used anymore
+     * simply show an error after
+     * parent::saveRegisterAction forwards to our index
+     * DEsc:
+     * This is only implemented to
+     * get registration exceptions and errors
+     *
+     * @return void
+     */
+    /*    public function saveRegisterAction()
+        {
+            parent::saveRegisterAction();
+
+            // check for registration errors and log those
+            // sadly we can not use our central logging subscriber
+            // because saveRegister forwards to checkout/index in case of errors
+            if ($this->error){
+                if ($this->View()->hasTemplate()){
+                    $registerArrObj = $this->View()->getAssign('register')->getArrayCopy();
+                    $register = $this->getArrayFromArrayObjs($registerArrObj);
+
+                }
+
+            }
+            $testifaboveReturns = 'blubs';
+        }
+    */
+    public function getArrayFromArrayObjs($arrayObjs)
+    {
+        $array = [];
+        foreach ($arrayObjs as $key => $arrayObj) {
+            $array[$key] = $arrayObj->getArrayCopy();
+            foreach ($array[$key] as $arrayObjKey => $value) {
+                $array[$key][$arrayObjKey] = $value->getArrayCopy();
+            }
+        }
+        return $array;
     }
 
     public function saveParamsToSession($params)

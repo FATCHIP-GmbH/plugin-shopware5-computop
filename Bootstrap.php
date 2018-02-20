@@ -62,16 +62,15 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         );
 
         // extend order model
-        $this->addAttributes('fatchipct', 's_order_attributes', CTPaymentAttributes::orderAttributes);
-        $this->addAttributes('fatchipct', 's_order_details_attributes', CTPaymentAttributes::orderDetailsAttributes);
+        $this->addAttributes('fatchipCT', 's_order_attributes', CTPaymentAttributes::orderAttributes);
+        $this->addAttributes('fatchipCT', 's_order_details_attributes', CTPaymentAttributes::orderDetailsAttributes);
         // extend address tables depending on sw version
         if ($this->assertMinimumVersion('5.2')) {
-            $this->addAttributes('fatchipct', 's_user_addresses_attributes', CTPaymentAttributes::userAddressAttributes);
+            $this->addAttributes('fatchipCT', 's_user_addresses_attributes', CTPaymentAttributes::userAddressAttributes);
         } else {
-            $this->addAttributes('fatchipct', 's_user_billingaddress_attributes', CTPaymentAttributes::userAddressAttributes);
-            $this->addAttributes('fatchipct', 's_user_shippingaddress_attributes', CTPaymentAttributes::userAddressAttributes);
+            $this->addAttributes('fatchipCT', 's_user_billingaddress_attributes', CTPaymentAttributes::userAddressAttributes);
+            $this->addAttributes('fatchipCT', 's_user_shippingaddress_attributes', CTPaymentAttributes::userAddressAttributes);
         }
-
 
         $this->createTables();
         //$this->updateSchema();
@@ -216,6 +215,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             new Shopware\FatchipCTPayment\Subscribers\BackendRiskManagement($container),
             new Shopware\FatchipCTPayment\Subscribers\FrontendRiskManagement($container),
             new Shopware\FatchipCTPayment\Subscribers\BackendOrder($container),
+            new Shopware\FatchipCTPayment\Subscribers\Logger(),
         ];
 
         foreach ($subscribers as $subscriber) {
@@ -304,7 +304,23 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
             $paymentObject = $this->createPayment($payment);
 
+            if (!empty($paymentMethod['countries'])) {
+                $this->restrictPaymentShippingCountries($paymentObject, $paymentMethod['countries']);
+            }
         }
+    }
+
+    protected function restrictPaymentShippingCountries($paymentObject, $countries)
+    {
+        $countryCollection = new Doctrine\Common\Collections\ArrayCollection();
+        foreach ($countries as $countryIso) {
+            $country =
+                Shopware()->Models()->getRepository(Shopware\Models\Country\Country::class)->findOneBy(['iso' => $countryIso]);
+            if ($country !== null) {
+                $countryCollection->add($country);
+            }
+        }
+        $paymentObject->setCountries($countryCollection);
     }
 
     protected function createComputopRiskRule($paymentName, $rule1, $value1)
@@ -372,6 +388,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
     }
 
+    private function createGeneralConfigForm($formGeneralTextElements, $formGeneralSelectElements)
     private function setAttributeVisibilityInBackend($prefix, $table, $attributes) {
         if ($this->assertMinimumVersion('5.2')) {
             foreach ($attributes as $name => $attribute) {
@@ -601,4 +618,23 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         ];
     }
 
+
+    // this wrapper is used for logging requests and responses to our shopware model
+    public function callComputopService($requestParams, $service){
+        $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
+        // Todo find a solution to get the paymentname from Classname
+        // ToDo implement getPaymentNameFromClassName
+        $log->setPaymentName('AmazonPay');
+        $log->setRequest($requestParams['EventToken']);
+        $log->setRequestDetails(json_encode($requestParams));
+        $response =  $service->callComputopAmazon($requestParams);
+        $log->setTransId($response['TransID']);
+        $log->setPayId($response['PayID']);
+        $log->setXId($response['XID']);
+        $log->setResponse($response['Status']);
+        $log->setResponseDetails(json_encode($response));
+        Shopware()->Models()->persist($log);
+        Shopware()->Models()->flush($log);
+        return $response;
+    }
 }
