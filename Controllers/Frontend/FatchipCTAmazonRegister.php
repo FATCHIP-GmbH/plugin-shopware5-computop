@@ -101,14 +101,21 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         // ToDo check if setting paymentid in sesion was necessary
         //$session->offsetSet('sPaymentID', $this->utils->getPaymentIdFromName('fatchip_computop_amazonpay'));
 
-        $registerArrObj = $this->View()->getAssign('register')->getArrayCopy();
-        $register = $this->getArrayFromArrayObjs($registerArrObj);
-        $merged_errors = array_merge($register['personal'], $register['billing'], $register['shipping']);
-        if (!empty($merged_errors['error_flags'])) {
+        // Not Compatible with SW 5.3 since 5.2? verfiy
+        if (version_compare(Shopware()->Config()->version, '5.2', '>=')){
+            $register = $this->View()->getAssign('errors');
+            $errors = array_merge($register['personal'], $register['billing'], $register['shipping']);
+        } else {
+            $registerArrObj = $this->View()->getAssign('register')->getArrayCopy();
+            $register = $this->getArrayFromArrayObjs($registerArrObj);
+            $merged_errors = array_merge($register['personal'], $register['billing'], $register['shipping']);
+            $errors =  $merged_errors['error_flags'];
+        }
+        if (!empty($errors)) {
             $errorMessage = 'Fehler bei der Shop Registrierung:<BR>' .
                             'Bitte korrigieren Sie in Ihrem Amazon Konto folgende Angaben:<BR>';
             $this->view->assign('errorMessage', $errorMessage);
-            $this->view->assign('errorFields',array_keys($merged_errors['error_flags']));
+            $this->view->assign('errorFields',array_keys($errors));
         }
         $this->view->assign('fatchipCTResponse', $params['fatchipCTResponse']);
         // add a config->toView method which removed sensitive data from view
