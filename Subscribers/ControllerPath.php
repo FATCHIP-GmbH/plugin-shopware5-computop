@@ -77,6 +77,8 @@ class ControllerPath implements SubscriberInterface
             => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaypalStandard'
             => 'onGetFrontendControllerPath',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaypalExpress'
+            => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPostFinance'
             => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPrzelewy24'

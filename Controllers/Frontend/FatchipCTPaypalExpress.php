@@ -24,19 +24,33 @@
  * @link      https://www.computop.com
  */
 
+
 use Fatchip\CTPayment\CTOrder\CTOrder;
+// add baseclass via require_once so we can extend
+// ToDo find a better solution for this
+require_once 'FatchipCTPayment.php';
+
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTSofort
+ * Class Shopware_Controllers_Frontend_FatchipCTPaypalStandard
  */
-class Shopware_Controllers_Frontend_FatchipCTSofort extends Shopware_Controllers_Frontend_FatchipCTPayment
+class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
 
-    public $paymentClass = 'Sofort';
+    public $paymentClass = 'PaypalStandard';
 
+
+    public function indexAction()
+    {
+        $this->forward('confirm');
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function gatewayAction()
     {
-        $session = Shopware()->Session();
         $orderVars = Shopware()->Session()->sOrderVariables;
         $userData = $orderVars['sUserData'];
 
@@ -49,27 +63,16 @@ class Shopware_Controllers_Frontend_FatchipCTSofort extends Shopware_Controllers
         $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
         $ctOrder->setEmail($userData['additional']['user']['email']);
         $ctOrder->setCustomerID($userData['additional']['user']['id']);
+        // Mandatory for paypalStandard
+        $ctOrder->setOrderDesc($this->getOrderDesc());
 
-        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Ideal $payment */
+        /*  @var \Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard $payment */
         $payment = $this->getPaymentClass($ctOrder);
-        $payment->setIssuerID($session->offsetGet('FatchipComputopSofortIssuer'));
+        $payment->setPayPalMethod('shortcut');
 
         $this->redirect($payment->getHTTPGetURL());
     }
 
-    public function getPaymentClass($order) {
-        $router = $this->Front()->Router();
-
-        return $this->paymentService->getPaymentClass(
-            $this->paymentClass,
-            $this->config,
-            $order,
-            $router->assemble(['action' => 'success', 'forceSecure' => true]),
-            $router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $router->assemble(['action' => 'notify', 'forceSecure' => true]),
-            $this->getOrderDesc(),
-            $this->getUserData()
-        );
-    }
-
 }
+
+

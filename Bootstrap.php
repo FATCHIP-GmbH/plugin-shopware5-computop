@@ -137,6 +137,11 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             'Fatchip',
             $this->Path() . 'Components/Api/lib/'
         );
+
+        Shopware()->Loader()->registerNamespace(
+            'Shopware\FatchipCTPayment\Controllers',
+            $this->Path() . 'Controllers/Frontend/'
+        );
     }
 
     public function createRiskRules()

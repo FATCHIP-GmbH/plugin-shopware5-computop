@@ -235,9 +235,23 @@ class Util
      */
     public function isAmazonPayActive()
     {
-        $paymentAmazonPay = Shopware()->Models()->getRepository('Shopware\Models\Payment\Payment')->findOneBy(
+        $payment = Shopware()->Models()->getRepository('Shopware\Models\Payment\Payment')->findOneBy(
             ['name' => 'fatchip_computop_amazonpay']
         );
-        return $paymentAmazonPay->getActive();
+        return $payment->getActive();
+    }
+
+    /**
+     * checks if Papyal is enabled
+     * ToDO refactor to generic method
+     *
+     * @return bool
+     */
+    public function isPaypalExpressActive()
+    {
+        $payment = Shopware()->Models()->getRepository('Shopware\Models\Payment\Payment')->findOneBy(
+            ['name' => 'fatchip_computop_paypal_express']
+        );
+        return $payment->getActive();
     }
 }

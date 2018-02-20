@@ -159,6 +159,16 @@ class Checkout implements SubscriberInterface
             $view->extendsTemplate('frontend/checkout/cart_amazon.tpl');
         }
 
+        // ToDo find a better way, it would be nice to move this to the Amazon Controller
+        // ToDo refactor both methods to isPaymentactive($paymentName)
+        if ($this->utils->isPaypalExpressActive()) {
+            // assign plugin Config to View
+            $view->assign('fatchipCTPaymentConfig', $pluginConfig);
+            // extend cart and ajax cart with Amazon Button
+            $view->extendsTemplate('frontend/checkout/ajax_cart_paypal.tpl');
+            $view->extendsTemplate('frontend/checkout/cart_paypal.tpl');
+        }
+
         if ($request->getActionName() == 'confirm') {
 
             $view->extendsTemplate('frontend/checkout/confirm.tpl');
