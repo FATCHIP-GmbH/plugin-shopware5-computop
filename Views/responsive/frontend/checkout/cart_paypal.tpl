@@ -5,7 +5,7 @@
     {if $sBasket.content}
         <div class="button--container">
             <a href="{url controller='FatchipCTPaypalExpress' action='gateway'}">
-                <img src="https://www.paypal.com/de_DE/i/btn/btn_xpressCheckout.gif" />
+                <img src="https://www.paypal.com/{$Locale}/i/btn/btn_xpressCheckout.gif" />
             </a>
         </div>
     {/if}

@@ -39,6 +39,7 @@ class Logger implements SubscriberInterface
         $this->config = $this->plugin->Config()->toArray();
 
         // ToDO use terniary operator here
+        // Shopware()->Application() is deprecated
         $logPath = Shopware()->DocPath();
         if (version_compare(Shopware()->Application()->Config()->version, '5.1', '>=')){
             $logFile = $logPath . 'var/log/FatchipCTPayment_production.log';

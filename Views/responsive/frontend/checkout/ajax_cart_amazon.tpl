@@ -2,6 +2,7 @@
 
 {block name='frontend_checkout_ajax_cart_button_container'}
     {$smarty.block.parent}
+    {if $sBasket.content}
     <div class="button--container">
         <div id="LoginWithAmazon">
             RemoveMe: <BR>
@@ -33,7 +34,7 @@
                                     popup: false
                                 {/if}
                             };
-                            var shopReturnUrl = '{url controller='FatchipCTAmazonRegister' action='login'}';
+                            var shopReturnUrl = "{url controller='FatchipCTAmazonRegister' action='login'}";
 
                             {if $smarty.server.REQUEST_SCHEME === 'https' && $smarty.server.HTTP_REFERER|strpos:'https://'=== 0}
                                 // Do nothing
@@ -59,5 +60,6 @@
                 src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/sandbox/lpa/js/Widgets.js'>
         </script>
     </div>
+    {/if}
 {/block}
 
