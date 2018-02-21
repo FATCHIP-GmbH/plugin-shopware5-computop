@@ -24,6 +24,9 @@
  * @link      https://www.computop.com
  */
 
+// ToDo find a better solution for this
+require_once 'FatchipCTPayment.php';
+
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTMobilepay
  */
