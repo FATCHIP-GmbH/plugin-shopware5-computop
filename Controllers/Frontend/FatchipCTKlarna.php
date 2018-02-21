@@ -48,6 +48,8 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends Shopware_Controllers
         $orderVars = Shopware()->Session()->sOrderVariables;
         $userData = $orderVars['sUserData'];
 
+        $test = $this->getUser();
+
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
         //important: multiply amount by 100
@@ -61,21 +63,28 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends Shopware_Controllers
         $ctOrder->setOrderDesc($this->getOrderDesc());
 
         $payment = $this->getPaymentClass($ctOrder);
+        $payment->setSocialSecurityNumber($this->utils->getUserSSN($userData));
+        $payment->setAnnualSalary($this->utils->getUserAnnualSalary($userData));
+
         $response = $payment->callKlarnaDirect();
 
         // TODO - Investigate if further handling of the response is required
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
-                $this->saveOrder(
+                $orderNumber =  $this->saveOrder(
                     $response->getTransID(),
                     $response->getUserData(),
                     self::PAYMENTSTATUSPAID
                 );
+                $this->saveTransactionResult($response);
                 $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
                 break;
             default:
-                // TODO - Implement a proper action for failed transactions
-                $this->forward('failure');
+                $ctError = [];
+                $ctError['CTErrorMessage'] = $response->getDescription();
+                $ctError['CTErrorCode'] = $response->getCode();
+                return $this->forward('shippingPayment', 'checkout', null, array('CTError' => $ctError));
+
                 break;
         }
     }
@@ -104,7 +113,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends Shopware_Controllers
             $phone, //TODO remove mobile
             $birthday,
             $isFirm,
-            $usesInvoice ? '-1' : '0'
+            $usesInvoice ? '-1' : '1334'
         );
     }
 

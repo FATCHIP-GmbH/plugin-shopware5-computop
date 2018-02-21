@@ -112,6 +112,24 @@ class Util
         return $billing->getPhone();
     }
 
+    public function getUserSSN($user)
+    {
+        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
+          ->find($user['additional']['user']['id']);
+        $attribute = $user->getAttribute();
+
+        return $attribute->getFatchipctSocialsecuritynumber();
+    }
+
+    public function getUserAnnualSalary($user)
+    {
+        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
+          ->find($user['additional']['user']['id']);
+        $attribute = $user->getAttribute();
+
+        return $attribute->getFatchipctAnnualSalary();
+    }
+
     // SW 5.0 - 5.3 Compatibility
     // 5.0 - check
     // 5.1 - check
@@ -165,6 +183,28 @@ class Util
         Shopware()->Models()->flush($billing);
     }
 
+
+    public function updateUserSSN($userId, $ssn)
+    {
+        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
+
+        $attributes = $user->getAttribute();
+        $attributes->setFatchipctSocialsecuritynumber($ssn);
+        Shopware()->Models()->persist($attributes);
+        Shopware()->Models()->flush($attributes);
+
+    }
+
+    public function updateUserAnnualSalary($userId, $ssn)
+    {
+        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
+
+        $attributes = $user->getAttribute();
+        $attributes->setFatchipctAnnualSalary($ssn);
+        Shopware()->Models()->persist($attributes);
+        Shopware()->Models()->flush($attributes);
+
+    }
 
     /**
      * @param $id
@@ -253,5 +293,53 @@ class Util
             ['name' => 'fatchip_computop_paypal_express']
         );
         return $payment->getActive();
+    }
+
+    public function needSocialSecurityNumberForKlarna() {
+        if ($countryIso = $this->getBillingIsoForCurrentOrder()) {
+            //only if billingcountry in DK, FI, SE, NO we show the social security number field
+            if ($countryIso == 'DK' || $countryIso == 'FI' || $countryIso == 'SE' || $countryIso == 'NO') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function needAnnualSalaryForKlarna() {
+        if ($countryIso = $this->getBillingIsoForCurrentOrder()) {
+            //only if billingcountry in DK, FI, SE, NO we show the social security number field
+            if ($countryIso == 'DK' ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getSSNLength() {
+        if ($countryIso = $this->getBillingIsoForCurrentOrder()) {
+            if ($countryIso == 'NO') {
+                return 5;
+            }
+            return 4;
+        }
+        return null;
+    }
+
+    private function getBillingIsoForCurrentOrder() {
+        if($orderVars = Shopware()->Session()->sOrderVariables) {
+            $userData = $orderVars['sUserData'];
+            $countryID = $this->getCountryIdFromAddress($userData['billingaddress']);
+        } else if ($user = Shopware()->Modules()->Admin()->sGetUserData()) {
+            $countryID = $this->getCountryIdFromAddress($user['billingaddress']);
+        }
+
+        if ($countryID) {
+            return $this->getCTCountryIso($countryID);
+        }
+
+        return null;
+
     }
 }

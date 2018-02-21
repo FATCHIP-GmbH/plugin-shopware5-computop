@@ -64,6 +64,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         // extend order model
         $this->addAttributes('fatchipCT', 's_order_attributes', CTPaymentAttributes::orderAttributes);
         $this->addAttributes('fatchipCT', 's_order_details_attributes', CTPaymentAttributes::orderDetailsAttributes);
+        $this->addAttributes('fatchipCT', 's_user_attributes', CTPaymentAttributes::userAttributes);
         // extend address tables depending on sw version
         if ($this->assertMinimumVersion('5.2')) {
             $this->addAttributes('fatchipCT', 's_user_addresses_attributes', CTPaymentAttributes::userAddressAttributes);
