@@ -89,8 +89,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     /**
-     * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function gatewayAction()
     {

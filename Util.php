@@ -20,7 +20,7 @@ class Util
     /**
      * @param array $swAddress
      * @return CTAddress
-     * @throws Exception
+     * @throws \Exception
      */
     public function getCTAddress(array $swAddress)
     {

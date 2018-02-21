@@ -24,6 +24,14 @@
  * @link      https://www.computop.com
  */
 
+use Fatchip\CTPayment\CTEnums\CTEnumStatus;
+use Fatchip\CTPayment\CTOrder\CTOrder;
+
+// add baseclass via require_once so we can extend
+// ToDo find a better solution for this
+require_once 'FatchipCTPayment.php';
+
+
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTKlarna
  */
@@ -31,6 +39,46 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends Shopware_Controllers
 {
 
     public $paymentClass = 'Klarna';
+
+    /**
+     * @inheritdoc
+     */
+    public function gatewayAction()
+    {
+        $orderVars = Shopware()->Session()->sOrderVariables;
+        $userData = $orderVars['sUserData'];
+
+        // ToDo refactor ctOrder creation
+        $ctOrder = new CTOrder();
+        //important: multiply amount by 100
+        $ctOrder->setAmount($this->getAmount() * 100);
+        $ctOrder->setCurrency($this->getCurrencyShortName());
+        $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
+        $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
+        $ctOrder->setEmail($userData['additional']['user']['email']);
+        $ctOrder->setCustomerID($userData['additional']['user']['id']);
+        // Mandatory for paypalStandard
+        $ctOrder->setOrderDesc($this->getOrderDesc());
+
+        $payment = $this->getPaymentClass($ctOrder);
+        $response = $payment->callKlarnaDirect();
+
+        // TODO - Investigate if further handling of the response is required
+        switch ($response->getStatus()) {
+            case CTEnumStatus::OK:
+                $this->saveOrder(
+                    $response->getTransID(),
+                    $response->getUserData(),
+                    self::PAYMENTSTATUSPAID
+                );
+                $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
+                break;
+            default:
+                // TODO - Implement a proper action for failed transactions
+                $this->forward('failure');
+                break;
+        }
+    }
 
     /**
      * @inheritdoc
@@ -43,8 +91,8 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends Shopware_Controllers
 
         $phone = $this->utils->getUserPhone($userData);
         $birthday =$this->utils->getUserDoB($userData);
-        $isFirm = !empty($user['billingaddress']['company']);
-        $usesInvoice = ($user['additional']['payment']['name'] === 'fatchip_computop_klarna_invoice');
+        $isFirm = !empty($userData['billingaddress']['company']);
+        $usesInvoice = ($userData['additional']['payment']['name'] === 'fatchip_computop_klarna_invoice');
 
         return new \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna(
             $this->config,
