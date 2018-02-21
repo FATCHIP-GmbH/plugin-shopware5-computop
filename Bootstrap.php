@@ -18,7 +18,7 @@
  */
 
 require_once 'Util.php';
-// needed for CSRF Protection compatibility SW versions < 5.2
+// needed for CSRF Protection compatibility SW versions < 5.2 lba
 require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
 
 use Fatchip\CTPayment\CTPaymentAttributes;
