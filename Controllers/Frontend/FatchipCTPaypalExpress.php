@@ -51,26 +51,68 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
      */
     public function gatewayAction()
     {
-        $orderVars = Shopware()->Session()->sOrderVariables;
-        $userData = $orderVars['sUserData'];
+        // ToDo Check sGEtBAsket  availablity in all SW Versions
+        $basket= Shopware()->Modules()->Basket()->sGetBasket();
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
         //important: multiply amount by 100
-        $ctOrder->setAmount($this->getAmount() * 100);
+        $ctOrder->setAmount($basket['AmountNumeric'] * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
-        $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
-        $ctOrder->setEmail($userData['additional']['user']['email']);
-        $ctOrder->setCustomerID($userData['additional']['user']['id']);
         // Mandatory for paypalStandard
         $ctOrder->setOrderDesc($this->getOrderDesc());
 
         /*  @var \Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard $payment */
-        $payment = $this->getPaymentClass($ctOrder);
+        $payment = $this->getPaymentClass($ctOrder, 'return');
         $payment->setPayPalMethod('shortcut');
 
         $this->redirect($payment->getHTTPGetURL());
+    }
+
+    /**
+     * Cancel action method
+     * @return void
+     */
+    public function returnAction()
+    {
+        $requestParams = $this->Request()->getParams();
+        $session = Shopware()->Session();
+        // ToDo Check sGetBasket  availablity in all SW Versions
+        $basket= Shopware()->Modules()->Basket()->sGetBasket();
+
+        /** @var CTResponseFatchipCTKlarnaCreditCard $response */
+        $response = $this->paymentService->createPaymentResponse($requestParams);
+        $token = $this->paymentService->createPaymentToken($basket['AmountNumeric'], $this->utils->getUserCustomerNumber($this->getUser()));
+
+        if (!$this->paymentService->isValidToken($response, $token)) {
+            $this->forward('failure');
+            return;
+        }
+        switch ($response->getStatus()) {
+            case CTEnumStatus::OK:
+                $session->offsetSet('FatchipCTPayPalExpressPayID', $response->getPayID() );
+                $session->offsetSet('FatchipCTPayPalExpressXID', $response->getXID());
+
+                $this->redirect(['controller' => 'checkout', 'action' => 'confirm']);
+                break;
+            default:
+                $this->forward('failure');
+                break;
+        }
+    }
+
+    public function getPaymentClass($order, $successAction = '') {
+        $router = $this->Front()->Router();
+
+        return new \Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard(
+            $this->config,
+            $order,
+            $router->assemble(['action' => $successAction, 'forceSecure' => true]),
+            $router->assemble(['action' => 'failure', 'forceSecure' => true]),
+            $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $this->getUserData(),
+            $this->getOrderDesc()
+        );
     }
 
 }

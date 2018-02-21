@@ -102,7 +102,8 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         //$session->offsetSet('sPaymentID', $this->utils->getPaymentIdFromName('fatchip_computop_amazonpay'));
 
         // Not Compatible with SW 5.3 since 5.2? verfiy
-        if (version_compare(Shopware()->Config()->version, '5.2', '>=')){
+        // ToDO check if Version Check work for all SW Versions
+        if (version_compare(\Shopware::VERSION, '5.2', '>=')){
             $register = $this->View()->getAssign('errors');
             $errors = array_merge($register['personal'], $register['billing'], $register['shipping']);
         } else {
