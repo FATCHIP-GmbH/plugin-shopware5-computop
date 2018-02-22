@@ -89,7 +89,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         $response = $this->loginComputopAmazon();
         $payID = $response['PayID'];
         $session->offsetSet('fatchipCTPaymentPayID', $payID);
-        // Todo better redirect here?
+        // Todo bette0r redirect here?
         $this->forward('index', null, null, ['fatchipCTResponse' => $response]);
     }
 
@@ -99,7 +99,8 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         $params = $request->getParams();
         $session = Shopware()->Session();
         // ToDo check if setting paymentid in sesion was necessary
-        //$session->offsetSet('sPaymentID', $this->utils->getPaymentIdFromName('fatchip_computop_amazonpay'));
+        // this has to be set so shipping methods will work
+        $session->offsetSet('sPaymentID', $this->utils->getPaymentIdFromName('fatchip_computop_amazonpay'));
 
         // Not Compatible with SW 5.3 since 5.2? verfiy
         // ToDO check if Version Check work for all SW Versions

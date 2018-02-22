@@ -26,6 +26,7 @@
 
 
 use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 // add baseclass via require_once so we can extend
 // ToDo find a better solution for this
 require_once 'FatchipCTPayment.php';
@@ -82,24 +83,26 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
 
         /** @var CTResponseFatchipCTKlarnaCreditCard $response */
         $response = $this->paymentService->createPaymentResponse($requestParams);
-        $token = $this->paymentService->createPaymentToken($basket['AmountNumeric'], $this->utils->getUserCustomerNumber($this->getUser()));
+        // ToDo token is broken, for PP Ex. because getAmount is only available after User Registration
+        $token = $this->paymentService->createPaymentToken($this->getAmount(), $this->utils->getUserCustomerNumber($this->getUser()));
 
-        if (!$this->paymentService->isValidToken($response, $token)) {
-            $this->forward('failure');
-            return;
-        }
         switch ($response->getStatus()) {
-            case CTEnumStatus::OK:
+            case CTEnumStatus::AUTHORIZE_REQUEST;
                 $session->offsetSet('FatchipCTPayPalExpressPayID', $response->getPayID() );
                 $session->offsetSet('FatchipCTPayPalExpressXID', $response->getXID());
 
-                $this->redirect(['controller' => 'checkout', 'action' => 'confirm']);
+                // forward to PP Express register Controller to login the User with an
+                // "Schnellbesteller" Account
+
+                $this->forward('register', 'FatchipCTPaypalExpressRegister', null, [ 'CTResponse' => $response]);
                 break;
             default:
                 $this->forward('failure');
                 break;
         }
     }
+
+
 
     public function getPaymentClass($order, $successAction = '') {
         $router = $this->Front()->Router();

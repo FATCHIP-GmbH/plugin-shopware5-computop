@@ -74,14 +74,13 @@ class Logger implements SubscriberInterface
         $subject = $args->getSubject();
         $request = $args->getRequest();
 
-        $test =  $this->config['logLevel'];
         if ($this->isFatchipCTController($request->getControllerName()) && $this->config['debuglog'] === 'active'){
 
             $this->logger->debug("postDispatchSecure:" . $request->getControllerName() . " " . $request->getActionName() . ":");
             $this->logger->debug("RequestParams:", $request->getParams());
 
             if ($subject->View()->hasTemplate()){
-                $this->logger->debug("Template Name:", $subject->View()->Template()->template_resource);
+                $this->logger->debug("Template Name:", [$subject->View()->Template()->template_resource]);
                 $this->logger->debug("Template Vars:", $subject->View()->Engine()->smarty->tpl_vars);
             }
         }
