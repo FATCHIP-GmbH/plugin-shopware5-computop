@@ -81,7 +81,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends Shopware_Controllers
                 break;
             default:
                 $ctError = [];
-                $ctError['CTErrorMessage'] = $response->getDescription();
+                $ctError['CTErrorMessage'] = self::ERRORMSG . $response->getDescription();
                 $ctError['CTErrorCode'] = $response->getCode();
                 return $this->forward('shippingPayment', 'checkout', null, array('CTError' => $ctError));
 
