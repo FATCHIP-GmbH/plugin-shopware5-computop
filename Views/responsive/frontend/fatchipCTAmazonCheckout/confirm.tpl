@@ -8,6 +8,8 @@
 {* for shippingAddress != billingAddress *}
 {* Billing: *}
 {block name="frontend_checkout_confirm_information_addresses_billing_panel_actions"}
+    <div class="panel--actions is--wide">
+    </div>
 {/block}
 
 {* SW 5.2 - 5.3, 5.4? Change PaymentMean Selection Action Button to FatchipCTAmazonCheckout Controller *}
@@ -23,6 +25,8 @@
 {* SW 5.2 - 5.3, 5.4? Change PaymentMean Selection Action Button to FatchipCTAmazonCheckout Controller *}
 {* for shippingAddress != billingAddress *}
 {block name="frontend_checkout_confirm_information_addresses_shipping_panel_actions"}
+<div class="panel--actions is--wide">
+</div>
 {/block}
 
 

@@ -13,7 +13,17 @@
 {* SW 5.2 - 5.3, 5.4? Change PaymentMean Selection Action Button to FatchipCTAmazonCheckout Controller *}
 {* for shippingAddress = billingAddress *}
 {* Billing and Shipping: *}
-{block name="frontend_checkout_confirm_information_addresses_equal_panel_shipping"}
+{* both template overrides do not work in 5.3? WTF *}
+{block name='frontend_checkout_confirm_information_addresses_equal_panel_actions'}
+<div class="panel--actions is--wide">
+    <div class="address--actions-change">
+    </div>
+</div>
+{/block}
+
+{block name='frontend_checkout_confirm_information_addresses_equal_panel_shipping'}
+<div class="shipping--panel">
+</div>
 {/block}
 
 {* SW 5.0 , 5.1 Disable ShippingAddress Action Buttons *}
