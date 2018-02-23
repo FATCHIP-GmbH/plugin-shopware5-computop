@@ -306,8 +306,31 @@ class Util
         return false;
     }
 
-    public function needAnnualSalaryForKlarna() {
-        if ($countryIso = $this->getBillingIsoForCurrentOrder()) {
+
+    public function getSocialSecurityNumberLabelForKlarna($userData) {
+        $label = 'Sozialversicherungsnummer (letzte 4 Ziffern)';
+        //For comapnies, the field is called Handelsregisternummer
+        if (isset($userData['billingaddress']['company'])) {
+            $label = 'Handelsregisternummer';
+        }
+        else if ($countryIso = $this->getBillingIsoForCurrentOrder()) {
+            //only if billingcountry in DK, FI, SE, NO we show the social security number field
+            if ($countryIso == 'NO') {
+                $label = 'Sozialversicherungsnummer (letzte 5 Ziffern)';
+            }
+        }
+
+        return $label;
+    }
+
+    /***
+     * @param $userData
+     * @return bool
+     *
+     * Annual salary is mandatory for Private Customers in Denmark
+     */
+    public function needAnnualSalaryForKlarna($userData) {
+        if (!isset($userData['billingaddress']['company']) && $countryIso = $this->getBillingIsoForCurrentOrder()) {
             //only if billingcountry in DK, FI, SE, NO we show the social security number field
             if ($countryIso == 'DK' ) {
                 return true;
@@ -317,8 +340,9 @@ class Util
         return false;
     }
 
-    public function getSSNLength() {
-        if ($countryIso = $this->getBillingIsoForCurrentOrder()) {
+    public function getSSNLength($userData) {
+        //for companies, we do not need a max length
+        if (!isset($userData['billingaddress']['company']) && $countryIso = $this->getBillingIsoForCurrentOrder()) {
             if ($countryIso == 'NO') {
                 return 5;
             }

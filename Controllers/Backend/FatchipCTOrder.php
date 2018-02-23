@@ -473,14 +473,6 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
               . $position->getPrice() * 100 . ';' . $position->getTaxRate() . ';0;0';
 
 
-       /*
-        if ($basket['sShippingcosts'] != 0) {
-            if (!empty($orderDesc)) {
-                $orderDesc .= ' + ';
-            }
-            $orderDesc .= '1;shipping;Versandkosten;' . $basket['sShippingcosts'] * 100 . ';' . $basket['sShippingcostsTax'] . ';0;8';
-        }*/
-
         return $orderDesc;
 
 

@@ -19,7 +19,7 @@
             {/block}
         {/if}
 
-        {if !$FatchipCTPaymentData.birthday || $FatchipCTPaymentData.birthday == '00' }
+        {if !$FatchipCTPaymentData.isCompany && (!$FatchipCTPaymentData.birthday || $FatchipCTPaymentData.birthday == '00') }
             {* The main form field table *}
             {block name="frontend_checkout_payment_fatchip_computop_klarna_birthday_label"}
                 <p class="none">
@@ -84,7 +84,7 @@
         {if $FatchipCTPaymentData.showsocialsecuritynumber}
             {block name="frontend_checkout_payment_fatchip_computop_klarna_installment_socialsecuritynumber_label"}
                 <p class="none">
-                    <label for="fatchip_computop_klarna_socialsecuritynumber">{s name='klarnaSocialsecuritynumberLabel'}Letzte Ziffern vom Sozialversicherungsnummer{/s}</label>
+                    <label for="fatchip_computop_klarna_socialsecuritynumber">{$FatchipCTPaymentData.SSNLabel}</label>
                 </p>
             {/block}
 
@@ -93,7 +93,7 @@
                        id="fatchip_computop_klarna_installment_socialsecuritynumber"
                 {if $FatchipCTPaymentData.SSNMaxLen}maxlength={$FatchipCTPaymentData.SSNMaxLen}{/if}
                 class="payment--field is--required{if $error_flags.fatchip_computop__klarna_socialsecuritynumber} has--error{/if}"
-                placeholder="{s name='klarnaSocialsecuritynumber'}Sozialversicherungsnummer{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
+                placeholder="{$FatchipCTPaymentData.SSNLabel}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
                 {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
                 value="{$FatchipCTPaymentData.socialsecuritynumber}"
                 />

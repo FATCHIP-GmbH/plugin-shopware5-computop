@@ -186,13 +186,18 @@ class Checkout implements SubscriberInterface
             if ($this->utils->needSocialSecurityNumberForKlarna()) {
                 $paymentData['socialsecuritynumber'] = $this->utils->getuserSSN($userData);
                 $paymentData['showsocialsecuritynumber'] = true;
-                $paymentData['SSNMaxLen'] = $this->utils->getSSNLength();
+                $paymentData['SSNLabel'] = $this->utils->getSocialSecurityNumberLabelForKlarna($userData);
+                $paymentData['SSNMaxLen'] = $this->utils->getSSNLength($userData);
             }
 
-            if ($this->utils->needAnnualSalaryForKlarna()) {
+            if ($this->utils->needAnnualSalaryForKlarna($userData)) {
                 $paymentData['showannualsalary'] = true;
                 $paymentData['annualsalary'] = $this->utils->getUserAnnualSalary($userData);
             }
+
+            $paymentData['isCompany'] = isset($userData['billingaddress']['company']);
+
+
 
 
             $view->assign('FatchipCTPaymentData', $paymentData);
