@@ -94,6 +94,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         ));
         $this->createMenuItem(array(
             'label'      => self::labelComputopApiLog,
+            'class'      => 'computop-icon',
             'active'     => 1,
             'action'     => 'index',
             'controller' => 'FatchipCTApilog',
