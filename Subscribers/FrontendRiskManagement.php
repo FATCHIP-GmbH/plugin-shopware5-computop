@@ -288,9 +288,9 @@ class FrontendRiskManagement implements SubscriberInterface {
         $crifStatus = $this->getCrifStatusFromAddressArray($addressArray);
         $crifDate =  $this->getCrifDateFromAddressArray($addressArray);
         $crifResult = $this->getCrifResultFromAddressArray($addressArray);
-        //if crif is not responding (FAILED), we try again after one hour to prevent making hundreds of calls
+        //if crif is not responding (FAILED), or INVALID (0) we try again after one hour to prevent making hundreds of calls
         //In Adressarray there are underscores in attribute nmaes
-        if ($crifStatus == 'FAILED') {
+        if ($crifStatus == 'FAILED' || $crifStatus == '0') {
             $lastTimeChecked = $this->getCrifDateFromAddressArray($addressArray);
             $hoursPassed = $lastTimeChecked->diff(new \DateTime('now'), true)->hours;
             return $hoursPassed > 1;
