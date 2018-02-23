@@ -35,7 +35,7 @@ require_once 'FatchipCTPayment.php';
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTKlarna
  */
-class Shopware_Controllers_Frontend_FatchipCTKlarna extends Shopware_Controllers_Frontend_FatchipCTPayment
+class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controllers_Frontend_FatchipCTPayment
 {
 
     public $paymentClass = 'Klarna';

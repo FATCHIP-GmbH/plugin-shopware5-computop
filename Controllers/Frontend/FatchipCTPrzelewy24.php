@@ -27,6 +27,9 @@
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTPrzelewy24
  */
+
+require_once 'FatchipCTPayment.php';
+
 class Shopware_Controllers_Frontend_FatchipCTPrzelewy24 extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
 

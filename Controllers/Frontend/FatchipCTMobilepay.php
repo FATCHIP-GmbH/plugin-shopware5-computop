@@ -27,6 +27,9 @@
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTMobilepay
  */
+
+require_once 'FatchipCTPayment.php';
+
 class Shopware_Controllers_Frontend_FatchipCTMobilepay extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
 

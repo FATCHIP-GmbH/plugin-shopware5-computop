@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -27,7 +28,10 @@
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTPaydirekt
  */
-class Shopware_Controllers_Frontend_FatchipCTPaydirekt extends Shopware_Controllers_Frontend_FatchipCTPayment
+
+require_once 'FatchipCTPayment.php';
+
+class Shopware_Controllers_Frontend_FatchipCTPaydirekt extends Shopware_Controllers_Frontend_FatchipCTPaymenst
 {
 
     public $paymentClass = 'Paydirekt';

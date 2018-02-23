@@ -29,6 +29,8 @@ use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Fatchip\CTPayment\CTEnums\CTEnumEasyCredit;
 use Fatchip\CTPayment\CTPaymentMethodsIframe\EasyCredit;
 
+require_once 'FatchipCTPayment.php';
+
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTEasyCredit
  */

@@ -29,6 +29,7 @@ use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Shopware\Components\CSRFWhitelistAware;
 
+require_once 'FatchipCTPayment.php';
 
 abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controllers_Frontend_Payment implements CSRFWhitelistAware
 {

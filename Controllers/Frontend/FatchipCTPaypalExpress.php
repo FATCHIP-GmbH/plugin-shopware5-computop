@@ -27,6 +27,7 @@
 
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
+use Fatchip\CTPayment\CTPaypalExpress;
 // add baseclass via require_once so we can extend
 // ToDo find a better solution for this
 require_once 'FatchipCTPayment.php';
@@ -88,13 +89,55 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
 
         switch ($response->getStatus()) {
             case CTEnumStatus::AUTHORIZE_REQUEST;
-                $session->offsetSet('FatchipCTPayPalExpressPayID', $response->getPayID() );
-                $session->offsetSet('FatchipCTPayPalExpressXID', $response->getXID());
+                $session->offsetSet('FatchipCTPaypalExpressPayID', $response->getPayID() );
+                $session->offsetSet('FatchipCTPaypalExpressXID', $response->getXID());
+                $session->offsetSet('FatchipCTPaypalExpressTransID', $response->getXID());
+
 
                 // forward to PP Express register Controller to login the User with an
                 // "Schnellbesteller" Account
 
                 $this->forward('register', 'FatchipCTPaypalExpressRegister', null, [ 'CTResponse' => $response]);
+                break;
+            default:
+                $this->forward('failure');
+                break;
+        }
+    }
+
+    /**
+     * success action method
+     * @return void
+     * @throws Exception
+     */
+    public function confirmAction()
+    {
+        $session = Shopware()->Session();
+        $orderVars = Shopware()->Session()->sOrderVariables;
+        $userData = $orderVars['sUserData'];
+
+        $service = new CTPaypalExpress($this->config);
+        $requestParams =  $service->getPaypalExpressCompleteParams(
+            $session->offsetGet('FatchipCTPaypalExpressPayID'),
+            $session->offsetGet('FatchipCTPaypalExpressTransID'),
+            $this->getAmount() * 100,
+            $this->getCurrencyShortName()
+        );
+        // wrap this in a method we can hook for central logging
+        // refactor Amazon to use central Paymentservice to get rid of service Param
+        $response = $this->plugin->callComputopService($requestParams, $service, 'ORDER');
+
+        switch ($response->getStatus()) {
+            case CTEnumStatus::OK:
+                $this->saveOrder(
+                    $response->getTransID(),
+                    $response->getUserData(),
+                    self::PAYMENTSTATUSPAID
+                );
+
+                $session->offsetSet('FatchipComputopEasyCreditInformation', null);
+
+                $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
                 break;
             default:
                 $this->forward('failure');

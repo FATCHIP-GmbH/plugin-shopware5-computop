@@ -27,6 +27,9 @@
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTLastschrift
  */
+
+require_once 'FatchipCTPayment.php';
+
 class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
     public $paymentClass = '';

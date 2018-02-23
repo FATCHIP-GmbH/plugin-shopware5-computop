@@ -27,6 +27,8 @@
 use Shopware\FatchipCTPayment\Util;
 use Shopware\Components\CSRFWhitelistAware;
 
+require_once 'FatchipCTPayment.php';
+
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTPaypalExpressRegisters
  */
@@ -73,6 +75,8 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpressRegister extends Shopw
     {
         $request = $this->Request();
         $params = $request->getParams();
+        $session= Shopware()->Session();
+        $session->offsetSet('sPaymentID', $this->utils->getPaymentIdFromName('fatchip_computop_paypal_express'));
         $AddrCountryCodeID = $this->utils->getCountryIdFromIso($params['CTResponse']->getAddrCountryCode());
         $splitNames = explode(' ', $params['CTResponse']->getName());
         // we simply dont use middle names

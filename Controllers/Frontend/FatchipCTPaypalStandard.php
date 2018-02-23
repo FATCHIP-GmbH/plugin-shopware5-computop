@@ -27,6 +27,9 @@
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTPaypalStandard
  */
+
+require_once 'FatchipCTPayment.php';
+
 class Shopware_Controllers_Frontend_FatchipCTPaypalStandard extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
 

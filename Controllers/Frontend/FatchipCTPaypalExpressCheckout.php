@@ -26,7 +26,8 @@
 
 use Shopware\FatchipCTPayment\Util;
 use Shopware\Components\CSRFWhitelistAware;
-use Fatchip\CTPayment\CTAmazon;
+
+require_once 'FatchipCTPayment.php';
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTPaypalExpressCheckout

@@ -98,7 +98,6 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         $request = $this->Request();
         $params = $request->getParams();
         $session = Shopware()->Session();
-        // ToDo check if setting paymentid in sesion was necessary
         // this has to be set so shipping methods will work
         $session->offsetSet('sPaymentID', $this->utils->getPaymentIdFromName('fatchip_computop_amazonpay'));
 

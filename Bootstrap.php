@@ -138,11 +138,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             'Fatchip',
             $this->Path() . 'Components/Api/lib/'
         );
-
-        Shopware()->Loader()->registerNamespace(
-            'Shopware\FatchipCTPayment\Controllers',
-            $this->Path() . 'Controllers/Frontend/'
-        );
     }
 
     public function createRiskRules()
@@ -626,14 +621,12 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
 
     // this wrapper is used for logging requests and responses to our shopware model
-    public function callComputopService($requestParams, $service){
+    public function callComputopService($requestParams, $service, $requestType){
         $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
-        // Todo find a solution to get the paymentname from Classname
-        // ToDo implement getPaymentNameFromClassName
         $log->setPaymentName('AmazonPay');
-        $log->setRequest($requestParams['EventToken']);
+        $log->setRequest($requestType);
         $log->setRequestDetails(json_encode($requestParams));
-        $response =  $service->callComputopAmazon($requestParams);
+        $response =  $service->callComputop($requestParams);
         $log->setTransId($response['TransID']);
         $log->setPayId($response['PayID']);
         $log->setXId($response['XID']);
