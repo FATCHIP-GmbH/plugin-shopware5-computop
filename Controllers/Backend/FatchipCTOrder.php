@@ -1,5 +1,7 @@
 <?php
 
+use Fatchip\CTPayment\CTPaymentService;
+
 class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_Backend_ExtJs
 {
 
@@ -74,7 +76,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
                 $this->markPositionsAsRefunded($order, $positionIds, $includeShipment);
                 $response = array('success' => true);
             } else {
-                $errorMessage = 'Gutschrift (zur Zeit) nicht möglich: ' . $captureResponse->getDescription();// . $captureResponse->get ;
+                $errorMessage = 'Gutschrift (zur Zeit) nicht möglich: ' . $captureResponse->getDescription();
                 $response = array('success' => false, 'error_message' => $errorMessage);
             }
         } catch (Exception $e) {
@@ -143,7 +145,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
                 $this->inquireAndupdatePaymentStatus($order,$paymentClass);
                 $response = array('success' => true);
             } else {
-                $errorMessage = 'Capture (zur Zeit) nicht möglich: ' . $captureResponse->getDescription();// . $captureResponse->get ;
+                $errorMessage = 'Capture (zur Zeit) nicht möglich: ' . $captureResponse->getDescription();
                 $response = array('success' => false, 'error_message' => $errorMessage);
             }
         } catch (Exception $e) {
@@ -177,11 +179,8 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         //Not all paymentclasses offer a refund URL. If not, the order is not refundable
         $paymentClass = $this->getCTPaymentClassForOrder($order);
         $refundURL =$paymentClass->getCTRefundURL();
-        if (empty($refundURL)) {
-            return false;
-        }
 
-        return true;
+        return !empty($refundURL);
     }
 
     private function createCTOrderFromSWorder($swOrder) {
@@ -368,54 +367,16 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
     private function getCTPaymentClassNameForOrder($order) {
         $name = $order->getPayment()->getName();
-        if (strpos($name, 'fatchip_computop') !== 0) {
-            return false;
+        /** @var CTPaymentService $service */
+        $service = new CTPaymentService(null);
+        $paymentMethods = $service->getPaymentMethods();
+
+        if ($key = array_search($name, array_column($paymentMethods, 'name'))) {
+            return $paymentMethods[$key]['className'];
         }
 
-        $value = $name;
-        switch ($name) {
-            case 'fatchip_computop_creditcard':
-                $value = 'CreditCard';
-                break;
-            case 'fatchip_computop_easycredit':
-                $value = 'EasyCredit';
-                break;
-            case 'fatchip_computop_ideal':
-                $value = 'Ideal';
-                break;
-            case 'fatchip_computop_klarna_invoice':
-                $value = 'Klarna';
-                break;
-            case 'fatchip_computop_klarna_installment':
-                $value = 'Klarna';
-                break;
-            case 'fatchip_computop_lastschrift':
-                $value = 'Lastschrift';
-                break;
-            case 'fatchip_computop_mobilepay':
-                $value = 'MobilePay';
-                break;
-            case 'fatchip_computop_paydirekt':
-                $value = 'Paydirekt';
-                break;
-            case 'fatchip_computop_paypal_standard':
-                $value = 'PaypalStandard';
-                break;
-            case 'fatchip_computop_postfinance':
-                $value = 'PostFinance';
-                break;
-            case 'fatchip_computop_przelewy24':
-                $value = 'Przelewy24';
-                break;
-            case 'fatchip_computop_sofort':
-                $value = 'Sofort';
-                break;
-            case 'fatchip_computop_amazonpay':
-                $value ='AmazonPay'; //TODO: Checken ob das stimmt.
-                break;
-        }
+        return $name;
 
-        return $value;
     }
 
     private function getCTPaymentClassForOrder($order) {
