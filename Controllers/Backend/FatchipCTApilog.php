@@ -18,20 +18,7 @@ class Shopware_Controllers_Backend_FatchipCTApilog extends Shopware_Controllers_
             $filterValue = $filter['value'];
         }
 
-        $builder = Shopware()->Models()->createQueryBuilder();
-        $builder->select(
-            'log.id as id',
-            'log.request as request',
-            'log.response as response',
-            'log.paymentName as paymentName',
-            'log.payId as payId',
-            'log.transId as transId',
-            'log.xId as xId',
-            'log.creationDate as creationDate',
-            'log.requestDetails as requestDetails',
-            'log.responseDetails as responseDetails'
-        )->from('Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog', 'log');
-
+        $builder = $this->getLogQuery();
 
       //order data
         $order = (array) $this->Request()->getParam('sort', array());
@@ -127,19 +114,7 @@ class Shopware_Controllers_Backend_FatchipCTApilog extends Shopware_Controllers_
             $filterValue = $filter['value'];
         }
 
-        $builder = Shopware()->Models()->createQueryBuilder();
-        $builder->select(
-            'log.id as id',
-            'log.request as request',
-            'log.response as response',
-            'log.paymentName as paymentName',
-            'log.payId as payId',
-            'log.transId as transId',
-            'log.xId as xId',
-            'log.creationDate as creationDate',
-            'log.requestDetails as requestDetails',
-            'log.responseDetails as responseDetails'
-        )->from('Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog', 'log');
+        $builder = $this->getLogQuery();
 
         if ($filterValue) {
             $builder->where('log.merchant_id = ?1')->setParameter(1, $filterValue);
@@ -162,19 +137,7 @@ class Shopware_Controllers_Backend_FatchipCTApilog extends Shopware_Controllers_
     {
         $filters = $this->Request()->get('filter');
 
-        $builder = Shopware()->Models()->createQueryBuilder();
-        $builder->select(
-            'log.id as id',
-            'log.request as request',
-            'log.response as response',
-            'log.paymentName as paymentName',
-            'log.payId as payId',
-            'log.transId as transId',
-            'log.xId as xId',
-            'log.creationDate as creationDate',
-            'log.requestDetails as requestDetails',
-            'log.responseDetails as responseDetails'
-        )->from('Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog', 'log');
+        $builder = $this->getLogQuery();
 
         foreach ($filters as $filter) {
             if ($filter['property'] == 'search' && !empty($filter['value'])) {
@@ -201,5 +164,24 @@ class Shopware_Controllers_Backend_FatchipCTApilog extends Shopware_Controllers_
         $total  = Shopware()->Models()->getQueryCount($builder->getQuery());
 
         $this->View()->assign(array('success' => true, 'data'    => $result, 'total'   => $total));
+    }
+
+    public function getLogQuery()
+    {
+        $builder = Shopware()->Models()->createQueryBuilder();
+        $builder->select(
+            'log.id as id',
+            'log.request as request',
+            'log.response as response',
+            'log.paymentName as paymentName',
+            'log.payId as payId',
+            'log.transId as transId',
+            'log.xId as xId',
+            'log.creationDate as creationDate',
+            'log.requestDetails as requestDetails',
+            'log.responseDetails as responseDetails'
+        )->from('Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog', 'log');
+
+        return $builder;
     }
 }
