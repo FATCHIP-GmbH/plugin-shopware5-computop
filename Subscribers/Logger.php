@@ -7,7 +7,7 @@ use Enlight\Event\SubscriberInterface;
 /**
  * Class Service
  *
- * @package Shopware\FatchipCTPayment\Subscribers
+ * @package Shopware\Plugins\FatchipCTPayment\Subscribers
  */
 class Logger implements SubscriberInterface
 {

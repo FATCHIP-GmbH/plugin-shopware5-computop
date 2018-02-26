@@ -8,7 +8,7 @@ use Shopware\Plugins\FatchipCTPayment\Util;
 /**
  * Class Service
  *
- * @package Shopware\FatchipCTPayment\Subscribers
+ * @package Shopware\Plugins\FatchipCTPayment\Subscribers
  */
 class Utils implements SubscriberInterface
 {

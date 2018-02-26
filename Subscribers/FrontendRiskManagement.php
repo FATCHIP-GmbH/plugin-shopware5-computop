@@ -4,9 +4,8 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 use Fatchip\CTPayment\CTOrder\CTOrder;
-use Fatchip\CTPayment\CTResponse;
 use Shopware\Components\DependencyInjection\Container;
-use Shopware\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipCTPayment\Util;
 
 /**
  * Class AddressCheck

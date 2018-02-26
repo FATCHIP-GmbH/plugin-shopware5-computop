@@ -24,7 +24,7 @@
  * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link      https://www.computop.com
  */
-// ToDo find a better solution for this
+
 require_once 'FatchipCTPayment.php';
 
 /**
