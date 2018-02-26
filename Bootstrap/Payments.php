@@ -38,7 +38,6 @@ class Payments
                 'description' => $paymentMethod['description'],
                 'action' => $paymentMethod['action'],
                 'active' => 0,
-                'position' => $paymentMethod['position'],
                 'template' => $paymentMethod['template'],
                 'additionalDescription' => $paymentMethod['additionalDescription'],
             ];
