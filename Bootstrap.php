@@ -97,7 +97,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         );
     }
 
-
     public function addJsFiles(Enlight_Event_EventArgs $args)
     {
         $jsFiles = [
@@ -106,8 +105,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         ];
         return new ArrayCollection($jsFiles);
     }
-
-
 
     /**
      * Register the custom model dir

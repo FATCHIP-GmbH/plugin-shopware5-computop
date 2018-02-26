@@ -42,7 +42,7 @@ class Attributes
         foreach ($attributes as $name => $attribute) {
             try {
                 $this->plugin->get('models')->addAttribute($table, $prefix, $name, $attribute['type']);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
             }
         }
 
@@ -68,7 +68,7 @@ class Attributes
                             'displayInBackend' => $attribute['additionalInfo']['displayInBackend']
                         ]);
                     }
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                 }
             }
         }
