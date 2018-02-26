@@ -70,82 +70,16 @@ class Checkout implements SubscriberInterface
 
         // ToDo prevent forward to checkout confirm if params are missing
 
-        // save easycredit additional input fields
-        if (!empty($params['FatchipComputopPaymentData']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_easycredit') {
-            $this->utils->updateUserDoB($session->get('sUserId'),
-                $params['FatchipComputopPaymentData']['fatchip_computop_easycredit_birthyear'].'-'.
-                $params['FatchipComputopPaymentData']['fatchip_computop_easycredit_birthmonth'].'-'.
-                $params['FatchipComputopPaymentData']['fatchip_computop_easycredit_birthday']
-                );
-        }
+        if ($request->getActionName() === 'saveShippingPayment') {
+            $this->updateUserDoB($paymentName, $session->get('sUserId'), $params);
+            $this->updateUserPhone($paymentName, $session->get('sUserId'), $params);
+            $this->updateUserSSN($paymentName, $session->get('sUserId'), $params);
+            $this->updateUserAnnualSalary($paymentName, $session->get('sUserId'), $params);
+            $this->setIssuerInSession($paymentName, $params);
 
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_birthyear']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna_invoice') {
-            $this->utils->updateUserDoB($session->get('sUserId'),
-                $params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_birthyear'] . '-' .
-                $params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_birthmonth'] . '-' .
-                $params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_birthday']
-            );
-        }
-
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_birthyear']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna_installment') {
-            $this->utils->updateUserDoB($session->get('sUserId'),
-              $params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_birthyear'] . '-' .
-              $params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_birthmonth'] . '-' .
-              $params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_birthday']
-            );
-        }
-
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_phone']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna_invoice') {
-            $this->utils->updateUserPhone($session->get('sUserId'),
-                $params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_phone']
-            );
-        }
-
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_phone']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna_installment') {
-            $this->utils->updateUserPhone($session->get('sUserId'),
-              $params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_phone']
-            );
-        }
-
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_socialsecuritynumber']) && $request->getActionName() === 'saveShippingPayment'&& $paymentName === 'fatchip_computop_klarna_invoice') {
-            $this->utils->updateUserSSN($session->get('sUserId'),
-              $params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_socialsecuritynumber']
-            );
-        }
-
-         if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_socialsecuritynumber']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna_installment') {
-             $this->utils->updateUserSSN($session->get('sUserId'),
-               $params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_socialsecuritynumber']
-             );
-         }
-
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_annualsalary']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna_invoice') {
-            $this->utils->updateUserAnnualSalary($session->get('sUserId'),
-              $params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_annualsalary']
-            );
-        }
-
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_annualsalary']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna_installment') {
-            $this->utils->updateUserAnnualSalary($session->get('sUserId'),
-              $params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_annualsalary']
-            );
-        }
-
-
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_ideal_issuer']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_ideal') {
-                $session->offsetSet('FatchipComputopIdealIssuer',
-                $params['FatchipComputopPaymentData']['fatchip_computop_ideal_issuer']
-            );
-        }
-
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_sofort_issuer']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_sofort') {
-            $session->offsetSet('FatchipComputopSofortIssuer',
-                $params['FatchipComputopPaymentData']['fatchip_computop_sofort_issuer']
-            );
-        }
-
-        if ($paymentName === 'fatchip_computop_easycredit' && $request->getActionName() === 'saveShippingPayment' && !$session->offsetExists('fatchipComputopEasyCreditPayId')) {
-            $subject->redirect(['controller' => 'FatchipCTEasyCredit','action' => 'gateway', 'forceSecure' => true]);
+            if ($paymentName === 'fatchip_computop_easycredit' && !$session->offsetExists('fatchipComputopEasyCreditPayId')) {
+                $subject->redirect(['controller' => 'FatchipCTEasyCredit','action' => 'gateway', 'forceSecure' => true]);
+            }
         }
     }
 
@@ -197,9 +131,6 @@ class Checkout implements SubscriberInterface
 
             $paymentData['isCompany'] = isset($userData['billingaddress']['company']);
 
-
-
-
             $view->assign('FatchipCTPaymentData', $paymentData);
 
             // assign payment errors and error template to view
@@ -239,6 +170,59 @@ class Checkout implements SubscriberInterface
             }
         }
     }
+
+
+    private function updateUserDoB($paymentName, $userId, $params) {
+        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_birthyear'])) {
+            $this->utils->updateUserDoB($userId,
+              $params['FatchipComputopPaymentData'][$paymentName . '_birthyear'].'-'.
+              $params['FatchipComputopPaymentData'][$paymentName . '_birthmonth'].'-'.
+              $params['FatchipComputopPaymentData'][$paymentName . '_birthday']
+            );
+        }
+    }
+
+    private function updateUserPhone($paymentName, $userId, $params) {
+        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_phone'])) {
+            $this->utils->updateUserPhone($userId,
+              $params['FatchipComputopPaymentData'][$paymentName . '_phone']
+            );
+        }
+    }
+
+    private function updateUserSSN($paymentName, $userId, $params) {
+        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_socialsecuritynumber'])) {
+            $this->utils->updateUserSSN($userId,
+              $params['FatchipComputopPaymentData'][$paymentName . '_socialsecuritynumber']
+            );
+        }
+    }
+
+
+    private function updateUserAnnualSalary($paymentName, $userId, $params) {
+        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_annualsalary'])) {
+            $this->utils->updateUserAnnualSalary($userId,
+              $params['FatchipComputopPaymentData'][$paymentName . '__annualsalary']
+            );
+        }
+    }
+
+    private function setIssuerInSession($paymentName, $params) {
+        $session = Shopware()->Session();
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_ideal_issuer']) && $paymentName === 'fatchip_computop_ideal') {
+            $session->offsetSet('FatchipComputopIdealIssuer',
+              $params['FatchipComputopPaymentData']['fatchip_computop_ideal_issuer']
+            );
+        }
+
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_sofort_issuer']) && $paymentName === 'fatchip_computop_sofort') {
+            $session->offsetSet('FatchipComputopSofortIssuer',
+              $params['FatchipComputopPaymentData']['fatchip_computop_sofort_issuer']
+            );
+        }
+    }
+
+
 
     /**
     * @return LessDefinition
