@@ -30,6 +30,8 @@ class Logger implements SubscriberInterface
                 'onPostDispatchFatchipCT',
             'Enlight_Controller_Action_PostDispatchSecure_Frontend' =>
                 'onPostDispatchSecureFatchipCT',
+           'Enlight_Controller_Action_PostDispatch_Backend_Index' =>
+             'onPostDispatchBackendIndex',
         ];
     }
 
@@ -84,5 +86,26 @@ class Logger implements SubscriberInterface
                 $this->logger->debug("Template Vars:", $subject->View()->Engine()->smarty->tpl_vars);
             }
         }
+    }
+    /**
+     * @param \Enlight_Event_EventArgs $args
+     */
+    public function onPostDispatchBackendIndex(\Enlight_Event_EventArgs $args)
+    {
+        /** @var \Shopware_Controllers_Backend_Index $subject */
+        $subject = $args->get('subject');
+        $request = $subject->Request();
+        $response = $subject->Response();
+        $view = $subject->View();
+
+        $view->addTemplateDir(__DIR__ . '/../Views');
+
+        if (!$request->isDispatched() ||
+          $response->isException() ||
+          $request->getModuleName() != 'backend' ||
+          !$view->hasTemplate()) {
+            return;
+        }
+        $view->extendsTemplate('responsive/backend/index/computop.tpl');
     }
 }

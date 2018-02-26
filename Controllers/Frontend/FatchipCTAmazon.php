@@ -72,7 +72,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
 
         $response = $this->paymentService->createPaymentResponse($requestParams);
 
-        $ctError['CTErrorMessage'] = $response->getDescription();
+        $ctError['CTErrorMessage'] = self::ERRORMSG . $response->getDescription();
         $ctError['CTErrorCode'] = $response->getCode();
 
         return $this->forward('index', 'FatchipCTAmazonRegister', null, array('CTError' => $ctError));

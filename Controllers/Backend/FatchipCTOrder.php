@@ -64,6 +64,10 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             $paymentClass->setAmount($amount);
             $paymentClass->setCurrency($order->getCurrency());
 
+            if (strpos($order->getPayment()->getName(), 'fatchip_computop_klarna_') === 0) {
+                $paymentClass->setOrderDesc($this->getKlarnaOrderDesc($order, $positionIds));
+            }
+
             $captureResponse = $paymentClass->refund($order->getAttribute()->getfatchipctPayid(), $amount, $order->getCurrency());
 
             if ($captureResponse->getStatus() == 'OK') {
@@ -379,7 +383,10 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             case 'fatchip_computop_ideal':
                 $value = 'Ideal';
                 break;
-            case 'fatchip_computop_klarna':
+            case 'fatchip_computop_klarna_invoice':
+                $value = 'Klarna';
+                break;
+            case 'fatchip_computop_klarna_installment':
                 $value = 'Klarna';
                 break;
             case 'fatchip_computop_lastschrift':
@@ -449,6 +456,26 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
                     $this->get('models')->flush($order);
                 }
             }
+        }
+    }
+
+    private function getKlarnaOrderDesc($order, $positionIds) {
+        $orderDesc = '';
+        foreach ($order->getDetails() as $position) {
+            if (!in_array($position->getId(), $positionIds)) {
+                continue;
+            }
+
+            if (!empty($orderDesc)) {
+                $orderDesc .= ' + ';
+            }
+            $orderDesc .= $position->getQuantity() . ';' . $position->getArticleID() . ';' . $position->getArticlename() . ';'
+              . $position->getPrice() * 100 . ';' . $position->getTaxRate() . ';0;0';
+
+
+        return $orderDesc;
+
+
         }
     }
 }

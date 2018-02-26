@@ -64,7 +64,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         // extend order model
         $this->addAttributes('fatchipCT', 's_order_attributes', CTPaymentAttributes::orderAttributes);
         $this->addAttributes('fatchipCT', 's_order_details_attributes', CTPaymentAttributes::orderDetailsAttributes);
-
+        $this->addAttributes('fatchipCT', 's_user_attributes', CTPaymentAttributes::userAttributes);
         // extend address tables depending on sw version
         if ($this->assertMinimumVersion('5.2')) {
             $this->addAttributes('fatchipCT', 's_user_addresses_attributes', CTPaymentAttributes::userAddressAttributes);
@@ -94,6 +94,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         ));
         $this->createMenuItem(array(
             'label'      => self::labelComputopApiLog,
+            'class'      => 'computop-icon',
             'active'     => 1,
             'action'     => 'index',
             'controller' => 'FatchipCTApilog',
@@ -408,22 +409,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         }
     }
 
-
-/*    private function addShippingAttributes() {
-        if ($this->assertMinimumVersion('5.2')) {
-            $this->get('shopware_attribute.crud_service')->create(
-              's_order_attributes',
-              'ShipCaptured',
-              'integer',
-              [
-                'label' => 'Versandkosten bisher eingezogen:1',
-                'displayInBackend' => true
-              ]
-            );
-        }
-        return true;
-    }
-*/
     private function createGeneralConfigForm($formGeneralTextElements, $formGeneralSelectElements)
     {
         $this->createFormTextElements($formGeneralTextElements);

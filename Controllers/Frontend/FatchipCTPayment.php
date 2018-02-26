@@ -39,6 +39,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     const PAYMENTSTATUSOPEN= 17;
     const PAYMENTSTATUSRESERVED = 18;
 
+    const ERRORMSG = 'Es ist ein Fehler aufgetreten. Bitte wählen Sie eine andere Zahlungsart oder versuchen Sie es später noch einmal.<br>';
+
     /** @var \Fatchip\CTPayment\CTPaymentService $service */
     protected $paymentService;
 
@@ -127,7 +129,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
         $response = $this->paymentService->createPaymentResponse($requestParams);
 
-        $ctError['CTErrorMessage'] = $response->getDescription();
+        $ctError['CTErrorMessage'] = self::ERRORMSG .  $response->getDescription();
         $ctError['CTErrorCode'] = $response->getCode();
 
         // remove easycredit session var

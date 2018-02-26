@@ -26,6 +26,7 @@
 namespace Shopware\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
+use Shopware\Components\Theme\LessDefinition;
 use Shopware\FatchipCTPayment\Util;
 
 class Checkout implements SubscriberInterface
@@ -42,6 +43,7 @@ class Checkout implements SubscriberInterface
         return array(
             'Shopware_Controllers_Frontend_Checkout::saveShippingPaymentAction::after' => 'onAfterPaymentAction',
             'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostdispatchFrontendCheckout',
+            'Theme_Compiler_Collect_Plugin_Less' => 'onThemeCompilerCollectPluginLess',
         );
     }
 
@@ -77,19 +79,58 @@ class Checkout implements SubscriberInterface
                 );
         }
 
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_birthyear']) && $request->getActionName() === 'saveShippingPayment' && strpos($paymentName, 'fatchip_computop_klarna_') === 0) {
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_birthyear']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna_invoice') {
             $this->utils->updateUserDoB($session->get('sUserId'),
-                $params['FatchipComputopPaymentData']['fatchip_computop_klarna_birthyear'] . '-' .
-                $params['FatchipComputopPaymentData']['fatchip_computop_klarna_birthmonth'] . '-' .
-                $params['FatchipComputopPaymentData']['fatchip_computop_klarna_birthday']
+                $params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_birthyear'] . '-' .
+                $params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_birthmonth'] . '-' .
+                $params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_birthday']
             );
         }
 
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_phone']) && $request->getActionName() === 'saveShippingPayment' && strpos($paymentName, 'fatchip_computop_klarna_') === 0) {
-            $this->utils->updateUserPhone($session->get('sUserId'),
-                $params['FatchipComputopPaymentData']['fatchip_computop_klarna_phone']
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_birthyear']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna_installment') {
+            $this->utils->updateUserDoB($session->get('sUserId'),
+              $params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_birthyear'] . '-' .
+              $params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_birthmonth'] . '-' .
+              $params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_birthday']
             );
         }
+
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_phone']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna_invoice') {
+            $this->utils->updateUserPhone($session->get('sUserId'),
+                $params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_phone']
+            );
+        }
+
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_phone']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna_installment') {
+            $this->utils->updateUserPhone($session->get('sUserId'),
+              $params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_phone']
+            );
+        }
+
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_socialsecuritynumber']) && $request->getActionName() === 'saveShippingPayment'&& $paymentName === 'fatchip_computop_klarna_invoice') {
+            $this->utils->updateUserSSN($session->get('sUserId'),
+              $params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_socialsecuritynumber']
+            );
+        }
+
+         if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_socialsecuritynumber']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna_installment') {
+             $this->utils->updateUserSSN($session->get('sUserId'),
+               $params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_socialsecuritynumber']
+             );
+         }
+
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_annualsalary']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna_invoice') {
+            $this->utils->updateUserAnnualSalary($session->get('sUserId'),
+              $params['FatchipComputopPaymentData']['fatchip_computop_klarna_invoice_annualsalary']
+            );
+        }
+
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_annualsalary']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_klarna_installment') {
+            $this->utils->updateUserAnnualSalary($session->get('sUserId'),
+              $params['FatchipComputopPaymentData']['fatchip_computop_klarna_installment_annualsalary']
+            );
+        }
+
 
         if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_ideal_issuer']) && $request->getActionName() === 'saveShippingPayment' && $paymentName === 'fatchip_computop_ideal') {
                 $session->offsetSet('FatchipComputopIdealIssuer',
@@ -140,6 +181,25 @@ class Checkout implements SubscriberInterface
             $paymentData['idealIssuer'] = $session->offsetGet('FatchipComputopIdealIssuer');
             $paymentData['sofortIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
             $paymentData['sofortIssuer'] = $session->offsetGet('FatchipComputopSofortIssuer');
+
+
+            if ($this->utils->needSocialSecurityNumberForKlarna()) {
+                $paymentData['socialsecuritynumber'] = $this->utils->getuserSSN($userData);
+                $paymentData['showsocialsecuritynumber'] = true;
+                $paymentData['SSNLabel'] = $this->utils->getSocialSecurityNumberLabelForKlarna($userData);
+                $paymentData['SSNMaxLen'] = $this->utils->getSSNLength($userData);
+            }
+
+            if ($this->utils->needAnnualSalaryForKlarna($userData)) {
+                $paymentData['showannualsalary'] = true;
+                $paymentData['annualsalary'] = $this->utils->getUserAnnualSalary($userData);
+            }
+
+            $paymentData['isCompany'] = isset($userData['billingaddress']['company']);
+
+
+
+
             $view->assign('FatchipCTPaymentData', $paymentData);
 
             // assign payment errors and error template to view
@@ -178,5 +238,16 @@ class Checkout implements SubscriberInterface
                 $view->assign('FatchipComputopEasyCreditInformation', $session->offsetGet('FatchipComputopEasyCreditInformation'));
             }
         }
+    }
+
+    /**
+    * @return LessDefinition
+    */
+    public function onThemeCompilerCollectPluginLess()
+    {
+        return new LessDefinition(
+          [],
+          [__DIR__ . '/../Views/frontend/_public/src/less/all.less']
+        );
     }
 }
