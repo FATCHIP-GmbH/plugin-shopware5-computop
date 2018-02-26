@@ -38,7 +38,7 @@ class FrontendRiskManagement implements SubscriberInterface {
      */
     public static function getSubscribedEvents() {
 
-        $events = ['sAdmin::executeRiskRule::replace' => 'sAdmin__executeRiskRule',];
+        $events = ['sAdmin::executeRiskRule::replace' => 'onExecuteRiskRule',];
 
         if (\Shopware::VERSION === '___VERSION___' || version_compare(\Shopware::VERSION, '5.2.0', '>='))
         {
@@ -111,29 +111,7 @@ class FrontendRiskManagement implements SubscriberInterface {
           $oldAddress['zipcode'] !== $newAddress['zipcode'] || $oldAddress['country'] !== $newAddress['countryID']);
     }
 
-
-    /**
-     * prepare Computop risk checks
-     *
-     * @param \Enlight_Hook_HookArgs $arguments
-     * @return boolean
-     */
-    public function sAdmin__sManageRisks__before(\Enlight_Hook_HookArgs $arguments) {
-        Shopware()->Session()->CTRiskCheckPaymentId = $arguments->get('paymentID');
-    }
-
-    /**
-     * clean up Computop risk checks
-     *
-     * @param \Enlight_Hook_HookArgs $arguments
-     * @return boolean
-     */
-    public function sAdmin__sManageRisks__after(\Enlight_Hook_HookArgs $arguments) {
-        unset(Shopware()->Session()->CTRiskCheckPaymentId);
-    }
-
-
-    /**
+  /**
      * @param \Shopware\Models\Customer\Address $address
      *
      * removes CRIF results from Address
@@ -170,7 +148,7 @@ class FrontendRiskManagement implements SubscriberInterface {
      *
      * * @param \Enlight_Hook_HookArgs $arguments
      */
-    public function sAdmin__executeRiskRule(\Enlight_Hook_HookArgs $arguments) {
+    public function onExecuteRiskRule(\Enlight_Hook_HookArgs $arguments) {
         $rule = $arguments->get('rule');
 
         $user = $arguments->get('user');
@@ -445,6 +423,7 @@ class FrontendRiskManagement implements SubscriberInterface {
 
                 Shopware()->Models()->persist($address);
                 Shopware()->Models()->flush();
+
             }
         }
     }
