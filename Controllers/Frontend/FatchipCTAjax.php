@@ -1,6 +1,6 @@
 <?php
 
-use Shopware\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipCTPayment\Util;
 
 
 class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Action

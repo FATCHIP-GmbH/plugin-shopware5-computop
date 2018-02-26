@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopware\FatchipCTPayment\Subscribers;
+namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 use Fatchip\CTPayment\CTPaymentService;
@@ -8,7 +8,7 @@ use Fatchip\CTPayment\CTPaymentService;
 /**
  * Class Service
  *
- * @package Shopware\FatchipCTPayment\Subscribers
+ * @package Shopware\Plugins\FatchipCTPayment\Subscribers
  */
 class Service implements SubscriberInterface
 {

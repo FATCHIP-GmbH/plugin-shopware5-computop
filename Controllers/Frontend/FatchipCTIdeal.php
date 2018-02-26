@@ -25,10 +25,9 @@
  */
 
 use Fatchip\CTPayment\CTOrder\CTOrder;
-// ToDo find a better solution for this
-require_once 'FatchipCTPayment.php';
 
 require_once 'FatchipCTPayment.php';
+
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTIdeal

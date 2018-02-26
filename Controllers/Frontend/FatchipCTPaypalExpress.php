@@ -28,8 +28,7 @@
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Fatchip\CTPayment\CTPaypalExpress;
-// add baseclass via require_once so we can extend
-// ToDo find a better solution for this
+
 require_once 'FatchipCTPayment.php';
 
 
@@ -127,11 +126,11 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
         // refactor Amazon to use central Paymentservice to get rid of service Param
         $response = $this->plugin->callComputopService($requestParams, $service, 'ORDER');
 
-        switch ($response->getStatus()) {
+        switch ($response['Status']) {
             case CTEnumStatus::OK:
                 $this->saveOrder(
-                    $response->getTransID(),
-                    $response->getUserData(),
+                    $response['TransID'],
+                    $response['UserData'],
                     self::PAYMENTSTATUSPAID
                 );
 

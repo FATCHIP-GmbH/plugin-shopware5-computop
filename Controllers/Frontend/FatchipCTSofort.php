@@ -25,7 +25,7 @@
  */
 
 use Fatchip\CTPayment\CTOrder\CTOrder;
-// ToDo find a better solution for this
+
 require_once 'FatchipCTPayment.php';
 
 /**

@@ -1,7 +1,10 @@
 <?php
-namespace Shopware\FatchipCTPayment\Subscribers;
+namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
+use Shopware\Components\DependencyInjection\Container;
+use Shopware\Models\Order\Detail;
+use Shopware\Models\Attribute\OrderDetail;
 
 class BackendOrder implements SubscriberInterface
 {
@@ -9,16 +12,16 @@ class BackendOrder implements SubscriberInterface
     /**
      * di container
      *
-     * @var \Shopware\Components\DependencyInjection\Container
+     * @var Container
      */
     private $container;
 
     /**
      * inject di container
      *
-     * @param \Shopware\Components\DependencyInjection\Container $container
+     * @param Container $container
      */
-    public function __construct(\Shopware\Components\DependencyInjection\Container $container)
+    public function __construct(Container $container)
     {
         $this->container = $container;
     }
@@ -83,13 +86,13 @@ class BackendOrder implements SubscriberInterface
         if (!empty($detailObject) && $attribute = $detailObject->getAttribute()) {
             return $attribute;
         }
-        if ($detailObject instanceof Shopware\Models\Order\Detail) {
+        if ($detailObject instanceof Detail) {
             if (!$attribute = Shopware()->Models()->getRepository('Shopware\Models\Attribute\OrderDetail')
               ->findOneBy(array('orderDetailId' => $detailObject->getId()))) {
-                $attribute = new Shopware\Models\Attribute\OrderDetail();
+                $attribute = new OrderDetail();
             }
         } else {
-            throw new Exception('Unknown attribute base class');
+            throw new \Exception('Unknown attribute base class');
         }
         $detailObject->setAttribute($attribute);
         return $attribute;

@@ -24,7 +24,7 @@
  * @link      https://www.computop.com
  */
 
-use Shopware\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipCTPayment\Util;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Shopware\Components\CSRFWhitelistAware;

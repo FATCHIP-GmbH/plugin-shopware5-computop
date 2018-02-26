@@ -23,11 +23,11 @@
  * @link      https://www.computop.com
  */
 
-namespace Shopware\FatchipCTPayment\Subscribers;
+namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 use Shopware\Components\Theme\LessDefinition;
-use Shopware\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipCTPayment\Util;
 
 class Checkout implements SubscriberInterface
 {

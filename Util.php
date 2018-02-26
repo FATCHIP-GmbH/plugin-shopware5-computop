@@ -6,7 +6,7 @@
  * Time: 7:28 PM
  */
 
-namespace Shopware\FatchipCTPayment;
+namespace Shopware\Plugins\FatchipCTPayment;
 
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use VIISON\AddressSplitter\AddressSplitter;

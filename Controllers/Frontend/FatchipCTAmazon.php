@@ -24,8 +24,8 @@
  * @link      https://www.computop.com
  */
 
-use Shopware\FatchipCTPayment\Util;
-use Fatchip\CTPayment\CTOrder\CTOrder;
+require_once 'FatchipCTPayment.php';
+
 use Fatchip\CTPayment\CTAmazon;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 

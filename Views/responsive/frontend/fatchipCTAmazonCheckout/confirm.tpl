@@ -41,7 +41,7 @@
 
                     {* Third Step - Confirmation *}
                     {block name='frontend_register_steps_confirm'}
-                        <li class="steps--entry step--confirm is--active{/if}">
+                        <li class="steps--entry step--confirm is--active">
                             <span class="icon">3</span>
                             <span class="text"><span class="text--inner">Prüfen und Bestellen</span></span>
                         </li>

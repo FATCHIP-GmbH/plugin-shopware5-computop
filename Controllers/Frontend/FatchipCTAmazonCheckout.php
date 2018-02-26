@@ -24,7 +24,7 @@
  * @link      https://www.computop.com
  */
 
-use Shopware\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipCTPayment\Util;
 use Shopware\Components\CSRFWhitelistAware;
 use Fatchip\CTPayment\CTAmazon;
 
