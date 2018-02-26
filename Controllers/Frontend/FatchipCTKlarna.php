@@ -68,13 +68,12 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
 
         $response = $payment->callKlarnaDirect();
 
-        // TODO - Investigate if further handling of the response is required
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
                 $orderNumber =  $this->saveOrder(
                     $response->getTransID(),
                     $response->getUserData(),
-                    self::PAYMENTSTATUSPAID
+                    self::PAYMENTSTATUSRESERVED
                 );
                 $this->saveTransactionResult($response);
                 $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
