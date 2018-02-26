@@ -1,8 +1,9 @@
 <?php
 
-namespace Shopware\FatchipCTPayment\Subscribers;
+namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
+use Shopware\Components\DependencyInjection\Container;
 
 class BackendRiskManagement implements SubscriberInterface
 {
@@ -10,16 +11,16 @@ class BackendRiskManagement implements SubscriberInterface
     /**
      * di container
      *
-     * @var \Shopware\Components\DependencyInjection\Container
+     * @var Container
      */
     private $container;
 
     /**
      * inject di container
      *
-     * @param \Shopware\Components\DependencyInjection\Container $container
+     * @param Container $container
      */
-    public function __construct(\Shopware\Components\DependencyInjection\Container $container)
+    public function __construct(Container $container)
     {
         $this->container = $container;
     }

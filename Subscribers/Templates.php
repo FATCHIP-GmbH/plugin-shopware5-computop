@@ -23,7 +23,7 @@
  * @link      https://www.computop.com
  */
 
-namespace Shopware\FatchipCTPayment\Subscribers;
+namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 use \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap as Bootstrap;

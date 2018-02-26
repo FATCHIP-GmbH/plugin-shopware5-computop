@@ -17,20 +17,19 @@
  * - uninstall: Triggered when the plugin is reinstalled or uninstalled. Clean up your tables here.
  */
 
-require_once 'Util.php';
 // needed for CSRF Protection compatibility SW versions < 5.2 lba
 require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
 
-use Fatchip\CTPayment\CTPaymentAttributes;
-use Fatchip\CTPayment\CTPaymentConfigForms;
-use Fatchip\CTPayment\CTPaymentService;
+use Shopware\Plugins\FatchipCTPayment\Bootstrap\Forms;
+use Shopware\Plugins\FatchipCTPayment\Bootstrap\Attributes;
+use Shopware\Plugins\FatchipCTPayment\Bootstrap\Payments;
+use Shopware\Plugins\FatchipCTPayment\Bootstrap\Menu;
+use Shopware\Plugins\FatchipCTPayment\Bootstrap\RiskRules;
+use Shopware\Plugins\FatchipCTPayment\Bootstrap\Models;
+
 
 class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
-
-    const labelParentFind = ['label' => 'Einstellungen'];
-    const labelComputopMenu = 'Computop';
-    const labelComputopApiLog = 'Apilog';
 
     /**
      * registers the custom plugin models and plugin namespaces
@@ -52,54 +51,25 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             throw new \RuntimeException("At least Shopware {$minimumVersion} is required");
         }
 
-        $this->createPayments();
+        // Helper Classes
+        $forms = new Forms();
+        $attributes = new Attributes();
+        $payments = new Payments();
+        $menu = new Menu();
+        $riskRules = new RiskRules();
+        $models = new Models();
+
+        $forms->createForm();
+        $attributes->createAttributes();
+        $payments->createPayments();
+        $menu->createMenu();
+        $riskRules->createRiskRules();
+        $models->createModels();
 
         $this->subscribeEvent('Enlight_Controller_Front_DispatchLoopStartup', 'onStartDispatch');
-        // add amazon javascript to
-        $this->subscribeEvent(
-            'Theme_Compiler_Collect_Plugin_Javascript',
-            'addJsFiles'
-        );
 
-        // extend order model
-        $this->addAttributes('fatchipCT', 's_order_attributes', CTPaymentAttributes::orderAttributes);
-        $this->addAttributes('fatchipCT', 's_order_details_attributes', CTPaymentAttributes::orderDetailsAttributes);
-        $this->addAttributes('fatchipCT', 's_user_attributes', CTPaymentAttributes::userAttributes);
-        // extend address tables depending on sw version
-        if ($this->assertMinimumVersion('5.2')) {
-            $this->addAttributes('fatchipCT', 's_user_addresses_attributes', CTPaymentAttributes::userAddressAttributes);
-        } else {
-            $this->addAttributes('fatchipCT', 's_user_billingaddress_attributes', CTPaymentAttributes::userAddressAttributes);
-            $this->addAttributes('fatchipCT', 's_user_shippingaddress_attributes', CTPaymentAttributes::userAddressAttributes);
-        }
-
-        $this->createTables();
         //$this->updateSchema();
-        $this->createConfig();
-        $this->createMenu();
-        $this->createRiskRules();
         return ['success' => true, 'invalidateCache' => ['backend', 'config', 'proxy']];
-    }
-
-    /**
-     * Create menu items to access configuration, logs and support page
-     */
-    protected function createMenu()
-    {
-        $item = $this->createMenuItem(array(
-            'label'      => self::labelComputopMenu,
-            'class'      => 'computop-icon',
-            'active'     => 1,
-            'parent'     => $this->Menu()->findOneBy(self::labelParentFind),
-        ));
-        $this->createMenuItem(array(
-            'label'      => self::labelComputopApiLog,
-            'class'      => 'computop-icon',
-            'active'     => 1,
-            'action'     => 'index',
-            'controller' => 'FatchipCTApilog',
-            'parent'     => $item,
-        ));
     }
 
     /**
@@ -122,7 +92,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             $this->Path() . 'Models/'
         );
     }
-
     /**
      * Registers the namespaces that are used by the plugin components
      */
@@ -130,67 +99,14 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     {
 
         Shopware()->Loader()->registerNamespace(
-            'Shopware\FatchipCTPayment',
+            'Shopware\Plugins\FatchipCTPayment',
             $this->Path()
         );
-
 
         Shopware()->Loader()->registerNamespace(
             'Fatchip',
             $this->Path() . 'Components/Api/lib/'
         );
-    }
-
-    public function createRiskRules()
-    {
-        $this->createComputopRiskRule('fatchip_computop_easycredit',
-            'ORDERVALUELESS', '200');
-
-        $this->createComputopRiskRule('fatchip_computop_przelewy24',
-            'CURRENCIESISOISNOT', 'PLN');
-
-        $this->createComputopRiskRule('fatchip_computop_ideal',
-            'BILLINGLANDISNOT', 'NL');
-    }
-
-    public function addJsFiles(Enlight_Event_EventArgs $args)
-    {
-        $jsFiles = [
-            $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTAmazon.js',
-            $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTPaypalExpress.js',
-        ];
-        return new \Doctrine\Common\Collections\ArrayCollection($jsFiles);
-    }
-
-    /**
-     * create tables
-     */
-    protected function createTables()
-    {
-        $em = $this->Application()->Models();
-        $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($em);
-        // ToDo foreach all folders in Models Folder
-
-        try {
-            $schemaTool->createSchema(
-                [
-                    $em->getClassMetadata('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers'),
-                ]
-            );
-        } catch (\Exception $e) {
-            // ignore
-        }
-
-        try {
-            $schemaTool->createSchema(
-                [
-                    $em->getClassMetadata('Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog'),
-                ]
-            );
-
-        } catch (\Exception $e) {
-            // ignore
-        }
     }
 
     /**
@@ -210,15 +126,15 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $container = Shopware()->Container();
 
         $subscribers = [
-            new Shopware\FatchipCTPayment\Subscribers\ControllerPath($this->Path()),
-            new Shopware\FatchipCTPayment\Subscribers\Service(),
-            new Shopware\FatchipCTPayment\Subscribers\Utils(),
-            new Shopware\FatchipCTPayment\Subscribers\Templates($this),
-            new Shopware\FatchipCTPayment\Subscribers\Checkout(),
-            new Shopware\FatchipCTPayment\Subscribers\BackendRiskManagement($container),
-            new Shopware\FatchipCTPayment\Subscribers\FrontendRiskManagement($container),
-            new Shopware\FatchipCTPayment\Subscribers\BackendOrder($container),
-            new Shopware\FatchipCTPayment\Subscribers\Logger(),
+            new Shopware\Plugins\FatchipCTPayment\Subscribers\ControllerPath($this->Path()),
+            new Shopware\Plugins\FatchipCTPayment\Subscribers\Service(),
+            new Shopware\Plugins\FatchipCTPayment\Subscribers\Utils(),
+            new Shopware\Plugins\FatchipCTPayment\Subscribers\Templates($this),
+            new Shopware\Plugins\FatchipCTPayment\Subscribers\Checkout(),
+            new Shopware\Plugins\FatchipCTPayment\Subscribers\BackendRiskManagement($container),
+            new Shopware\Plugins\FatchipCTPayment\Subscribers\FrontendRiskManagement($container),
+            new Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder($container),
+            new Shopware\Plugins\FatchipCTPayment\Subscribers\Logger(),
         ];
 
         foreach ($subscribers as $subscriber) {
@@ -240,229 +156,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             // $tool->updateSchema($classes, true);
         } catch (Exception $e) {
             // ignore
-        }
-    }
-
-
-    /***
-     *  Creates the settings page for this plugin.
-     */
-    private function createConfig()
-    {
-        $this->createGeneralConfigForm(CTPaymentConfigForms::formGeneralTextElements, CTPaymentConfigForms::formGeneralSelectElements);
-
-        $this->createCreditCardConfigForm(CTPaymentConfigForms::formCreditCardSelectElements, CTPaymentConfigForms::formCreditCardNumberElements);
-
-
-        // ideal and Sofort
-        $this->Form()->setElement('button', 'fatchip_computop_ideal_button', [
-            'label' => '<strong>iDeal Banken aktualisieren <strong>',
-            'handler' => "function(btn) {" . file_get_contents(__DIR__ . '/Views/common/backend/ideal/ideal_button_handler.js') . "}"
-        ]);
-
-        $this->createFormSelectElements(CTPaymentConfigForms::formIdealSelectElements);
-
-        // Mobilepay
-        $this->createFormTextElements(CTPaymentConfigForms::formMobilePayBooleanElements);
-
-        $this->createPayDirektConfigForm(CTPaymentConfigForms::formPayDirektTextElements, CTPaymentConfigForms::formPayDirektSelectElements, CTPaymentConfigForms::formPayDirektNumberElements);
-
-        //paypal
-        $this->createFormSelectElements(CTPaymentConfigForms::formPayPalSelectElements);
-
-        //amazon
-        $this->createAmazonPayConfigForm(CTPaymentConfigForms::formAmazonTextElements, CTPaymentConfigForms::formAmazonSelectElements);
-
-        //rating
-        $this->createFormTextElements(CTPaymentConfigForms::formBonitaetElements);
-
-        //CRIF-Bonitätsprüfung. Globally set to inactive, Quickcheck or Creditcheck
-
-        $this->createFormSelectElements(CTPaymentConfigForms::formBonitaetSelectElements);
-    }
-
-    /**
-     * create payment methods
-     */
-    protected function createPayments()
-    {
-        /** @var CTPaymentService $service */
-        $service = new CTPaymentService(null);
-        $paymentMethods = $service->getPaymentMethods();
-
-        foreach ($paymentMethods as $paymentMethod) {
-            if ($this->Payments()->findOneBy(array('name' => $paymentMethod['name']))) {
-                continue;
-            }
-
-            $payment = array(
-                'name' => $paymentMethod['name'],
-                'description' => $paymentMethod['description'],
-                'action' => $paymentMethod['action'],
-                'active' => 0,
-                'position' => $paymentMethod['position'],
-                'template' => $paymentMethod['template'],
-                'additionalDescription' => $paymentMethod['additionalDescription'],
-            );
-
-            $paymentObject = $this->createPayment($payment);
-
-            if (!empty($paymentMethod['countries'])) {
-                $this->restrictPaymentShippingCountries($paymentObject, $paymentMethod['countries']);
-            }
-        }
-    }
-
-    protected function restrictPaymentShippingCountries($paymentObject, $countries)
-    {
-        $countryCollection = new Doctrine\Common\Collections\ArrayCollection();
-        foreach ($countries as $countryIso) {
-            $country =
-                Shopware()->Models()->getRepository(Shopware\Models\Country\Country::class)->findOneBy(['iso' => $countryIso]);
-            if ($country !== null) {
-                $countryCollection->add($country);
-            }
-        }
-        $paymentObject->setCountries($countryCollection);
-    }
-
-    protected function createComputopRiskRule($paymentName, $rule1, $value1)
-    {
-        /** @var \Shopware\Components\Model\ModelManager $manager */
-        $manager = $this->get('models');
-        $payment = $this->getPaymentObjByName($paymentName);
-
-        // ToDo refactor rules array in case we have more rules for other payments
-        $rules = [];
-        $valueRule = new \Shopware\Models\Payment\RuleSet();
-        $valueRule->setRule1($rule1);
-        $valueRule->setValue1($value1);
-        $valueRule->setRule2('');
-        $valueRule->setValue2('');
-        $valueRule->setPayment($payment);
-        $rules[] = $valueRule;
-
-        // only add risk rules if no rules are set
-
-        if ($payment->getRuleSets() === null ||
-            $payment->getRuleSets()->count() === 0) {
-            $payment->setRuleSets($rules);
-            foreach ($rules as $rule) {
-                $manager->persist($rule);
-            }
-            $manager->flush($payment);
-        }
-    }
-
-    private function getPaymentObjByName($paymentName)
-    {
-        /** @var Shopware\Models\Payment\Payment $result */
-        $result = $this->Payments()->findOneBy(
-            [
-                'name' => [
-                    $paymentName,
-                ]
-            ]
-        );
-        return $result;
-    }
-
-    /**
-     * @param string $prefix
-     * @param string $table
-     * @param array $attributes
-     */
-    private function addAttributes($prefix, $table, $attributes)
-    {
-        foreach ($attributes as $name => $attribute) {
-            try {
-                $this->get('models')->addAttribute($table, $prefix, $name, $attribute['type']);
-            } catch (Exception $e) {
-            }
-        }
-
-        $this->get('models')->generateAttributeModels(
-            [
-                $table
-            ]
-        );
-
-        $this->setAttributeVisibilityInBackend($prefix, $table, $attributes);
-
-    }
-
-    private function setAttributeVisibilityInBackend($prefix, $table, $attributes) {
-        if ($this->assertMinimumVersion('5.2')) {
-            foreach ($attributes as $name => $attribute) {
-                try {
-                    if (isset($attribute['additionalInfo'])) {
-                        $updateType = $attribute['type'] == 'DOUBLE' ? 'float' : $attribute['type'];
-                        $service = $this->get('shopware_attribute.crud_service');
-                        $service->update($table, $prefix . '_' . $name, $updateType, [
-                          'label' => $attribute['additionalInfo']['label'],
-                          'displayInBackend' => $attribute['additionalInfo']['displayInBackend']
-                        ]);
-                    }
-                } catch (Exception $e) {
-                }
-            }
-        }
-    }
-
-    private function createGeneralConfigForm($formGeneralTextElements, $formGeneralSelectElements)
-    {
-        $this->createFormTextElements($formGeneralTextElements);
-        $this->createFormSelectElements($formGeneralSelectElements);
-    }
-
-    private function createCreditCardConfigForm($formCreditCardSelectElements, $formCreditCardNumberElements)
-    {
-        $this->createFormSelectElements($formCreditCardSelectElements);
-        $this->createFormTextElements($formCreditCardNumberElements);
-    }
-
-    private function createPayDirektConfigForm($formPayDirektTextElements, $formPayDirektSelectElements, $formPayDirektNumberElements)
-    {
-        $this->createFormTextElements($formPayDirektTextElements);
-        $this->createFormSelectElements($formPayDirektSelectElements);
-        $this->createFormTextElements($formPayDirektNumberElements);
-    }
-
-    private function createAmazonPayConfigForm($formAmazonTextElements, $formAmazonSelectElements)
-    {
-        $this->createFormTextElements($formAmazonTextElements);
-        $this->createFormSelectElements($formAmazonSelectElements);
-    }
-
-    /**
-     * @param array $elements
-     */
-    private function createFormTextElements($elements)
-    {
-        foreach ($elements as $element) {
-            $this->Form()->setElement($element['type'], $element['name'], array(
-                'value' => $element['value'],
-                'label' => $element['label'],
-                'required' => $element['required'],
-                'description' => $element['description'],
-            ));
-        }
-    }
-
-    /**
-     * @param array $elements
-     */
-    private function createFormSelectElements($elements)
-    {
-        foreach ($elements as $element) {
-            $this->Form()->setElement($element['type'], $element['name'], array(
-                'value' => $element['value'],
-                'label' => $element['label'],
-                'required' => $element['required'],
-                'editable' => $element['editable'],
-                'store' => $element['store'],
-                'description' => $element['description'],
-            ));
         }
     }
 
@@ -603,7 +296,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             ],
         ];
     }
-
 
     // this wrapper is used for logging requests and responses to our shopware model
     public function callComputopService($requestParams, $service, $requestType){
