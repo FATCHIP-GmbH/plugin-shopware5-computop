@@ -57,7 +57,7 @@ class Shopware_Controllers_Frontend_FatchipCTSofort extends Shopware_Controllers
 
         /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Ideal $payment */
         $payment = $this->getPaymentClass($ctOrder);
-        $payment->setIssuerID($session->offsetGet('FatchipComputopSofortIssuer'));
+        //$payment->setIssuerID($session->offsetGet('FatchipComputopSofortIssuer'));
 
         $this->redirect($payment->getHTTPGetURL());
     }
