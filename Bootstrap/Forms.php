@@ -35,9 +35,6 @@ class Forms
 
         $this->createFormSelectElements(CTPaymentConfigForms::formIdealSelectElements);
 
-        // mobilepay
-        $this->createFormTextElements(CTPaymentConfigForms::formMobilePayBooleanElements);
-
         $this->createPayDirektConfigForm(CTPaymentConfigForms::formPayDirektTextElements, CTPaymentConfigForms::formPayDirektSelectElements, CTPaymentConfigForms::formPayDirektNumberElements);
 
         // paypal
