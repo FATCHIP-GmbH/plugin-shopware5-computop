@@ -33,7 +33,7 @@ require_once 'FatchipCTPayment.php';
 
 require_once 'FatchipCTPayment.php';
 
-class Shopware_Controllers_Frontend_FatchipCTPaydirekt extends Shopware_Controllers_Frontend_FatchipCTPaymenst
+class Shopware_Controllers_Frontend_FatchipCTPaydirekt extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
 
     public $paymentClass = 'Paydirekt';
