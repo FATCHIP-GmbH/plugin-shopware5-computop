@@ -34,19 +34,5 @@ require_once 'FatchipCTPayment.php';
 
 class Shopware_Controllers_Frontend_FatchipCTMobilepay extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
-
     public $paymentClass = 'Mobilepay';
-
-    public function getPaymentClass($order) {
-        $router = $this->Front()->Router();
-
-        return new \Fatchip\CTPayment\CTPaymentMethodsIframe\Mobilepay(
-          $this->config,
-          $order, $router->assemble(['action' => 'success', 'forceSecure' => true]),
-          $router->assemble(['action' => 'failure', 'forceSecure' => true]),
-          $router->assemble(['action' => 'notify', 'forceSecure' => true]),
-          $this->getOrderDesc(),
-          $this->getUserData());
-    }
-
 }
