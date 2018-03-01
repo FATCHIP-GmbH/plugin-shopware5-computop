@@ -26,7 +26,6 @@
 
 use Shopware\Plugins\FatchipCTPayment\Util;
 use Shopware\Components\CSRFWhitelistAware;
-use Fatchip\CTPayment\CTAmazon;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTAmazonRegister
@@ -44,7 +43,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
 
     protected $config;
 
-    /** @var Util $utils **/
+    /** @var Util $utils * */
     protected $utils;
 
     /**
@@ -52,7 +51,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
      */
     public function init()
     {
-        if (method_exists(parent::init())){
+        if (method_exists(parent::init())) {
             parent::init();
         }
         // ToDo handle possible Exception
@@ -62,16 +61,10 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
     }
 
-
     public function shippingPaymentAction()
     {
         parent::shippingPaymentAction();
-        // Debug:
-        $request = $this->Request();
-        $params = $request->getParams();
-        $post = $request->getPost();
-        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-        $this->config = $this->plugin->Config()->toArray();
+        $params = $this->Request()->getParams();
         $fatchipCTAmazonpayID = $this->utils->getPaymentIdFromName('fatchip_computop_amazonpay');
 
         $this->view->assign('fatchipCTAmazonpayID', $fatchipCTAmazonpayID);
@@ -88,19 +81,6 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         // load Template to avoid annoying uppercase to _lowercase conversion
         $this->view->loadTemplate('frontend/fatchipCTAmazonCheckout/shipping_payment.tpl');
     }
-
-    /*public function saveShippingPaymentAction()
-    {
-        $request = $this->Request();
-        $params = $request->getParams();
-        $post = $request->getPost();
-        parent::saveShippingPaymentAction();
-        $request = $this->Request();
-        $params = $request->getParams();
-        $post = $request->getPost();
-
-    }
-*/
 
     public function getWhitelistedCSRFActions()
     {
@@ -120,28 +100,27 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
     public function finishAction()
     {
         parent::finishAction();
-
         $this->view->loadTemplate('frontend/fatchipCTAmazonCheckout/finish.tpl');
         Shopware()->Session()->unsetAll();
         Shopware()->Modules()->Basket()->sRefreshBasket();
     }
 
-
     // ToDo think about what to do if errors occur in this step
-    public function ctGetOrderDetails(){
-
+    public function ctGetOrderDetails()
+    {
         $session = Shopware()->Session();
         $orderDesc = "Test";
 
-        $service = new CTAmazon($this->config);
-        $requestParams =  $service->getAmazonGODParams(
+        /** @var \Fatchip\CTPayment\CTPaymentMethods\AmazonPay $payment */
+        $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
+        $requestParams = $payment->getAmazonGODParams(
             $session->offsetGet('fatchipCTPaymentPayID'),
             $orderDesc,
             $session->offsetGet('fatchipCTAmazonReferenceID')
         );
-        // wrap this in a method we can hook for central logging
-        // refactor Amazon to use central Paymentservice to get rid of service Param
-        $response = $this->plugin->callComputopService($requestParams, $service);
+
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'GOD');
+        return $response;
     }
 }
 

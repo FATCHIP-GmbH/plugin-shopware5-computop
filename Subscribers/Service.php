@@ -32,7 +32,7 @@ class Service implements SubscriberInterface
     {
         $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $config = $plugin->Config()->toArray();
-        return new CTPaymentService($config['blowfishPassword']);
+        return new CTPaymentService($config);
 
     }
 }

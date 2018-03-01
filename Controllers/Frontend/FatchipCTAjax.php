@@ -19,6 +19,8 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
     /** @var Util $utils * */
     protected $utils;
 
+    protected $session;
+
     public function init()
     {
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
@@ -26,35 +28,71 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         $this->config = $this->plugin->Config()->toArray();
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
         Shopware()->Plugins()->Controller()->ViewRenderer()->setNoRender();
+        $this->session = Shopware()->Session();
 
     }
 
+    public function ctGetOrderDetailsAction()
+    {
+        $params = $this->Request()->getParams();
+        $referenceId = $params['referenceId'];
+        $this->session->offsetSet('fatchipCTAmazonReferenceID', $referenceId);
+        $orderDesc = "Test";
+
+        /** @var \Fatchip\CTPayment\CTPaymentMethods\AmazonPay $payment */
+        $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
+
+        $requestParams = $payment->getAmazonGODParams(
+            $this->session->offsetGet('fatchipCTPaymentPayID'),
+            $orderDesc,
+            $referenceId
+        );
+
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'GOD')->toArray();
+        // Test data IT, Rome, Guiseppe Rossi needs this
+        if (!$response['AddrStreet2'] && !empty($response['addrstreet2'])) {
+            $response['AddrStreet2'] = $response['addrstreet2'];
+        }
+
+        // Test data GB, London, Elisabeth Harrison needs this
+        if (!$response['AddrStreet2'] && !empty($response['AddrStreet'])) {
+            $response['AddrStreet2'] = $response['AddrStreet'];
+        }
+
+        $response['AddrCountryCodeID'] = $this->utils->getCountryIdFromIso($response['AddrCountryCode']);
+        $response['bdaddrcountrycodeID'] = $this->utils->getCountryIdFromIso($response['bdaddrcountrycode']);
+        $data = [];
+        $data['data'] = $response;
+        $data['status'] = ($response['Code'] == '00000000' ? 'success' : 'error');
+        $data['errormessage'] = $response['Description'];
+        $encoded = json_encode($data);
+        echo $encoded;
+    }
 
     // ToDo leave Actions here, but move request response handling to payment service
     public function ctSetOrderDetailsAction()
     {
-
-        $session = Shopware()->Session();
         $params = $this->Request()->getParams();
         $referenceId = $params['referenceId'];
         $basket = Shopware()->Modules()->Basket()->sGetBasket();
         $amount = $basket['AmountNumeric'] * 100;
+        // ToDo use REAL Currency !!!!
         $currency = 'EUR';
         $orderDesc = "Test";
 
-        $service = new \Fatchip\CTPayment\CTAmazon($this->config);
-        $requestParams = $service->getAmazonSODParams(
-            $session->offsetGet('fatchipCTPaymentPayID'),
-            $session->offsetGet('fatchipCTPaymentTransID'),
+        /** @var \Fatchip\CTPayment\CTPaymentMethods\AmazonPay $payment */
+        $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
+
+        $requestParams = $payment->getAmazonSODParams(
+            $this->session->offsetGet('fatchipCTPaymentPayID'),
+            $this->session->offsetGet('fatchipCTPaymentTransID'),
             $amount,
             $currency,
             $orderDesc,
             $referenceId
         );
 
-        // wrap this in a method we can hook for central logging
-        // refactor Amazon to use central Paymentservice to get rid of service Param
-        $response = $this->plugin->callComputopService($requestParams, $service);
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'SOD')->toArray();
         $data = [];
         $data['data'] = $response;
         $data['status'] = ($response['Code'] == '00000000' ? 'success' : 'error');
@@ -97,44 +135,5 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
             return $el->getId();
         }, $activeCountries);
         return $allowedCountries;
-    }
-
-    public function ctGetOrderDetailsAction()
-    {
-        $session = Shopware()->Session();
-        $params = $this->Request()->getParams();
-        $referenceId = $params['referenceId'];
-        // save referencID to Session
-        $session->offsetSet('fatchipCTAmazonReferenceID', $referenceId);
-        $orderDesc = "Test";
-
-        $service = new \Fatchip\CTPayment\CTAmazon($this->config);
-        $requestParams = $service->getAmazonGODParams(
-            $session->offsetGet('fatchipCTPaymentPayID'),
-            $orderDesc,
-            $referenceId
-        );
-        // wrap this in a method we can hook for central logging
-        // refactor Amazon to use central Paymentservice to get rid of service Param
-        $response = $this->plugin->callComputopService($requestParams, $service);
-
-        // Test data IT, Rome, Guiseppe Rossi needs this
-        if (!$response['AddrStreet2'] && !empty($response['addrstreet2'])) {
-            $response['AddrStreet2'] = $response['addrstreet2'];
-        }
-
-        // Test data GB, London, Elisabeth Harrison needs this
-        if (!$response['AddrStreet2'] && !empty($response['AddrStreet'])) {
-            $response['AddrStreet2'] = $response['AddrStreet'];
-        }
-        // replace country code with shopware countryId
-        $response['AddrCountryCodeID'] = $this->utils->getCountryIdFromIso($response['AddrCountryCode']);
-        $response['bdaddrcountrycodeID'] = $this->utils->getCountryIdFromIso($response['bdaddrcountrycode']);
-        $data = [];
-        $data['data'] = $response;
-        $data['status'] = ($response['Code'] == '00000000' ? 'success' : 'error');
-        $data['errormessage'] = $response['Description'];
-        $encoded = json_encode($data);
-        echo $encoded;
     }
 }

@@ -75,9 +75,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
      */
     public function loginAction()
     {
-        $request = $this->Request();
-        $params = $request->getParams();
-        // ToDO  move paymentID saving to saveParamsToSession
+        $params = $this->Request()->getParams();
         $session = Shopware()->Session();
 
         // unset logged in User Information so we can register
@@ -87,16 +85,12 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
 
         $this->saveParamsToSession($params);
         $response = $this->loginComputopAmazon();
-        $payID = $response['PayID'];
-        $session->offsetSet('fatchipCTPaymentPayID', $payID);
-        // Todo bette0r redirect here?
+        $session->offsetSet('fatchipCTPaymentPayID', $response->getPayID());
         $this->forward('index', null, null, ['fatchipCTResponse' => $response]);
     }
 
     public function indexAction()
     {
-        $request = $this->Request();
-        $params = $request->getParams();
         $session = Shopware()->Session();
         // this has to be set so shipping methods will work
         $session->offsetSet('sPaymentID', $this->utils->getPaymentIdFromName('fatchip_computop_amazonpay'));
@@ -118,7 +112,8 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
             $this->view->assign('errorMessage', $errorMessage);
             $this->view->assign('errorFields',array_keys($errors));
         }
-        $this->view->assign('fatchipCTResponse', $params['fatchipCTResponse']);
+        // unused
+        //$this->view->assign('fatchipCTResponse', $params['fatchipCTResponse']);
         // add a config->toView method which removed sensitive data from view
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
         // load Template to avoid annoying uppercase to _lowercase conversion
@@ -131,6 +126,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         // ToDO  get countryIso from session instead by calling sGetUserData
         $user = Shopware()->Modules()->Admin()->sGetUserData();
         $countryIso = $user['additional']['country']['countryiso'];
+        $router = $this->Front()->Router();
         $session = Shopware()->Session();
 
         // generate transID for payment and save in Session
@@ -139,51 +135,20 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         $transID .= date('yzGis');
         $session->offsetSet('fatchipCTPaymentTransID', $transID);
 
-
-        $service = new \Fatchip\CTPayment\CTAmazon($this->config);
-        $requestParams = $service->getAmazonLGNParams(
+        /** @var \Fatchip\CTPayment\CTPaymentMethods\AmazonPay $payment */
+        $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
+        $requestParams = $payment->getAmazonLGNParams(
             $session->fatchipCTPaymentTransID,
             $session->fatchipCTAmazonAccessToken,
             $session->fatchipCTAmazonAccessTokenType,
             $session->fatchipCTAmazonAccessTokenExpire,
             $session->fatchipCTAmazonAccessTokenScope,
             $countryIso,
-            'https://testshop.de/FatchipCTPayment/notify'
+            $router->assemble(['controller' => 'FatchipCTAmazon', 'action' => 'notify', 'forceSecure' => true])
         );
-        // wrap this in a method we can hook for central logging
-        // refactor Amazon to use central Paymentservice to get rid of service Param
-        $response = $this->plugin->callComputopService($requestParams, $service);
-        return $response;
+        return  $this->plugin->callComputopService($requestParams, $payment, 'LGN');
     }
 
-    /**
-     * not used anymore
-     * simply show an error after
-     * parent::saveRegisterAction forwards to our index
-     * DEsc:
-     * This is only implemented to
-     * get registration exceptions and errors
-     *
-     * @return void
-     */
-    /*    public function saveRegisterAction()
-        {
-            parent::saveRegisterAction();
-
-            // check for registration errors and log those
-            // sadly we can not use our central logging subscriber
-            // because saveRegister forwards to checkout/index in case of errors
-            if ($this->error){
-                if ($this->View()->hasTemplate()){
-                    $registerArrObj = $this->View()->getAssign('register')->getArrayCopy();
-                    $register = $this->getArrayFromArrayObjs($registerArrObj);
-
-                }
-
-            }
-            $testifaboveReturns = 'blubs';
-        }
-    */
     public function getArrayFromArrayObjs($arrayObjs)
     {
         $array = [];

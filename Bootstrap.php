@@ -31,7 +31,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
-
     /**
      * registers the custom plugin models and plugin namespaces
      */
@@ -321,18 +320,37 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         ];
     }
 
-    // this wrapper is used for logging requests and responses to our shopware model
-    public function callComputopService($requestParams, $service, $requestType){
+
+    // ToDo refactor both methods into a single one
+    // this wrapper is used for logging Server requests and responses to our shopware model
+    public function callComputopService($requestParams, $payment, $requestType, $url){
         $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
-        $log->setPaymentName('AmazonPay');
+        $log->setPaymentName($payment::paymentClass);
         $log->setRequest($requestType);
         $log->setRequestDetails(json_encode($requestParams));
-        $response =  $service->callComputop($requestParams);
-        $log->setTransId($response['TransID']);
-        $log->setPayId($response['PayID']);
-        $log->setXId($response['XID']);
-        $log->setResponse($response['Status']);
-        $log->setResponseDetails(json_encode($response));
+        /** @var \Fatchip\CTPayment\CTResponse $response */
+        $response =  $payment->callComputop($requestParams, $url);
+        $log->setTransId($response->getTransID());
+        $log->setPayId($response->getPayID());
+        $log->setXId($response->getXID());
+        $log->setResponse($response->getStatus());
+        $log->setResponseDetails(json_encode($response->toArray()));
+        Shopware()->Models()->persist($log);
+        Shopware()->Models()->flush($log);
+        return $response;
+    }
+
+    // this wrapper is used for logging Redirectrequests and responses to our shopware model
+    public function logRedirectParams($requestParams, $paymentName, $requestType, $response){
+        $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
+        $log->setPaymentName($paymentName);
+        $log->setRequest($requestType);
+        $log->setRequestDetails(json_encode($requestParams));
+        $log->setTransId($response->getTransID());
+        $log->setPayId($response->getPayID());
+        $log->setXId($response->getXID());
+        $log->setResponse($response->getStatus());
+        $log->setResponseDetails(json_encode($response->toArray()));
         Shopware()->Models()->persist($log);
         Shopware()->Models()->flush($log);
         return $response;

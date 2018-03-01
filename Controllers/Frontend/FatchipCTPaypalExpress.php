@@ -27,7 +27,6 @@
 
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
-use Fatchip\CTPayment\CTPaypalExpress;
 
 require_once 'FatchipCTPayment.php';
 
@@ -38,8 +37,7 @@ require_once 'FatchipCTPayment.php';
 class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
 
-    public $paymentClass = 'PaypalStandard';
-
+    const paymentClass = 'PaypalExpress';
 
     public function indexAction()
     {
@@ -52,6 +50,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
      */
     public function gatewayAction()
     {
+        $router = $this->Front()->Router();
         // ToDo Check sGEtBAsket  availablity in all SW Versions
         $basket= Shopware()->Modules()->Basket()->sGetBasket();
 
@@ -63,11 +62,24 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
         // Mandatory for paypalStandard
         $ctOrder->setOrderDesc($this->getOrderDesc());
 
-        /*  @var \Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard $payment */
-        $payment = $this->getPaymentClass($ctOrder, 'return');
-        $payment->setPayPalMethod('shortcut');
+        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard $payment */
+        $payment = $this->paymentService->getIframePaymentClass(
+            'PaypalStandard',
+            $this->config,
+            $ctOrder,
+            $router->assemble(['action' => 'return', 'forceSecure' => true]),
+            $router->assemble(['action' => 'failure', 'forceSecure' => true]),
+            $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            'Test',
+            $this->getUserData()
+            //$this->getOrderDesc()
+        );
 
-        $this->redirect($payment->getHTTPGetURL());
+        $payment->setPayPalMethod('shortcut');
+        //$payment->setNoShipping(0);
+        $params = $payment->getRedirectUrlParams();
+
+        $this->redirect($payment->getHTTPGetURL($params));
     }
 
     /**
@@ -78,20 +90,14 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
     {
         $requestParams = $this->Request()->getParams();
         $session = Shopware()->Session();
-        // ToDo Check sGetBasket  availablity in all SW Versions
-        $basket= Shopware()->Modules()->Basket()->sGetBasket();
 
-        /** @var CTResponseFatchipCTKlarnaCreditCard $response */
-        $response = $this->paymentService->createPaymentResponse($requestParams);
-        // ToDo token is broken, for PP Ex. because getAmount is only available after User Registration
-        $token = $this->paymentService->createPaymentToken($this->getAmount(), $this->utils->getUserCustomerNumber($this->getUser()));
+        $response = $this->paymentService->getDecryptedResponse($requestParams);
 
         switch ($response->getStatus()) {
             case CTEnumStatus::AUTHORIZE_REQUEST;
                 $session->offsetSet('FatchipCTPaypalExpressPayID', $response->getPayID() );
                 $session->offsetSet('FatchipCTPaypalExpressXID', $response->getXID());
                 $session->offsetSet('FatchipCTPaypalExpressTransID', $response->getXID());
-
 
                 // forward to PP Express register Controller to login the User with an
                 // "Schnellbesteller" Account
@@ -115,8 +121,10 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
         $orderVars = Shopware()->Session()->sOrderVariables;
         $userData = $orderVars['sUserData'];
 
-        $service = new CTPaypalExpress($this->config);
-        $requestParams =  $service->getPaypalExpressCompleteParams(
+        /** @var \Fatchip\CTPayment\CTPaymentMethods\PaypalExpress $payment */
+        $payment = $this->paymentService->getPaymentClass(self::paymentClass, $this->config);
+
+        $requestParams =  $payment->getPaypalExpressCompleteParams(
             $session->offsetGet('FatchipCTPaypalExpressPayID'),
             $session->offsetGet('FatchipCTPaypalExpressTransID'),
             $this->getAmount() * 100,
@@ -124,19 +132,17 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
         );
         // wrap this in a method we can hook for central logging
         // refactor Amazon to use central Paymentservice to get rid of service Param
-        $response = $this->plugin->callComputopService($requestParams, $service, 'ORDER');
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'ORDER');
 
-        switch ($response['Status']) {
+        switch ($response->getStatus()) {
             case CTEnumStatus::OK:
                 $this->saveOrder(
-                    $response['TransID'],
-                    $response['UserData'],
+                    $response->getTransID(),
+                    $response->getPayID(),
                     self::PAYMENTSTATUSPAID
                 );
 
-                $session->offsetSet('FatchipComputopEasyCreditInformation', null);
-
-                $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
+                $this->redirect(['controller' => 'FatchipCTPaypalExpressCheckout', 'action' => 'finish']);
                 break;
             default:
                 $this->forward('failure');
@@ -144,22 +150,20 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
         }
     }
 
+    /**
+     * @return void
+     * Cancel action method
+     */
+    public function failureAction()
+    {
+        $requestParams = $this->Request()->getParams();
+        $ctError = [];
 
-
-    public function getPaymentClass($order, $successAction = '') {
-        $router = $this->Front()->Router();
-
-        return new \Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard(
-            $this->config,
-            $order,
-            $router->assemble(['action' => $successAction, 'forceSecure' => true]),
-            $router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $router->assemble(['action' => 'notify', 'forceSecure' => true]),
-            $this->getUserData(),
-            $this->getOrderDesc()
-        );
+        $response = $this->paymentService->getDecryptedResponse($requestParams);
+        $ctError['CTErrorMessage'] = self::ERRORMSG . $response->getDescription();
+        $ctError['CTErrorCode'] = $response->getCode();
+        return $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
     }
-
 }
 
 

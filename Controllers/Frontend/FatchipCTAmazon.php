@@ -26,7 +26,6 @@
 
 require_once 'FatchipCTPayment.php';
 
-use Fatchip\CTPayment\CTAmazon;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 
 
@@ -35,29 +34,27 @@ use Fatchip\CTPayment\CTEnums\CTEnumStatus;
  */
 class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
-
     /**
      * @return void
      * @throws Exception
      */
     public function gatewayAction()
     {
-        $user = Shopware()->Modules()->Admin()->sGetUserData();
         $response = $this->ctSetAndConfirmOrderDetails();
-        switch ($response['Status']) {
+        switch ($response->getStatus()) {
             case CTEnumStatus::OK:
                 $this->saveOrder(
-                    $response['TransID'],
-                    $response['orderid'],
+                    $response->getTransID(),
+                    $response->getOrderid(),
                     self::PAYMENTSTATUSPAID
                 );
                 $this->redirect(['controller' => 'FatchipCTAmazonCheckout', 'action' => 'finish']);
                 break;
             default:
+                // ToDO Test this after reloading confirm page
                 $this->forward('failure');
                 break;
         }
-
     }
 
     /**
@@ -67,25 +64,22 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
     public function failureAction()
     {
         $requestParams = $this->Request()->getParams();
-        $session = Shopware()->Session();
         $ctError = [];
 
-        $response = $this->paymentService->createPaymentResponse($requestParams);
-
+        $response = $this->paymentService->getDecryptedResponse($requestParams);
         $ctError['CTErrorMessage'] = self::ERRORMSG . $response->getDescription();
         $ctError['CTErrorCode'] = $response->getCode();
-
-        return $this->forward('index', 'FatchipCTAmazonRegister', null, array('CTError' => $ctError));
+        return $this->forward('index', 'FatchipCTAmazonRegister', null, ['CTError' => $ctError]);
     }
 
-    public function ctSetAndConfirmOrderDetails(){
-
-        $user = Shopware()->Modules()->Admin()->sGetUserData();
+    public function ctSetAndConfirmOrderDetails()
+    {
         $session = Shopware()->Session();
         $orderDesc = "Test";
 
-        $service = new CTAmazon($this->config);
-        $requestParams =  $service->getAmazonSCOParams(
+        /** @var \Fatchip\CTPayment\CTPaymentMethods\AmazonPay $payment */
+        $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
+        $requestParams = $payment->getAmazonSCOParams(
             $session->offsetGet('fatchipCTPaymentPayID'),
             $session->offsetGet('fatchipCTPaymentTransID'),
             $this->getAmount() * 100,
@@ -93,10 +87,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
             $orderDesc,
             $session->offsetGet('fatchipCTAmazonReferenceID')
         );
-
-        // wrap this in a method we can hook for central logging
-        // refactor Amazon to use central Paymentservice to get rid of service Param
-        $response = $this->plugin->callComputopService($requestParams, $service);
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'SCO');
         return $response;
     }
 }

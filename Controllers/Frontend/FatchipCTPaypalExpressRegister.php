@@ -61,7 +61,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpressRegister extends Shopw
         if (method_exists('Shopware_Controllers_Frontend_Register', 'init')) {
             parent::init();
         }
-        // ToDo handle possible Exception
+
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $this->config = $this->plugin->Config()->toArray();
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');

@@ -114,7 +114,7 @@ class Checkout implements SubscriberInterface
             $paymentData['idealIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
             $paymentData['idealIssuer'] = $session->offsetGet('FatchipComputopIdealIssuer');
             $paymentData['sofortIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
-            $paymentData['sofortIssuer'] = $session->offsetGet('FatchipComputopSofortIssuer');
+            $paymentData['sofortIssuer'] = $session->offsetGet('FatchipComputop44rtIssuer');
 
 
             if ($this->utils->needSocialSecurityNumberForKlarna()) {
