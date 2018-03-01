@@ -36,8 +36,9 @@ require_once 'FatchipCTPayment.php';
  */
 class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
-
     public $paymentClass = 'EasyCredit';
+
+    protected $basket;
 
     public function indexAction()
     {
@@ -50,14 +51,14 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
      */
     public function gatewayAction()
     {
-        $router = $this->Front()->Router();
         // we have to use this, because there is no order yet
         $user = Shopware()->Modules()->Admin()->sGetUserData();
+        $this->basket = $this->get('modules')->Basket()->sGetBasket();
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
         //important: multiply amount by 100
-        $ctOrder->setAmount($this->getAmount() * 100);
+        $ctOrder->setAmount($this->basket['AmountNumeric'] * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
@@ -71,19 +72,15 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
             $this->paymentClass,
             $this->config,
             $ctOrder,
-            $router->assemble(['action' => 'return', 'forceSecure' => true]),
-            $router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $this->router->assemble(['action' => 'return', 'forceSecure' => true]),
+            $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
+            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
             'Test',
             $this->getUserData(),
             CTEnumEasyCredit::EVENTTOKEN_INIT
-
-        //$this->getOrderDesc()
         );
 
-        //$payment->setDateOfBirth($this->utils->getUserDoB($userData));
-        $payment->setDateOfBirth('1999-12-12');
-
+        $payment->setDateOfBirth($this->utils->getUserDoB($user));
         $params = $payment->getRedirectUrlParams();
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
         $this->redirect($payment->getHTTPGetURL($params));
@@ -96,15 +93,14 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
      */
     public function returnAction()
     {
-        $orderVars = $this->session->sOrderVariables;
-        // we have to use this, because there is no order yet
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $requestParams = $this->Request()->getParams();
+        $this->basket = $this->get('modules')->Basket()->sGetBasket();
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
         //important: multiply amount by 100
-        $ctOrder->setAmount($this->getAmount() * 100);
+        $ctOrder->setAmount($this->basket['AmountNumeric'] * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
         $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
@@ -132,15 +128,11 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
 
         switch ($response->getStatus()) {
             case CTEnumStatus::AUTHORIZE_REQUEST:
-
                 // Only save Information to Session if $decision['entscheidung']['entscheidungsergebnis'] is "GRUEN"
                 // see https://www.computop.com/fileadmin/user_upload/Downloads_Content/deutsch/Handbuch/Manual_Computop_Paygate_easyCredit.pdf
                 // page 11
-
-                $decisionParams = $payment->getDecisionParams($response->getPayID(), $response->getTransID(), $this->getAmount() * 100, $this->getCurrencyShortName());
+                $decisionParams = $payment->getDecisionParams($response->getPayID(), $response->getTransID(), $this->basket['AmountNumeric'] * 100, $this->getCurrencyShortName());
                 $responseObject = $this->plugin->callComputopService($decisionParams, $payment, 'GET', $payment->getCTCreditCheckURL());
-                //$responseObject = $payment->getDecision($decisionParams);
-                //$responseObject = $payment->getDecision($response->getPayID());
                 $decision = json_decode($responseObject->getDecision(), true);
 
                 if (!($decision['entscheidung']['entscheidungsergebnis'] === 'GRUEN')) {
@@ -150,7 +142,6 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
 
                 $this->session->offsetSet('FatchipComputopEasyCreditInformation', $this->getConfirmPageInformation($responseObject));
                 $this->session->offsetSet('fatchipComputopEasyCreditPayId', $response->getPayID());
-
                 $this->redirect(['controller' => 'checkout', 'action' => 'confirm']);
                 break;
             default:
@@ -168,12 +159,12 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
     {
         $orderVars = $this->session->sOrderVariables;
         $userData = $orderVars['sUserData'];
-        $requestParams = $this->Request()->getParams();
+        $this->basket = $this->get('modules')->Basket()->sGetBasket();
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
         //important: multiply amount by 100
-        $ctOrder->setAmount($this->getAmount() * 100);
+        $ctOrder->setAmount($this->basket['AmountNumeric'] * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
         $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
@@ -194,12 +185,8 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         );
 
         $payment->setDateOfBirth($this->utils->getUserDoB($userData));
-
         $params = $payment->getConfirmParams($this->session->offsetGet('fatchipComputopEasyCreditPayId'));
-
         $response = $this->plugin->callComputopService($params, $payment, 'CON', $payment->getCTCreditCheckURL());
-
-        //$response = $payment->confirm($this->session->offsetGet('fatchipComputopEasyCreditPayId'));
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
@@ -208,11 +195,8 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
                     $response->getUserData(),
                     self::PAYMENTSTATUSPAID
                 );
-
                 $this->session->offsetUnSet('FatchipComputopEasyCreditInformation');
-
                 $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
-
                 break;
             default:
                 $this->forward('failure');
@@ -232,10 +216,8 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
     private function getConfirmPageInformation($responseObject)
     {
         $easyCreditInformation = [];
-
         $process = json_decode($responseObject->getProcess(), true);
         $financing = json_decode($responseObject->getFinancing(), true);
-
         $easyCreditInformation['anzahlRaten'] = $financing['ratenplan']['zahlungsplan']['anzahlRaten'];
         $easyCreditInformation['tilgungsplanText'] = $financing['tilgungsplanText'];
         $easyCreditInformation['urlVorvertraglicheInformationen'] = $process['allgemeineVorgangsdaten']['urlVorvertraglicheInformationen'];
@@ -247,7 +229,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $easyCreditInformation['betragRate'] = $financing['ratenplan']['zahlungsplan']['betragRate'];
         $easyCreditInformation['betragLetzteRate'] = $financing['ratenplan']['zahlungsplan']['betragLetzteRate'];
         $easyCreditInformation['urlVorvertraglicheInformationen'] = $process['allgemeineVorgangsdaten']['urlVorvertraglicheInformationen'];
-
+        $easyCreditInformation['urlVorvertraglicheInformationen'] = $process['allgemeineVorgangsdaten']['urlVorvertraglicheInformationen'];
         return $easyCreditInformation;
     }
 }
