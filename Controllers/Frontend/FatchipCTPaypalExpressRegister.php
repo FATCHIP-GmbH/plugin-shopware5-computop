@@ -85,8 +85,8 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpressRegister extends Shopw
         $firstName = $splitNames[0];
         $this->view->assign('fatchipCTResponse', $params['CTResponse']);
         $this->view->assign('fatchipAddrCountryCodeID', $AddrCountryCodeID);
-        $this->view->assign('fatchipAddrFirstName', $firstName);
-        $this->view->assign('fatchipAddrLastName', $lastName);
+        $this->view->assign('fatchipAddrFirstName', $params['CTResponse']->getFirstName());
+        $this->view->assign('fatchipAddrLastName',  $params['CTResponse']->getLastName());
         // add a config->toView method which removed sensitive data from view
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
         // load Template to avoid annoying uppercase to _lowercase conversion

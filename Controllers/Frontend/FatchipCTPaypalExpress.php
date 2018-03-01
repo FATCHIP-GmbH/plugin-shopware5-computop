@@ -50,8 +50,6 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
      */
     public function gatewayAction()
     {
-        $router = $this->Front()->Router();
-        // ToDo Check sGEtBAsket  availablity in all SW Versions
         $basket= Shopware()->Modules()->Basket()->sGetBasket();
 
         // ToDo refactor ctOrder creation
@@ -67,16 +65,16 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
             'PaypalStandard',
             $this->config,
             $ctOrder,
-            $router->assemble(['action' => 'return', 'forceSecure' => true]),
-            $router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $this->router->assemble(['action' => 'return', 'forceSecure' => true]),
+            $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
+            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
             'Test',
             $this->getUserData()
             //$this->getOrderDesc()
         );
 
         $payment->setPayPalMethod('shortcut');
-        //$payment->setNoShipping(0);
+        $payment->setNoShipping(0);
         $params = $payment->getRedirectUrlParams();
 
         $this->redirect($payment->getHTTPGetURL($params));
@@ -132,7 +130,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
         );
         // wrap this in a method we can hook for central logging
         // refactor Amazon to use central Paymentservice to get rid of service Param
-        $response = $this->plugin->callComputopService($requestParams, $payment, 'ORDER');
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'ORDER', $payment->getCTPaymentURL());
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
