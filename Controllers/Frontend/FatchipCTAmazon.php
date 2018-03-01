@@ -87,7 +87,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
             $orderDesc,
             $session->offsetGet('fatchipCTAmazonReferenceID')
         );
-        $response = $this->plugin->callComputopService($requestParams, $payment, 'SCO');
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'SCO', $payment->getCTPaymentURL());
         return $response;
     }
 }

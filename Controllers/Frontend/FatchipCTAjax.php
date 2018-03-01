@@ -48,7 +48,7 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
             $referenceId
         );
 
-        $response = $this->plugin->callComputopService($requestParams, $payment, 'GOD')->toArray();
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'GOD', $payment->getCTPaymentURL())->toArray();
         // Test data IT, Rome, Guiseppe Rossi needs this
         if (!$response['AddrStreet2'] && !empty($response['addrstreet2'])) {
             $response['AddrStreet2'] = $response['addrstreet2'];
@@ -92,7 +92,7 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
             $referenceId
         );
 
-        $response = $this->plugin->callComputopService($requestParams, $payment, 'SOD')->toArray();
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'SOD', $payment->getCTPaymentURL())->toArray();
         $data = [];
         $data['data'] = $response;
         $data['status'] = ($response['Code'] == '00000000' ? 'success' : 'error');

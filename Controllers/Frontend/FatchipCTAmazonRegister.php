@@ -146,7 +146,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
             $countryIso,
             $router->assemble(['controller' => 'FatchipCTAmazon', 'action' => 'notify', 'forceSecure' => true])
         );
-        return  $this->plugin->callComputopService($requestParams, $payment, 'LGN');
+        return  $this->plugin->callComputopService($requestParams, $payment, 'LGN', $payment->getCTPaymentURL());
     }
 
     public function getArrayFromArrayObjs($arrayObjs)
