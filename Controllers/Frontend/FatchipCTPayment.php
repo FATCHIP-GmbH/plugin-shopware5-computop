@@ -92,8 +92,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     public function gatewayAction()
     {
-        $router = $this->Front()->Router();
-        $orderVars = Shopware()->Session()->sOrderVariables;
+        $orderVars = $this->session->sOrderVariables;
         $userData = $orderVars['sUserData'];
 
         // ToDo refactor ctOrder creation
@@ -111,9 +110,9 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $this->paymentClass,
             $this->config,
             $ctOrder,
-            $router->assemble(['action' => 'success', 'forceSecure' => true]),
-            $router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $this->router->assemble(['action' => 'success', 'forceSecure' => true]),
+            $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
+            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
             $this->getOrderDesc(),
             $this->getUserData()
         );

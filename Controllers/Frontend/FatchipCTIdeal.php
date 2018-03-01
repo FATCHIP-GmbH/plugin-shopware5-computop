@@ -53,9 +53,7 @@ class Shopware_Controllers_Frontend_FatchipCTIdeal extends Shopware_Controllers_
      */
     public function gatewayAction()
     {
-
-        $session = Shopware()->Session();
-        $orderVars = Shopware()->Session()->sOrderVariables;
+        $orderVars =$this->session->sOrderVariables;
         $userData = $orderVars['sUserData'];
 
         // ToDo refactor ctOrder creation
@@ -68,26 +66,20 @@ class Shopware_Controllers_Frontend_FatchipCTIdeal extends Shopware_Controllers_
         $ctOrder->setEmail($userData['additional']['user']['email']);
         $ctOrder->setCustomerID($userData['additional']['user']['id']);
 
-        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Ideal $payment */
-        $payment = $this->getPaymentClass($ctOrder);
-        $payment->setIssuerID($session->offsetGet('FatchipComputopIdealIssuer'));
-
-        $this->redirect($payment->getHTTPGetURL());
-    }
-
-    public function getPaymentClass($order) {
-        $router = $this->Front()->Router();
-
-        return $this->paymentService->getPaymentClass(
+        $payment = $this->paymentService->getIframePaymentClass(
             $this->paymentClass,
             $this->config,
-            $order,
-            $router->assemble(['action' => 'success', 'forceSecure' => true]),
-            $router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $ctOrder,
+            $this->router->assemble(['action' => 'success', 'forceSecure' => true]),
+            $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
+            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
             $this->getOrderDesc(),
             $this->getUserData()
         );
-    }
 
+        $params = $payment->getRedirectUrlParams();
+        $this->session->offsetSet('fatchipCTRedirectParams', $params);
+        $payment->setIssuerID($this->session->offsetGet('FatchipComputopIdealIssuer'));
+        $this->redirect($payment->getHTTPGetURL($params));
+    }
 }

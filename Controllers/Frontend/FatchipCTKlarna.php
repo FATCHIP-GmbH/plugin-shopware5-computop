@@ -45,7 +45,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
      */
     public function gatewayAction()
     {
-        $orderVars = Shopware()->Session()->sOrderVariables;
+        $orderVars = $this->session->sOrderVariables;
         $userData = $orderVars['sUserData'];
 
         $test = $this->getUser();
@@ -92,9 +92,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
      * @inheritdoc
      */
     public function getPaymentClass($order) {
-        $router = $this->Front()->Router();
-
-        $orderVars = Shopware()->Session()->sOrderVariables;
+        $orderVars = $this->session->sOrderVariables;
         $userData = $orderVars['sUserData'];
 
         $phone = $this->utils->getUserPhone($userData);
@@ -105,7 +103,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
         return new \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna(
             $this->config,
             $order,
-            $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
             $this->getOrderDesc(),
             $this->getUserData(),
             $phone,
