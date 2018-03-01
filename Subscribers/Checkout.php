@@ -113,8 +113,8 @@ class Checkout implements SubscriberInterface
             $paymentData['phone'] = $this->utils->getUserPhone($userData);
             $paymentData['idealIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
             $paymentData['idealIssuer'] = $session->offsetGet('FatchipComputopIdealIssuer');
-            $paymentData['sofortIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
-            $paymentData['sofortIssuer'] = $session->offsetGet('FatchipComputop44rtIssuer');
+            //$paymentData['sofortIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
+            //$paymentData['sofortIssuer'] = $session->offsetGet('FatchipComputopSofortIssuer');
 
 
             if ($this->utils->needSocialSecurityNumberForKlarna()) {
@@ -215,11 +215,12 @@ class Checkout implements SubscriberInterface
             );
         }
 
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_sofort_issuer']) && $paymentName === 'fatchip_computop_sofort') {
+       /* if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_sofort_issuer']) && $paymentName === 'fatchip_computop_sofort') {
             $session->offsetSet('FatchipComputopSofortIssuer',
               $params['FatchipComputopPaymentData']['fatchip_computop_sofort_issuer']
             );
         }
+       */
     }
 
 

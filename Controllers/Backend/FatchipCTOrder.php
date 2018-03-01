@@ -371,7 +371,8 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         $service = new CTPaymentService(null);
         $paymentMethods = $service->getPaymentMethods();
 
-        if ($key = array_search($name, array_column($paymentMethods, 'name'))) {
+        if (array_search($name, array_column($paymentMethods, 'name')) !== false) {
+            $key = array_search($name, array_column($paymentMethods, 'name'));
             return $paymentMethods[$key]['className'];
         }
 

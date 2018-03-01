@@ -31,10 +31,9 @@ class Forms
             'handler' => "function(btn) {" . file_get_contents(__DIR__ . '/../Views/common/backend/ideal/ideal_button_handler.js') . "}"
         ]);
 
-        $this->createFormSelectElements(CTPaymentConfigForms::formIdealSelectElements);
+        $this->createLastschriftConfigForm(CTPaymentConfigForms::formLastschriftSelectElements, CTPaymentConfigForms::formLastschriftNumberElements);
 
-        // mobilepay
-        $this->createFormTextElements(CTPaymentConfigForms::formMobilePayBooleanElements);
+        $this->createFormSelectElements(CTPaymentConfigForms::formIdealSelectElements);
 
         $this->createPayDirektConfigForm(CTPaymentConfigForms::formPayDirektTextElements, CTPaymentConfigForms::formPayDirektSelectElements, CTPaymentConfigForms::formPayDirektNumberElements);
 
@@ -59,6 +58,12 @@ class Forms
     {
         $this->createFormSelectElements($formCreditCardSelectElements);
         $this->createFormTextElements($formCreditCardNumberElements);
+    }
+
+    private function createLastschriftConfigForm($formLastschriftSelectElements, $formLastschriftNumberElements)
+    {
+        $this->createFormSelectElements($formLastschriftSelectElements);
+        $this->createFormTextElements($formLastschriftNumberElements);
     }
 
     private function createPayDirektConfigForm($formPayDirektTextElements, $formPayDirektSelectElements, $formPayDirektNumberElements)
