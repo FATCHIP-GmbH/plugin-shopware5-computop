@@ -36,45 +36,5 @@ require_once 'FatchipCTPayment.php';
 
 class Shopware_Controllers_Frontend_FatchipCTSofort extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
-
     public $paymentClass = 'Sofort';
-
-    public function gatewayAction()
-    {
-        $session = Shopware()->Session();
-        $orderVars = Shopware()->Session()->sOrderVariables;
-        $userData = $orderVars['sUserData'];
-
-        // ToDo refactor ctOrder creation
-        $ctOrder = new CTOrder();
-        //important: multiply amount by 100
-        $ctOrder->setAmount($this->getAmount() * 100);
-        $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
-        $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
-        $ctOrder->setEmail($userData['additional']['user']['email']);
-        $ctOrder->setCustomerID($userData['additional']['user']['id']);
-
-        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Ideal $payment */
-        $payment = $this->getPaymentClass($ctOrder);
-        //$payment->setIssuerID($session->offsetGet('FatchipComputopSofortIssuer'));
-
-        $this->redirect($payment->getHTTPGetURL());
-    }
-
-    public function getPaymentClass($order) {
-        $router = $this->Front()->Router();
-
-        return $this->paymentService->getPaymentClass(
-            $this->paymentClass,
-            $this->config,
-            $order,
-            $router->assemble(['action' => 'success', 'forceSecure' => true]),
-            $router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $router->assemble(['action' => 'notify', 'forceSecure' => true]),
-            $this->getOrderDesc(),
-            $this->getUserData()
-        );
-    }
-
 }
