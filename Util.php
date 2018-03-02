@@ -29,11 +29,11 @@ class Util
         return new CTAddress(
             ($swAddress['salutation'] == 'mr') ? 'Herr' : 'Frau',
             $swAddress['company'],
-            $swAddress['firstname'],
-            $swAddress['lastname'],
+            ($swAddress['firstname']) ? $swAddress['firstname'] : $swAddress['firstName'] ,
+            ($swAddress['lastname']) ? $swAddress['lastname'] : $swAddress['lastName'] ,
             $splitAddress['streetName'],
             $splitAddress['houseNumber'],
-            $swAddress['zipcode'],
+            ($swAddress['zipcode']) ? $swAddress['zipcode'] : $swAddress['zipCode'],
             $swAddress['city'],
             $this->getCTCountryIso($this->getCountryIdFromAddress($swAddress)),
             $this->getCTCountryIso3($this->getCountryIdFromAddress($swAddress)),
@@ -138,11 +138,14 @@ class Util
     public function getCountryIdFromAddress($swAddress)
     {
         $countryId = null;
+        /*
         if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
             $countryId = $swAddress['countryId'];
         } else {
             $countryId = $swAddress['countryID'];
         }
+        */
+        $countryId = ($swAddress['countryId']) ? $swAddress['countryId'] :  $swAddress['countryID'];
         return $countryId;
     }
 
