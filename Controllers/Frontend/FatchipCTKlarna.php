@@ -62,11 +62,31 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
         // Mandatory for paypalStandard
         $ctOrder->setOrderDesc($this->getOrderDesc());
 
-        $payment = $this->getPaymentClass($ctOrder);
+        $usesInvoice = ($userData['additional']['payment']['name'] === 'fatchip_computop_klarna_invoice');
+        $isFirm = !empty($userData['billingaddress']['company']);
+        $invoice = $usesInvoice ? '-1' : '1334';
+
+        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna $payment */
+        $payment = $this->paymentService->getIframePaymentClass(
+            $this->paymentClass,
+            $this->config,
+            $ctOrder,
+            null,
+            null,
+            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $this->getOrderDesc(),
+            $this->getUserData(),
+            null,
+            $isFirm,
+            $invoice
+        );
+
         $payment->setSocialSecurityNumber($this->utils->getUserSSN($userData));
         $payment->setAnnualSalary($this->utils->getUserAnnualSalary($userData));
-
-        $response = $payment->callKlarnaDirect();
+        $payment->setPhone($this->utils->getUserPhone($userData));
+        $payment->setDateOfBirth($this->utils->getUserDoB($userData));
+        $requestParams = $payment->getRedirectUrlParams();
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'Klarna', $payment->getCTPaymentURL());
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
@@ -86,32 +106,6 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
 
                 break;
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getPaymentClass($order) {
-        $orderVars = $this->session->sOrderVariables;
-        $userData = $orderVars['sUserData'];
-
-        $phone = $this->utils->getUserPhone($userData);
-        $birthday =$this->utils->getUserDoB($userData);
-        $isFirm = !empty($userData['billingaddress']['company']);
-        $usesInvoice = ($userData['additional']['payment']['name'] === 'fatchip_computop_klarna_invoice');
-
-        return new \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna(
-            $this->config,
-            $order,
-            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
-            $this->getOrderDesc(),
-            $this->getUserData(),
-            $phone,
-            $phone, //TODO remove mobile
-            $birthday,
-            $isFirm,
-            $usesInvoice ? '-1' : '1334'
-        );
     }
 
     /**
