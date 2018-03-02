@@ -142,7 +142,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         // remove easycredit session var
         $this->session->offsetUnset('fatchipComputopEasyCreditPayId');
 
-        return $this->forward('shippingPayment', 'checkout', null, array('CTError' => $ctError));
+        return $this->forward('shippingPayment', 'checkout', null, $this->hideError($response->getCode()) ? null : array('CTError' => $ctError));
     }
 
     /**
@@ -305,5 +305,28 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             }
 
         }
+    }
+
+
+    /***
+     * @param $errorCode
+     * @return bool
+     *
+     * Error code exists of numbers
+     * 1st = Result
+     * 2-4 = Category/Paymentmethod
+     * 5-8 = Details
+     */
+    private function hideError($errorCode) {
+        if (strlen($errorCode) > 4) {
+            switch (substr($errorCode, -4)) {
+                case '0053': //Cancel by User
+                    return true;
+                case '0703': //User Canceled
+                    return true;
+            }
+        }
+
+        return false;
     }
 }
