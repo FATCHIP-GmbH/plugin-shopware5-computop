@@ -22,7 +22,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
      */
     private $paymentService;
 
-    /** @var Util $utils * */
+    /** @var \Shopware\Plugins\FatchipCTPayment\Util $utils * */
     protected $utils;
 
 
@@ -155,6 +155,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         $this->View()->assign($response);
     }
 
+    /* ToDO is orderHasComputopPayment($order) neccessary? poisiton tab should not be displayed for non-computop orders */
     private function fcct_isOrderCapturable($order) {
 
          if (!$this->orderHasComputopPayment($order)) {
@@ -183,37 +184,11 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         return !empty($refundURL);
     }
 
+
     private function createCTOrderFromSWorder($swOrder) {
-        $swShipping = $swOrder->getShipping();
 
-        $ctShippingAddress = new \Fatchip\CTPayment\CTAddress\CTAddress($swShipping->getSalutation(),
-            $swShipping->getCompany(),
-            $swShipping->getFirstName(),
-            $swShipping->getLastName(),
-            $swShipping->getStreet(),
-            '',
-            $swShipping->getZipCode(),
-            $swShipping->getCity(),
-            $this->utils->getCTCountryIso($swOrder->getShipping()->getCountry()->getId()),
-            $this->utils->getCTCountryIso3($swOrder->getShipping()->getCountry()->getId()),
-            '',
-            '');
-
-        $swBilling = $swOrder->getBilling();
-
-        $ctBillingAddress = new \Fatchip\CTPayment\CTAddress\CTAddress($swBilling->getSalutation(),
-          $swBilling->getCompany(),
-          $swBilling->getFirstName(),
-          $swBilling->getLastName(),
-          $swBilling->getStreet(),
-          '',
-          $swBilling->getZipCode(),
-          $swBilling->getCity(),
-          $this->utils->getCTCountryIso($swOrder->getBilling()->getCountry()->getId()),
-          $this->utils->getCTCountryIso3($swOrder->getBilling()->getCountry()->getId()),
-          '',
-          '');
-
+        $ctShippingAddress = $this->utils->getCTAddress($swOrder->getShipping()->toArray());
+        $ctBillingAddress = $this->utils->getCTAddress($swOrder->getBilling());
 
         $ctOrder = new \Fatchip\CTPayment\CTOrder\CTOrder();
         $ctOrder->setBillingAddress($ctBillingAddress);
@@ -401,6 +376,8 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         $currentPaymentStatus = $order->getPaymentStatus()->getId();
 
         //Only when the current payment status = reserved or partly paid, we update the payment status
+
+        die();
         if ($currentPaymentStatus == self::PAYMENTSTATUSRESERVED || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID) {
             $payID = $order->getAttribute()->getfatchipctPayid();
             $inquireResponse = $paymentClass->inquire($payID);
