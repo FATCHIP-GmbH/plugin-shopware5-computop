@@ -185,7 +185,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $this->Front()->Plugins()->ViewRenderer()->setNoRender();
 
         $requestParams = $this->Request()->getParams();
-        $response = $this->paymentService->getPaymentResponse($requestParams);
+        /** @var \Fatchip\CTPayment\CTResponse $response */
+        $response = $this->paymentService->getDecryptedResponse($requestParams);
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
@@ -246,13 +247,13 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     {
         $transactionId = $response->getTransID();
         if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $transactionId])) {
-            if ($atrribute = $order->getAttribute()) {
-                $atrribute->setfatchipctStatus($response->getStatus());
-                $atrribute->setfatchipctTransid($response->getTransID());
-                $atrribute->setfatchipctPayid($response->getPayID());
-                $atrribute->setfatchipctXid($response->getXID());
+            if ($attribute = $order->getAttribute()) {
+                $attribute->setfatchipctStatus($response->getStatus());
+                $attribute->setfatchipctTransid($response->getTransID());
+                $attribute->setfatchipctPayid($response->getPayID());
+                $attribute->setfatchipctXid($response->getXID());
 
-                Shopware()->Models()->persist($atrribute);
+                Shopware()->Models()->persist($attribute);
                 Shopware()->Models()->flush();
             }
         }
