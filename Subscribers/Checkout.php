@@ -115,6 +115,7 @@ class Checkout implements SubscriberInterface
             $paymentData['idealIssuer'] = $session->offsetGet('FatchipComputopIdealIssuer');
             //$paymentData['sofortIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
             //$paymentData['sofortIssuer'] = $session->offsetGet('FatchipComputopSofortIssuer');
+            $paymentData['isCompany'] = isset($userData['billingaddress']['company']);
 
 
             if ($this->utils->needSocialSecurityNumberForKlarna()) {
@@ -129,9 +130,23 @@ class Checkout implements SubscriberInterface
                 $paymentData['annualsalary'] = $this->utils->getUserAnnualSalary($userData);
             }
 
-            $paymentData['isCompany'] = isset($userData['billingaddress']['company']);
+            // remove AmazonPay and Paypal Express from Payment List
+            $payments = $view->getAssign('sPayments');
 
-            $view->assign('FatchipCTPaymentData', $paymentData);
+            foreach ($payments as $index=>$payment) {
+                if ($payment['name'] === 'fatchip_computop_amazonpay') {
+                    $amazonPayIndex = $index;
+                }
+                if ($payment['name'] === 'fatchip_computop_paypal_express') {
+                    $paypalExpressIndex = $index;
+                }
+            }
+            unset ($payments[$amazonPayIndex]);
+            unset ($payments[$paypalExpressIndex]);
+
+
+            $view->assign('sPayments', $payments);
+                        $view->assign('FatchipCTPaymentData', $paymentData);
 
             // assign payment errors and error template to view
             $view->extendsTemplate('frontend/checkout/shipping_payment.tpl');
