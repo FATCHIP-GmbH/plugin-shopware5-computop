@@ -188,17 +188,21 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         /** @var \Fatchip\CTPayment\CTResponse $response */
         $response = $this->paymentService->getDecryptedResponse($requestParams);
 
+        $this->plugin->logRedirectParams(null, $this->paymentClass, 'NOTIFY', $response);
+
+
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
                 $transactionId = $response->getTransID();
                 if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $response->getTransID()])) {
-                    $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSPAID);
-                    $this->markOrderDetailsAsFullyCaptured($order);
+                    $this->inquireAndupdatePaymentStatus($order, $this->paymentClass);
+                } else {
+                    throw new \RuntimeException('No order available within Notify');
                 }
                 // else do nothing notify got here before success
                 break;
             default:
-                $this->forward('failure');
+                throw new \RuntimeException('No order available within Notify');
                 break;
         }
     }
@@ -329,5 +333,89 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         }
 
         return false;
+    }
+
+    private function inquireAndupdatePaymentStatus($order, $paymentClass) {
+
+        $currentPaymentStatus = $order->getPaymentStatus()->getId();
+
+        //Only when the current payment status = reserved or partly paid, we update the payment status
+        if ($currentPaymentStatus == self::PAYMENTSTATUSRESERVED || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID) {
+            $payID = $order->getAttribute()->getfatchipctPayid();
+            $ctOrder = $this->createCTOrderFromSWorder($order);
+            if ($paymentClass !== 'PaypalExpress' && $paymentClass !== 'AmazonPay'){
+                $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->config, $ctOrder);
+            } else {
+                $payment = $this->paymentService->getPaymentClass($paymentClass, $this->config, $ctOrder);
+            }
+            $inquireParams = $payment->getInquireParams($payID);
+
+
+
+            $inquireResponse = $this->plugin->callComputopService($inquireParams, $payment, 'INQUIRE', $payment->getCTInquireURL());
+
+
+            if ($inquireResponse->getStatus() == 'OK') {
+                if ($inquireResponse->getAmountAuth() == $inquireResponse->getAmountCap()) {
+                    //Fully paid
+                    $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', self::PAYMENTSTATUSPAID);
+                    $order->setPaymentStatus($paymentStatus);
+                    $this->markOrderDetailsAsFullyCaptured($order);
+                    $this->get('models')->flush($order);
+                } else if ($inquireResponse->getAmountCap() > 0){
+                    //partially paid
+                    $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', self::PAYMENTSTATUSPARTIALLYPAID);
+                    $order->setPaymentStatus($paymentStatus);
+                    $this->get('models')->flush($order);
+                } else {
+                        //if nothing has been captured, we throw an error, so Computop will send another Notification
+                        //if the capture has been made either manually or delayed within 24 hours, we will get a notification and be able
+                        //to mark the order as captured
+                        throw new \RuntimeException('No Capture in InquireResponse within first hour');
+
+                }
+            }
+        }
+    }
+
+     private function createCTOrderFromSWorder($swOrder) {
+        $swShipping = $swOrder->getShipping();
+
+        $ctShippingAddress = new \Fatchip\CTPayment\CTAddress\CTAddress($swShipping->getSalutation(),
+          $swShipping->getCompany(),
+          $swShipping->getFirstName(),
+          $swShipping->getLastName(),
+          $swShipping->getStreet(),
+          '',
+          $swShipping->getZipCode(),
+          $swShipping->getCity(),
+          $this->utils->getCTCountryIso($swOrder->getShipping()->getCountry()->getId()),
+          $this->utils->getCTCountryIso3($swOrder->getShipping()->getCountry()->getId()),
+          '',
+          '');
+
+        $swBilling = $swOrder->getBilling();
+
+        $ctBillingAddress = new \Fatchip\CTPayment\CTAddress\CTAddress($swBilling->getSalutation(),
+          $swBilling->getCompany(),
+          $swBilling->getFirstName(),
+          $swBilling->getLastName(),
+          $swBilling->getStreet(),
+          '',
+          $swBilling->getZipCode(),
+          $swBilling->getCity(),
+          $this->utils->getCTCountryIso($swOrder->getBilling()->getCountry()->getId()),
+          $this->utils->getCTCountryIso3($swOrder->getBilling()->getCountry()->getId()),
+          '',
+          '');
+
+
+        $ctOrder = new \Fatchip\CTPayment\CTOrder\CTOrder();
+        $ctOrder->setBillingAddress($ctBillingAddress);
+        $ctOrder->setShippingAddress($ctShippingAddress);
+        if ($email = $swOrder->getCustomer()->getEmail()) {
+            $ctOrder->setEmail($email);
+        }
+        return $ctOrder;
     }
 }
