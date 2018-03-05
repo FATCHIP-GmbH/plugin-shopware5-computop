@@ -55,7 +55,7 @@ class FatchipCTApilog extends ModelEntity
 
 
     /**
-   * @ORM\Column(name="request_details", type="array", precision=0, scale=0, nullable=false, unique=false)
+   * @ORM\Column(name="request_details", type="array", precision=0, scale=0, nullable=true, unique=false)
    */
     private $requestDetails;
 
