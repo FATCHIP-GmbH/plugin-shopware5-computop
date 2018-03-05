@@ -491,6 +491,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
     private function getKlarnaOrderDesc($order, $positionIds)
     {
+        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->find($order['id']);
         $orderDesc = '';
         foreach ($order->getDetails() as $position) {
             if (!in_array($position->getId(), $positionIds)) {

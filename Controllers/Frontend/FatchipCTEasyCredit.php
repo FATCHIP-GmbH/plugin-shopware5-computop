@@ -192,11 +192,12 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
             case CTEnumStatus::OK:
                 $this->saveOrder(
                     $response->getTransID(),
-                    $response->getUserData(),
+                    $response->getPayID(),
                     self::PAYMENTSTATUSPAID
                 );
                 $this->session->offsetUnSet('FatchipComputopEasyCreditInformation');
-                $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
+                //$this->redirect(['controller' => 'checkout', 'action' => 'finish']);
+                $this->forward('finish', 'checkout', null, ['sAGB' => 1]);
                 break;
             default:
                 $this->forward('failure');

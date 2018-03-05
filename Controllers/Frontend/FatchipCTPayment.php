@@ -162,7 +162,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             case CTEnumStatus::OK:
                 $orderNumber = $this->saveOrder(
                     $response->getTransID(),
-                    $response->getXID(),
+                    $response->getPayID(),
                     self::PAYMENTSTATUSRESERVED
                 );
                 $this->saveTransactionResult($response);

@@ -92,11 +92,13 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
             case CTEnumStatus::OK:
                 $orderNumber =  $this->saveOrder(
                     $response->getTransID(),
-                    $response->getUserData(),
+                    $response->getPayID(),
                     self::PAYMENTSTATUSRESERVED
                 );
                 $this->saveTransactionResult($response);
-                $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
+                //$this->redirect(['controller' => 'checkout', 'action' => 'finish', ['sAGB' => 'true']]);
+                $params = $this->Request()->getParams();
+                $this->forward('finish', 'checkout', null, ['sAGB' => 1]);
                 break;
             default:
                 $ctError = [];
