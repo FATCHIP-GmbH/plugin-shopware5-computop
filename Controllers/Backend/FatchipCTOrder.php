@@ -35,8 +35,8 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
         // set order array!as property
-        $orderid = $this->Request()->getParam('id');
-        $this->order = $this->getOrderArray($orderid);
+        $orderId = $this->Request()->getParam('id');
+        $this->order = $this->getOrderArray($orderId);
         parent::init();
     }
 
@@ -130,20 +130,24 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             $paymentClass = $this->getCTPaymentClassForOrder($this->order);
 
             $amount = $this->getRefundAmount($this->order, $positionIds, $includeShipment);
-            $paymentClass->setAmount($amount);
-            $paymentClass->setCurrency($this->order->getCurrency());
 
-            if (strpos($this->order->getPayment()->getName(), 'fatchip_computop_klarna_') === 0) {
+            $requestParams = $paymentClass->getCaptureParams(
+                $this->order['attribute']['fatchipctPayid'],
+                $amount,
+                $this->order['currency']
+            );
+
+            if (strpos($this->order['payment']['name'], 'fatchip_computop_klarna_') === 0) {
                 $paymentClass->setOrderDesc($this->getKlarnaOrderDesc($this->order, $positionIds));
             }
 
-            $captureResponse = $paymentClass->refund($this->order->getAttribute()->getfatchipctPayid(), $amount, $this->order->getCurrency());
+            $refundResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'Refund', $paymentClass->getCTRefundURL());
 
-            if ($captureResponse->getStatus() == 'OK') {
+            if ($refundResponse->getStatus() == 'OK') {
                 $this->markPositionsAsRefunded($this->order, $positionIds, $includeShipment);
                 $response = array('success' => true);
             } else {
-                $errorMessage = 'Gutschrift (zur Zeit) nicht möglich: ' . $captureResponse->getDescription();
+                $errorMessage = 'Gutschrift (zur Zeit) nicht möglich: ' . $refundResponse->getDescription();
                 $response = array('success' => false, 'error_message' => $errorMessage);
             }
         } catch (Exception $e) {
@@ -201,7 +205,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
                 $this->order['currency']
             );
 
-            $response = $this->plugin->callComputopService($requestParams, $paymentClass, 'Capture', $paymentClass->getCTPaymentURL());
+            $response = $this->plugin->callComputopService($requestParams, $paymentClass, 'Capture', $paymentClass->getCTCaptureURL());
 
 
             if ($response->getStatus() == 'OK') {
@@ -209,7 +213,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
                 $this->inquireAndupdatePaymentStatus($this->order, $paymentClass);
                 $response = array('success' => true);
             } else {
-                $errorMessage = 'Capture (zur Zeit) nicht möglich: ' . $captureResponse->getDescription();
+                $errorMessage = 'Capture (zur Zeit) nicht möglich: ' . $response->getDescription();
                 $response = array('success' => false, 'error_message' => $errorMessage);
             }
         } catch (Exception $e) {
@@ -316,25 +320,26 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
     {
         $amount = 0;
 
-        foreach ($order->getDetails() as $position) {
-            if (!in_array($position->getId(), $positionIds)) {
+        foreach ($order['details'] as $position) {
+            if (!in_array($position['id'], $positionIds)) {
                 continue;
             }
 
-            $positionAttribute = $position->getAttribute();
-            $alreadyRefundedAmount = $positionAttribute ? $positionAttribute->getfatchipctDebit() : 0;
+            $positionAttribute = $position['attribute'];
+
+            $alreadyRefundedAmount = $positionAttribute ? $positionAttribute['fatchipctDebit'] : 0;
             //add difference between total price and already captured amount
-            $positionPrice = round($position->getPrice(), 2);
+            $positionPrice = round($position['price'], 2);
 
-            $amount += ($positionPrice * $position->getQuantity()) - $alreadyRefundedAmount;
+            $amount += ($positionPrice * $position['quantity']) - $alreadyRefundedAmount;
 
-            if ($position->getArticleNumber() == 'SHIPPING') {
+            if ($position['articleNumber'] == 'SHIPPING') {
                 $includeShipment = false;
             }
         }
 
         if ($includeShipment) {
-            $amount += $order->getInvoiceShipping();
+            $amount += $order['invoiceShipping'];
         }
 
         /*Important: multiply by 100*/
@@ -345,6 +350,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
     private function markPositionsAsCaptured($order, $positionIds, $includeShipment = false)
     {
+        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->find($order['id']);
         foreach ($order->getDetails() as $position) {
             if (!in_array($position->getId(), $positionIds)) {
                 continue;
@@ -372,6 +378,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
     private function markPositionsAsRefunded($order, $positionIds, $includeShipment = false)
     {
+        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->find($order['id']);
         foreach ($order->getDetails() as $position) {
             if (!in_array($position->getId(), $positionIds)) {
                 continue;
@@ -421,29 +428,50 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         $ctOrder = $this->createCTOrderFromSWorder($order);
         $ctOrder->setOrderDesc('');
         $router = $this->Front()->Router();
-        return $this->paymentService->getIframePaymentClass(
-            $this->getCTPaymentClassNameForOrder($order),
-            $this->config,
-            $ctOrder,
-            $router->assemble(['action' => 'success', 'forceSecure' => true]),
-            $router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $router->assemble(['action' => 'notify', 'forceSecure' => true]),
-            Shopware()->Config()->shopName,
-            '-'
-        );
+        $paymentClassName = $this->getCTPaymentClassNameForOrder($order);
+
+        if ($paymentClassName !== 'PaypalExpress' && $paymentClassName !== 'AmazonPay'){
+            return $this->paymentService->getIframePaymentClass(
+                $paymentClassName,
+                $this->config,
+                $ctOrder,
+                $router->assemble(['action' => 'success', 'forceSecure' => true]),
+                $router->assemble(['action' => 'failure', 'forceSecure' => true]),
+                $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+                Shopware()->Config()->shopName,
+                '-'
+            );
+        } else {
+            return $this->paymentService->getPaymentClass(
+                $paymentClassName,
+                $this->config,
+                $ctOrder,
+                $router->assemble(['action' => 'success', 'forceSecure' => true]),
+                $router->assemble(['action' => 'failure', 'forceSecure' => true]),
+                $router->assemble(['action' => 'notify', 'forceSecure' => true]),
+                Shopware()->Config()->shopName,
+                '-'
+            );
+        }
     }
 
     private function inquireAndupdatePaymentStatus($order, $paymentClass)
     {
+        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->find($order['id']);
 
         $currentPaymentStatus = $order->getPaymentStatus()->getId();
 
         //Only when the current payment status = reserved or partly paid, we update the payment status
 
-        die();
         if ($currentPaymentStatus == self::PAYMENTSTATUSRESERVED || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID) {
             $payID = $order->getAttribute()->getfatchipctPayid();
-            $inquireResponse = $paymentClass->inquire($payID);
+
+            $requestParams = $paymentClass->getInquireParams(
+                $this->order['attribute']['fatchipctPayid']
+            );
+
+            $inquireResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'Inquire', $paymentClass->getCTInquireURL());
+
 
             if ($inquireResponse->getStatus() == 'OK') {
                 if ($inquireResponse->getAmountAuth() == $inquireResponse->getAmountCap()) {
