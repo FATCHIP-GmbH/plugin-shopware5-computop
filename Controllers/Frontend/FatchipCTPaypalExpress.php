@@ -139,7 +139,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
                     $response->getPayID(),
                     self::PAYMENTSTATUSPAID
                 );
-
+                $this->saveTransactionResult($response);
                 $this->redirect(['controller' => 'FatchipCTPaypalExpressCheckout', 'action' => 'finish']);
                 break;
             default:

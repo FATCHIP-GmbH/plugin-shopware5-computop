@@ -190,11 +190,12 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
-                $this->saveOrder(
+                $orderNumber = $this->saveOrder(
                     $response->getTransID(),
                     $response->getPayID(),
                     self::PAYMENTSTATUSPAID
                 );
+                $this->saveTransactionResult($response);
                 $this->session->offsetUnSet('FatchipComputopEasyCreditInformation');
                 //$this->redirect(['controller' => 'checkout', 'action' => 'finish']);
                 $this->forward('finish', 'checkout', null, ['sAGB' => 1]);

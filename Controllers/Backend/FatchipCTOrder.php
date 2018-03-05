@@ -134,7 +134,9 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             $requestParams = $paymentClass->getCaptureParams(
                 $this->order['attribute']['fatchipctPayid'],
                 $amount,
-                $this->order['currency']
+                $this->order['currency'],
+                $this->order['attribute']['fatchipctTransid'],
+                $this->order['attribute']['fatchipctXid']
             );
 
             if (strpos($this->order['payment']['name'], 'fatchip_computop_klarna_') === 0) {
@@ -202,8 +204,11 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             $requestParams = $paymentClass->getCaptureParams(
                 $this->order['attribute']['fatchipctPayid'],
                 $amount,
-                $this->order['currency']
+                $this->order['currency'],
+                $this->order['attribute']['fatchipctTransid'],
+                $this->order['attribute']['fatchipctXid']
             );
+            $requestParams['OrderDesc'] = 'Test';
 
             $response = $this->plugin->callComputopService($requestParams, $paymentClass, 'Capture', $paymentClass->getCTCaptureURL());
 
