@@ -70,7 +70,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $this->config = $this->plugin->Config()->toArray();
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
-        $this->session= Shopware()->Session();
+        $this->session = Shopware()->Session();
         $this->router = $this->Front()->Router();
     }
 
@@ -99,8 +99,16 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $ctOrder = new CTOrder();
         $ctOrder->setAmount($this->getAmount() * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
-        $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
+        // try catch in case Address Splitter retrun exceptions
+        try {
+            $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
+            $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
+        } catch (Exception $e) {
+            $ctError = [];
+            $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
+            $ctError['CTErrorCode'] = $e->getMessage();
+            return $this->forward('shippingPayment', 'checkout', null,  ['CTError' => $ctError]);
+        }
         $ctOrder->setEmail($userData['additional']['user']['email']);
         $ctOrder->setCustomerID($userData['additional']['user']['id']);
         // Mandatory for paypalStandard
@@ -322,7 +330,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      * 2-4 = Category/Paymentmethod
      * 5-8 = Details
      */
-    private function hideError($errorCode) {
+    private function hideError($errorCode)
+    {
         if (strlen($errorCode) > 4) {
             switch (substr($errorCode, -4)) {
                 case '0053': //Cancel by User
@@ -335,7 +344,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         return false;
     }
 
-    private function inquireAndupdatePaymentStatus($order, $paymentClass) {
+    private function inquireAndupdatePaymentStatus($order, $paymentClass)
+    {
 
         $currentPaymentStatus = $order->getPaymentStatus()->getId();
 
@@ -343,13 +353,12 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         if ($currentPaymentStatus == self::PAYMENTSTATUSRESERVED || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID) {
             $payID = $order->getAttribute()->getfatchipctPayid();
             $ctOrder = $this->createCTOrderFromSWorder($order);
-            if ($paymentClass !== 'PaypalExpress' && $paymentClass !== 'AmazonPay'){
+            if ($paymentClass !== 'PaypalExpress' && $paymentClass !== 'AmazonPay') {
                 $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->config, $ctOrder);
             } else {
                 $payment = $this->paymentService->getPaymentClass($paymentClass, $this->config, $ctOrder);
             }
             $inquireParams = $payment->getInquireParams($payID);
-
 
 
             $inquireResponse = $this->plugin->callComputopService($inquireParams, $payment, 'INQUIRE', $payment->getCTInquireURL());
@@ -362,52 +371,53 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                     $order->setPaymentStatus($paymentStatus);
                     $this->markOrderDetailsAsFullyCaptured($order);
                     $this->get('models')->flush($order);
-                } else if ($inquireResponse->getAmountCap() > 0){
+                } else if ($inquireResponse->getAmountCap() > 0) {
                     //partially paid
                     $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', self::PAYMENTSTATUSPARTIALLYPAID);
                     $order->setPaymentStatus($paymentStatus);
                     $this->get('models')->flush($order);
                 } else {
-                        //if nothing has been captured, we throw an error, so Computop will send another Notification
-                        //if the capture has been made either manually or delayed within 24 hours, we will get a notification and be able
-                        //to mark the order as captured
-                        throw new \RuntimeException('No Capture in InquireResponse within first hour');
+                    //if nothing has been captured, we throw an error, so Computop will send another Notification
+                    //if the capture has been made either manually or delayed within 24 hours, we will get a notification and be able
+                    //to mark the order as captured
+                    throw new \RuntimeException('No Capture in InquireResponse within first hour');
 
                 }
             }
         }
     }
 
-     private function createCTOrderFromSWorder($swOrder) {
+    private function createCTOrderFromSWorder($swOrder)
+    {
         $swShipping = $swOrder->getShipping();
 
         $ctShippingAddress = new \Fatchip\CTPayment\CTAddress\CTAddress($swShipping->getSalutation(),
-          $swShipping->getCompany(),
-          $swShipping->getFirstName(),
-          $swShipping->getLastName(),
-          $swShipping->getStreet(),
-          '',
-          $swShipping->getZipCode(),
-          $swShipping->getCity(),
-          $this->utils->getCTCountryIso($swOrder->getShipping()->getCountry()->getId()),
-          $this->utils->getCTCountryIso3($swOrder->getShipping()->getCountry()->getId()),
-          '',
-          '');
+            $swShipping->getCompany(),
+            $swShipping->getFirstName(),
+            $swShipping->getLastName(),
+            $swShipping->getStreet(),
+            '',
+            $swShipping->getZipCode(),
+            $swShipping->getCity(),
+            $this->utils->getCTCountryIso($swOrder->getShipping()->getCountry()->getId()),
+            $this->utils->getCTCountryIso3($swOrder->getShipping()->getCountry()->getId()),
+            '',
+            '');
 
         $swBilling = $swOrder->getBilling();
 
         $ctBillingAddress = new \Fatchip\CTPayment\CTAddress\CTAddress($swBilling->getSalutation(),
-          $swBilling->getCompany(),
-          $swBilling->getFirstName(),
-          $swBilling->getLastName(),
-          $swBilling->getStreet(),
-          '',
-          $swBilling->getZipCode(),
-          $swBilling->getCity(),
-          $this->utils->getCTCountryIso($swOrder->getBilling()->getCountry()->getId()),
-          $this->utils->getCTCountryIso3($swOrder->getBilling()->getCountry()->getId()),
-          '',
-          '');
+            $swBilling->getCompany(),
+            $swBilling->getFirstName(),
+            $swBilling->getLastName(),
+            $swBilling->getStreet(),
+            '',
+            $swBilling->getZipCode(),
+            $swBilling->getCity(),
+            $this->utils->getCTCountryIso($swOrder->getBilling()->getCountry()->getId()),
+            $this->utils->getCTCountryIso3($swOrder->getBilling()->getCountry()->getId()),
+            '',
+            '');
 
 
         $ctOrder = new \Fatchip\CTPayment\CTOrder\CTOrder();
