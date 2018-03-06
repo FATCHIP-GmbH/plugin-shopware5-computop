@@ -1,8 +1,8 @@
 # Fatchip Computop Payments for Shopware 5
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/badges/quality-score.png?b=master&s=169b12bb8f81818d409d65f7e9f45b574caa3e2d)](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/badges/coverage.png?b=master&s=faf14e7b40f87bff3c7973f749902a590aac05a3)](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/?branch=master)
-[![Build Status](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/badges/build.png?b=master&s=1b4403702a2ddbcc17d86349f404161124fade07)](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/build-status/master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/badges/quality-score.png?b=master&s=ef80e9afd3621e208f7b8d6e2e1fa0d02672340c)](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/badges/coverage.png?b=master&s=17b8caeddcf39fc90dc791b9604ed7f97551c645)](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/badges/build.png?b=master&s=b16401c505027a089d9c5bf322fb75aaaa70486d)](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/build-status/master)
 
 Licence ????
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
