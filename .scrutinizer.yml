@@ -166,6 +166,7 @@ build:
         postgresql:           false
         redis:                false
         variables:
+
             # This is the right way to define env vars, but vars are not replaced in the before commands
             # so we use export instead for now
             #BUILD_HOME: /home/scrutinizer
