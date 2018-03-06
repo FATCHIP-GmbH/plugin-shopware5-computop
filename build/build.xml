@@ -9,7 +9,7 @@
   <property name="dist"  location="./build/versions"/>
   <property name="pluginname"  value="FatchipCTPayment"/>
   <property name="zipname"  value="FatchipCTPayment"/>
-  <property name="repository" value="FATCHIP-GmbH/plugin-shopware5-computop-"/>
+  <property name="repository" value="FATCHIP-GmbH/plugin-shopware5-computop"/>
 
 
     <!-- property name="expires"  value="2011-05-11"/ -->
@@ -86,9 +86,10 @@
 		<arg value="${dist}/${zipname}-v${version}.zip" />
         </exec>
 
-    <!-- Clean UP -->
+    <!-- Clean UP
   	<delete dir="${buildtmp}"/>
 	<delete dir="${dist}"/>
+	 -->
   </target>
 	
 </project>
