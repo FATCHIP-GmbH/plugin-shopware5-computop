@@ -4,6 +4,7 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\CTPayment\CTCrif\CRIF;
 use Shopware\Components\DependencyInjection\Container;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
@@ -163,14 +164,13 @@ class FrontendRiskManagement implements SubscriberInterface {
         }
         else {
 
-            /** @var \Fatchip\CTPayment\CTPaymentService $service */
+            /** @var Fatchip\CTPayment\CTPaymentService $service */
             $service = Shopware()->Container()->get('FatchipCTPaymentApiClient');
             $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
             $config = $plugin->Config()->toArray();
             //only execute riskcheck if a CRIF method is set in config.
             if (!isset($config['crifmethod']) || $config['crifmethod'] == 'inactive') {
                 $arguments->setReturn(FALSE);
-
                 return;
             }
 
@@ -211,11 +211,12 @@ class FrontendRiskManagement implements SubscriberInterface {
                 $ctOrder->setCustomerID($user['additional']['user']['id']);
 
                 //TODO: Set orderDesc and Userdata
+                /** @var CRIF $crif */
                 $crif = $service->getCRIFClass($config, $ctOrder, 'testOrder', 'testUserData');
-                //make the call to CRIF
-                $rawResp = $crif->callCRFDirect();
+                $crifParams = $crif->getRedirectUrlParams();
+                $crifResponse = $plugin->callComputopCRIFService($crifParams, $crif, 'CRIF', $crif->getCTPaymentURL());
+
                 /** @var \Fatchip\CTPayment\CTResponse\CTResponse $crifResponse */
-                $crifResponse = $service->createPaymentResponse($rawResp);
                 $status = $crifResponse->getStatus();
                 $callResult = $crifResponse->getResult();
                 //write the result to the session for this billingaddressID

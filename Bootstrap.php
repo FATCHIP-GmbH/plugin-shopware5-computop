@@ -355,4 +355,23 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         Shopware()->Models()->flush($log);
         return $response;
     }
+
+    // ToDo refactor both methods into a single one
+    // this wrapper is used for logging Server requests and responses to our shopware model
+    public function callComputopCRIFService($requestParams, $crif, $requestType, $url){
+        $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
+        $log->setPaymentName('RiskCheck');
+        $log->setRequest($requestType);
+        $log->setRequestDetails(json_encode($requestParams));
+        /** @var \Fatchip\CTPayment\CTResponse $response */
+        $response =  $crif->callComputop($requestParams, $url);
+        $log->setTransId($response->getTransID());
+        $log->setPayId($response->getPayID());
+        $log->setXId($response->getXID());
+        $log->setResponse($response->getStatus());
+        $log->setResponseDetails(json_encode($response->toArray()));
+        Shopware()->Models()->persist($log);
+        Shopware()->Models()->flush($log);
+        return $response;
+    }
 }
