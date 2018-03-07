@@ -13,7 +13,8 @@ use Shopware\Plugins\FatchipCTPayment\Util;
  *
  * @package Shopware\Plugins\MoptPaymentPayone\Subscribers
  */
-class FrontendRiskManagement implements SubscriberInterface {
+class FrontendRiskManagement implements SubscriberInterface
+{
 
     /**
      * di container
@@ -27,7 +28,8 @@ class FrontendRiskManagement implements SubscriberInterface {
      *
      * @param Container $container
      */
-    public function __construct(Container $container) {
+    public function __construct(Container $container)
+    {
         $this->container = $container;
     }
 
@@ -36,12 +38,12 @@ class FrontendRiskManagement implements SubscriberInterface {
      *
      * @return array
      */
-    public static function getSubscribedEvents() {
+    public static function getSubscribedEvents()
+    {
 
         $events = ['sAdmin::executeRiskRule::replace' => 'onExecuteRiskRule',];
 
-        if (\Shopware::VERSION === '___VERSION___' || version_compare(\Shopware::VERSION, '5.2.0', '>='))
-        {
+        if (\Shopware::VERSION === '___VERSION___' || version_compare(\Shopware::VERSION, '5.2.0', '>=')) {
             $events['Shopware\Models\Customer\Address::postUpdate'] = 'afterAddressUpdate';
         } else {
             $events['Shopware_Modules_Admin_ValidateStep2Shipping_FilterResult'] = 'onValidateStep2ShippingAddress';
@@ -58,7 +60,8 @@ class FrontendRiskManagement implements SubscriberInterface {
      * Fired after a user updates an address in SW >=5.2 If a CRIF result is available, it will be
      * invalidated / deleted
      */
-    public function afterAddressUpdate(\Enlight_Hook_HookArgs $args) {
+    public function afterAddressUpdate(\Enlight_Hook_HookArgs $args)
+    {
         //check in Session if we autoupated the address with the corrected Address from CRIF
         if (!$this->addressWasAutoUpdated()) {
             /** @var \Shopware\Models\Customer\Address $model */
@@ -68,7 +71,8 @@ class FrontendRiskManagement implements SubscriberInterface {
     }
 
 
-    public function onValidateStep2BillingAddress(\Enlight_Hook_HookArgs $arguments) {
+    public function onValidateStep2BillingAddress(\Enlight_Hook_HookArgs $arguments)
+    {
         //check in Session if we autoupated the address with the corrected Address from CRIF
         if (!$this->addressWasAutoUpdated()) {
             $session = Shopware()->Session();
@@ -78,7 +82,7 @@ class FrontendRiskManagement implements SubscriberInterface {
             $customerBillingId = $userData['billingaddress']['customerBillingId'];
 
             //postdata contains the new addressdata that the user just entered
-            $postData       = $arguments->get('post');
+            $postData = $arguments->get('post');
 
             if (!empty($customerBillingId) && $this->addressChanged($postData, $oldBillingAddress)) {
                 $this->invalidateCrifResult($customerBillingId, 'billing');
@@ -97,7 +101,7 @@ class FrontendRiskManagement implements SubscriberInterface {
             $customerShippingId = $userData['shippingaddress']['customerShippingId'];
 
             //postdata contains the new addressdata that the user just entered
-            $postData       = $arguments->get('post');
+            $postData = $arguments->get('post');
 
             if (!empty($customerShippingId) && $this->addressChanged($postData, $oldShippingAddress)) {
                 $this->invalidateCrifResult($customerShippingId, 'shipping');
@@ -105,18 +109,20 @@ class FrontendRiskManagement implements SubscriberInterface {
         }
     }
 
-    private function addressChanged($oldAddress, $newAddress) {
+    private function addressChanged($oldAddress, $newAddress)
+    {
         //we consider the address changed if street, zipcode, city or country changed
         return ($oldAddress['city'] !== $newAddress['city'] || $oldAddress['street'] !== $newAddress['street'] ||
-          $oldAddress['zipcode'] !== $newAddress['zipcode'] || $oldAddress['country'] !== $newAddress['countryID']);
+            $oldAddress['zipcode'] !== $newAddress['zipcode'] || $oldAddress['country'] !== $newAddress['countryID']);
     }
 
-  /**
+    /**
      * @param \Shopware\Models\Customer\Address $address
      *
      * removes CRIF results from Address
      */
-    private function invalidateCrifFOrAddress($address) {
+    private function invalidateCrifFOrAddress($address)
+    {
         /* @var \Shopware\Models\Customer\Address $address */
         if ($attribute = $address->getAttribute()) {
             $attribute->setFatchipctCrifdate(0);
@@ -128,7 +134,8 @@ class FrontendRiskManagement implements SubscriberInterface {
         }
     }
 
-    private function invalidateCrifResult($addressID, $type) {
+    private function invalidateCrifResult($addressID, $type)
+    {
         $util = new Util();
         $address = $util->getCustomerAddressById($addressID, $type);
         if ($attribute = $address->getAttribute()) {
@@ -148,7 +155,8 @@ class FrontendRiskManagement implements SubscriberInterface {
      *
      * * @param \Enlight_Hook_HookArgs $arguments
      */
-    public function onExecuteRiskRule(\Enlight_Hook_HookArgs $arguments) {
+    public function onExecuteRiskRule(\Enlight_Hook_HookArgs $arguments)
+    {
         $rule = $arguments->get('rule');
 
         $user = $arguments->get('user');
@@ -156,13 +164,12 @@ class FrontendRiskManagement implements SubscriberInterface {
         // execute parent call if rule is not Computop
         if (strpos($rule, 'sRiskFATCHIP_COMPUTOP__') !== 0) {
             $arguments->setReturn(
-              $arguments->getSubject()->executeParent(
-                $arguments->getMethod(),
-                $arguments->getArgs()
-              )
+                $arguments->getSubject()->executeParent(
+                    $arguments->getMethod(),
+                    $arguments->getArgs()
+                )
             );
-        }
-        else {
+        } else {
 
             /** @var Fatchip\CTPayment\CTPaymentService $service */
             $service = Shopware()->Container()->get('FatchipCTPaymentApiClient');
@@ -182,8 +189,8 @@ class FrontendRiskManagement implements SubscriberInterface {
 
             $userId = $user['additional']['user']['id'] ? $user['additional']['user']['id'] : null;
             $userObject = $userId ? Shopware()->Models()
-              ->getRepository('Shopware\Models\Customer\Customer')
-              ->find($userId) : null;
+                ->getRepository('Shopware\Models\Customer\Customer')
+                ->find($userId) : null;
 
             //If we don't have a userobject yet, there is no point in doing a risk check
             if (!$userObject) {
@@ -204,7 +211,7 @@ class FrontendRiskManagement implements SubscriberInterface {
 
                 $ctOrder = new CTOrder();
                 $ctOrder->setAmount($basket['AmountNumeric'] * 100);
-                $ctOrder->setCurrency( Shopware()->Container()->get('currency')->getShortName());
+                $ctOrder->setCurrency(Shopware()->Container()->get('currency')->getShortName());
                 $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
                 $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
                 $ctOrder->setEmail($user['additional']['user']['email']);
@@ -232,8 +239,7 @@ class FrontendRiskManagement implements SubscriberInterface {
                     $this->updateBillingAddressFromCrifResponse($billingAddressData['id'], $crifResponse);
                 }
 
-            }
-            else {
+            } else {
                 $callResult = $this->getCrifResultFromAddressArray($user['billingaddress']);
             }
 
@@ -245,7 +251,8 @@ class FrontendRiskManagement implements SubscriberInterface {
         }
     }
 
-    private function getCRIFResponseArray($crifResponseObject) {
+    private function getCRIFResponseArray($crifResponseObject)
+    {
         $crifResponseArray = array();
         $crifResponseArray['Code'] = $crifResponseObject->getCode();
         $crifResponseArray['Description'] = $crifResponseObject->getDescription();
@@ -255,16 +262,16 @@ class FrontendRiskManagement implements SubscriberInterface {
         return $crifResponseArray;
     }
 
-
     /***
      * @param $addressArray
-     * @param null $type: billing or shipping
+     * @param null $type : billing or shipping
      * @return bool
      */
-    private function crifCheckNecessary($addressArray, $type = null) {
+    private function crifCheckNecessary($addressArray, $type = null)
+    {
 
         $crifStatus = $this->getCrifStatusFromAddressArray($addressArray);
-        $crifDate =  $this->getCrifDateFromAddressArray($addressArray);
+        $crifDate = $this->getCrifDateFromAddressArray($addressArray);
         $crifResult = $this->getCrifResultFromAddressArray($addressArray);
         //if crif is not responding (FAILED), or INVALID (0) we try again after one hour to prevent making hundreds of calls
         //In Adressarray there are underscores in attribute nmaes
@@ -276,18 +283,16 @@ class FrontendRiskManagement implements SubscriberInterface {
 
         $util = new Util();
         //check in Session if CRIF data are missing.
-        if (!isset($crifResult))
-        {
+        if (!isset($crifResult)) {
             //If it is not in the session, we also check in the database to prevent multiple calls
             if (isset($addressArray['id'])) {
                 $address = $util->getCustomerAddressById($addressArray['id'], $type);
                 if (!empty($address) && $attribute = $address->getAttribute()) {
                     $attributeData = Shopware()->Models()->toArray($address->getAttribute());
                     //in attributeData there are NO underscores in attribute names and Shopware ads CamelCase after fcct prefix
-                    if (!isset($attributeData['fcctCrifresult'])|| !isset($attributeData['fcctCrifdate'])) {
+                    if (!isset($attributeData['fcctCrifresult']) || !isset($attributeData['fcctCrifdate'])) {
                         return true;
-                    }
-                    else {
+                    } else {
                         //write the values from the database in the addressarray
                         $addressArray['attribute']['fcct_crifresult'] = $attributeData['fcctCrifresult'];
                         $addressArray['attribute']['fcct_crifdate'] = $attributeData['fcctCrifdate'];
@@ -322,16 +327,23 @@ class FrontendRiskManagement implements SubscriberInterface {
     // 5.1 -
     // 5.2 -
     // 5.3 - check
-    private function getCrifStatusFromAddressArray($aAddress) {
-        if (array_key_exists('fatchipCTCrifstatus' , $aAddress)) {
-            // SW 5.0
+    private function getCrifStatusFromAddressArray($aAddress)
+    {
+        // SW 5.0
+        if (array_key_exists('fatchipCTCrifstatus', $aAddress)) {
             return $aAddress['fatchipCTCrifstatus'];
-        } else if (array_key_exists('fatchipct_crifstatus', $aAddress['attributes'])) {
-            // SW 5.3
+        } // SW 5.3
+        else if (array_key_exists('fatchipct_crifstatus', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipct_crifstatus'];
-        } else if (array_key_exists('fatchipctCrifstatus', $aAddress['attributes'])) {
-            return $aAddress['attributes']['fatchipctCrifstatus'];
+        } // SW 5.2
+        else if (array_key_exists('fatchipCT_crifstatus', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fatchipCT_crifstatus'];
+        } // SW 5.1
+        else if (array_key_exists('fatchipctCrifstatus', $aAddress)) {
+            return $aAddress['fatchipctCrifstatus'];
         }
+
+
         return null;
     }
 
@@ -340,15 +352,20 @@ class FrontendRiskManagement implements SubscriberInterface {
     // 5.1 -
     // 5.2 -
     // 5.3 -
-    private function getCrifResultFromAddressArray($aAddress) {
-        if (array_key_exists('fatchipCTCrifresult' , $aAddress)) {
-            // SW 5.0
+    private function getCrifResultFromAddressArray($aAddress)
+    {
+        // SW 5.0
+        if (array_key_exists('fatchipCTCrifresult', $aAddress)) {
             return $aAddress['fatchipCTCrifresult'];
-        } else if (array_key_exists('fatchipct_crifresult', $aAddress['attributes'])) {
-            // SW 5.3
+        } // SW 5.3
+        else if (array_key_exists('fatchipct_crifresult', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipct_crifresult'];
-        } else if (array_key_exists('fatchipctCrifresult', $aAddress['attributes'])) {
-            return $aAddress['attributes']['fatchipctCrifresult'];
+        } // SW 5.2
+        else if (array_key_exists('fatchipCT_crifresult', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fatchipCT_crifresult'];
+        } // SW 5.1
+        else if (array_key_exists('fatchipctCrifresult', $aAddress)) {
+            return $aAddress['fatchipctCrifresult'];
         }
         return null;
     }
@@ -358,19 +375,24 @@ class FrontendRiskManagement implements SubscriberInterface {
     // 5.1 -
     // 5.2 -
     // 5.3 -
-    private function getCrifDateFromAddressArray($aAddress) {
-
-        if (array_key_exists('fatchipCTCrifdate' , $aAddress)) {
-            // SW 5.0
+    private function getCrifDateFromAddressArray($aAddress)
+    {
+        // SW 5.0
+        if (array_key_exists('fatchipCTCrifdate', $aAddress)) {
             return $aAddress['fatchipCTCrifdate'] instanceof \DateTime ?
                 $aAddress['fatchipCTCrifdate'] : new \DateTime($aAddress['fatchipCTCrifdate']);
-        } else if (array_key_exists('fatchipct_crifdate', $aAddress['attributes'])) {
-            // SW 5.3
-            return  $aAddress['attributes']['fatchipct_crifdate'] instanceof \DateTime ?
+        } // SW 5.3
+        else if (array_key_exists('fatchipct_crifdate', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fatchipct_crifdate'] instanceof \DateTime ?
                 $aAddress['attributes']['fatchipct_crifdate'] : new \DateTime($aAddress['attributes']['fatchipct_crifdate']);
-        } else if (array_key_exists('fatchipctCrifdate', $aAddress['attributes'])) {
-            return $aAddress['attributes']['fatchipctCrifdate'] instanceof \DateTime ?
-                $aAddress['attributes']['fatchipctCrifdate'] : new \DateTime($aAddress['attributes']['fatchipctCrifdate']);
+        } // SW 5.2
+        else if (array_key_exists('fatchipCT_crifdate', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fatchipCT_crifdate'] instanceof \DateTime ?
+                $aAddress['attributes']['fatchipCT_crifdate'] : new \DateTime($aAddress['attributes']['fatchipCT_crifdate']);
+        } // SW 5.1
+        else if (array_key_exists('fatchipctCrifdate', $aAddress)) {
+            return $aAddress['fatchipctCrifdate'] instanceof \DateTime ?
+                $aAddress['fatchipctCrifdate'] : new \DateTime($aAddress['fatchipctCrifdate']);
         }
         return null;
     }
@@ -383,7 +405,8 @@ class FrontendRiskManagement implements SubscriberInterface {
      * @param $value
      * @return bool
      */
-    public function sRiskFATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS($scoring, $value) {
+    public function sRiskFATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS($scoring, $value)
+    {
         return $scoring == $value; //return true if payment has to be denied
     }
 
@@ -395,7 +418,8 @@ class FrontendRiskManagement implements SubscriberInterface {
      * @param $value
      * @return bool
      */
-    public function sRiskFATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS_NOT($scoring, $value) {
+    public function sRiskFATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS_NOT($scoring, $value)
+    {
         return !$this->sRiskFATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS($scoring, $value);
     }
 
@@ -403,17 +427,18 @@ class FrontendRiskManagement implements SubscriberInterface {
      * @param $addressID
      * @param $crifResponse CTResponse
      */
-    private function updateBillingAddressFromCrifResponse($addressID, $crifResponse) {
+    private function updateBillingAddressFromCrifResponse($addressID, $crifResponse)
+    {
         $util = new Util();
         if ($address = $util->getCustomerAddressById($addressID, 'billing')) {
             //only update the address, if something changed. This check is important, because if nothing changed
             //callin persist and flush does not result in calling afterAddressUpdate and the session variable
             //fatchipComputopCrifAutoAddressUpdate woould not get cleared.
             if ($address->getFirstName() !== $crifResponse->getFirstName() ||
-              $address->getLastName() !== $crifResponse->getLastName() ||
-              $address->getStreet() != $crifResponse->getAddrStreet() . ' ' . $crifResponse->getAddrStreetNr() ||
-              $address->getZipCode() !== $crifResponse->getAddrZip() ||
-              $address->getCity() !== $crifResponse->getAddrCity()
+                $address->getLastName() !== $crifResponse->getLastName() ||
+                $address->getStreet() != $crifResponse->getAddrStreet() . ' ' . $crifResponse->getAddrStreetNr() ||
+                $address->getZipCode() !== $crifResponse->getAddrZip() ||
+                $address->getCity() !== $crifResponse->getAddrCity()
             ) {
                 $address->setFirstName($crifResponse->getFirstName());
                 $address->setLastName($crifResponse->getLastName());
@@ -433,7 +458,8 @@ class FrontendRiskManagement implements SubscriberInterface {
         }
     }
 
-    private function addressWasAutoUpdated() {
+    private function addressWasAutoUpdated()
+    {
         if (Shopware()->Session()->offsetExists('fatchipComputopCrifAutoAddressUpdate')) {
             Shopware()->Session()->offsetUnset('fatchipComputopCrifAutoAddressUpdate');
             return true;
