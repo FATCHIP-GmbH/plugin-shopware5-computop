@@ -322,17 +322,12 @@ class FrontendRiskManagement implements SubscriberInterface
         return false;
     }
 
-    // SW 5.0 - 5.3 Compatibility
-    // 5.0 - check
-    // 5.1 -
-    // 5.2 -
-    // 5.3 - check
     private function getCrifStatusFromAddressArray($aAddress)
     {
         // SW 5.0
         if (array_key_exists('fatchipCTCrifstatus', $aAddress)) {
             return $aAddress['fatchipCTCrifstatus'];
-        } // SW 5.3
+        } // SW 5.3, SW 5.4
         else if (array_key_exists('fatchipct_crifstatus', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipct_crifstatus'];
         } // SW 5.2
@@ -347,17 +342,12 @@ class FrontendRiskManagement implements SubscriberInterface
         return null;
     }
 
-    // SW 5.0 - 5.3 Compatibility
-    // 5.0 - check
-    // 5.1 -
-    // 5.2 -
-    // 5.3 -
     private function getCrifResultFromAddressArray($aAddress)
     {
         // SW 5.0
         if (array_key_exists('fatchipCTCrifresult', $aAddress)) {
             return $aAddress['fatchipCTCrifresult'];
-        } // SW 5.3
+        } // SW 5.3, SW 5.4
         else if (array_key_exists('fatchipct_crifresult', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipct_crifresult'];
         } // SW 5.2
@@ -370,18 +360,13 @@ class FrontendRiskManagement implements SubscriberInterface
         return null;
     }
 
-    // SW 5.0 - 5.3 Compatibility
-    // 5.0 - check
-    // 5.1 -
-    // 5.2 -
-    // 5.3 -
     private function getCrifDateFromAddressArray($aAddress)
     {
         // SW 5.0
         if (array_key_exists('fatchipCTCrifdate', $aAddress)) {
             return $aAddress['fatchipCTCrifdate'] instanceof \DateTime ?
                 $aAddress['fatchipCTCrifdate'] : new \DateTime($aAddress['fatchipCTCrifdate']);
-        } // SW 5.3
+        } // SW 5.3, SW 5.4
         else if (array_key_exists('fatchipct_crifdate', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipct_crifdate'] instanceof \DateTime ?
                 $aAddress['attributes']['fatchipct_crifdate'] : new \DateTime($aAddress['attributes']['fatchipct_crifdate']);
