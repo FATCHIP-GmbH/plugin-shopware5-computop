@@ -16,7 +16,6 @@ require_once 'Components/Api/vendor/autoload.php';
 
 class Util
 {
-
     /**
      * @param array $swAddress
      * @return CTAddress
