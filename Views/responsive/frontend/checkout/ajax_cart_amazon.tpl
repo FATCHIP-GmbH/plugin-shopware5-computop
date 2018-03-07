@@ -5,9 +5,6 @@
     {if $sBasket.content}
     <div class="button--container">
         <div id="LoginWithAmazon">
-            RemoveMe: <BR>
-            smarty.server.REQUEST_SCHEME: {$smarty.server.REQUEST_SCHEME}<BR>
-            smarty.server.HTTP_REFERER: {$smarty.server.HTTP_REFERER}<BR>
         </div>
         <div class="clear"></div>
         <script>
@@ -28,24 +25,9 @@
                         authorization: function () {
                             loginOptions = {
                                 scope: 'profile payments:widget payments:shipping_address payments:billing_address',
-                                {if $smarty.server.REQUEST_SCHEME === 'https' && $smarty.server.HTTP_REFERER|strpos:'https://'=== 0}
-                                    popup: true
-                                {else}
-                                    popup: false
-                                {/if}
+                                popup: true
                             };
                             var shopReturnUrl = "{url controller='FatchipCTAmazonRegister' action='login'}";
-
-                            {if $smarty.server.REQUEST_SCHEME === 'https' && $smarty.server.HTTP_REFERER|strpos:'https://'=== 0}
-                                // Do nothing
-                                console.log('Normal Mode');
-                            {else}
-                                // replace with https return Url
-                                shopReturnUrl = shopReturnUrl.replace("http://", "https://");
-                                console.log('Cookie Mode');
-                            {/if}
-
-                            console.log(shopReturnUrl);
                             authRequest = amazon.Login.authorize(loginOptions, shopReturnUrl);
                         },
                         onError: function (error) {
@@ -62,4 +44,3 @@
     </div>
     {/if}
 {/block}
-

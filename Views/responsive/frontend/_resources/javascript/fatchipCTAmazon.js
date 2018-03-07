@@ -35,14 +35,9 @@ $.plugin('fatchipCTAmazon', {
 
     init: function () {
         var me = this;
-        console.log("Jquery Plugin received Init:");
-        console.log(me.opts);
-
         me._on(me.$el, 'onAmazonOrderRef', function (event) {
             event.preventDefault();
             me.applyDataAttributes();
-            console.log("Jquery Plugin received onAmazonOrderRef Event:");
-            console.log(me.opts);
             $.ajax({
                 type: 'POST',
                 async: false,
@@ -51,36 +46,19 @@ $.plugin('fatchipCTAmazon', {
                 dataType: "json"
             }).done(function (msg) {
                 if (msg.status == 'success') {
-                    console.log('SOD returned successful:');
-                    console.log(msg.data);
-//                    console.log("delaying");
-
-                    // had to delay the SOD call a bit
-                    // because GOD returned  only partial
-                    // billing address data
-//                  setTimeout(function() {
-
-                        $.ajax({
-                            type: 'POST',
-                            async: false,
-                            url: me.opts.fatchipCTAmazonGODUrl,
-                            data: {referenceId: me.opts.fatchipCTAmazonOrderReferenceId},
-                            dataType: "json"
-                        }).done(function (msg) {
-                            if (msg.status == 'success') {
-                                console.log('GOD returned successful:');
-                                console.log(msg.data);
-                            } else {
-                                console.log('Shit happed during GOD:');
-                                console.log(msg.errormessage);
-                            }
-                        });
-//                    }, 2000);
-                    console.log("after delay")
-
+                    $.ajax({
+                        type: 'POST',
+                        async: false,
+                        url: me.opts.fatchipCTAmazonGODUrl,
+                        data: {referenceId: me.opts.fatchipCTAmazonOrderReferenceId},
+                        dataType: "json"
+                    }).done(function (msg) {
+                        if (msg.status == 'success') {
+                        } else {
+                        }
+                    });
                 } else {
-                    console.log('Shit happed during SOD:');
-                    console.log(msg.errormessage);
+                    // do nothing
                 }
             });
         });
@@ -90,81 +68,60 @@ $.plugin('fatchipCTAmazon', {
             me.applyDataAttributes();
             $('#AmazonErrors').hide();
             //$.loadingIndicator.open();
-            console.log("Jquery Plugin received onAmazonAddressSelect Event:");
-            console.log(me.opts);
-                console.log("delaying Addres Select calls");
-
-                // had to delay the SOD call a bit
-                // because GOD returned  only partial
-                // billing address data
-                setTimeout(function() {
-
-
+            // had to delay the SOD call a bit
+            // because GOD returned  only partial
+            // billing address data
+            setTimeout(function () {
                 $.ajax({
-                type: 'POST',
-                async: false,
-                url: me.opts.fatchipCTAmazonGODUrl,
-                data: {referenceId: me.opts.fatchipCTAmazonOrderReferenceId},
-                dataType: "json"
-            }).done(function (msg) {
-                if (msg.status == 'success') {
-                    console.log('GOD returned successful:');
-                    console.log(msg.data);
-                    me.updateAddressData(msg.data);
+                    type: 'POST',
+                    async: false,
+                    url: me.opts.fatchipCTAmazonGODUrl,
+                    data: {referenceId: me.opts.fatchipCTAmazonOrderReferenceId},
+                    dataType: "json"
+                }).done(function (msg) {
+                    if (msg.status == 'success') {
+                        me.updateAddressData(msg.data);
 
-                    // check shipping country,
-                    // disable button in case shipping Country is not supported
-                    // and show error message in amazonError Div
-                    console.log("calling shipping country check:");
-                    $.ajax({
-                        type: 'POST',
-                        async: false,
-                        url: me.opts.fatchipCTAmazonShippingCheckUrl,
-                        data: {shippingCountryID: me.opts.countryCodeShippingID},
-                        dataType: "json"
-                    }).done(function (msg) {
-                        if (msg.status == 'success') {
-                            console.log('ShippingCountry Check returned successful:');
-                            console.log(msg.data);
-                            $('#fatchipCTAmazonButton').removeAttr("disabled");
-                        } else {
-                            console.log('ShippingCountry Check returned with error:');
-                            console.log(msg.errormessage);
-                            $('#AmazonErrors').show();
-                            $('#AmazonErrorContent').text(msg.errormessage);
-                        }
-                    });
+                        // check shipping country,
+                        // disable button in case shipping Country is not supported
+                        // and show error message in amazonError Div
+                        $.ajax({
+                            type: 'POST',
+                            async: false,
+                            url: me.opts.fatchipCTAmazonShippingCheckUrl,
+                            data: {shippingCountryID: me.opts.countryCodeShippingID},
+                            dataType: "json"
+                        }).done(function (msg) {
+                            if (msg.status == 'success') {
+                                $('#fatchipCTAmazonButton').removeAttr("disabled");
+                            } else {
+                                $('#AmazonErrors').show();
+                                $('#AmazonErrorContent').text(msg.errormessage);
+                            }
+                        });
 
-                    $.ajax({
-                        type: 'POST',
-                        async: false,
-                        url: me.opts.fatchipCTAmazonSODUrl,
-                        data: {referenceId: me.opts.fatchipCTAmazonOrderReferenceId},
-                        dataType: "json"
-                    }).done(function (msg) {
-                        if (msg.status == 'success') {
-                            console.log('SOD returned successful:');
-                            console.log(msg.data);
-                        } else {
-                            console.log('Shit happed during SOD:');
-                            console.log(msg.errormessage);
-                        }
-                    });
-                } else {
-                    console.log('Shit happed during GOD:');
-                    console.log(msg.errormessage);
-                }
-            });
-                }, 1000);
-            console.log("after delay")
+                        $.ajax({
+                            type: 'POST',
+                            async: false,
+                            url: me.opts.fatchipCTAmazonSODUrl,
+                            data: {referenceId: me.opts.fatchipCTAmazonOrderReferenceId},
+                            dataType: "json"
+                        }).done(function (msg) {
+                            if (msg.status == 'success') {
+                            } else {
+                                // nothing to Do
+                            }
+                        });
+                    } else {
+                        // nothing to do
+                    }
+                });
+            }, 1000);
             //$.loadingIndicator.close();
         });
 
         me._on(me.$el, 'fatchipCTAmazonButtonClick', function (event) {
             event.preventDefault();
-            console.log("Jquery Plugin received fatchipCTAmazonButton Event:");
-            console.log(me.opts);
-
             /*
                         // these are nicer solutions than building the complete from
                         // but after posting to register controller the redirects in
@@ -248,7 +205,6 @@ $.plugin('fatchipCTAmazon', {
 
         });
 */
-
             var frm = $('<form>', {
                 'action': me.opts.fatchipCTAmazonRegisterUrl,
                 'method': 'post'
@@ -309,46 +265,23 @@ $.plugin('fatchipCTAmazon', {
         var sname = data.addrname.split(" ");
         var bname = data.bdaddrname.split(" ");
 
-        // ToDo: return countryIds instead of CountryCode in ajax controller
-        console.log("Billing Data");
-        console.log("Name:");
-        console.log(bname);
         me.opts.firstname = bname[0];
-        console.log("firstname:" + me.opts.firstname);
         me.opts.lastname = bname[1];
-        console.log("lastname:" + me.opts.lastname);
         me.opts.phone = data.phonenumber;
-        console.log("phone:" + me.opts.phone);
         me.opts.email = data.buyermail;
-        console.log("email:" + me.opts.email);
         me.opts.street = data.bdaddrstreet2;
-        console.log("street:" + me.opts.street);
         me.opts.zip = data.bdaddrzip;
-        console.log("zip:" + me.opts.zip);
         me.opts.city = data.bdaddrcity;
-        console.log("city:" + me.opts.city);
         me.opts.countryCodeBilling = data.bdaddrcountrycode;
-        console.log("CountryCode:" + me.opts.countryCodeBilling);
         me.opts.countryCodeBillingID = data.bdaddrcountrycodeID;
-        console.log("CountryCodeID:" + me.opts.countryCodeBillingID);
 
-        console.log("Shipping Data");
-        console.log("Name:");
-        console.log(sname);
         me.opts.firstname2 = sname[0];
-        console.log("firstname2:" + me.opts.firstname2);
         me.opts.lastname2 = sname[1];
-        console.log("lastname2:" + me.opts.lastname2);
         me.opts.street2 = data.AddrStreet2;
-        console.log("street2:" + me.opts.street2);
         me.opts.zip2 = data.AddrZip;
-        console.log("zip2:" + me.opts.zip2);
         me.opts.city2 = data.AddrCity;
-        console.log("city2:" + me.opts.city2);
         me.opts.countryCodeShipping = data.AddrCountryCode;
-        console.log("CountryCode:" + me.opts.countryCodeShipping);
         me.opts.countryCodeShippingID = data.AddrCountryCodeID;
-        console.log("CountryCodeID:" + me.opts.countryCodeShippingID);
     },
 
     destroy: function () {

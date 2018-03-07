@@ -32,10 +32,7 @@ $.plugin('fatchipCTPaypalExpress', {
 
     init: function () {
         var me = this;
-        console.log("PP Jquery Plugin received Init:");
         me.applyDataAttributes();
-
-        console.log(me.opts);
         var frm = $('<form>', {
             'action': me.opts.fatchipCTPaypalExpressRegisterUrl,
             'method': 'post'
@@ -86,5 +83,4 @@ $.plugin('fatchipCTPaypalExpress', {
     }
 });
 
-console.log("PP Express loaded");
 $('#fatchipCTPaypalExpressInformation').fatchipCTPaypalExpress();
