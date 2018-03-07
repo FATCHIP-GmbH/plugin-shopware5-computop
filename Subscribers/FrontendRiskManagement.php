@@ -324,8 +324,10 @@ class FrontendRiskManagement implements SubscriberInterface {
     // 5.3 - check
     private function getCrifStatusFromAddressArray($aAddress) {
         if (array_key_exists('fatchipCTCrifstatus' , $aAddress)) {
+            // SW 5.0
             return $aAddress['fatchipCTCrifstatus'];
         } else if (array_key_exists('fatchipct_crifstatus', $aAddress['attributes'])) {
+            // SW 5.3
             return $aAddress['attributes']['fatchipct_crifstatus'];
         } else if (array_key_exists('fatchipctCrifstatus', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipctCrifstatus'];
@@ -340,8 +342,10 @@ class FrontendRiskManagement implements SubscriberInterface {
     // 5.3 -
     private function getCrifResultFromAddressArray($aAddress) {
         if (array_key_exists('fatchipCTCrifresult' , $aAddress)) {
+            // SW 5.0
             return $aAddress['fatchipCTCrifresult'];
         } else if (array_key_exists('fatchipct_crifresult', $aAddress['attributes'])) {
+            // SW 5.3
             return $aAddress['attributes']['fatchipct_crifresult'];
         } else if (array_key_exists('fatchipctCrifresult', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipctCrifresult'];
@@ -357,15 +361,16 @@ class FrontendRiskManagement implements SubscriberInterface {
     private function getCrifDateFromAddressArray($aAddress) {
 
         if (array_key_exists('fatchipCTCrifdate' , $aAddress)) {
+            // SW 5.0
             return $aAddress['fatchipCTCrifdate'] instanceof \DateTime ?
-              $aAddress['fatchipCTCrifdate'] : new \DateTime($aAddress['fatchipCTCrifdate']);
+                $aAddress['fatchipCTCrifdate'] : new \DateTime($aAddress['fatchipCTCrifdate']);
         } else if (array_key_exists('fatchipct_crifdate', $aAddress['attributes'])) {
+            // SW 5.3
             return  $aAddress['attributes']['fatchipct_crifdate'] instanceof \DateTime ?
-              $aAddress['attributes']['fatchipct_crifdate'] : new \DateTime($aAddress['attributes']['fatchipct_crifdate']);
-
+                $aAddress['attributes']['fatchipct_crifdate'] : new \DateTime($aAddress['attributes']['fatchipct_crifdate']);
         } else if (array_key_exists('fatchipctCrifdate', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipctCrifdate'] instanceof \DateTime ?
-              $aAddress['attributes']['fatchipctCrifdate'] : new \DateTime($aAddress['attributes']['fatchipctCrifdate']);
+                $aAddress['attributes']['fatchipctCrifdate'] : new \DateTime($aAddress['attributes']['fatchipctCrifdate']);
         }
         return null;
     }
