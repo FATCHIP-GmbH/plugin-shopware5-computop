@@ -247,8 +247,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
     public function getUserData()
     {
-        // return empty string for now
-        return '';
+        return  'Shopware Version: ' .  \Shopware::VERSION . ', Modul Version: ' . $this->plugin->getVersion() ;;
     }
 
     // SW 5.0 - 5.3 Compatibility
