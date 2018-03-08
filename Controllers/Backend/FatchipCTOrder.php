@@ -142,6 +142,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
             if (strpos($this->order['payment']['name'], 'fatchip_computop_klarna_') === 0) {
                 $paymentClass->setOrderDesc($this->getKlarnaOrderDesc($this->order, $positionIds));
+                $requestParams['OrderDesc'] = $paymentClass->getOrderDesc();
             }
 
             $refundResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'Refund', $paymentClass->getCTRefundURL());
@@ -210,7 +211,12 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
                 $this->order['attribute']['fatchipctTransid'],
                 $this->order['attribute']['fatchipctXid']
             );
-            $requestParams['OrderDesc'] = 'Test';
+
+
+            if (strpos($this->order['payment']['name'], 'fatchip_computop_klarna_') === 0) {
+                $paymentClass->setOrderDesc($this->getKlarnaOrderDesc($this->order, $positionIds));
+                $requestParams['OrderDesc'] = $paymentClass->getOrderDesc();
+            }
 
             $response = $this->plugin->callComputopService($requestParams, $paymentClass, 'Capture', $paymentClass->getCTCaptureURL());
 
