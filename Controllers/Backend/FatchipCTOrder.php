@@ -9,6 +9,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
     const PAYMENTSTATUSPAID = 12;
     const PAYMENTSTATUSOPEN = 17;
     const PAYMENTSTATUSRESERVED = 18;
+    const PAYMENTSTATUSRECREDITING = 20;
 
     /**
      * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
@@ -147,6 +148,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
             if ($refundResponse->getStatus() == 'OK') {
                 $this->markPositionsAsRefunded($this->order, $positionIds, $includeShipment);
+                $this->inquireAndupdatePaymentStatusAfterRefund($this->order, $paymentClass);
                 $response = array('success' => true);
             } else {
                 $errorMessage = 'Gutschrift (zur Zeit) nicht möglich: ' . $refundResponse->getDescription();
@@ -215,7 +217,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
             if ($response->getStatus() == 'OK') {
                 $this->markPositionsAsCaptured($this->order, $positionIds, $includeShipment);
-                $this->inquireAndupdatePaymentStatus($this->order, $paymentClass);
+                $this->inquireAndupdatePaymentStatusAfterCapture($this->order, $paymentClass);
                 $response = array('success' => true);
             } else {
                 $errorMessage = 'Capture (zur Zeit) nicht möglich: ' . $response->getDescription();
@@ -460,7 +462,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         }
     }
 
-    private function inquireAndupdatePaymentStatus($order, $paymentClass)
+    private function inquireAndupdatePaymentStatusAfterCapture($order, $paymentClass)
     {
         $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->find($order['id']);
 
@@ -487,6 +489,35 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
                 } else if ($inquireResponse->getAmountCap() > 0) {
                     //partially paid
                     $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', self::PAYMENTSTATUSPARTIALLYPAID);
+                    $order->setPaymentStatus($paymentStatus);
+                    $this->get('models')->flush($order);
+                }
+            }
+        }
+    }
+
+    private function inquireAndupdatePaymentStatusAfterRefund($order, $paymentClass)
+    {
+        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->find($order['id']);
+
+        $currentPaymentStatus = $order->getPaymentStatus()->getId();
+
+        //Only when the current payment status = reserved or partly paid, we update the payment status
+
+        if ($currentPaymentStatus == self::PAYMENTSTATUSPAID || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID) {
+            $payID = $order->getAttribute()->getfatchipctPayid();
+
+            $requestParams = $paymentClass->getInquireParams(
+              $this->order['attribute']['fatchipctPayid']
+            );
+
+            $inquireResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'Inquire', $paymentClass->getCTInquireURL());
+
+
+            if ($inquireResponse->getStatus() == 'OK') {
+                if ($inquireResponse->getAmountCred() >= 0) {
+                    //Fully paid
+                    $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', self::PAYMENTSTATUSRECREDITING);
                     $order->setPaymentStatus($paymentStatus);
                     $this->get('models')->flush($order);
                 }
