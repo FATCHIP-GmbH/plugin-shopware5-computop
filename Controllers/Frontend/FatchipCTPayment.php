@@ -322,7 +322,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     /**
-     * @param $orderNumber
+     * @param $order
      * @param $paymentClass
      *
      * The RefNr for Computop has to be equal to the ordernumber. As we do not have an ordernumber on the initial call,
