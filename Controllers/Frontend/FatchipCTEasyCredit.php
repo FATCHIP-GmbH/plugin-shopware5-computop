@@ -75,7 +75,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
             $this->router->assemble(['action' => 'return', 'forceSecure' => true]),
             $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
-            'Test',
+            $this->getOrderDesc(),
             $this->getUserData(),
             CTEnumEasyCredit::EVENTTOKEN_INIT
         );
@@ -179,7 +179,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
             $this->router->assemble(['action' => 'success', 'forceSecure' => true]),
             $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
-            'Test',
+            $this->getOrderDesc(),
             $this->getUserData(),
             CTEnumEasyCredit::EVENTTOKEN_CON
         );
