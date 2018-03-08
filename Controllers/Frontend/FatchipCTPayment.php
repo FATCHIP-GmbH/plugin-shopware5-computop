@@ -203,6 +203,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             case CTEnumStatus::OK:
                 $transactionId = $response->getTransID();
                 if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $response->getTransID()])) {
+                    $this->updateRefNrWithComputop($order, $this->paymentClass);
                     $this->inquireAndupdatePaymentStatus($order, $this->paymentClass);
                 } else {
                     throw new \RuntimeException('No order available within Notify');
@@ -317,6 +318,27 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 $this->markOrderDetailsAsFullyCaptured($order);
             }
 
+        }
+    }
+
+    /**
+     * @param $orderNumber
+     * @param $paymentClass
+     *
+     * The RefNr for Computop has to be equal to the ordernumber. As we do not have an ordernumber on the initial call,
+     * we update the RefNr after order creation
+     */
+    private function updateRefNrWithComputop($order, $paymentClass) {
+        if ($order) {
+            $ctOrder = $this->createCTOrderFromSWorder($order);
+            if ($paymentClass !== 'PaypalExpress' && $paymentClass !== 'AmazonPay') {
+                $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->config, $ctOrder);
+            } else {
+                $payment = $this->paymentService->getPaymentClass($paymentClass, $this->config, $ctOrder);
+            }
+            $payID = $order->getAttribute()->getfatchipctPayid();
+            $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getNumber());
+            $response = $this->plugin->callComputopService($RefNrChangeParams, $payment, 'REFNRCHANGE', $payment->getCTRefNrChangeURL());
         }
     }
 
