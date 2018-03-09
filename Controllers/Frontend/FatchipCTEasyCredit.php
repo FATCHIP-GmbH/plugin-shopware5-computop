@@ -54,14 +54,14 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         // we have to use this, because there is no order yet
         $user = Shopware()->Modules()->Admin()->sGetUserData();
         $this->basket = $this->get('modules')->Basket()->sGetBasket();
-        $session = Shopware()->Session();
-        // used for getting amount including shipping costs
-        $orderVars = $session->sOrderVariables->getArrayCopy();
+        $shippingCosts = Shopware()->Modules()->Admin()->sGetPremiumShippingcosts();
+        $amount = $this->basket['AmountNumeric'] + $shippingCosts['brutto'];
+
 
             // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
         //important: multiply amount by 100
-        $ctOrder->setAmount($orderVars['sBasket']['AmountNumeric'] * 100);
+        $ctOrder->setAmount($amount * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
@@ -99,11 +99,13 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $requestParams = $this->Request()->getParams();
         $this->basket = $this->get('modules')->Basket()->sGetBasket();
+        $shippingCosts = Shopware()->Modules()->Admin()->sGetPremiumShippingcosts();
+        $amount = $this->basket['AmountNumeric'] + $shippingCosts['brutto'];
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
         //important: multiply amount by 100
-        $ctOrder->setAmount($this->basket['AmountNumeric'] * 100);
+        $ctOrder->setAmount($amount * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
         $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
@@ -134,7 +136,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
                 // Only save Information to Session if $decision['entscheidung']['entscheidungsergebnis'] is "GRUEN"
                 // see https://www.computop.com/fileadmin/user_upload/Downloads_Content/deutsch/Handbuch/Manual_Computop_Paygate_easyCredit.pdf
                 // page 11
-                $decisionParams = $payment->getDecisionParams($response->getPayID(), $response->getTransID(), $this->basket['AmountNumeric'] * 100, $this->getCurrencyShortName());
+                $decisionParams = $payment->getDecisionParams($response->getPayID(), $response->getTransID(), $amount * 100, $this->getCurrencyShortName());
                 $responseObject = $this->plugin->callComputopService($decisionParams, $payment, 'GET', $payment->getCTCreditCheckURL());
                 $decision = json_decode($responseObject->getDecision(), true);
 
@@ -163,11 +165,13 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $orderVars = $this->session->sOrderVariables;
         $userData = $orderVars['sUserData'];
         $this->basket = $this->get('modules')->Basket()->sGetBasket();
+        $shippingCosts = Shopware()->Modules()->Admin()->sGetPremiumShippingcosts();
+        $amount = $this->basket['AmountNumeric'] + $shippingCosts['brutto'];
 
         // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
         //important: multiply amount by 100
-        $ctOrder->setAmount($this->basket['AmountNumeric'] * 100);
+        $ctOrder->setAmount($amount * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
         $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
@@ -236,5 +240,13 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $easyCreditInformation['urlVorvertraglicheInformationen'] = $process['allgemeineVorgangsdaten']['urlVorvertraglicheInformationen'];
         $easyCreditInformation['urlVorvertraglicheInformationen'] = $process['allgemeineVorgangsdaten']['urlVorvertraglicheInformationen'];
         return $easyCreditInformation;
+    }
+
+    public function getShippingCosts($dispatchId)
+    {
+        /** @var \Shopware\Models\Dispatch\Dispatch $dispatch */
+        $dispatch = Shopware()->Models()->getRepository('Shopware\Models\Dispatch\ShippingCost')->find($dispatchId);
+        return "3,90";
+
     }
 }
