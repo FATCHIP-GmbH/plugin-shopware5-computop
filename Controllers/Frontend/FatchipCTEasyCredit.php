@@ -200,7 +200,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
                 $orderNumber = $this->saveOrder(
                     $response->getTransID(),
                     $response->getPayID(),
-                    self::PAYMENTSTATUSPAID
+                    self::PAYMENTSTATUSRESERVED
                 );
                 $this->saveTransactionResult($response);
                 $this->session->offsetUnSet('FatchipComputopEasyCreditInformation');
@@ -211,15 +211,6 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
                 $this->forward('failure');
                 break;
         }
-    }
-
-    /**
-     * notify action method
-     * @return void
-     * @throws Exception
-     */
-    public function notifyAction()
-    {
     }
 
     private function getConfirmPageInformation($responseObject)
