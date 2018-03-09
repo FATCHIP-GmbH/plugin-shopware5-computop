@@ -360,6 +360,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                     return true;
                 case '0703': //User Canceled
                     return true;
+                case '0321': //no action taken
+                    return true;
             }
         }
 
