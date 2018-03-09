@@ -32,7 +32,7 @@ use Shopware\Plugins\FatchipCTPayment\Util;
 class Checkout implements SubscriberInterface
 {
 
-    /** @var Util $utils **/
+    /** @var Util $utils * */
     protected $utils;
 
     /**
@@ -77,8 +77,8 @@ class Checkout implements SubscriberInterface
             $this->updateUserAnnualSalary($paymentName, $session->get('sUserId'), $params);
             $this->setIssuerInSession($paymentName, $params);
 
-            if ($paymentName === 'fatchip_computop_easycredit' && !$session->offsetExists('fatchipComputopEasyCreditPayId')) {
-                $subject->redirect(['controller' => 'FatchipCTEasyCredit','action' => 'gateway', 'forceSecure' => true]);
+            if ($paymentName === 'fatchip_computop_easycredit') {
+                $subject->redirect(['controller' => 'FatchipCTEasyCredit', 'action' => 'gateway', 'forceSecure' => true]);
             }
         }
     }
@@ -133,7 +133,7 @@ class Checkout implements SubscriberInterface
             // remove AmazonPay and Paypal Express from Payment List
             $payments = $view->getAssign('sPayments');
 
-            foreach ($payments as $index=>$payment) {
+            foreach ($payments as $index => $payment) {
                 if ($payment['name'] === 'fatchip_computop_amazonpay') {
                     $amazonPayIndex = $index;
                 }
@@ -158,11 +158,8 @@ class Checkout implements SubscriberInterface
                 unset ($payments[$klarnaInsatallmentIndex]);
             }
 
-
-
-
             $view->assign('sPayments', $payments);
-                        $view->assign('FatchipCTPaymentData', $paymentData);
+            $view->assign('FatchipCTPaymentData', $paymentData);
 
             // assign payment errors and error template to view
             $view->extendsTemplate('frontend/checkout/shipping_payment.tpl');
@@ -202,67 +199,71 @@ class Checkout implements SubscriberInterface
         }
     }
 
-    private function updateUserDoB($paymentName, $userId, $params) {
+    private function updateUserDoB($paymentName, $userId, $params)
+    {
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_birthyear'])) {
             $this->utils->updateUserDoB($userId,
-              $params['FatchipComputopPaymentData'][$paymentName . '_birthyear'].'-'.
-              $params['FatchipComputopPaymentData'][$paymentName . '_birthmonth'].'-'.
-              $params['FatchipComputopPaymentData'][$paymentName . '_birthday']
+                $params['FatchipComputopPaymentData'][$paymentName . '_birthyear'] . '-' .
+                $params['FatchipComputopPaymentData'][$paymentName . '_birthmonth'] . '-' .
+                $params['FatchipComputopPaymentData'][$paymentName . '_birthday']
             );
         }
     }
 
-    private function updateUserPhone($paymentName, $userId, $params) {
+    private function updateUserPhone($paymentName, $userId, $params)
+    {
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_phone'])) {
             $this->utils->updateUserPhone($userId,
-              $params['FatchipComputopPaymentData'][$paymentName . '_phone']
+                $params['FatchipComputopPaymentData'][$paymentName . '_phone']
             );
         }
     }
 
-    private function updateUserSSN($paymentName, $userId, $params) {
+    private function updateUserSSN($paymentName, $userId, $params)
+    {
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_socialsecuritynumber'])) {
             $this->utils->updateUserSSN($userId,
-              $params['FatchipComputopPaymentData'][$paymentName . '_socialsecuritynumber']
+                $params['FatchipComputopPaymentData'][$paymentName . '_socialsecuritynumber']
             );
         }
     }
 
 
-    private function updateUserAnnualSalary($paymentName, $userId, $params) {
+    private function updateUserAnnualSalary($paymentName, $userId, $params)
+    {
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_annualsalary'])) {
             $this->utils->updateUserAnnualSalary($userId,
-              $params['FatchipComputopPaymentData'][$paymentName . '__annualsalary']
+                $params['FatchipComputopPaymentData'][$paymentName . '__annualsalary']
             );
         }
     }
 
-    private function setIssuerInSession($paymentName, $params) {
+    private function setIssuerInSession($paymentName, $params)
+    {
         $session = Shopware()->Session();
         if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_ideal_issuer']) && $paymentName === 'fatchip_computop_ideal') {
             $session->offsetSet('FatchipComputopIdealIssuer',
-              $params['FatchipComputopPaymentData']['fatchip_computop_ideal_issuer']
+                $params['FatchipComputopPaymentData']['fatchip_computop_ideal_issuer']
             );
         }
 
-       /* if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_sofort_issuer']) && $paymentName === 'fatchip_computop_sofort') {
-            $session->offsetSet('FatchipComputopSofortIssuer',
-              $params['FatchipComputopPaymentData']['fatchip_computop_sofort_issuer']
-            );
-        }
-       */
+        /* if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_sofort_issuer']) && $paymentName === 'fatchip_computop_sofort') {
+             $session->offsetSet('FatchipComputopSofortIssuer',
+               $params['FatchipComputopPaymentData']['fatchip_computop_sofort_issuer']
+             );
+         }
+        */
     }
 
 
-
     /**
-    * @return LessDefinition
-    */
+     * @return LessDefinition
+     */
     public function onThemeCompilerCollectPluginLess()
     {
         return new LessDefinition(
-          [],
-          [__DIR__ . '/../Views/frontend/_public/src/less/all.less']
+            [],
+            [__DIR__ . '/../Views/frontend/_public/src/less/all.less']
         );
     }
 
