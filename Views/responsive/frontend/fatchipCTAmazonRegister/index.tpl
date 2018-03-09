@@ -46,7 +46,6 @@
 
 {* Replace Register content with Amazon Widget SW 5.0 *}
 {block name='frontend_register_index_registration'}
-
     <style type="text/css">
         #fatchipCTAddressBookWidgetDiv {
             min-width: 300px;
@@ -56,7 +55,6 @@
             height: 240px;
             max-height: 400px;
         }
-
         #fatchipCTWalletWidgetDiv {
             min-width: 300px;
             width: 100%;
@@ -67,7 +65,6 @@
             display: none;
         }
     </style>
-
 
     {* ToDo merge PHP and js error to one Block, beautify errors *}
     {* Error Messages Javascript *}
@@ -120,10 +117,7 @@
         </button>
     </div>
 
-
-
     <script>
-
         window.onAmazonLoginReady = function() {
             amazon.Login.setClientId("{$fatchipCTPaymentConfig.amazonClientId}");
         };
@@ -133,13 +127,9 @@
                 sellerId: "{$fatchipCTPaymentConfig.amazonSellerId}",
                 scope: 'profile payments:widget payments:shipping_address payments:billing_address',
                 onOrderReferenceCreate: function (orderReference) {
-                    console.log("entering onOrderRefCreate:");
                     fatchipCTAmazonReferenceId = orderReference.getAmazonOrderReferenceId();
-                    console.log(fatchipCTAmazonReferenceId);
                     var el = document.querySelector('#fatchipCTAmazonInformation');
                     el.setAttribute('data-fatchipCTAmazonOrderReferenceId', fatchipCTAmazonReferenceId );
-                    console.log("double Check Reference:");
-                    console.log(el.getAttribute('data-fatchipCTAmazonOrderReferenceId'));
                     $("#fatchipCTAmazonInformation").trigger("onAmazonOrderRef");
                     $('#fatchipCTAddressBookWidgetDiv').show();
                     $('#fatchipCTWalletWidgetDiv').show();
@@ -160,8 +150,6 @@
                 }
             }).bind("fatchipCTAddressBookWidgetDiv");
 
-
-
             new OffAmazonPayments.Widgets.Wallet({
                 sellerId: "{$fatchipCTPaymentConfig.amazonSellerId}",
                 scope: 'profile payments:widget payments:shipping_address payments:billing_address',
@@ -177,8 +165,6 @@
                 }
             }).bind("fatchipCTWalletWidgetDiv");
         };
-
-
     </script>
     <script async="async"
             src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/sandbox/lpa/js/Widgets.js'>

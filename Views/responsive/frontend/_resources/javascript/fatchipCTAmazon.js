@@ -278,7 +278,7 @@ $.plugin('fatchipCTAmazon', {
         me.opts.firstname2 = sname[0];
         me.opts.lastname2 = sname[1];
         me.opts.street2 = data.AddrStreet2;
-        me.opts.zip2 = data.AddrZip;
+        me.opts.zip2 = data.AddrZip ? data.AddrZip : data.AddrZIP;
         me.opts.city2 = data.AddrCity;
         me.opts.countryCodeShipping = data.AddrCountryCode;
         me.opts.countryCodeShippingID = data.AddrCountryCodeID;
