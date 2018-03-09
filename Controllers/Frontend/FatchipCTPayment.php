@@ -311,7 +311,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $paymentName = $order->getPayment()->getName();
             if (
                 ($paymentName == 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] == 'DELAYED') ||
-                ($paymentName == 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] == 'DELAYED')
+                ($paymentName == 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] == 'DELAYED') ||
+                ($paymentName == 'fatchip_computop_lastschrift' && $this->config['lastschriftCaption'] == 'DELAYED')
             ) {
                 $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSPAID);
                 $this->markOrderDetailsAsFullyCaptured($order);
@@ -358,6 +359,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 case '0053': //Cancel by User
                     return true;
                 case '0703': //User Canceled
+                    return true;
+                case '0321': //no action taken
                     return true;
             }
         }
