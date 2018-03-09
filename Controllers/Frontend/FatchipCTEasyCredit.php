@@ -54,11 +54,14 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         // we have to use this, because there is no order yet
         $user = Shopware()->Modules()->Admin()->sGetUserData();
         $this->basket = $this->get('modules')->Basket()->sGetBasket();
+        $session = Shopware()->Session();
+        // used for getting amount including shipping costs
+        $orderVars = $session->sOrderVariables->getArrayCopy();
 
-        // ToDo refactor ctOrder creation
+            // ToDo refactor ctOrder creation
         $ctOrder = new CTOrder();
         //important: multiply amount by 100
-        $ctOrder->setAmount($this->basket['AmountNumeric'] * 100);
+        $ctOrder->setAmount($orderVars['sBasket']['AmountNumeric'] * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
