@@ -308,6 +308,23 @@ class Util
         return false;
     }
 
+    /***
+     * @param $userData
+     * @return bool
+     *
+     * Klarna is only available for Private persons in DE, AT and NL. So for companies we block Klarna in these countries
+     */
+    public function isKlarnaBlocked($userData) {
+        if (isset($userData['billingaddress']['company']) && $countryIso = $this->getBillingIsoForCurrentOrder()) {
+            if ($countryIso == 'DE' || $countryIso == 'AT' || $countryIso == 'NL') {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
 
     public function getSocialSecurityNumberLabelForKlarna($userData) {
         $label = 'Sozialversicherungsnummer (letzte 4 Ziffern)';
