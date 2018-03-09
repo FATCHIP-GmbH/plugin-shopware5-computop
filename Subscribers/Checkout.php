@@ -140,9 +140,25 @@ class Checkout implements SubscriberInterface
                 if ($payment['name'] === 'fatchip_computop_paypal_express') {
                     $paypalExpressIndex = $index;
                 }
+                //Klarna is not available for Companies in DE, AT NL
+                if ($payment['name'] === 'fatchip_computop_klarna_invoice') {
+                    $klarnaInvoiceIndex = $index;
+                }
+                if ($payment['name'] === 'fatchip_computop_klarna_installment') {
+                    $klarnaInsatallmentIndex = $index;
+                }
+
             }
+
             unset ($payments[$amazonPayIndex]);
             unset ($payments[$paypalExpressIndex]);
+
+            if ($this->utils->isKlarnaBlocked($userData)) {
+                unset ($payments[$klarnaInvoiceIndex]);
+                unset ($payments[$klarnaInsatallmentIndex]);
+            }
+
+
 
 
             $view->assign('sPayments', $payments);
@@ -185,7 +201,6 @@ class Checkout implements SubscriberInterface
             }
         }
     }
-
 
     private function updateUserDoB($paymentName, $userId, $params) {
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_birthyear'])) {
@@ -250,4 +265,5 @@ class Checkout implements SubscriberInterface
           [__DIR__ . '/../Views/frontend/_public/src/less/all.less']
         );
     }
+
 }
