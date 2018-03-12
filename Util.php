@@ -379,7 +379,7 @@ class Util
         $countryIso = $this->getBillingIsoForCurrentOrder();
 
         if ($countryIso == 'DE' || $countryIso == 'AT' || $countryIso == 'NL') {
-            if (isset($userData['billingaddress']['company'])){
+            if (!empty($userData['billingaddress']['company'])){
                 return true;
             }
         }

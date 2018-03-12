@@ -337,8 +337,6 @@ class FrontendRiskManagement implements SubscriberInterface
         else if (array_key_exists('fatchipctCrifstatus', $aAddress)) {
             return $aAddress['fatchipctCrifstatus'];
         }
-
-
         return null;
     }
 
