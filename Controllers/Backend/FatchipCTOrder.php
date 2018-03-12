@@ -64,18 +64,21 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
             $amount = $this->getRefundAmount($order, $positionIds, $includeShipment);
 
+            $orderDesc = null;
+            if (strpos($order->getPayment()->getName(), 'fatchip_computop_klarna_') === 0) {
+                $orderDesc = $this->getKlarnaOrderDesc($order, $positionIds);
+            }
+
             $requestParams = $paymentClass->getCaptureParams(
                 $order->getAttribute()->getfatchipctPayid(),
                 $amount,
                 $order->getCurrency(),
                 $order->getAttribute()->getfatchipctTransid(),
-                $order->getAttribute()->getfatchipctXid()
+                $order->getAttribute()->getfatchipctXid(),
+                $orderDesc
             );
 
-            if (strpos($order->getPayment()->getName(), 'fatchip_computop_klarna_') === 0) {
-                $paymentClass->setOrderDesc($this->getKlarnaOrderDesc($order, $positionIds));
-                // $requestParams['OrderDesc'] = $this->getKlarnaOrderDesc($order, $positionIds);
-            }
+
 
             $refundResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'Refund', $paymentClass->getCTRefundURL());
 
@@ -145,12 +148,18 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
             $amount = $this->getCaptureAmount($order, $positionIds, $includeShipment);
 
+            $orderDesc = null;
+            if (strpos($order->getPayment()->getName(), 'fatchip_computop_klarna_') === 0) {
+                $orderDesc = $this->getKlarnaOrderDesc($order, $positionIds);
+            }
+
             $requestParams = $paymentClass->getCaptureParams(
                 $order->getAttribute()->getfatchipctPayid(),
                 $amount,
                 $order->getCurrency(),
                 $order->getAttribute()->getfatchipctTransid(),
-                $order->getAttribute()->getfatchipctXid()
+                $order->getAttribute()->getfatchipctXid(),
+                $orderDesc
             );
 
             $captureResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'Capture', $paymentClass->getCTCaptureURL());
