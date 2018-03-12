@@ -26,8 +26,6 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
     /** @var \Shopware\Plugins\FatchipCTPayment\Util $utils * */
     protected $utils;
 
-    /* order as array */
-    protected $order;
 
     public function init()
     {
@@ -35,86 +33,20 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         $this->config = $this->plugin->Config()->toArray();
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
-        // set order array!as property
-        $orderId = $this->Request()->getParam('id');
-        $this->order = $this->getOrderArray($orderId);
         parent::init();
-    }
-
-
-    public function getOrderArray($orderId)
-    {
-        $builder = Shopware()->Models()->createQueryBuilder();
-        $builder->select([
-            'orders',
-            'details',
-            'documents',
-            'payment',
-            'customer',
-            'paymentInstances',
-            'shipping',
-            'billing',
-            'billingCountry',
-            'shippingCountry',
-            'billingState',
-            'shippingState',
-            'shop',
-            'dispatch',
-            'paymentStatus',
-            'orderStatus',
-            'documentType',
-            'billingAttribute',
-            'attribute',
-            'detailAttribute',
-            'documentAttribute',
-            'shippingAttribute',
-            'paymentAttribute',
-            'dispatchAttribute',
-            'subShop',
-            'locale',
-        ]);
-
-        $builder->from('Shopware\Models\Order\Order', 'orders');
-        $builder->leftJoin('orders.details', 'details')
-            ->leftJoin('orders.documents', 'documents')
-            ->leftJoin('documents.type', 'documentType')
-            ->leftJoin('orders.payment', 'payment')
-            ->leftJoin('orders.paymentStatus', 'paymentStatus')
-            ->leftJoin('orders.orderStatus', 'orderStatus')
-            ->leftJoin('orders.customer', 'customer')
-            ->leftJoin('orders.paymentInstances', 'paymentInstances')
-            ->leftJoin('orders.billing', 'billing')
-            ->leftJoin('billing.country', 'billingCountry')
-            ->leftJoin('billing.state', 'billingState')
-            ->leftJoin('orders.shipping', 'shipping')
-            ->leftJoin('orders.shop', 'shop')
-            ->leftJoin('orders.dispatch', 'dispatch')
-            ->leftJoin('payment.attribute', 'paymentAttribute')
-            ->leftJoin('dispatch.attribute', 'dispatchAttribute')
-            ->leftJoin('billing.attribute', 'billingAttribute')
-            ->leftJoin('shipping.attribute', 'shippingAttribute')
-            ->leftJoin('details.attribute', 'detailAttribute')
-            ->leftJoin('documents.attribute', 'documentAttribute')
-            ->leftJoin('orders.attribute', 'attribute')
-            ->leftJoin('orders.languageSubShop', 'subShop')
-            ->leftJoin('subShop.locale', 'locale')
-            ->leftJoin('shipping.country', 'shippingCountry')
-            ->leftJoin('shipping.state', 'shippingState')
-            ->where('orders.id = ?1')
-            ->setParameter(1, $orderId);
-        return $builder->getQuery()->getOneOrNullResult(Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
     }
 
     public function fatchipCTDebitAction()
     {
         try {
+            $orderId = $this->Request()->getParam('id');
 
-            if (empty($this->order)) {
+            if (!$order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->find($orderId)) {
                 $message = 'Bestellung nicht gefunden';
                 throw new Exception($message);
             }
 
-            if (!$this->fcct_isOrderRefundable($this->order)) {
+            if (!$this->fcct_isOrderRefundable($order)) {
                 $errorMessage = 'Gutschrift nicht möglich.';
                 throw new Exception($errorMessage);
             }
@@ -128,28 +60,28 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             //positions ?
             $positionIds = $this->Request()->get('positionIds') ? json_decode($this->Request()->get('positionIds')) : array();
 
-            $paymentClass = $this->getCTPaymentClassForOrder($this->order);
+            $paymentClass = $this->getCTPaymentClassForOrder($order);
 
-            $amount = $this->getRefundAmount($this->order, $positionIds, $includeShipment);
+            $amount = $this->getRefundAmount($order, $positionIds, $includeShipment);
 
             $requestParams = $paymentClass->getCaptureParams(
-                $this->order['attribute']['fatchipctPayid'],
+                $order->getAttribute()->getfatchipctPayid(),
                 $amount,
-                $this->order['currency'],
-                $this->order['attribute']['fatchipctTransid'],
-                $this->order['attribute']['fatchipctXid']
+                $order->getCurrency(),
+                $order->getAttribute()->getfatchipctTransid(),
+                $order->getAttribute()->getfatchipctXid()
             );
 
-            if (strpos($this->order['payment']['name'], 'fatchip_computop_klarna_') === 0) {
-                $paymentClass->setOrderDesc($this->getKlarnaOrderDesc($this->order, $positionIds));
-                $requestParams['OrderDesc'] = $paymentClass->getOrderDesc();
+            if (strpos($order->getPayment()->getName(), 'fatchip_computop_klarna_') === 0) {
+                $paymentClass->setOrderDesc($this->getKlarnaOrderDesc($order, $positionIds));
+                // $requestParams['OrderDesc'] = $this->getKlarnaOrderDesc($order, $positionIds);
             }
 
             $refundResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'Refund', $paymentClass->getCTRefundURL());
 
             if ($refundResponse->getStatus() == 'OK') {
-                $this->markPositionsAsRefunded($this->order, $positionIds, $includeShipment);
-                $this->inquireAndupdatePaymentStatusAfterRefund($this->order, $paymentClass);
+                $this->markPositionsAsRefunded($order, $positionIds, $includeShipment);
+                $this->inquireAndupdatePaymentStatusAfterRefund($order, $paymentClass);
                 $response = array('success' => true);
             } else {
                 $errorMessage = 'Gutschrift (zur Zeit) nicht möglich: ' . $refundResponse->getDescription();
@@ -166,67 +98,69 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
     public function fatchipCTTGetButtonStateAction()
     {
+
+        $request = $this->Request();
         try {
-            if (empty($this->order)) {
+            $orderId = $request->getParam('id');
+            if (!$order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->find($orderId)) {
                 $message = 'Bestellung nicht gefunden';
                 throw new Exception($message);
             }
 
-            $response = ['success' => true, 'isOrderRefundable' => $this->fcct_isOrderRefundable($this->order), 'isOrderCapturable' => $this->fcct_isOrderCapturable($this->order)];
+            $response = array('success' => true, 'isOrderRefundable' => $this->fcct_isOrderRefundable($order), 'isOrderCapturable' => $this->fcct_isOrderCapturable($order));
             $this->View()->assign($response);
         } catch (Exception $e) {
-            $response = ['success' => false, 'error_message' => $e->getMessage()];
+            $response = array('success' => false, 'error_message' => $e->getMessage());
         }
+
     }
 
     public function fatchipCTCaptureOrderAction()
     {
+        $request = $this->Request();
         try {
-            if (empty($this->order)) {
+            $orderId = $request->getParam('id');
+
+            if (!$order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->find($orderId)) {
                 $message = 'Bestellung nicht gefunden';
                 throw new Exception($message);
             }
 
-            if (!$this->fcct_isOrderCapturable($this->order)) {
+            if (!$this->fcct_isOrderCapturable($order)) {
                 $errorMessage = 'Capture nicht möglich.';
                 throw new Exception($errorMessage);
             }
 
-            if ($this->Request()->getParam('includeShipment') === 'true') {
+            if ($request->getParam('includeShipment') === 'true') {
                 $includeShipment = true;
             } else {
                 $includeShipment = false;
             }
 
             //positions ?
-            $positionIds = $this->Request()->get('positionIds') ? json_decode($this->Request()->get('positionIds')) : [];
-            $amount = $this->getCaptureAmount($this->order, $positionIds, $includeShipment);
+            $positionIds = $request->get('positionIds') ? json_decode($request->get('positionIds')) : array();
 
-            $paymentClass = $this->getCTPaymentClassForOrder($this->order);
+
+            $paymentClass = $this->getCTPaymentClassForOrder($order);
+
+            $amount = $this->getCaptureAmount($order, $positionIds, $includeShipment);
 
             $requestParams = $paymentClass->getCaptureParams(
-                $this->order['attribute']['fatchipctPayid'],
+                $order->getAttribute()->getfatchipctPayid(),
                 $amount,
-                $this->order['currency'],
-                $this->order['attribute']['fatchipctTransid'],
-                $this->order['attribute']['fatchipctXid']
+                $order->getCurrency(),
+                $order->getAttribute()->getfatchipctTransid(),
+                $order->getAttribute()->getfatchipctXid()
             );
 
+            $captureResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'Capture', $paymentClass->getCTCaptureURL());
 
-            if (strpos($this->order['payment']['name'], 'fatchip_computop_klarna_') === 0) {
-                $paymentClass->setOrderDesc($this->getKlarnaOrderDesc($this->order, $positionIds));
-                $requestParams['OrderDesc'] = $paymentClass->getOrderDesc();
-            }
-
-            $response = $this->plugin->callComputopService($requestParams, $paymentClass, 'Capture', $paymentClass->getCTCaptureURL());
-
-
-            if ($response->getStatus() == 'OK') {
-                $this->markPositionsAsCaptured($this->order, $positionIds, $includeShipment);
-                $this->inquireAndupdatePaymentStatusAfterCapture($this->order, $paymentClass);
+            if ($captureResponse->getStatus() == 'OK') {
+                $this->markPositionsAsCaptured($order, $positionIds, $includeShipment);
+                $this->inquireAndupdatePaymentStatusAfterCapture($order, $paymentClass);
                 $response = array('success' => true);
             } else {
-                $errorMessage = 'Capture (zur Zeit) nicht möglich: ' . $response->getDescription();
+                $errorMessage = 'Capture (zur Zeit) nicht möglich: ' . $captureResponse->getDescription();
                 $response = array('success' => false, 'error_message' => $errorMessage);
             }
         } catch (Exception $e) {
@@ -236,7 +170,6 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         $this->View()->assign($response);
     }
 
-    /* ToDO is orderHasComputopPayment($order) neccessary? poisiton tab should not be displayed for non-computop orders */
     private function fcct_isOrderCapturable($order)
     {
 
@@ -267,17 +200,45 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         return !empty($refundURL);
     }
 
-
     private function createCTOrderFromSWorder($swOrder)
     {
+        $swShipping = $swOrder->getShipping();
 
-        $ctShippingAddress = $this->utils->getCTAddress($swOrder['shipping']);
-        $ctBillingAddress = $this->utils->getCTAddress($swOrder['billing']);
+        $ctShippingAddress = new \Fatchip\CTPayment\CTAddress\CTAddress($swShipping->getSalutation(),
+            $swShipping->getCompany(),
+            $swShipping->getFirstName(),
+            $swShipping->getLastName(),
+            $swShipping->getStreet(),
+            '',
+            $swShipping->getZipCode(),
+            $swShipping->getCity(),
+            $this->utils->getCTCountryIso($swOrder->getShipping()->getCountry()->getId()),
+            $this->utils->getCTCountryIso3($swOrder->getShipping()->getCountry()->getId()),
+            '',
+            '');
+
+        $swBilling = $swOrder->getBilling();
+
+        $ctBillingAddress = new \Fatchip\CTPayment\CTAddress\CTAddress($swBilling->getSalutation(),
+            $swBilling->getCompany(),
+            $swBilling->getFirstName(),
+            $swBilling->getLastName(),
+            $swBilling->getStreet(),
+            '',
+            $swBilling->getZipCode(),
+            $swBilling->getCity(),
+            $this->utils->getCTCountryIso($swOrder->getBilling()->getCountry()->getId()),
+            $this->utils->getCTCountryIso3($swOrder->getBilling()->getCountry()->getId()),
+            '',
+            '');
+
 
         $ctOrder = new \Fatchip\CTPayment\CTOrder\CTOrder();
         $ctOrder->setBillingAddress($ctBillingAddress);
         $ctOrder->setShippingAddress($ctShippingAddress);
-        $ctOrder->setEmail($swOrder['customer']['email']);
+        if ($email = $swOrder->getCustomer()->getEmail()) {
+            $ctOrder->setEmail($email);
+        }
         return $ctOrder;
     }
 
@@ -293,26 +254,26 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
     {
         $amount = 0;
 
-        foreach ($order['details'] as $position) {
-            if (!in_array($position['id'], $positionIds)) {
+        foreach ($order->getDetails() as $position) {
+            if (!in_array($position->getId(), $positionIds)) {
                 continue;
             }
 
-            $positionAttribute = $position['attribute'];
+            $positionAttribute = $position->getAttribute();
 
-            $alreadyCapturedAmount = $positionAttribute ? $positionAttribute['fatchipctCaptured'] : 0;
+            $alreadyCapturedAmount = $positionAttribute ? $positionAttribute->getfatchipctCaptured() : 0;
             //add difference between total price and already captured amount
-            $positionPrice = round($position['price'], 2);
+            $positionPrice = round($position->getPrice(), 2);
 
-            $amount += ($positionPrice * $position['quantity']) - $alreadyCapturedAmount;
+            $amount += ($positionPrice * $position->getQuantity()) - $alreadyCapturedAmount;
 
-            if ($position['articleNumber'] == 'SHIPPING') {
+            if ($position->getArticleNumber() == 'SHIPPING') {
                 $includeShipment = false;
             }
         }
 
         if ($includeShipment) {
-            $amount += $order['invoiceShipping'];
+            $amount += $order->getInvoiceShipping();
         }
 
         /*Important: multiply by 100*/
@@ -333,26 +294,25 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
     {
         $amount = 0;
 
-        foreach ($order['details'] as $position) {
-            if (!in_array($position['id'], $positionIds)) {
+        foreach ($order->getDetails() as $position) {
+            if (!in_array($position->getId(), $positionIds)) {
                 continue;
             }
 
-            $positionAttribute = $position['attribute'];
-
-            $alreadyRefundedAmount = $positionAttribute ? $positionAttribute['fatchipctDebit'] : 0;
+            $positionAttribute = $position->getAttribute();
+            $alreadyRefundedAmount = $positionAttribute ? $positionAttribute->getfatchipctDebit() : 0;
             //add difference between total price and already captured amount
-            $positionPrice = round($position['price'], 2);
+            $positionPrice = round($position->getPrice(), 2);
 
-            $amount += ($positionPrice * $position['quantity']) - $alreadyRefundedAmount;
+            $amount += ($positionPrice * $position->getQuantity()) - $alreadyRefundedAmount;
 
-            if ($position['articleNumber'] == 'SHIPPING') {
+            if ($position->getArticleNumber() == 'SHIPPING') {
                 $includeShipment = false;
             }
         }
 
         if ($includeShipment) {
-            $amount += $order['invoiceShipping'];
+            $amount += $order->getInvoiceShipping();
         }
 
         /*Important: multiply by 100*/
@@ -363,7 +323,6 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
     private function markPositionsAsCaptured($order, $positionIds, $includeShipment = false)
     {
-        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->find($order['id']);
         foreach ($order->getDetails() as $position) {
             if (!in_array($position->getId(), $positionIds)) {
                 continue;
@@ -391,7 +350,6 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
     private function markPositionsAsRefunded($order, $positionIds, $includeShipment = false)
     {
-        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->find($order['id']);
         foreach ($order->getDetails() as $position) {
             if (!in_array($position->getId(), $positionIds)) {
                 continue;
@@ -419,7 +377,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
     private function orderHasComputopPayment($order)
     {
-        if (strpos($this->utils->getPaymentNameFromId($order['paymentId']), 'fatchip_computop') !== 0) {
+        if (strpos($order->getPayment()->getName(), 'fatchip_computop') !== 0) {
             return false;
         }
 
@@ -428,12 +386,17 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
     private function getCTPaymentClassNameForOrder($order)
     {
-        $name = $order['payment']['name'];
+        $name = $order->getPayment()->getName();
         /** @var CTPaymentService $service */
         $paymentMethods = $this->paymentService->getPaymentMethods();
 
-        $key = array_search($name, array_column($paymentMethods, 'name'));
-        return $paymentMethods[$key]['className'];
+        if (array_search($name, array_column($paymentMethods, 'name')) !== false) {
+            $key = array_search($name, array_column($paymentMethods, 'name'));
+            return $paymentMethods[$key]['className'];
+        }
+
+        return $name;
+
     }
 
     private function getCTPaymentClassForOrder($order)
@@ -443,7 +406,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         $router = $this->Front()->Router();
         $paymentClassName = $this->getCTPaymentClassNameForOrder($order);
 
-        if ($paymentClassName !== 'PaypalExpress' && $paymentClassName !== 'AmazonPay'){
+        if ($paymentClassName !== 'PaypalExpress' && $paymentClassName !== 'AmazonPay') {
             return $this->paymentService->getIframePaymentClass(
                 $paymentClassName,
                 $this->config,
@@ -470,17 +433,15 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
     private function inquireAndupdatePaymentStatusAfterCapture($order, $paymentClass)
     {
-        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->find($order['id']);
 
         $currentPaymentStatus = $order->getPaymentStatus()->getId();
 
         //Only when the current payment status = reserved or partly paid, we update the payment status
-
         if ($currentPaymentStatus == self::PAYMENTSTATUSRESERVED || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID) {
             $payID = $order->getAttribute()->getfatchipctPayid();
 
             $requestParams = $paymentClass->getInquireParams(
-                $this->order['attribute']['fatchipctPayid']
+                $payID
             );
 
             $inquireResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'Inquire', $paymentClass->getCTInquireURL());
@@ -504,17 +465,15 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
     private function inquireAndupdatePaymentStatusAfterRefund($order, $paymentClass)
     {
-        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->find($order['id']);
 
         $currentPaymentStatus = $order->getPaymentStatus()->getId();
 
         //Only when the current payment status = reserved or partly paid, we update the payment status
 
         if ($currentPaymentStatus == self::PAYMENTSTATUSPAID || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID) {
-            $payID = $order->getAttribute()->getfatchipctPayid();
 
             $requestParams = $paymentClass->getInquireParams(
-              $this->order['attribute']['fatchipctPayid']
+                $order->getAttribute()->getfatchipctPayid()
             );
 
             $inquireResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'Inquire', $paymentClass->getCTInquireURL());
@@ -533,7 +492,6 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
     private function getKlarnaOrderDesc($order, $positionIds)
     {
-        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->find($order['id']);
         $orderDesc = '';
         foreach ($order->getDetails() as $position) {
             if (!in_array($position->getId(), $positionIds)) {
@@ -546,7 +504,10 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             $orderDesc .= $position->getQuantity() . ';' . $position->getArticleID() . ';' . $position->getArticlename() . ';'
                 . $position->getPrice() * 100 . ';' . $position->getTaxRate() . ';0;0';
 
+
             return $orderDesc;
+
+
         }
     }
 }
