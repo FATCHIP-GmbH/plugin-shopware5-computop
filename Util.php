@@ -315,14 +315,16 @@ class Util
      * Klarna is only available for Private persons in DE, AT and NL. So for companies we block Klarna in these countries
      */
     public function isKlarnaBlocked($userData) {
-        if (isset($userData['billingaddress']['company']) && $countryIso = $this->getBillingIsoForCurrentOrder()) {
-            if ($countryIso == 'DE' || $countryIso == 'AT' || $countryIso == 'NL') {
-                return true;
+
+        $countryIso = $this->getBillingIsoForCurrentOrder();
+
+        if ($countryIso == 'DE' || $countryIso == 'AT' || $countryIso == 'NL') {
+            if (!isset($userData['billingaddress']['company'])){
+                return false;
             }
         }
 
-        return false;
-
+        return true;
     }
 
 
