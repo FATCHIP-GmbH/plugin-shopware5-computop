@@ -2,8 +2,6 @@
     {* The main container for filling in the birthday field *}
     <div class="fatchip-computop-payment-easycredit-form payment--form-group">
 
-    {if !$FatchipCTPaymentData.birthday || $FatchipCTPaymentData.birthday=='00' }
-
         {* The main form field table *}
         {block name="frontend_checkout_payment_fatchip_computop_easycredit_birthday_label"}
             <p class="none">
@@ -64,5 +62,5 @@
                 </select>
         {/block}
         </div>
-    {/if}
+
 </div>

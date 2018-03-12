@@ -75,6 +75,10 @@ class Checkout implements SubscriberInterface
             $this->updateUserPhone($paymentName, $session->get('sUserId'), $params);
             $this->updateUserSSN($paymentName, $session->get('sUserId'), $params);
             $this->updateUserAnnualSalary($paymentName, $session->get('sUserId'), $params);
+            $this->updateUserLastschriftBank($paymentName, $session->get('sUserId'), $params);
+            $this->updateUserLastschriftIban($paymentName, $session->get('sUserId'), $params);
+            $this->updateUserLastschriftKontoinhaber($paymentName, $session->get('sUserId'), $params);
+
             $this->setIssuerInSession($paymentName, $params);
 
             if ($paymentName === 'fatchip_computop_easycredit') {
@@ -116,6 +120,9 @@ class Checkout implements SubscriberInterface
             //$paymentData['sofortIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
             //$paymentData['sofortIssuer'] = $session->offsetGet('FatchipComputopSofortIssuer');
             $paymentData['isCompany'] = isset($userData['billingaddress']['company']);
+            $paymentData['lastschriftbank'] = $this->utils->getUserLastschriftBank($userData);
+            $paymentData['lastschriftiban'] = $this->utils->getUserLastschriftIban($userData);
+            $paymentData['lastschriftkontoinhaber'] = $this->utils->getUserLastschriftKontoinhaber($userData);
 
 
             if ($this->utils->needSocialSecurityNumberForKlarna()) {
@@ -234,6 +241,33 @@ class Checkout implements SubscriberInterface
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_annualsalary'])) {
             $this->utils->updateUserAnnualSalary($userId,
                 $params['FatchipComputopPaymentData'][$paymentName . '__annualsalary']
+            );
+        }
+    }
+
+    private function updateUserLastschriftBank($paymentName, $userId, $params)
+    {
+        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_bank'])) {
+            $this->utils->updateUserLastschriftBank($userId,
+              $params['FatchipComputopPaymentData'][ $paymentName . '_bank']
+            );
+        }
+    }
+
+    private function updateUserLastschriftIban($paymentName, $userId, $params)
+    {
+        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_iban'])) {
+            $this->utils->updateUserLastschriftIban($userId,
+              $params['FatchipComputopPaymentData'][ $paymentName . '_iban']
+            );
+        }
+    }
+
+    private function updateUserLastschriftKontoinhaber($paymentName, $userId, $params)
+    {
+        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_kontoinhaber'])) {
+            $this->utils->updateUserLastschriftKontoinhaber($userId,
+              $params['FatchipComputopPaymentData'][ $paymentName . '_kontoinhaber']
             );
         }
     }

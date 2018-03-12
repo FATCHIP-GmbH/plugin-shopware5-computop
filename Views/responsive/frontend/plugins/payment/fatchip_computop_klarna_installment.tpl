@@ -1,25 +1,25 @@
     {* The main container for filling in the birthday field *}
     <div class="fatchip-computop-payment-klarna-form payment--form-group">
 
-        {if !$FatchipCTPaymentData.phone}
-            {block name="frontend_checkout_payment_fatchip_computop_klarna_phone_label"}
-                <p class="none">
-                    <label for="fatchip_computop_klarna_installment_phone">{s name='klarnaPhoneLabel'}Telefonnummer{/s}</label>
-                </p>
-            {/block}
 
-            {block name="frontend_checkout_payment_fatchip_computop_klarna_phone_input"}
-                <input name="FatchipComputopPaymentData[fatchip_computop_klarna_installment_phone]" type="text"
-                       id="fatchip_computop_klarna_installment_phone"
-                       class="payment--field is--required{if $error_flags.fatchip_computop__klarna_phone} has--error{/if}"
-                       placeholder="{s name='klarnaPhoneNumber'}Telefonnummer{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
-                       {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
-                       value="{$FatchipCTPaymentData.phone}"
-                        />
-            {/block}
-        {/if}
+        {block name="frontend_checkout_payment_fatchip_computop_klarna_phone_label"}
+            <p class="none">
+                <label for="fatchip_computop_klarna_installment_phone">{s name='klarnaPhoneLabel'}Telefonnummer{/s}</label>
+            </p>
+        {/block}
 
-        {if !$FatchipCTPaymentData.isCompany && (!$FatchipCTPaymentData.birthday || $FatchipCTPaymentData.birthday == '00') }
+        {block name="frontend_checkout_payment_fatchip_computop_klarna_phone_input"}
+            <input name="FatchipComputopPaymentData[fatchip_computop_klarna_installment_phone]" type="text"
+                   id="fatchip_computop_klarna_installment_phone"
+                   class="payment--field is--required{if $error_flags.fatchip_computop__klarna_phone} has--error{/if}"
+                   placeholder="{s name='klarnaPhoneNumber'}Telefonnummer{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
+                   {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
+                   value="{$FatchipCTPaymentData.phone}"
+                    />
+        {/block}
+
+
+        {if !$FatchipCTPaymentData.isCompany }
             {* The main form field table *}
             {block name="frontend_checkout_payment_fatchip_computop_klarna_birthday_label"}
                 <p class="none">
