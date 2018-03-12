@@ -53,7 +53,7 @@
                     >
                         <option disabled="disabled" value="">-</option>
                         {section name="birthmonth" start=1 loop=13 step=1}
-                            {$isSelected = $smarty.section.birthmonth.index == $data.birthmonth}
+                            {$isSelected = $smarty.section.birthmonth.index == $FatchipCTPaymentData.birthmonth}
                             <option value="{$smarty.section.birthmonth.index}" {if $isSelected}selected{/if}>
                                 {$smarty.section.birthmonth.index}
                             </option>
