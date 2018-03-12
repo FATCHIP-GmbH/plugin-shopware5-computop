@@ -380,11 +380,11 @@ class Util
 
         if ($countryIso == 'DE' || $countryIso == 'AT' || $countryIso == 'NL') {
             if (isset($userData['billingaddress']['company'])){
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
 
