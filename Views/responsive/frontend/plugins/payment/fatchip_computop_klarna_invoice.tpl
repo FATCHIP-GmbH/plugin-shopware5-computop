@@ -1,7 +1,7 @@
     {* The main container for filling in the birthday field *}
     <div class="fatchip-computop-payment-klarna-form payment--form-group">
 
-        {if !$FatchipCTPaymentData.phone || 1==1}
+        {if !$FatchipCTPaymentData.phone}
             {block name="frontend_checkout_payment_fatchip_computop_klarna_invoice_phone_label"}
                 <p class="none">
                     <label for="fatchip_computop_klarna_phone">{s name='klarnaPhoneLabel'}Telefonnummer{/s}</label>

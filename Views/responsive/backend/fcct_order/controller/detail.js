@@ -128,8 +128,8 @@ Ext.define('Shopware.apps.Order.controller.fcctDetail', {
       + ' {s name=detail/debit2}Position(en) mit einem Gesamtbetrag von{/s} <span style="color: red;">'
       + amount.toFixed(2) + '&#8364 </span> {s name=detail/debit3}markiert{/s}.</p><br>'
       + '<p><label for="fcct__capture_shipment">{s name=detail/debit6}Versandkosten auch Einziehen{/s}</label>'
-      + '<input type="checkbox" id="fcct__capture_shipment" class="x-form-field x-form-checkbox"'
-      + 'style="margin: 0 0 0 4px; height: 15px !important; width: 15px !important;"/>'
+      + '<input type="checkbox" id="fcct__capture_shipment" class="x-form-field x-form-checkbox" checked '
+      + 'style="margin: 0 0 0 4px; height: 15px !important; width: 15px !important;" />'
       + '</p>';
 
 
