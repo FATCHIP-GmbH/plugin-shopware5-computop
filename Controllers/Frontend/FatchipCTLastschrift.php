@@ -24,13 +24,15 @@
  * @link      https://www.computop.com
  */
 
+use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\CTPayment\CTEnums\CTEnumStatus;
+
 require_once 'FatchipCTPayment.php';
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTLastschrift
  */
 
-require_once 'FatchipCTPayment.php';
 
 class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
@@ -51,6 +53,66 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
                 break;
             case 'INTERCARD':
                 $this->paymentClass = 'LastschriftInterCard';
+                break;
+        }
+    }
+
+    public function gatewayAction()
+    {
+        // we have to use this, because there is no order yet
+        $user = Shopware()->Modules()->Admin()->sGetUserData();
+        $amount = $this->getAmount();
+
+
+        // ToDo refactor ctOrder creation
+        $ctOrder = new CTOrder();
+        //important: multiply amount by 100
+        $ctOrder->setAmount($amount * 100);
+        $ctOrder->setCurrency($this->getCurrencyShortName());
+        $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
+        $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
+        // Sw 5.04 user email
+        // check other versions
+        $ctOrder->setEmail($user['additional']['user']['email']);
+        $ctOrder->setCustomerID($user['additional']['user']['id']);
+
+        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Lastschrift $payment */
+        $payment = $this->paymentService->getIframePaymentClass(
+          $this->paymentClass,
+          $this->config,
+          $ctOrder,
+          $this->router->assemble(['action' => 'return', 'forceSecure' => true]),
+          $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
+          $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
+          $this->getOrderDesc(),
+          $this->getUserData()
+        );
+
+        $payment->setAccBank($this->utils->getUserLastschriftBank($user));
+        $payment->setAccOwner($this->utils->getUserLastschriftKontoinhaber($user));
+        $payment->setIBAN($this->utils->getUserLastschriftIban($user));
+
+        $requestParams = $payment->getRedirectUrlParams();
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'Lastschrift', $payment->getCTPaymentURL());
+
+        switch ($response->getStatus()) {
+            case CTEnumStatus::OK:
+                $orderNumber =  $this->saveOrder(
+                  $response->getTransID(),
+                  $response->getPayID(),
+                  self::PAYMENTSTATUSRESERVED
+                );
+                $this->saveTransactionResult($response);
+                //$this->redirect(['controller' => 'checkout', 'action' => 'finish', ['sAGB' => 'true']]);
+                $params = $this->Request()->getParams();
+                $this->forward('finish', 'checkout', null, ['sAGB' => 1]);
+                break;
+            default:
+                $ctError = [];
+                $ctError['CTErrorMessage'] = self::ERRORMSG . $response->getDescription();
+                $ctError['CTErrorCode'] = $response->getCode();
+                return $this->forward('shippingPayment', 'checkout', null, array('CTError' => $ctError));
+
                 break;
         }
     }

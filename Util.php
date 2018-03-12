@@ -129,6 +129,33 @@ class Util
         return $attribute->getFatchipctAnnualSalary();
     }
 
+    public function getUserLastschriftBank($user)
+    {
+        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
+          ->find($user['additional']['user']['id']);
+        $attribute = $user->getAttribute();
+
+        return $attribute->getFatchipctLastschriftbank();
+    }
+
+    public function getUserLastschriftIban($user)
+    {
+        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
+          ->find($user['additional']['user']['id']);
+        $attribute = $user->getAttribute();
+
+        return $attribute->getFatchipctLastschriftiban();
+    }
+
+    public function getUserLastschriftKontoinhaber($user)
+    {
+        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
+          ->find($user['additional']['user']['id']);
+        $attribute = $user->getAttribute();
+
+        return $attribute->getFatchipctLastschriftaccowner();
+    }
+
     // SW 5.0 - 5.3 Compatibility
     // 5.0 - check
     // 5.1 - check
@@ -203,6 +230,39 @@ class Util
 
         $attributes = $user->getAttribute();
         $attributes->setFatchipctAnnualSalary($ssn);
+        Shopware()->Models()->persist($attributes);
+        Shopware()->Models()->flush($attributes);
+
+    }
+
+    public function updateUserLastschriftBank($userId, $bank)
+    {
+        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
+
+        $attributes = $user->getAttribute();
+        $attributes->setFatchipctLastschriftbank($bank);
+        Shopware()->Models()->persist($attributes);
+        Shopware()->Models()->flush($attributes);
+
+    }
+
+    public function updateUserLastschriftIban($userId, $iban)
+    {
+        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
+
+        $attributes = $user->getAttribute();
+        $attributes->setFatchipctLastschriftiban($iban);
+        Shopware()->Models()->persist($attributes);
+        Shopware()->Models()->flush($attributes);
+
+    }
+
+    public function updateUserLastschriftKontoinhaber($userId, $kontoinhaber)
+    {
+        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
+
+        $attributes = $user->getAttribute();
+        $attributes->setFatchipctLastschriftaccowner($kontoinhaber);
         Shopware()->Models()->persist($attributes);
         Shopware()->Models()->flush($attributes);
 
