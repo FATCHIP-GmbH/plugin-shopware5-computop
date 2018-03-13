@@ -64,7 +64,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
             $amount = $this->getRefundAmount($order, $positionIds, $includeShipment);
 
-            $orderDesc = null;
+            $orderDesc ='none';
             if (strpos($order->getPayment()->getName(), 'fatchip_computop_klarna_') === 0) {
                 $orderDesc = $this->getKlarnaOrderDesc($order, $positionIds);
             }
@@ -148,7 +148,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
             $amount = $this->getCaptureAmount($order, $positionIds, $includeShipment);
 
-            $orderDesc = null;
+            $orderDesc ='none';
             if (strpos($order->getPayment()->getName(), 'fatchip_computop_klarna_') === 0) {
                 $orderDesc = $this->getKlarnaOrderDesc($order, $positionIds);
             }
