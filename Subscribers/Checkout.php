@@ -103,13 +103,13 @@ class Checkout implements SubscriberInterface
         $session = Shopware()->Session();
         $params = $request->getParams();
 
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
         if (!$request->isDispatched() || $response->isException()) {
             return;
         }
 
         if ($request->getActionName() == 'shippingPayment') {
-            $userData = Shopware()->Modules()->Admin()->sGetUserData();
-
             $birthday = explode('-', $this->utils->getUserDoB($userData));
             $paymentData['birthday'] = $birthday[2];
             $paymentData['birthmonth'] = $birthday[1];
@@ -195,9 +195,9 @@ class Checkout implements SubscriberInterface
             $view->extendsTemplate('frontend/checkout/cart_paypal.tpl');
         }
 
-        if ($request->getActionName() == 'confirm') {
+        if ($request->getActionName() == 'confirm' && $paymentName === 'fatchip_computop_easycredit') {
 
-            $view->extendsTemplate('frontend/checkout/confirm.tpl');
+            $view->extendsTemplate('frontend/checkout/easycredit_confirm.tpl');
 
             // add easyCredit Information to view
             if ($session->offsetGet('FatchipComputopEasyCreditInformation')) {
