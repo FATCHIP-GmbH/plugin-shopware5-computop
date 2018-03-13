@@ -20,15 +20,15 @@ class Attributes
     public function createAttributes()
     {
         // extend order model
-        $this->addAttributes('fatchipCT', 's_order_attributes', CTPaymentAttributes::orderAttributes);
-        $this->addAttributes('fatchipCT', 's_order_details_attributes', CTPaymentAttributes::orderDetailsAttributes);
-        $this->addAttributes('fatchipCT', 's_user_attributes', CTPaymentAttributes::userAttributes);
+        $this->addAttributes('fatchipct', 's_order_attributes', CTPaymentAttributes::orderAttributes);
+        $this->addAttributes('fatchipct', 's_order_details_attributes', CTPaymentAttributes::orderDetailsAttributes);
+        $this->addAttributes('fatchipct', 's_user_attributes', CTPaymentAttributes::userAttributes);
         // extend address tables depending on sw version
         if (version_compare(\Shopware::VERSION, '5.2.0', '>=')) {
-            $this->addAttributes('fatchipCT', 's_user_addresses_attributes', CTPaymentAttributes::userAddressAttributes);
+            $this->addAttributes('fatchipct', 's_user_addresses_attributes', CTPaymentAttributes::userAddressAttributes);
         } else {
-            $this->addAttributes('fatchipCT', 's_user_billingaddress_attributes', CTPaymentAttributes::userAddressAttributes);
-            $this->addAttributes('fatchipCT', 's_user_shippingaddress_attributes', CTPaymentAttributes::userAddressAttributes);
+            $this->addAttributes('fatchipct', 's_user_billingaddress_attributes', CTPaymentAttributes::userAddressAttributes);
+            $this->addAttributes('fatchipct', 's_user_shippingaddress_attributes', CTPaymentAttributes::userAddressAttributes);
         }
     }
 
@@ -57,13 +57,12 @@ class Attributes
 
     private function setAttributeVisibilityInBackend($prefix, $table, $attributes)
     {
-        if (version_compare(\Shopware::VERSION, '5.2.0', '>=')) {
+        if (version_compare(\Shopware::VERSION, '5.2', '>=')) {
             foreach ($attributes as $name => $attribute) {
                 try {
                     if (isset($attribute['additionalInfo'])) {
-                        $updateType = $attribute['type'] == 'DOUBLE' ? 'float' : $attribute['type'];
                         $service = $this->plugin->get('shopware_attribute.crud_service');
-                        $service->update($table, $prefix . '_' . $name, $updateType, [
+                        $service->update($table, $prefix . '_' . $name, $attribute['type'], [
                             'label' => $attribute['additionalInfo']['label'],
                             'displayInBackend' => $attribute['additionalInfo']['displayInBackend']
                         ]);
