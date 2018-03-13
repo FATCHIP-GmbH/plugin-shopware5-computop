@@ -119,7 +119,7 @@ class Checkout implements SubscriberInterface
             $paymentData['idealIssuer'] = $session->offsetGet('FatchipComputopIdealIssuer');
             //$paymentData['sofortIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
             //$paymentData['sofortIssuer'] = $session->offsetGet('FatchipComputopSofortIssuer');
-            $paymentData['isCompany'] = isset($userData['billingaddress']['company']);
+            $paymentData['isCompany'] = !empty($userData['billingaddress']['company']);
             $paymentData['lastschriftbank'] = $this->utils->getUserLastschriftBank($userData);
             $paymentData['lastschriftiban'] = $this->utils->getUserLastschriftIban($userData);
             $paymentData['lastschriftkontoinhaber'] = $this->utils->getUserLastschriftKontoinhaber($userData);
