@@ -69,13 +69,14 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
                 $orderDesc = $this->getKlarnaOrderDesc($order, $positionIds);
             }
 
-            $requestParams = $paymentClass->getCaptureParams(
+            $requestParams = $paymentClass->getRefundParams(
                 $order->getAttribute()->getfatchipctPayid(),
                 $amount,
                 $order->getCurrency(),
                 $order->getAttribute()->getfatchipctTransid(),
                 $order->getAttribute()->getfatchipctXid(),
-                $orderDesc
+                $orderDesc,
+                $order->getAttribute()->getfatchipctKlarnainvno()
             );
 
 
@@ -167,6 +168,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             if ($captureResponse->getStatus() == 'OK') {
                 $this->markPositionsAsCaptured($order, $positionIds, $includeShipment);
                 $this->inquireAndupdatePaymentStatusAfterCapture($order, $paymentClass);
+                $this->saveInvNo($captureResponse);
                 $response = array('success' => true);
             } else {
                 $errorMessage = 'Capture (zur Zeit) nicht möglich: ' . $captureResponse->getDescription();
@@ -517,6 +519,20 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             return $orderDesc;
 
 
+        }
+    }
+
+    private function saveInvNo($response)
+    {
+        $transactionId = $response->getTransID();
+        if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $transactionId])) {
+            if ($attribute = $order->getAttribute()) {
+                    if (!empty($response->getInvNo())) {
+                        $attribute->setfatchipctKlarnainvno($response->getInvNo());
+                        Shopware()->Models()->persist($attribute);
+                        Shopware()->Models()->flush();
+                }
+            }
         }
     }
 }

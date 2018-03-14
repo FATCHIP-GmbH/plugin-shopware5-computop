@@ -137,8 +137,10 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
             if (!empty($orderDesc)) {
                 $orderDesc .= ' + ';
             }
+            //careful: $position['amount'] contains the total for the position, so QTY*Price
+            //in controllers/backend/FatchipCTOrder $position->getPrice() returns price of only 1 article
             $orderDesc .= $position['quantity'] . ';' . $position['articleID'] . ';' . $position['articlename'] . ';'
-              . $position['amount'] * 100 . ';' . $position['tax_rate'] . ';0;0';
+              . $position['amount'] * 100 / $position['quantity'] . ';' . $position['tax_rate'] . ';0;0';
         }
         //add shipping if > 0
         if ($basket['sShippingcosts'] != 0) {
@@ -150,5 +152,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
 
         return $orderDesc;
     }
+
+
 
 }
