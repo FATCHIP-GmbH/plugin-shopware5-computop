@@ -204,6 +204,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
                 );
                 $this->saveTransactionResult($response);
                 $this->session->offsetUnSet('FatchipComputopEasyCreditInformation');
+                $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
                 //$this->redirect(['controller' => 'checkout', 'action' => 'finish']);
                 $this->forward('finish', 'checkout', null, ['sAGB' => 1]);
                 break;

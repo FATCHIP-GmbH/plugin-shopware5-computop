@@ -43,12 +43,13 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
         $response = $this->ctSetAndConfirmOrderDetails();
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
-                $this->saveOrder(
+                $orderNumber = $this->saveOrder(
                     $response->getTransID(),
                     $response->getOrderid(),
                     self::PAYMENTSTATUSPAID
                 );
                 $this->saveTransactionResult($response);
+                $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
                 $this->redirect(['controller' => 'FatchipCTAmazonCheckout', 'action' => 'finish']);
                 break;
             default:

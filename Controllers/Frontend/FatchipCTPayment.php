@@ -175,6 +175,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 );
                 $this->saveTransactionResult($response);
                 $this->handleDelayedCapture($orderNumber);
+                $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
                 $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
                 break;
             default:
@@ -203,7 +204,6 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             case CTEnumStatus::OK:
                 $transactionId = $response->getTransID();
                 if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $response->getTransID()])) {
-                    $this->updateRefNrWithComputop($order, $this->paymentClass);
                     $this->inquireAndupdatePaymentStatus($order, $this->paymentClass);
                 } else {
                     throw new \RuntimeException('No order available within Notify');
@@ -318,6 +318,13 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 $this->markOrderDetailsAsFullyCaptured($order);
             }
 
+        }
+    }
+
+
+    protected function updateRefNrWithComputopFromOrderNumber($orderNumber) {
+        if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number' => $orderNumber])) {
+            $this->updateRefNrWithComputop($order, $this->paymentClass);
         }
     }
 

@@ -134,12 +134,13 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
-                $this->saveOrder(
+                $orderNumber = $this->saveOrder(
                     $response->getTransID(),
                     $response->getPayID(),
                     self::PAYMENTSTATUSPAID
                 );
                 $this->saveTransactionResult($response);
+                $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
                 $this->redirect(['controller' => 'FatchipCTPaypalExpressCheckout', 'action' => 'finish']);
                 break;
             default:
