@@ -115,7 +115,6 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
 
                 $url =  $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'finish']);
-
                 $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTURL' => $url));
                 break;
             default:
