@@ -62,7 +62,7 @@
 
 {else}
 
-        <iframe src="{$fatchipCTIframeURL}" style="width:100%; height:850px"></iframe>
+        <iframe src="{$fatchipCTIframeURL}" style="width:100%; height:550px;" frameBorder="0"></iframe>
 
 {/if}
 {/block}
