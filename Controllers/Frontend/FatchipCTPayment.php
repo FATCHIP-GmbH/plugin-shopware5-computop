@@ -304,7 +304,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      * With delayed Captures, no Notify is sent to the shop. But because the capture is guaranteed to happen
      * we mark the order as fully paid
      */
-    private function handleDelayedCapture($orderNumber)
+    protected function handleDelayedCapture($orderNumber)
     {
         $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number' => $orderNumber]);
         if ($order) {
