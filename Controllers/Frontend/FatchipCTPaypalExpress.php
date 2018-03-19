@@ -24,7 +24,6 @@
  * @link      https://www.computop.com
  */
 
-
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 

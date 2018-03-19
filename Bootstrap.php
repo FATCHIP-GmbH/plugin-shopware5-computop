@@ -1,20 +1,27 @@
 <?php
 
 /**
- * The Bootstrap class is the main entry point of any Shopware plugin.
+ * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * Short function reference
- * - install: Called a single time during (re)installation. Here you can trigger install-time actions like
- *   - creating the menu
- *   - creating attributes
- *   - creating database tables
- *   You need to return "true" or array('success' => true, 'invalidateCache' => array())
- *   in order to let the installation be successful
+ * The Computop Shopware Plugin is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  *
- * - update: Triggered when the user updates the plugin. You will get passes the former version of the plugin as param
- *   In order to let the update be successful, return "true"
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * - uninstall: Triggered when the plugin is reinstalled or uninstalled. Clean up your tables here.
+ * PHP version 5.6, 7 , 7.1
+ *
+ * @category  Payment
+ * @package   Computop_Shopware5_Plugin
+ * @author    FATCHIP GmbH <support@fatchip.de>
+ * @copyright 2018 Computop
+ * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link      https://www.computop.com
  */
 
 // needed for CSRF Protection compatibility SW versions < 5.2 lba

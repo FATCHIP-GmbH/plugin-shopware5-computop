@@ -24,7 +24,6 @@
  * @link      https://www.computop.com
  */
 
-
 require_once 'FatchipCTPayment.php';
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTPostFinance
