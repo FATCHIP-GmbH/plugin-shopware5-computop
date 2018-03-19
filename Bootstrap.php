@@ -39,7 +39,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
     /**
-     * registers the custom plugin models and plugin namespaces
+     * registers the custom models and plugin namespaces
      */
     public function afterInit()
     {
@@ -48,6 +48,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     }
 
     /**
+     * plugin install method
      * @return array|bool
      * @throws Exception
      */
@@ -83,6 +84,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
     /**
      * Registers the snippet directory, needed for backend snippets
+     *
      */
     public function registerSnippets()
     {
@@ -93,7 +95,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
     /**
      * Registers the js files in less compiler
-     * use for amazon and paypal express jquery plugins
+     * used by AmazonPay and PaypalExpress and CreditCard jquery plugins
      */
     public function registerJavascript()
     {
@@ -103,6 +105,12 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         );
     }
 
+    /**
+     * Callback method for Event "Theme_Compiler_Collect_Plugin_Javascript"
+     * adds
+     * @param Enlight_Event_EventArgs $args
+     * @return ArrayCollection
+     */
     public function addJsFiles(Enlight_Event_EventArgs $args)
     {
         $jsFiles = [
@@ -124,7 +132,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         );
     }
     /**
-     * Registers the namespaces that are used by the plugin components
+     * Registers namespaces used by the plugin
+     * and its components
      */
     private function registerComponents()
     {
@@ -150,10 +159,10 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     public function onStartDispatch(Enlight_Event_EventArgs $args)
     {
         $this->registerComponents();
-        //$this->registerTemplateDir();
         $this->registerSnippets();
 
-        //TODO: Schauen ob wirklich gebraucht wird.
+        //TODO: check if we should / can use the container everywehre
+        // the effects are currently unknown, beware because of backward compatibility
         $container = Shopware()->Container();
 
         $subscribers = [
@@ -213,7 +222,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     }
 
     /**
-     * Returns the current version number
+     * Returns the current plugin version number
      *
      * @return string
      * @throws Exception
@@ -261,6 +270,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     }
 
     /**
+     * Enable plugin method
      * @return array
      */
     public function enable()
@@ -269,6 +279,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     }
 
     /**
+     * Disable plugin method
      * @return array
      */
     public function disable()
@@ -308,6 +319,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     }
 
     /**
+     * invalidates all caches
      * @param bool $return
      * @return array
      */
