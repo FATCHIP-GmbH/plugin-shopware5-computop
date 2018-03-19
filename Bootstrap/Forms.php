@@ -44,8 +44,9 @@ class Forms
         $this->createAmazonPayConfigForm(CTPaymentConfigForms::formAmazonTextElements, CTPaymentConfigForms::formAmazonSelectElements);
 
         // riskchecks
-        $this->createFormTextElements(CTPaymentConfigForms::formBonitaetElements);
         $this->createFormSelectElements(CTPaymentConfigForms::formBonitaetSelectElements);
+        $this->createFormTextElements(CTPaymentConfigForms::formBonitaetElements);
+
     }
 
     private function createGeneralConfigForm($formGeneralTextElements, $formGeneralSelectElements)
