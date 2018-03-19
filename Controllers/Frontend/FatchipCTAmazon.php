@@ -34,7 +34,7 @@ use Fatchip\CTPayment\CTEnums\CTEnumStatus;
  */
 class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
-    const paymentClass = 'AmazonPay';
+    public $paymentClass = 'AmazonPay';
 
     /**
      * @return void
