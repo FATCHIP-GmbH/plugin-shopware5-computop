@@ -1,20 +1,27 @@
 <?php
 
 /**
- * The Bootstrap class is the main entry point of any Shopware plugin.
+ * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * Short function reference
- * - install: Called a single time during (re)installation. Here you can trigger install-time actions like
- *   - creating the menu
- *   - creating attributes
- *   - creating database tables
- *   You need to return "true" or array('success' => true, 'invalidateCache' => array())
- *   in order to let the installation be successful
+ * The Computop Shopware Plugin is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  *
- * - update: Triggered when the user updates the plugin. You will get passes the former version of the plugin as param
- *   In order to let the update be successful, return "true"
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * - uninstall: Triggered when the plugin is reinstalled or uninstalled. Clean up your tables here.
+ * PHP version 5.6, 7 , 7.1
+ *
+ * @category  Payment
+ * @package   Computop_Shopware5_Plugin
+ * @author    FATCHIP GmbH <support@fatchip.de>
+ * @copyright 2018 Computop
+ * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link      https://www.computop.com
  */
 
 // needed for CSRF Protection compatibility SW versions < 5.2 lba
@@ -32,7 +39,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
     /**
-     * registers the custom plugin models and plugin namespaces
+     * registers the custom models and plugin namespaces
      */
     public function afterInit()
     {
@@ -41,6 +48,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     }
 
     /**
+     * plugin install method
      * @return array|bool
      * @throws Exception
      */
@@ -76,6 +84,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
     /**
      * Registers the snippet directory, needed for backend snippets
+     *
      */
     public function registerSnippets()
     {
@@ -86,7 +95,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
     /**
      * Registers the js files in less compiler
-     * use for amazon and paypal express jquery plugins
+     * used by AmazonPay and PaypalExpress and CreditCard jquery plugins
      */
     public function registerJavascript()
     {
@@ -96,6 +105,12 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         );
     }
 
+    /**
+     * Callback method for Event "Theme_Compiler_Collect_Plugin_Javascript"
+     * adds
+     * @param Enlight_Event_EventArgs $args
+     * @return ArrayCollection
+     */
     public function addJsFiles(Enlight_Event_EventArgs $args)
     {
         $jsFiles = [
@@ -117,7 +132,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         );
     }
     /**
-     * Registers the namespaces that are used by the plugin components
+     * Registers namespaces used by the plugin
+     * and its components
      */
     private function registerComponents()
     {
@@ -143,10 +159,10 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     public function onStartDispatch(Enlight_Event_EventArgs $args)
     {
         $this->registerComponents();
-        //$this->registerTemplateDir();
         $this->registerSnippets();
 
-        //TODO: Schauen ob wirklich gebraucht wird.
+        //TODO: check if we should / can use the container everywehre
+        // the effects are currently unknown, beware because of backward compatibility
         $container = Shopware()->Container();
 
         $subscribers = [
@@ -206,7 +222,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     }
 
     /**
-     * Returns the current version number
+     * Returns the current plugin version number
      *
      * @return string
      * @throws Exception
@@ -254,6 +270,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     }
 
     /**
+     * Enable plugin method
      * @return array
      */
     public function enable()
@@ -262,6 +279,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     }
 
     /**
+     * Disable plugin method
      * @return array
      */
     public function disable()
@@ -301,6 +319,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     }
 
     /**
+     * invalidates all caches
      * @param bool $return
      * @return array
      */

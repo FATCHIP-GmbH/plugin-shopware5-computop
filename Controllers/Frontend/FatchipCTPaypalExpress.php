@@ -24,7 +24,6 @@
  * @link      https://www.computop.com
  */
 
-
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 
@@ -37,7 +36,7 @@ require_once 'FatchipCTPayment.php';
 class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
 
-    const paymentClass = 'PaypalExpress';
+    public $paymentClass = 'PaypalExpress';
 
     public function indexAction()
     {
