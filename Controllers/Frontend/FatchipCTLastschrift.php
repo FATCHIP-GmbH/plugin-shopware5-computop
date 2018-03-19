@@ -93,7 +93,7 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
         $payment->setIBAN($this->utils->getUserLastschriftIban($user));
 
         $requestParams = $payment->getRedirectUrlParams();
-        $response = $this->plugin->callComputopService($requestParams, $payment, 'Lastschrift', $payment->getCTPaymentURL());
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'LASTSCHRIFT', $payment->getCTPaymentURL());
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:

@@ -105,7 +105,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
 
 
-            $refundResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'Refund', $paymentClass->getCTRefundURL());
+            $refundResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'REFUND', $paymentClass->getCTRefundURL());
 
             if ($refundResponse->getStatus() == 'OK') {
                 $this->markPositionsAsRefunded($order, $positionIds, $includeShipment);
@@ -187,7 +187,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
                 $orderDesc
             );
 
-            $captureResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'Capture', $paymentClass->getCTCaptureURL());
+            $captureResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'CAPTURE', $paymentClass->getCTCaptureURL());
 
             if ($captureResponse->getStatus() == 'OK') {
                 $this->markPositionsAsCaptured($order, $positionIds, $includeShipment);
@@ -479,7 +479,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
                 $payID
             );
 
-            $inquireResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'Inquire', $paymentClass->getCTInquireURL());
+            $inquireResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'INQUIRE', $paymentClass->getCTInquireURL());
 
 
             if ($inquireResponse->getStatus() == 'OK') {
@@ -511,7 +511,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
                 $order->getAttribute()->getfatchipctPayid()
             );
 
-            $inquireResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'Inquire', $paymentClass->getCTInquireURL());
+            $inquireResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'INQUIRE', $paymentClass->getCTInquireURL());
 
 
             if ($inquireResponse->getStatus() == 'OK') {

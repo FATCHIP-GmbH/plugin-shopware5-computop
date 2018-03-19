@@ -86,7 +86,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
         $payment->setPhone($this->utils->getUserPhone($userData));
         $payment->setDateOfBirth($this->utils->getUserDoB($userData));
         $requestParams = $payment->getRedirectUrlParams();
-        $response = $this->plugin->callComputopService($requestParams, $payment, 'Klarna', $payment->getCTPaymentURL());
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'KLARNA', $payment->getCTPaymentURL());
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
