@@ -119,7 +119,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
         $userData = $orderVars['sUserData'];
 
         /** @var \Fatchip\CTPayment\CTPaymentMethods\PaypalExpress $payment */
-        $payment = $this->paymentService->getPaymentClass(self::paymentClass, $this->config);
+        $payment = $this->paymentService->getPaymentClass($this->paymentClass, $this->config);
 
         $requestParams =  $payment->getPaypalExpressCompleteParams(
             $session->offsetGet('FatchipCTPaypalExpressPayID'),
