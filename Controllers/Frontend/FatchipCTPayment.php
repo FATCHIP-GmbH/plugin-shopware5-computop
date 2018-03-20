@@ -150,7 +150,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         // remove easycredit session var
         $this->session->offsetUnset('fatchipComputopEasyCreditPayId');
 
-        return $this->forward('shippingPayment', 'checkout', null, $this->hideError($response->getCode()) ? null : array('CTError' => $ctError));
+        return $this->forward('shippingPayment', 'checkout', null, $this->hideError($response->getCode()) ? null : ['CTError' => $ctError]);
     }
 
     /**

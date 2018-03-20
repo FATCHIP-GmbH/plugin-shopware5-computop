@@ -57,6 +57,8 @@
 
     <div id="fatchipCTCreditcardIFrame" hidden
         data-fatchipCTCreditcardIFrameUrl='{$fatchipCTURL}'
+        data-fatchipCTErrorMessage='{$fatchipCTErrorMessage}'
+        data-fatchipCTErrorCode='{$fatchipCTErrorCode}'
     >
     </div>
 
