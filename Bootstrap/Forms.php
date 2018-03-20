@@ -1,4 +1,5 @@
 <?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
@@ -14,10 +15,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
  * @category  Payment
  * @package   Computop_Shopware5_Plugin
+ * @subpackage Bootstrap
  * @author    FATCHIP GmbH <support@fatchip.de>
  * @copyright 2018 Computop
  * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
@@ -28,19 +30,36 @@ namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
 
 use Fatchip\CTPayment\CTPaymentConfigForms;
 
+/**
+ * Class Forms.
+ *
+ * create the shopware backend config form.
+ */
 class Forms
 {
-    /***
-     *  Creates the settings page for this plugin.
+    /**
+     * FatchipCTpayment Plugin Bootstrap Class
+     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
-
     private $plugin;
 
+    /**
+     * Forms constructor.
+     */
     public function __construct()
     {
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
     }
 
+    /**
+     * create the shopware backend config form.
+     *
+     * uses several helper methods to group different element types and sections.
+     *
+     * @see \Shopware\Models\Config\Form
+     *
+     * @return void
+     */
     public function createForm()
     {
         // general settings
@@ -73,24 +92,65 @@ class Forms
 
     }
 
+    /**
+     * create elements for the general section of the config form.
+     *
+     * creates Text and Select Elements.
+     *
+     * @param array $formGeneralTextElements
+     * @param array $formGeneralSelectElements
+     *
+     * @return void
+     */
     private function createGeneralConfigForm($formGeneralTextElements, $formGeneralSelectElements)
     {
         $this->createFormTextElements($formGeneralTextElements);
         $this->createFormSelectElements($formGeneralSelectElements);
     }
 
+    /**
+     * create elements for the creditcard section of the config form.
+     *
+     * creates Text and Select Elements.
+     *
+     * @param array $formCreditCardSelectElements
+     * @param array $formCreditCardNumberElements
+     *
+     * @return void
+     */
     private function createCreditCardConfigForm($formCreditCardSelectElements, $formCreditCardNumberElements)
     {
         $this->createFormSelectElements($formCreditCardSelectElements);
         $this->createFormTextElements($formCreditCardNumberElements);
     }
 
+    /**
+     * create elements for the lastschrift section of the config form.
+     *
+     * creates Text and Select Elements.
+     *
+     * @param array $formLastschriftSelectElements
+     * @param array $formLastschriftNumberElements
+     *
+     * @return void
+     */
     private function createLastschriftConfigForm($formLastschriftSelectElements, $formLastschriftNumberElements)
     {
         $this->createFormSelectElements($formLastschriftSelectElements);
         $this->createFormTextElements($formLastschriftNumberElements);
     }
 
+    /**
+     * create elements for the paydirekt section of the config form.
+     *
+     * creates Text and Select Elements.
+     *
+     * @param array $formPayDirektTextElements
+     * @param array $formPayDirektSelectElements
+     * @param array $formPayDirektNumberElements
+     *
+     * @return void
+     */
     private function createPayDirektConfigForm($formPayDirektTextElements, $formPayDirektSelectElements, $formPayDirektNumberElements)
     {
         $this->createFormTextElements($formPayDirektTextElements);
@@ -98,6 +158,16 @@ class Forms
         $this->createFormTextElements($formPayDirektNumberElements);
     }
 
+    /**
+     * create elements for the amazonpay section of the config form.
+     *
+     * creates Text and Select Elements.
+     *
+     * @param array $formAmazonTextElements
+     * @param array $formAmazonSelectElements
+     *
+     * @return void
+     */
     private function createAmazonPayConfigForm($formAmazonTextElements, $formAmazonSelectElements)
     {
         $this->createFormTextElements($formAmazonTextElements);
@@ -105,7 +175,25 @@ class Forms
     }
 
     /**
-     * @param array $elements
+     * actually creates the elements the config form.
+     *
+     * creates Text and Number Elements.
+     *
+     * @see \Shopware\Models\Config\Form::setElement()
+     *
+     * @param array $elements {
+     *
+     * @type string type   attribute type. Default ''. Accepts 'VARCHAR(integer)', 'float', 'DATE'.
+     * @type array additionalInfo {
+     *
+     *      @type string label              backend label for the attribute. Default ''. Accepts String.
+     *      @type string helpText           backend helptext for the attribute. Default ''. Accepts String.
+     *      @type string displayInBackend   backend visibility. Default true. Accepts true|false.
+     *
+     *      }
+     * }
+     *
+     * @return void
      */
     private function createFormTextElements($elements)
     {
@@ -120,7 +208,25 @@ class Forms
     }
 
     /**
-     * @param array $elements
+     * actually creates the elements the config form.
+     *
+     * creates Select Elements.
+     *
+     * @see \Shopware\Models\Config\Form::setElement()
+     *
+     * @param array $elements {
+     *
+     * @type string type   attribute type. Default ''. Accepts 'VARCHAR(integer)', 'float', 'DATE'.
+     * @type array additionalInfo {
+     *
+     *      @type string label              backend label for the attribute. Default ''. Accepts String.
+     *      @type string helpText           backend helptext for the attribute. Default ''. Accepts String.
+     *      @type string displayInBackend   backend visibility. Default true. Accepts true|false.
+     *
+     *      }
+     * }
+     *
+     * @return void
      */
     private function createFormSelectElements($elements)
     {

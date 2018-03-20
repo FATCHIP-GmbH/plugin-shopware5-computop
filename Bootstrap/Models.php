@@ -1,4 +1,5 @@
 <?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
@@ -14,10 +15,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
  * @category  Payment
  * @package   Computop_Shopware5_Plugin
+ * @subpackage Bootstrap
  * @author    FATCHIP GmbH <support@fatchip.de>
  * @copyright 2018 Computop
  * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
@@ -27,22 +29,37 @@
 namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
 
 use Doctrine\ORM\Tools\SchemaTool;
+use Shopware\Components\Model\ModelManager;
 
+/**
+ * Class Models.
+ *
+ * creates our custom db models.
+ */
 class Models
 {
-    /***
-     *  Creates the settings page for this plugin.
-     */
 
+    /**
+     * FatchipCTpayment Plugin Bootstrap Class
+     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     */
     private $plugin;
 
+    /**
+     * Model constructor.
+     */
     public function __construct()
     {
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
     }
 
     /**
-     * create tables
+     * Create db tables / models
+     *
+     * @see SchemaTool::createSchema()
+     * @see ModelManager::getClassMetadata()
+     *
+     * @return void
      */
     public function createModels()
     {

@@ -1,4 +1,5 @@
 <?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
@@ -14,10 +15,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
  * @category  Payment
  * @package   Computop_Shopware5_Plugin
+ * @subpackage Bootstrap
  * @author    FATCHIP GmbH <support@fatchip.de>
  * @copyright 2018 Computop
  * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
@@ -26,18 +28,26 @@
 
 namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
 
+/**
+ * Class Menu.
+ *
+ * creates the computop menu entry in the shopware backend.
+ */
 class Menu
 {
-    /***
-     *  Creates the settings page for this plugin.
+    /**
+     * FatchipCTpayment Plugin Bootstrap Class
+     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
-
     private $plugin;
 
     const labelParentFind = ['label' => 'Einstellungen'];
     const labelComputopMenu = 'Computop';
     const labelComputopApiLog = 'Apilog';
 
+    /**
+     * Menu constructor.
+     */
     public function __construct()
     {
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
@@ -45,6 +55,10 @@ class Menu
 
     /**
      * Create menu items to access configuration, logs and support page
+     *
+     * @see \Shopware_Components_Plugin_Bootstrap::createMenuItem()
+     *
+     * @return void
      */
     public function createMenu()
     {
