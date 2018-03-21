@@ -64,7 +64,8 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
 
         $usesInvoice = ($userData['additional']['payment']['name'] === 'fatchip_computop_klarna_invoice');
         $isFirm = !empty($userData['billingaddress']['company']);
-        $invoice = $usesInvoice ? '-1' : '1334';
+        //Klarna acttion = -1 for Klarna Invoice, or comes from the Pluginsettings for Klarna Installment
+        $klarnaAction = $usesInvoice ? '-1' : $this->config['klarnaaction'];
 
         /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna $payment */
         $payment = $this->paymentService->getIframePaymentClass(
@@ -78,7 +79,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
             $this->getUserData(),
             null,
             $isFirm,
-            $invoice
+            $klarnaAction
         );
 
         $payment->setSocialSecurityNumber($this->utils->getUserSSN($userData));

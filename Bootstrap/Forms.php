@@ -69,15 +69,18 @@ class Forms
         $this->createCreditCardConfigForm(CTPaymentConfigForms::formCreditCardSelectElements, CTPaymentConfigForms::formCreditCardNumberElements);
 
 
+        $this->createFormSelectElements(CTPaymentConfigForms::formIdealSelectElements);
+
         // ideal and sofort
         $this->plugin->Form()->setElement('button', 'fatchip_computop_ideal_button', [
             'label' => '<strong>iDeal Banken aktualisieren <strong>',
             'handler' => "function(btn) {" . file_get_contents(__DIR__ . '/../Views/common/backend/ideal/ideal_button_handler.js') . "}"
         ]);
 
-        $this->createLastschriftConfigForm(CTPaymentConfigForms::formLastschriftSelectElements, CTPaymentConfigForms::formLastschriftNumberElements);
 
-        $this->createFormSelectElements(CTPaymentConfigForms::formIdealSelectElements);
+        $this->createKlarnaConfigForm(CTPaymentConfigForms::formKlarnaTextElements);
+
+        $this->createLastschriftConfigForm(CTPaymentConfigForms::formLastschriftSelectElements, CTPaymentConfigForms::formLastschriftNumberElements);
 
         $this->createPayDirektConfigForm(CTPaymentConfigForms::formPayDirektTextElements, CTPaymentConfigForms::formPayDirektSelectElements, CTPaymentConfigForms::formPayDirektNumberElements);
 
@@ -123,6 +126,20 @@ class Forms
     {
         $this->createFormSelectElements($formCreditCardSelectElements);
         $this->createFormTextElements($formCreditCardNumberElements);
+    }
+
+    /**
+     * create elements for the Klarna section of the config form.
+     *
+     * creates Text and Select Elements.
+     *
+     * @param array $formKlarnaTextElements
+     *
+     * @return void
+     */
+    private function createKlarnaConfigForm($formKlarnaTextElements)
+    {
+        $this->createFormTextElements($formKlarnaTextElements);
     }
 
     /**
