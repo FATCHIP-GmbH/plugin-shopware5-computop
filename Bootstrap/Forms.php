@@ -203,6 +203,7 @@ class Forms
                 'label' => $element['label'],
                 'required' => $element['required'],
                 'description' => $element['description'],
+                'scope' => \Shopware\Models\Config\Element::SCOPE_SHOP,
             ));
         }
     }
@@ -238,6 +239,7 @@ class Forms
                 'editable' => $element['editable'],
                 'store' => $element['store'],
                 'description' => $element['description'],
+                'scope' => \Shopware\Models\Config\Element::SCOPE_SHOP,
             ));
         }
     }
