@@ -17,18 +17,19 @@
  *
  * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
+ * @category   Payment
+ * @package    FatchipCTPayment
  * @subpackage Bootstrap
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
 
 use Fatchip\CTPayment\CTPaymentConfigForms;
+use Shopware\Models\Config\Form;
 
 /**
  * Class Forms.
@@ -56,7 +57,7 @@ class Forms
      *
      * uses several helper methods to group different element types and sections.
      *
-     * @see \Shopware\Models\Config\Form
+     * @see Form::setElement()
      *
      * @return void
      */
@@ -179,7 +180,7 @@ class Forms
      *
      * creates Text and Number Elements.
      *
-     * @see \Shopware\Models\Config\Form::setElement()
+     * @see Form::setElement()
      *
      * @param array $elements {
      *
@@ -212,7 +213,7 @@ class Forms
      *
      * creates Select Elements.
      *
-     * @see \Shopware\Models\Config\Form::setElement()
+     * @see Form::setElement()
      *
      * @param array $elements {
      *

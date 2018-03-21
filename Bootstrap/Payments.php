@@ -17,13 +17,13 @@
  *
  * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
+ * @category   Payment
+ * @package    FatchipCTPayment
  * @subpackage Bootstrap
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
@@ -31,22 +31,36 @@ namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
 use Fatchip\CTPayment\CTPaymentService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Shopware\Models\Country\Country;
+use Shopware\Models\Payment\Payment;
 
+/**
+ * Class Payments.
+ *
+ * creates payment methods.
+ */
 class Payments
 {
-    /***
-     *  Creates the settings page for this plugin.
+    /**
+     * FatchipCTpayment Plugin Bootstrap Class
+     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
-
     private $plugin;
 
+    /**
+     * Payments constructor.
+     */
     public function __construct()
     {
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
     }
 
     /**
-     * create payment methods
+     * Create payment methods.
+     *
+     * @see CTPaymentService::getPaymentMethods()
+     * @see \Shopware_Components_Plugin_Bootstrap::createPayment()
+     *
+     * @return void
      */
     public function createPayments()
     {
@@ -76,6 +90,17 @@ class Payments
         }
     }
 
+    /**
+     * Restrict payment method to countries.
+     *
+     *
+     * @see \Shopware\Models\Payment\Payment::setCountries()
+     *
+     * @param Payment $paymentObject        payment method to restrict
+     * @param ArrayCollection $countries    countries to restrict
+     *
+     * @return void
+     */
     private function restrictPaymentShippingCountries($paymentObject, $countries)
     {
         $countryCollection = new ArrayCollection();
@@ -88,6 +113,4 @@ class Payments
         }
         $paymentObject->setCountries($countryCollection);
     }
-
-
 }
