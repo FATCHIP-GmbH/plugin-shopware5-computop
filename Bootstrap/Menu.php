@@ -17,13 +17,13 @@
  *
  * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
+ * @category   Payment
+ * @package    FatchipCTPayment
  * @subpackage Bootstrap
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
@@ -56,7 +56,7 @@ class Menu
     /**
      * Create menu items to access configuration, logs and support page
      *
-     * @see \Shopware_Components_Plugin_Bootstrap::createMenuItem()
+     * @see Shopware_Components_Plugin_Bootstrap::createMenuItem()
      *
      * @return void
      */
