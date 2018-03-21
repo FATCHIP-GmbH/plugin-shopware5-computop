@@ -67,6 +67,12 @@ class RiskRules
         $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
           'BILLINGLANDIS', 'DK', 'CURRENCIESISOISNOT', 'DKK');
 
+        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
+          'BILLINGLANDIS', 'DE', 'CURRENCIESISOISNOT', 'EUR');
+
+        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
+          'BILLINGLANDIS', 'NL', 'CURRENCIESISOISNOT', 'EUR');
+
         $this->createComputopRiskRule('fatchip_computop_klarna_installment',
           'BILLINGLANDIS', 'SE', 'CURRENCIESISOISNOT', 'SEK');
 
@@ -75,6 +81,12 @@ class RiskRules
 
         $this->createComputopRiskRule('fatchip_computop_klarna_installment',
           'BILLINGLANDIS', 'DK', 'CURRENCIESISOISNOT', 'DKK');
+
+        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
+          'BILLINGLANDIS', 'DE', 'CURRENCIESISOISNOT', 'EUR');
+
+        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
+          'BILLINGLANDIS', 'NL', 'CURRENCIESISOISNOT', 'EUR');
 
     }
 
@@ -108,7 +120,7 @@ class RiskRules
 
     function getNumberOfRiskrules($paymentName) {
         if ($paymentName == 'fatchip_computop_klarna_installment' || $paymentName == 'fatchip_computop_klarna_invoice') {
-            return 3;
+            return 5;
         }
 
         return 1;
