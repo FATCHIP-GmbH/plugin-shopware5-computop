@@ -7,7 +7,7 @@
             </p>
         {/block}
 
-        {block name="frontend_checkout_payment_fatchip_computop_lastschrift_bank_input"}
+        {block name="frontend_checkout_payment_fatchip_computop_creditcard_cardnumber_input"}
             <input name="FatchipComputopPaymentData[fatchip_computop_creditcard_cardnumber]" type="text"
                    id="fatchip_computop_creditcard_cardnumber"
                    class="payment--field is--required{if $error_flags.fatchip_computop__creditcard_cardnumber} has--error{/if}"
@@ -51,7 +51,7 @@
                         {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
                 >
                     <option disabled="disabled" value="">----</option>
-                    {section name="expirationdateyear" start=$thisyear loop=15 step=1}
+                    {section name="expirationdateyear" start=$thisyear loop=$thisyear + 15 step=1}
                         {$isSelected = $smarty.section.expirationdateyear.index == $FatchipCTPaymentData.expirationdateyear}
                         <option value="{$smarty.section.expirationdateyear.index}" {if $isSelected}selected{/if}>
                             {$smarty.section.expirationdateyear.index}
@@ -64,5 +64,31 @@
             end_year='+1' display_days=false}
         {/block}
         </div>
+
+        <div>
+        {block name="frontend_checkout_payment_fatchip_computop_creditcard_cvc_label"}
+            <p class="none">
+                <label for="fatchip_computop_creditcard_cvc">{s name='CreditcardCvc'}CVC Code{/s}</label>
+            </p>
+        {/block}
+
+        {block name="frontend_checkout_payment_fatchip_computop_creditcard_cvc_input"}
+            <input name="FatchipComputopPaymentData[fatchip_computop_creditcard_cvc]" type="text"
+                   id="fatchip_computop_creditcard_cvc"
+                   class="payment--field is--required{if $error_flags.fatchip_computop__creditcard_cvc} has--error{/if}"
+                   placeholder="{s name='creditcardCvc'}CVC Code{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
+                   {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
+                   value="{$FatchipCTPaymentData.creditcardcvc}"
+                    />
+        {/block}
+        </div>
+
+        <div id="fatchipCTCreditcardPaynow" hidden
+             data-fatchipCTCreditcardnumber=$FatchipCTPaymentData.creditcardcardnumber
+             data-fatchipCTCreditcardcvc=$FatchipCTPaymentData.creditcardcvc
+             data-fatchipCTAmazonGODUrl='{url controller="FatchipCTAjax" action="ctGetOrderDetails" forceSecure}'
+             data-fatchipCTAmazonShippingCheckUrl='{url controller="FatchipCTAjax" action="ctIsShippingCountrySupported" forceSecure}'
+             data-fatchipCTAmazonRegisterUrl='{url controller="FatchipCTAmazonRegister" action="saveRegister" forceSecure}?sTarget=FatchipCTAmazonCheckout&sTargetAction=shippingPayment'
+                ></div>
 
 </div>
