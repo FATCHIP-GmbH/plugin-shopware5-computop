@@ -240,7 +240,7 @@ class Checkout implements SubscriberInterface
     {
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_annualsalary'])) {
             $this->utils->updateUserAnnualSalary($userId,
-                $params['FatchipComputopPaymentData'][$paymentName . '__annualsalary']
+                $params['FatchipComputopPaymentData'][$paymentName . '_annualsalary']
             );
         }
     }
