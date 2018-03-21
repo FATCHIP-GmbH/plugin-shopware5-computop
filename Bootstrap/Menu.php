@@ -36,7 +36,7 @@ class Menu
 
     const labelParentFind = ['label' => 'Einstellungen'];
     const labelComputopMenu = 'Computop';
-    const labelComputopApiLog = 'Apilog';
+    const labelComputopApiLog = 'API Protokoll';
 
     public function __construct()
     {
