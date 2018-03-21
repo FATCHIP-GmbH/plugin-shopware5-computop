@@ -40,6 +40,8 @@ use Shopware\Plugins\FatchipCTPayment\Util;
 class FrontendRiskManagement implements SubscriberInterface
 {
 
+    const allowedCountries = ['DE', 'AT', 'CH', 'NL'];
+
     /**
      * di container
      *
@@ -205,7 +207,6 @@ class FrontendRiskManagement implements SubscriberInterface
                 return;
             }
 
-
             //$value contains the value that we want to compare with, as set in the SW Riskmanagment Backend Rule
             $value = $arguments->get('value');
             $basket = $arguments->get('basket');
@@ -297,6 +298,15 @@ class FrontendRiskManagement implements SubscriberInterface
         $crifStatus = $this->getCrifStatusFromAddressArray($addressArray);
         $crifDate = $this->getCrifDateFromAddressArray($addressArray);
         $crifResult = $this->getCrifResultFromAddressArray($addressArray);
+
+        // only check in allowed countries self::allowedCountries
+        $util = new Util();
+        $countryIso = $util->getCTCountryIso($addressArray['countryId']);
+        $allowedCountry = in_array($countryIso, self::allowedCountries) ? true : false;
+        if (! $allowedCountry){
+            return false;
+        }
+
         //if crif is not responding (FAILED), or INVALID (0) we try again after one hour to prevent making hundreds of calls
         //In Adressarray there are underscores in attribute nmaes
         if ($crifStatus == 'FAILED' || $crifStatus == '0') {
