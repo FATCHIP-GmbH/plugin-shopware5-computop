@@ -89,8 +89,9 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $requestParams = $this->Request()->getParams();
         $this->view->assign('fatchipCTIframeURL', $requestParams['fatchipCTRedirectURL']);
         $this->view->assign('fatchipCTURL', $requestParams['fatchipCTURL']);
-
-
+        // assgin error messages to template
+        $this->view->assign('fatchipCTErrorMessage', $requestParams['CTError']['CTErrorMessage']);
+        $this->view->assign('fatchipCTErrorCode', $requestParams['CTError']['CTErrorCode']);
     }
 
     public function successAction()
@@ -129,8 +130,17 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
      */
     public function failureAction()
     {
+        $requestParams = $this->Request()->getParams();
+        $ctError = [];
+
+        $response = $this->paymentService->getDecryptedResponse($requestParams);
+
+        $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
+
+        $ctError['CTErrorMessage'] = self::ERRORMSG . $response->getDescription();
+        $ctError['CTErrorCode'] = $response->getCode();
         $url =  $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'shippingPayment']);
-        $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTURL' => $url));
+        $this->forward('iframe', 'FatchipCTCreditCard', null, ['fatchipCTURL' => $url, 'CTError' => $ctError]);
     }
 
 
