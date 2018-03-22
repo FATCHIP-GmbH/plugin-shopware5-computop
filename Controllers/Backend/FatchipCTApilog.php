@@ -1,4 +1,5 @@
 <?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
@@ -14,38 +15,48 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Backend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
+/**
+ * Class Shopware_Controllers_Backend_FatchipCTApilog
+ *
+ *  gets api log entries from the database and assigns them to the view.
+ */
 class Shopware_Controllers_Backend_FatchipCTApilog extends Shopware_Controllers_Backend_ExtJs
 {
 
-  /**
-   *  get logs action, loads log entries with paging
-   */
+    /**
+     * reads api log data for usage in apilog list view.
+     *
+     * assigns found data to view
+     *
+     * @return void
+     */
     public function getApilogsAction()
     {
         $start = $this->Request()->get('start');
         $limit = $this->Request()->get('limit');
 
-      //Get the value itself
+        //Get search value itself
         if ($this->Request()->get('filter')) {
-            $filter      = $this->Request()->get('filter');
-            $filter      = $filter[count($filter) - 1];
+            $filter = $this->Request()->get('filter');
+            $filter = $filter[count($filter) - 1];
             $filterValue = $filter['value'];
         }
 
         $builder = $this->getLogQuery();
 
-      //order data
-        $order = (array) $this->Request()->getParam('sort', array());
+        //order data
+        $order = (array)$this->Request()->getParam('sort', array());
         if ($order) {
             foreach ($order as $ord) {
                 $builder->addOrderBy('log.' . $ord['property'], $ord['direction']);
@@ -66,12 +77,17 @@ class Shopware_Controllers_Backend_FatchipCTApilog extends Shopware_Controllers_
 
         $total = Shopware()->Models()->getQueryCount($builder->getQuery());
 
-        $this->View()->assign(array('success' => true, 'data'    => $result, 'total'   => $total));
+        $this->View()->assign(array('success' => true, 'data' => $result, 'total' => $total));
     }
 
-  /**
-   * grid data action, returns api call details
-   */
+    /**
+     * sets request response details for use in backend detail view.
+     *
+     * assigns details data to view
+     *
+     *
+     * @return void
+     */
     public function getGridDataAction()
     {
         $type = $this->Request()->get('type');
@@ -84,18 +100,18 @@ class Shopware_Controllers_Backend_FatchipCTApilog extends Shopware_Controllers_
 
         $result = $builder->getQuery()->getArrayResult();
 
-        $result = $this->addArrayRequestResponse($result);
+        $resultArray = $this->addArrayRequestResponse($result);
 
         $total = Shopware()->Models()->getQueryCount($builder->getQuery());
-        $this->View()->assign(array('success' => true, 'data'    => $result[0][$type . 'Array'], 'total'   => $total));
+        $this->View()->assign(array('success' => true, 'data' => $resultArray[0][$type . 'Array'], 'total' => $total));
     }
 
-  /**
-   * helper method, extracts response/request data
-   *
-   * @param string $result
-   * @return array
-   */
+    /**
+     * helper method, extracts response/request data
+     *
+     * @param string $result
+     * @return array|string
+     */
     protected function addArrayRequestResponse($result)
     {
         if (!empty($result)) {
@@ -106,35 +122,37 @@ class Shopware_Controllers_Backend_FatchipCTApilog extends Shopware_Controllers_
                 $dataRequest = json_decode($entry['requestDetails']);
 
                 foreach ($dataRequest as $reqKey => $value) {
-                    $request[] = ['name'  => $reqKey, 'value' => $value];
+                    $request[] = ['name' => $reqKey, 'value' => $value];
                 }
 
                 $dataResponse = json_decode($entry['responseDetails']);
                 foreach ($dataResponse as $respKey => $value) {
-                    $response[] = ['name'  => $respKey, 'value' => $value];
+                    $response[] = ['name' => $respKey, 'value' => $value];
                 }
 
-                $result[$key]['requestArray']  = $request;
+                $result[$key]['requestArray'] = $request;
                 $result[$key]['responseArray'] = $response;
             }
         }
         return $result;
     }
 
-  /**
-   * controller action, returns log data
-   */
+    /**
+     * controller action, returns log data
+     *
+     * @return void
+     */
     public function controllerAction()
     {
         $start = $this->Request()->get('start');
         $limit = $this->Request()->get('limit');
 
-      //order data
-        $order = (array) $this->Request()->getParam('sort', array());
-      //Get the value itself
+        //order data
+        $order = (array)$this->Request()->getParam('sort', array());
+        //Get the value itself
         if ($this->Request()->get('filter')) {
-            $filter      = $this->Request()->get('filter');
-            $filter      = $filter[count($filter) - 1];
+            $filter = $this->Request()->get('filter');
+            $filter = $filter[count($filter) - 1];
             $filterValue = $filter['value'];
         }
 
@@ -148,15 +166,17 @@ class Shopware_Controllers_Backend_FatchipCTApilog extends Shopware_Controllers_
         $builder->setFirstResult($start)->setMaxResults($limit);
 
         $result = $builder->getQuery()->getArrayResult();
-        $total  = Shopware()->Models()->getQueryCount($builder->getQuery());
+        $total = Shopware()->Models()->getQueryCount($builder->getQuery());
 
 
-        $this->View()->assign(array('success' => true, 'data'    => $result, 'total'   => $total));
+        $this->View()->assign(array('success' => true, 'data' => $result, 'total' => $total));
     }
 
-  /**
-   * assigns search result data to view object
-   */
+    /**
+     * assigns search result data to view object
+     *
+     * return void
+     */
     public function getSearchResultAction()
     {
         $filters = $this->Request()->get('filter');
@@ -185,11 +205,16 @@ class Shopware_Controllers_Backend_FatchipCTApilog extends Shopware_Controllers_
 
         $builder->setMaxResults(20);
         $result = $builder->getQuery()->getArrayResult();
-        $total  = Shopware()->Models()->getQueryCount($builder->getQuery());
+        $total = Shopware()->Models()->getQueryCount($builder->getQuery());
 
-        $this->View()->assign(array('success' => true, 'data'    => $result, 'total'   => $total));
+        $this->View()->assign(array('success' => true, 'data' => $result, 'total' => $total));
     }
 
+    /**
+     * returns sql base query
+     *
+     * @return \Doctrine\ORM\QueryBuilder
+     */
     public function getLogQuery()
     {
         $builder = Shopware()->Models()->createQueryBuilder();

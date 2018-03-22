@@ -1,4 +1,5 @@
 <?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
@@ -14,36 +15,44 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Backend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 use Fatchip\CTPayment\CTPaymentService;
 use Fatchip\CTPayment\CTIdealIssuerService;
 
-
+/**
+ * Shopware_Controllers_Backend_FatchipCTIdeal
+ *
+ *  gets/updates ideal issuer list.
+ */
 class Shopware_Controllers_Backend_FatchipCTIdeal extends Shopware_Controllers_Backend_ExtJs
 {
     /**
-     * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     * FatchipCTpayment Plugin Bootstrap Class
+     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
     private $plugin;
 
+    /**
+     * FatchipCTPayment Configuration
+     * @var array
+     */
     private $config;
 
     /**
+     * Payment Service
      * @var CTPaymentService
      */
     private $paymentService;
-
-    /** @var Util $utils * */
-    protected $utils;
 
     /**
      * {@inheritdoc}
@@ -53,10 +62,16 @@ class Shopware_Controllers_Backend_FatchipCTIdeal extends Shopware_Controllers_B
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $this->config = $this->plugin->Config()->toArray();
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
-        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
         parent::init();
     }
 
+    /**
+     * updates ideal bank data from computop.
+     *
+     * assigns error and count of updated items to view
+     *
+     * @return void
+     */
     public function getIdealIssuerListAction()
     {
         $service = new CTIdealIssuerService($this->config);
@@ -88,11 +103,13 @@ class Shopware_Controllers_Backend_FatchipCTIdeal extends Shopware_Controllers_B
         }
     }
 
+    /**
+     * prevents CSRF Token errors
+     * @return array
+     */
     public function getWhitelistedCSRFActions()
     {
-        $csrfActions = array(
-            'getIdealIssuerList'
-        );
+        $csrfActions = ['getIdealIssuerList'];
 
         return $csrfActions;
     }
