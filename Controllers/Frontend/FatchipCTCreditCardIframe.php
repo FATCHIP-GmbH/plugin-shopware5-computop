@@ -25,12 +25,11 @@
  */
 
 use Shopware\Plugins\FatchipCTPayment\Util;
-use Shopware\Components\CSRFWhitelistAware;
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTAmazonRegister
+ * Class Shopware_Controllers_Frontend_FatchipCTCreditCardIframe
  */
-class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Controllers_Frontend_Index implements CSRFWhitelistAware
+class Shopware_Controllers_Frontend_FatchipCTCreditCardIframe extends Shopware_Controllers_Frontend_Index
 {
 
     /** @var \Fatchip\CTPayment\CTPaymentService $service */
@@ -46,32 +45,12 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
     /** @var Util $utils * */
     protected $utils;
 
-    /**
-     * init payment controller
-     */
-    public function init()
-    {
-        if (method_exists('Shopware_Controllers_Frontend_Index', 'init')) {
-            parent::init();
-        }
-    }
-
 
     public function indexAction()
     {
-        $session = Shopware()->Session();
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
         $this->view->loadTemplate('frontend/fatchipCTCreditcardIframe/index.tpl');
 
-    }
-
-
-    public function getWhitelistedCSRFActions()
-    {
-        $returnArray = array(
-            'saveRegister',
-        );
-        return $returnArray;
     }
 }
 

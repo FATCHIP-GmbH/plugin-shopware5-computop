@@ -36,7 +36,6 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
 
     public $paymentClass = 'CreditCard';
 
-
     public function gatewayAction()
     {
         $orderVars = $this->session->sOrderVariables;

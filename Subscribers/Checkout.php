@@ -147,7 +147,6 @@ class Checkout implements SubscriberInterface
                 if ($payment['name'] === 'fatchip_computop_paypal_express') {
                     $paypalExpressIndex = $index;
                 }
-                //Klarna is not available for Companies in DE, AT NL
                 if ($payment['name'] === 'fatchip_computop_klarna_invoice') {
                     $klarnaInvoiceIndex = $index;
                 }
