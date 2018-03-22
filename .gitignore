@@ -1,1 +1,4 @@
+# phpstorm
 .idea/*
+#phpdocumentor
+output/
