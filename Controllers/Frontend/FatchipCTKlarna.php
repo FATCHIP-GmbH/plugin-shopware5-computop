@@ -38,54 +38,22 @@ require_once 'FatchipCTPayment.php';
 class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controllers_Frontend_FatchipCTPayment
 {
 
+    /**
+     * {@inheritdoc}
+     */
     public $paymentClass = 'Klarna';
 
     /**
-     * @inheritdoc
+     * gatewayAction is overridden because there is no redirect but a server to server call is made
+     * On success create the order and forward to checkout/finish
+     * On failure forward to checkout/payment and set the error message
+     *
      */
     public function gatewayAction()
     {
-        $orderVars = $this->session->sOrderVariables;
-        $userData = $orderVars['sUserData'];
-
-        $test = $this->getUser();
-
-        // ToDo refactor ctOrder creation
-        $ctOrder = new CTOrder();
-        //important: multiply amount by 100
-        $ctOrder->setAmount($this->getAmount() * 100);
-        $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
-        $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
-        $ctOrder->setEmail($userData['additional']['user']['email']);
-        $ctOrder->setCustomerID($userData['additional']['user']['id']);
-        // Mandatory for paypalStandard
-        $ctOrder->setOrderDesc($this->getOrderDesc());
-
-        $usesInvoice = ($userData['additional']['payment']['name'] === 'fatchip_computop_klarna_invoice');
-        $isFirm = !empty($userData['billingaddress']['company']);
-        //Klarna acttion = -1 for Klarna Invoice, or comes from the Pluginsettings for Klarna Installment
-        $klarnaAction = $usesInvoice ? '-1' : $this->config['klarnaaction'];
-
         /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna $payment */
-        $payment = $this->paymentService->getIframePaymentClass(
-            $this->paymentClass,
-            $this->config,
-            $ctOrder,
-            null,
-            null,
-            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
-            $this->getOrderDesc(),
-            $this->getUserData(),
-            null,
-            $isFirm,
-            $klarnaAction
-        );
-
-        $payment->setSocialSecurityNumber($this->utils->getUserSSN($userData));
-        $payment->setAnnualSalary($this->utils->getUserAnnualSalary($userData));
-        $payment->setPhone($this->utils->getUserPhone($userData));
-        $payment->setDateOfBirth($this->utils->getUserDoB($userData));
+        // getPaymentClassForGatewayAction is overridden
+        $payment = $this->getPaymentClassForGatewayAction();
         $requestParams = $payment->getRedirectUrlParams();
         $response = $this->plugin->callComputopService($requestParams, $payment, 'KLARNA', $payment->getCTPaymentURL());
 
@@ -111,6 +79,49 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
                 break;
         }
     }
+
+    /**
+     * getPaymentClassForGatewayAction is overridden cause call to getIframePaymentClass has no URLSuccess, URLFailure
+     * and params isFirm and $klarnaAction
+     *
+     * Furthermore SSN, AnnualSalary, Phone and DOB need to be set
+     *
+     * @return \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna
+     */
+    protected function getPaymentClassForGatewayAction() {
+        $orderVars = $this->session->sOrderVariables;
+        $userData = $orderVars['sUserData'];
+
+        $ctOrder = $this->createCTOrder();
+
+        $usesInvoice = ($userData['additional']['payment']['name'] === 'fatchip_computop_klarna_invoice');
+        $isFirm = !empty($userData['billingaddress']['company']);
+        //Klarna acttion = -1 for Klarna Invoice, or comes from the Pluginsettings for Klarna Installment
+        $klarnaAction = $usesInvoice ? '-1' : $this->config['klarnaaction'];
+
+        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna $payment */
+        $payment = $this->paymentService->getIframePaymentClass(
+          $this->paymentClass,
+          $this->config,
+          $ctOrder,
+          null,
+          null,
+          $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
+          $this->getOrderDesc(),
+          $this->getUserDataParam(),
+          null,
+          $isFirm,
+          $klarnaAction
+        );
+
+        $payment->setSocialSecurityNumber($this->utils->getUserSSN($userData));
+        $payment->setAnnualSalary($this->utils->getUserAnnualSalary($userData));
+        $payment->setPhone($this->utils->getUserPhone($userData));
+        $payment->setDateOfBirth($this->utils->getUserDoB($userData));
+
+        return $payment;
+    }
+
 
     /**
      * Beschreibung der gebuchten Artikel:

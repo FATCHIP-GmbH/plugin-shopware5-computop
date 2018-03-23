@@ -36,6 +36,9 @@ require_once 'FatchipCTPayment.php';
 class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
 
+    /**
+     * {@inheritdoc}
+     */
     public $paymentClass = 'PaypalExpress';
 
     public function indexAction()
@@ -68,7 +71,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
             $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
             'Test',
-            $this->getUserData()
+            $this->getUserDataParam()
             //$this->getOrderDesc()
         );
 

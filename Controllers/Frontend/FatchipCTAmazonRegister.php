@@ -37,6 +37,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
     protected $paymentService;
 
     /**
+     * FatchipCTpayment Plugin Bootstrap Class
      * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
     protected $plugin;

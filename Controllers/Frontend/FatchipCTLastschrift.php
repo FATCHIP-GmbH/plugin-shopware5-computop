@@ -1,5 +1,7 @@
 <?php
 
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,14 +16,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 use Fatchip\CTPayment\CTOrder\CTOrder;
@@ -31,15 +34,19 @@ require_once 'FatchipCTPayment.php';
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTLastschrift
+ * Frontend controller for Lastschrift
  */
-
-
 class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
+    /**
+     * {@inheritdoc}
+     */
     public $paymentClass = '';
 
     /**
-     * init payment controller
+     * Sets the correct paymentclass depending on the pluginsetting lastschriftDienst
+     *
+     * @return void
      */
     public function init()
     {
@@ -57,36 +64,16 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
         }
     }
 
+    /**
+     *  gatewaAction is overridden for Lastschrift because there is no redirect but a server to server call is made
+     *  On success create the order and forward to checkout/finish
+     *  On failure forward to checkout/payment and set the error message
+     */
     public function gatewayAction()
     {
-        // we have to use this, because there is no order yet
-        $user = Shopware()->Modules()->Admin()->sGetUserData();
-        $amount = $this->getAmount();
+        $payment = $this->getPaymentClassForGatewayAction();
 
-
-        // ToDo refactor ctOrder creation
-        $ctOrder = new CTOrder();
-        //important: multiply amount by 100
-        $ctOrder->setAmount($amount * 100);
-        $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
-        $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
-        // Sw 5.04 user email
-        // check other versions
-        $ctOrder->setEmail($user['additional']['user']['email']);
-        $ctOrder->setCustomerID($user['additional']['user']['id']);
-
-        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Lastschrift $payment */
-        $payment = $this->paymentService->getIframePaymentClass(
-          $this->paymentClass,
-          $this->config,
-          $ctOrder,
-          $this->router->assemble(['action' => 'return', 'forceSecure' => true]),
-          $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
-          $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
-          $this->getOrderDesc(),
-          $this->getUserData()
-        );
+        $user = $this->getUserData();
 
         $payment->setAccBank($this->utils->getUserLastschriftBank($user));
         $payment->setAccOwner($this->utils->getUserLastschriftKontoinhaber($user));
@@ -112,10 +99,19 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
                 $ctError = [];
                 $ctError['CTErrorMessage'] = self::ERRORMSG . $response->getDescription();
                 $ctError['CTErrorCode'] = $response->getCode();
-                return $this->forward('shippingPayment', 'checkout', null, array('CTError' => $ctError));
+                $this->forward('shippingPayment', 'checkout', null, array('CTError' => $ctError));
 
                 break;
         }
+    }
+
+
+    /**
+     * Overridden: because we do not have order yet
+     * @return array|false
+     */
+    protected function getUserData() {
+        return Shopware()->Modules()->Admin()->sGetUserData();
     }
 }
 

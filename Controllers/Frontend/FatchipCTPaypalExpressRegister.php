@@ -35,6 +35,7 @@ require_once 'FatchipCTPayment.php';
 class Shopware_Controllers_Frontend_FatchipCTPaypalExpressRegister extends Shopware_Controllers_Frontend_Register implements CSRFWhitelistAware
 {
     /**
+     * FatchipCTpayment Plugin Bootstrap Class
      * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
     protected $plugin;

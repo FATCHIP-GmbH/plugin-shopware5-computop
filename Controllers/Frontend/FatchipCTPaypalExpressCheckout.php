@@ -39,6 +39,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpressCheckout extends Shopw
     protected $paymentService;
 
     /**
+     * FatchipCTpayment Plugin Bootstrap Class
      * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
     protected $plugin;
