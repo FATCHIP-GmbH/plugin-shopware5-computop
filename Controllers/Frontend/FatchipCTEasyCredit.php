@@ -1,5 +1,7 @@
 <?php
 
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,15 +16,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
+
 
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
@@ -32,10 +36,15 @@ use Fatchip\CTPayment\CTPaymentMethodsIframe\EasyCredit;
 require_once 'FatchipCTPayment.php';
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTEasyCredit
+ * Class Shopware_Controllers_Frontend_FatchipCTEasyCredit *
+ * Frontend controller for EasyCredit
  */
 class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
+    /**
+     * PaymentClass, needed for instatiating payment objects of the correct type     *
+     * @var string
+     */
     public $paymentClass = 'EasyCredit';
 
     protected $basket;
@@ -79,7 +88,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
             $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
             $this->getOrderDesc(),
-            $this->getUserData(),
+            $this->getUserDataParam(),
             CTEnumEasyCredit::EVENTTOKEN_INIT
         );
 
@@ -121,7 +130,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
             $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
             'Test',
-            $this->getUserData(),
+            $this->getUserDataParam(),
             CTEnumEasyCredit::EVENTTOKEN_GET
         );
 
@@ -187,7 +196,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
             $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
             $this->getOrderDesc(),
-            $this->getUserData(),
+            $this->getUserDataParam(),
             CTEnumEasyCredit::EVENTTOKEN_CON
         );
 

@@ -44,6 +44,11 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     /** @var \Fatchip\CTPayment\CTPaymentService $service */
     protected $paymentService;
 
+    /**
+     * @var string
+     *
+     * PaymentClass, needed for instatiating payment objects of the correct type
+     */
     public $paymentClass = '';
 
     /**
@@ -92,38 +97,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     public function gatewayAction()
     {
-        $orderVars = $this->session->sOrderVariables;
-        $userData = $orderVars['sUserData'];
-
-        // ToDo refactor ctOrder creation
-        $ctOrder = new CTOrder();
-        $ctOrder->setAmount($this->getAmount() * 100);
-        $ctOrder->setCurrency($this->getCurrencyShortName());
-        // try catch in case Address Splitter retrun exceptions
-        try {
-            $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
-            $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
-        } catch (Exception $e) {
-            $ctError = [];
-            $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
-            $ctError['CTErrorCode'] = $e->getMessage();
-            return $this->forward('shippingPayment', 'checkout', null,  ['CTError' => $ctError]);
-        }
-        $ctOrder->setEmail($userData['additional']['user']['email']);
-        $ctOrder->setCustomerID($userData['additional']['user']['id']);
-        // Mandatory for paypalStandard
-        $ctOrder->setOrderDesc($this->getOrderDesc());
-
-        $payment = $this->paymentService->getIframePaymentClass(
-            $this->paymentClass,
-            $this->config,
-            $ctOrder,
-            $this->router->assemble(['action' => 'success', 'forceSecure' => true]),
-            $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
-            $this->getOrderDesc(),
-            $this->getUserData()
-        );
+        $payment = $this->getPaymentClassForGatewayAction();
 
         $params = $payment->getRedirectUrlParams();
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
@@ -216,6 +190,52 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         }
     }
 
+
+    protected function getPaymentClassForGatewayAction() {
+        $ctOrder = $this->createCTOrder();
+        $payment = $this->paymentService->getIframePaymentClass(
+          $this->paymentClass,
+          $this->config,
+          $ctOrder,
+          $this->router->assemble(['action' => 'success', 'forceSecure' => true]),
+          $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
+          $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
+          $this->getOrderDesc(),
+          $this->getUserDataParam());
+
+        return $payment;
+    }
+
+    protected function createCTOrder() {
+
+        $userData = $this->getUserData();
+
+
+        $ctOrder = new CTOrder();
+        $ctOrder->setAmount($this->getAmount() * 100);
+        $ctOrder->setCurrency($this->getCurrencyShortName());
+        // try catch in case Address Splitter retrun exceptions
+        try {
+            $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
+            $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
+        } catch (Exception $e) {
+            $ctError = [];
+            $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
+            $ctError['CTErrorCode'] = $e->getMessage();
+            return $this->forward('shippingPayment', 'checkout', null,  ['CTError' => $ctError]);
+        }
+        $ctOrder->setEmail($userData['additional']['user']['email']);
+        $ctOrder->setCustomerID($userData['additional']['user']['id']);
+        // Mandatory for paypalStandard
+        $ctOrder->setOrderDesc($this->getOrderDesc());
+        return $ctOrder;
+    }
+
+    protected function getUserData() {
+        $orderVars = $this->session->sOrderVariables;
+        return $orderVars['sUserData'];
+    }
+
     /**
      * try to load order via transaction id
      *
@@ -245,7 +265,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         return Shopware()->Config()->shopName;
     }
 
-    public function getUserData()
+    public function getUserDataParam()
     {
         return  'Shopware Version: ' .  \Shopware::VERSION . ', Modul Version: ' . $this->plugin->getVersion() ;;
     }

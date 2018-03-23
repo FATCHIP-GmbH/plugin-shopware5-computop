@@ -1,5 +1,7 @@
 <?php
 
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,14 +16,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 use Fatchip\CTPayment\CTOrder\CTOrder;
@@ -31,51 +34,22 @@ require_once 'FatchipCTPayment.php';
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTIdeal
- *
- * IdeaL
- * SW 5.0 - check
- * SW 5.1 -
- * SW 5.2 -
- * SW 5.3 -
- * Sofort
- * SW 5.0 -
- * SW 5.1 -
- * SW 5.2 -
- * SW 5.3 -
+ * Frontend controller for Ideal
  */
 class Shopware_Controllers_Frontend_FatchipCTIdeal extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
+    /**
+     * PaymentClass, needed for instatiating payment objects of the correct type     *
+     * @var string
+     */
     public $paymentClass = 'Ideal';
 
     /**
-     * @return void
-     * @throws Exception
+     * gatewayAction is overridden because issuerID needs to be set.
      */
     public function gatewayAction()
     {
-        $orderVars =$this->session->sOrderVariables;
-        $userData = $orderVars['sUserData'];
-
-        // ToDo refactor ctOrder creation
-        $ctOrder = new CTOrder();
-        //important: multiply amount by 100
-        $ctOrder->setAmount($this->getAmount() * 100);
-        $ctOrder->setCurrency($this->getCurrencyShortName());
-        $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
-        $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
-        $ctOrder->setEmail($userData['additional']['user']['email']);
-        $ctOrder->setCustomerID($userData['additional']['user']['id']);
-
-        $payment = $this->paymentService->getIframePaymentClass(
-            $this->paymentClass,
-            $this->config,
-            $ctOrder,
-            $this->router->assemble(['action' => 'success', 'forceSecure' => true]),
-            $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
-            $this->getOrderDesc(),
-            $this->getUserData()
-        );
+        $payment = $this->getPaymentClassForGatewayAction();
 
         $payment->setIssuerID($this->session->offsetGet('FatchipComputopIdealIssuer'));
         $params = $payment->getRedirectUrlParams();

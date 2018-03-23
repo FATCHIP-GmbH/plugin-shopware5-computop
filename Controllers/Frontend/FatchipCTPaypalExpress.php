@@ -68,7 +68,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
             $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
             'Test',
-            $this->getUserData()
+            $this->getUserDataParam()
             //$this->getOrderDesc()
         );
 

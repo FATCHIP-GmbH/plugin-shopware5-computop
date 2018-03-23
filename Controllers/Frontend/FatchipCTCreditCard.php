@@ -36,40 +36,14 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
 
     public $paymentClass = 'CreditCard';
 
+    /**
+     *  gatewaAction is overridden for Creditcard because:
+     *  1. extra param URLBack
+     *  2. forward to iframe controller instead of Computop Gateway, so the Computop IFrame is shown within Shop layout
+     */
     public function gatewayAction()
     {
-        $orderVars = $this->session->sOrderVariables;
-        $userData = $orderVars['sUserData'];
-
-        // ToDo refactor ctOrder creation
-        $ctOrder = new CTOrder();
-        $ctOrder->setAmount($this->getAmount() * 100);
-        $ctOrder->setCurrency($this->getCurrencyShortName());
-        // try catch in case Address Splitter retrun exceptions
-        try {
-            $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
-            $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
-        } catch (Exception $e) {
-            $ctError = [];
-            $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
-            $ctError['CTErrorCode'] = $e->getMessage();
-            return $this->forward('shippingPayment', 'checkout', null,  ['CTError' => $ctError]);
-        }
-        $ctOrder->setEmail($userData['additional']['user']['email']);
-        $ctOrder->setCustomerID($userData['additional']['user']['id']);
-        $ctOrder->setOrderDesc($this->getOrderDesc());
-
-        $payment = $this->paymentService->getIframePaymentClass(
-          $this->paymentClass,
-          $this->config,
-          $ctOrder,
-          $this->router->assemble(['action' => 'success', 'forceSecure' => true]),
-          $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
-          $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
-          $this->getOrderDesc(),
-          $this->getUserData()
-        );
-
+        $payment = $this->getPaymentClassForGatewayAction();
         //only Creditcard has URLBck
         $payment->setUrlBack($this->router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]));
 
