@@ -77,9 +77,10 @@ class Shopware_Controllers_Frontend_FatchipCTIdeal extends Shopware_Controllers_
             $this->getUserData()
         );
 
+        $payment->setIssuerID($this->session->offsetGet('FatchipComputopIdealIssuer'));
         $params = $payment->getRedirectUrlParams();
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
-        $payment->setIssuerID($this->session->offsetGet('FatchipComputopIdealIssuer'));
+
         $this->redirect($payment->getHTTPGetURL($params));
     }
 }
