@@ -42,19 +42,24 @@ require_once 'FatchipCTPayment.php';
 class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
     /**
-     * PaymentClass, needed for instatiating payment objects of the correct type     *
-     * @var string
+     * {@inheritdoc}
      */
     public $paymentClass = 'EasyCredit';
 
     protected $basket;
 
+    /**
+    * index action method
+    * @return void
+    * @throws Exception
+*/
     public function indexAction()
     {
         $this->forward('confirm');
     }
 
     /**
+     * gateway action method
      * @return void
      * @throws Exception
      */
@@ -223,6 +228,11 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         }
     }
 
+    /**
+     * Gets inforation from response to be displayed on the order confirmation page
+     * @param $responseObject
+     * @return array
+     */
     private function getConfirmPageInformation($responseObject)
     {
         $easyCreditInformation = [];
@@ -243,6 +253,11 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         return $easyCreditInformation;
     }
 
+    /**
+     * Get shipping costs
+     * @param $dispatchId
+     * @return string
+     */
     public function getShippingCosts($dispatchId)
     {
         /** @var \Shopware\Models\Dispatch\Dispatch $dispatch */

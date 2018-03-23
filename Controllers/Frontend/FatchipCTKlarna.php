@@ -38,10 +38,16 @@ require_once 'FatchipCTPayment.php';
 class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controllers_Frontend_FatchipCTPayment
 {
 
+    /**
+     * {@inheritdoc}
+     */
     public $paymentClass = 'Klarna';
 
     /**
-     * @inheritdoc
+     * gatewayAction is overridden because there is no redirect but a server to server call is made
+     * On success create the order and forward to checkout/finish
+     * On failure forward to checkout/payment and set the error message
+     *
      */
     public function gatewayAction()
     {
@@ -75,12 +81,12 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
     }
 
     /**
-     * @return \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna
-     *
      * getPaymentClassForGatewayAction is overridden cause call to getIframePaymentClass has no URLSuccess, URLFailure
      * and params isFirm and $klarnaAction
      *
      * Furthermore SSN, AnnualSalary, Phone and DOB need to be set
+     *
+     * @return \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna
      */
     protected function getPaymentClassForGatewayAction() {
         $orderVars = $this->session->sOrderVariables;

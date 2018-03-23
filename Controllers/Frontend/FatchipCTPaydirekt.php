@@ -39,8 +39,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaydirekt extends Shopware_Controll
 {
 
     /**
-     * PaymentClass, needed for instatiating payment objects of the correct type     *
-     * @var string
+     * {@inheritdoc}
      */
     public $paymentClass = 'Paydirekt';
 

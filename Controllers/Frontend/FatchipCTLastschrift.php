@@ -39,8 +39,7 @@ require_once 'FatchipCTPayment.php';
 class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
     /**
-     * PaymentClass, needed for instatiating payment objects of the correct type     *
-     * @var string
+     * {@inheritdoc}
      */
     public $paymentClass = '';
 
@@ -107,6 +106,10 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
     }
 
 
+    /**
+     * Overridden: because we do not have order yet
+     * @return array|false
+     */
     protected function getUserData() {
         return Shopware()->Modules()->Admin()->sGetUserData();
     }

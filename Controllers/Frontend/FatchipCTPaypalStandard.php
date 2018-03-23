@@ -25,15 +25,16 @@
  */
 
 require_once 'FatchipCTPayment.php';
+require_once 'FatchipCTPayment.php';
+
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTPaypalStandard
  */
-
-require_once 'FatchipCTPayment.php';
-
 class Shopware_Controllers_Frontend_FatchipCTPaypalStandard extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
-
+    /**
+     * {@inheritdoc}
+     */
     public $paymentClass = 'PaypalStandard';
 
 }

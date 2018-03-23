@@ -38,8 +38,7 @@ require_once 'FatchipCTPayment.php';
 class Shopware_Controllers_Frontend_FatchipCTPostFinance extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
     /**
-     * PaymentClass, needed for instatiating payment objects of the correct type     *
-     * @var string
+     * {@inheritdoc}
      */
     public $paymentClass = 'PostFinance';
 

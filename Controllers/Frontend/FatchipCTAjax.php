@@ -34,10 +34,14 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
     protected $paymentService;
 
     /**
+     * FatchipCTpayment Plugin Bootstrap Class
      * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
     protected $plugin;
 
+    /**
+     * {inheritdoc}
+     */
     protected $config;
 
     /** @var Util $utils * */

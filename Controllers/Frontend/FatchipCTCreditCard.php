@@ -34,6 +34,9 @@ use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
 
+    /**
+     * {@inheritdoc}
+     */
     public $paymentClass = 'CreditCard';
 
     /**
@@ -55,6 +58,9 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     }
 
 
+    /**
+     * action to show Computop Creditcard Iframe within shop layout
+     */
     public function iframeAction()
     {
         $this->view->loadTemplate('frontend/fatchipCTCreditcardCheckoutIframe/index.tpl');
@@ -67,6 +73,11 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $this->view->assign('fatchipCTErrorCode', $requestParams['CTError']['CTErrorCode']);
     }
 
+    /**
+     * success action method
+     * Overridden because for Creditcards we forward to IFrameAction
+     * @return void     *
+     */
     public function successAction()
     {
         $requestParams = $this->Request()->getParams();
@@ -98,8 +109,8 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     }
 
     /**
+     * Cancel action method. Overridden cause for Creditcard we forward to iframe action
      * @return void
-     * Cancel action method
      */
     public function failureAction()
     {

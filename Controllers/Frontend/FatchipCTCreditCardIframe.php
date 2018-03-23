@@ -32,20 +32,32 @@ use Shopware\Plugins\FatchipCTPayment\Util;
 class Shopware_Controllers_Frontend_FatchipCTCreditCardIframe extends Shopware_Controllers_Frontend_Index
 {
 
-    /** @var \Fatchip\CTPayment\CTPaymentService $service */
+    /**
+     *  CT Paymentservice
+     * @var \Fatchip\CTPayment\CTPaymentService $service */
     protected $paymentService;
 
     /**
-     * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     * FatchipCTpayment Plugin Bootstrap Class
+     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
     protected $plugin;
 
+    /**
+     * {inheritdoc}
+     */
     protected $config;
 
-    /** @var Util $utils * */
+    /**
+     * Utils class
+     * @var Util $utils * */
     protected $utils;
 
 
+    /**
+     * index action method
+     * @return void     *
+     */
     public function indexAction()
     {
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
