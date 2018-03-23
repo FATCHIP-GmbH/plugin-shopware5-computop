@@ -1,6 +1,5 @@
-
-    <div class="fatchip-computop-payment-creditcard-form payment--form-group">
-
+<div class="fatchip-computop-payment-creditcard-form payment--form-group">
+    {if $fatchipCTCreditCardMode}
         {block name="frontend_checkout_payment_fatchip_computop_creditcard_cardnumber_label"}
             <p class="none">
                 <label for="fatchip_computop_creditcard_cardnumber">{s name='CreditcardCardnumberLabel'}Kartennummer{/s}</label>
@@ -14,7 +13,7 @@
                    placeholder="{s name='creditcardCardnumber'}Kartennummer{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
                    {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
                    value="{$FatchipCTPaymentData.creditcardcardnumber}"
-                    />
+            />
         {/block}
 
         {* The main form field table *}
@@ -23,9 +22,8 @@
                 <label for="fatchip_computop_creditcard_expirationdate">{s name='CreditcardExpirationdate'}Kartenablaufdatum:{/s}</label>
             </p>
         {/block}
-
         <div class="select-field">
-        {block name="frontend_checkout_payment_fatchip_computop_creditcard_expirationdate_month_input"}
+            {block name="frontend_checkout_payment_fatchip_computop_creditcard_expirationdate_month_input"}
                 <select name="FatchipComputopPaymentData[fatchip_computop_creditcard_expirationdatemonth]"
                         id="fatchip_computop_creditcard_expirationdatemonth"
                         class="is--required"
@@ -33,17 +31,15 @@
                 >
                     <option disabled="disabled" value="">-</option>
                     {section name="expirationdatemonth" start=1 loop=13 step=1}
-                        {$isSelected = $smarty.section.expirationdatemonth.index == $FatchipCTPaymentData.expirationdatemonth}
-                        <option value="{$smarty.section.expirationdatemonth.index}" {if $isSelected}selected{/if}>
-                            {$smarty.section.expirationdatemonth.index}
+                        <option value="{if $smarty.section.expirationdatemonth.index < 10}0{/if}">
+                            {if $smarty.section.expirationdatemonth.index < 10}0{/if}{$smarty.section.expirationdatemonth.index}
                         </option>
                     {/section}
                 </select>
-        {/block}
+            {/block}
         </div>
-
         <div class="select-field">
-        {block name="frontend_checkout_payment_fatchip_computop_creditcard_expirationdate_year_input"}
+            {block name="frontend_checkout_payment_fatchip_computop_creditcard_expirationdate_year_input"}
                 {assign var=thisyear value=$smarty.now|date_format:"%Y"}
                 <select name="FatchipComputopPaymentData[fatchip_computop_creditcard_expirationdateyear]"
                         id="fatchip_computop_creditcard_expirationdateyear"
@@ -57,38 +53,32 @@
                             {$smarty.section.expirationdateyear.index}
                         </option>
                     {/section}
-
-
                 </select>
-            {html_select_date prefix='StartDate' time=$time start_year='-5'
-            end_year='+1' display_days=false}
-        {/block}
+            {/block}
         </div>
-
         <div>
-        {block name="frontend_checkout_payment_fatchip_computop_creditcard_cvc_label"}
-            <p class="none">
-                <label for="fatchip_computop_creditcard_cvc">{s name='CreditcardCvc'}CVC Code{/s}</label>
-            </p>
-        {/block}
+            {block name="frontend_checkout_payment_fatchip_computop_creditcard_cvc_label"}
+                <p class="none">
+                    <label for="fatchip_computop_creditcard_cvc">{s name='CreditcardCvc'}CVC Code{/s}</label>
+                </p>
+            {/block}
 
-        {block name="frontend_checkout_payment_fatchip_computop_creditcard_cvc_input"}
-            <input name="FatchipComputopPaymentData[fatchip_computop_creditcard_cvc]" type="text"
-                   id="fatchip_computop_creditcard_cvc"
-                   class="payment--field is--required{if $error_flags.fatchip_computop__creditcard_cvc} has--error{/if}"
-                   placeholder="{s name='creditcardCvc'}CVC Code{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
-                   {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
-                   value="{$FatchipCTPaymentData.creditcardcvc}"
-                    />
-        {/block}
+            {block name="frontend_checkout_payment_fatchip_computop_creditcard_cvc_input"}
+                <input name="FatchipComputopPaymentData[fatchip_computop_creditcard_cvc]" type="text"
+                       id="fatchip_computop_creditcard_cvc"
+                       class="payment--field is--required{if $error_flags.fatchip_computop__creditcard_cvc} has--error{/if}"
+                       placeholder="{s name='creditcardCvc'}CVC Code{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
+                       {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
+                       value="{$FatchipCTPaymentData.creditcardcvc}"
+                />
+            {/block}
         </div>
-
-        <div id="fatchipCTCreditcardPaynow" hidden
-             data-fatchipCTCreditcardnumber=$FatchipCTPaymentData.creditcardcardnumber
-             data-fatchipCTCreditcardcvc=$FatchipCTPaymentData.creditcardcvc
-             data-fatchipCTAmazonGODUrl='{url controller="FatchipCTAjax" action="ctGetOrderDetails" forceSecure}'
-             data-fatchipCTAmazonShippingCheckUrl='{url controller="FatchipCTAjax" action="ctIsShippingCountrySupported" forceSecure}'
-             data-fatchipCTAmazonRegisterUrl='{url controller="FatchipCTAmazonRegister" action="saveRegister" forceSecure}?sTarget=FatchipCTAmazonCheckout&sTargetAction=shippingPayment'
-                ></div>
-
+        <div id="fatchipCTCreditCard" hidden
+             data-fatchipCTCCNr'123'
+             data-fatchipCTCCCVC='456'
+             data-fatchipCTCCExpiryYear='2018'
+             data-fatchipCTCCExpiryMonth='04'
+             data-fatchipCTCCBrand='Visa'
+        ></div>
+    {/if}
 </div>

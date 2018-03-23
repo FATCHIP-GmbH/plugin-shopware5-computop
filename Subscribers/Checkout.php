@@ -60,6 +60,7 @@ class Checkout implements SubscriberInterface
         $params = $request->getParams();
         $session = Shopware()->Session();
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
         // Todo check in all sw versions
         // sw 5.0
         // sw 5.1
@@ -85,7 +86,7 @@ class Checkout implements SubscriberInterface
                 $subject->redirect(['controller' => 'FatchipCTEasyCredit', 'action' => 'gateway', 'forceSecure' => true]);
             }
         }
-    }
+     }
 
 
     /**
@@ -172,6 +173,10 @@ class Checkout implements SubscriberInterface
             // ToDo DO not Display User canceled:22730703 at least for paydirekt
             // logic shouldnt be here or in the template ...
             $view->assign('CTError', $params['CTError']);
+
+            if ($pluginConfig['creditCardMode'] == 'SILENT' && $paymentName == 'fatchip_computop_creditcard'){
+                $view->assign('fatchipCTCreditCardMode', "1");
+            }
         }
 
 

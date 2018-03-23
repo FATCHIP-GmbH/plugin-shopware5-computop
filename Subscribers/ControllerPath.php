@@ -63,8 +63,6 @@ class ControllerPath implements SubscriberInterface
             => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTCreditCard'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTCreditCardIframe'
-            => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTEasyCredit'
             => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTIdeal'
