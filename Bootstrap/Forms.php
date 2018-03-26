@@ -66,7 +66,7 @@ class Forms
         // general settings
         $this->createGeneralConfigForm(CTPaymentConfigForms::formGeneralTextElements, CTPaymentConfigForms::formGeneralSelectElements);
 
-        $this->createCreditCardConfigForm(CTPaymentConfigForms::formCreditCardSelectElements, CTPaymentConfigForms::formCreditCardNumberElements);
+        $this->createCreditCardConfigForm(CTPaymentConfigForms::formCreditCardSelectElements, CTPaymentConfigForms::formCreditCardNumberElements, CTPaymentConfigForms::formCreditCardTextElements);
 
 
         $this->createFormSelectElements(CTPaymentConfigForms::formIdealSelectElements);
@@ -119,13 +119,15 @@ class Forms
      *
      * @param array $formCreditCardSelectElements
      * @param array $formCreditCardNumberElements
+     * @param array $formCreditCardTextElements
      *
      * @return void
      */
-    private function createCreditCardConfigForm($formCreditCardSelectElements, $formCreditCardNumberElements)
+    private function createCreditCardConfigForm($formCreditCardSelectElements, $formCreditCardNumberElements, $formCreditCardTextElements)
     {
         $this->createFormSelectElements($formCreditCardSelectElements);
         $this->createFormTextElements($formCreditCardNumberElements);
+        $this->createFormTextElements($formCreditCardTextElements);
     }
 
     /**
