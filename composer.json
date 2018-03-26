@@ -2,9 +2,5 @@
   "name": "fatchip/plugin-shopware5-computop",
   "description": "FATCHIP Computop Payment Plugin",
   "license": "????",
-  "type": "shopware-plugin",
-  "require": {
-    "phpunit/phpunit": "~5.6||~6.3",
-    "phpunit/dbunit": "~2.0|| ~3.0"
-  }
+  "type": "shopware-plugin"
 }

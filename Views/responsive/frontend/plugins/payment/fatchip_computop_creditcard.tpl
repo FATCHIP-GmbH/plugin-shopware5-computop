@@ -79,6 +79,7 @@
              data-fatchipCTCCExpiryYear='2018'
              data-fatchipCTCCExpiryMonth='04'
              data-fatchipCTCCBrand='Visa'
+             data-fatchipCTCCPaymentId={$payment_mean.id}
         ></div>
     {/if}
 </div>

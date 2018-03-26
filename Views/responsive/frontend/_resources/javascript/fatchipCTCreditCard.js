@@ -1,3 +1,32 @@
+$.plugin("fatchipCTCreditCardIFrame", {
+    defaults: {
+        fatchipCTCreditcardIFrameUrl: false,
+        fatchipCTErrorMessage: false,
+        fatchipCTErrorCode: false
+    },
+
+    init: function () {
+        "use strict";
+        var me = this;
+        me.applyDataAttributes();
+        console.log(me.opts.fatchipCTCreditcardIFrameUrl);
+        console.log("fatchipCTErrorMessage:");
+        console.log(me.opts.fatchipCTErrorMessage);
+        console.log("fatchipCTErrorCode:");
+        console.log(me.opts.fatchipCTErrorCode);
+
+        window.top.location.href = me.opts.fatchipCTCreditcardIFrameUrl + "?CTError[CTErrorMessage]=" + me.opts.fatchipCTErrorMessage + "&CTError[CTErrorCode]=" + me.opts.fatchipCTErrorCode;
+    },
+
+    destroy: function () {
+        "use strict";
+        var me = this;
+
+        me.$el.removeClass(me.opts.activeCls);
+        me._destroy();
+    }
+});
+
 $.plugin("fatchipCTCreditCard", {
     defaults: {
         fatchipCTCCNr: false,
@@ -36,44 +65,26 @@ $.plugin("fatchipCTCreditCard", {
     }
 });
 
-$.plugin("fatchipCTShippingPayment", {
-    defaults: {
-        submit: false
-    },
-
-    init: function () {
-        "use strict";
-        var me = this;
-        me.applyDataAttributes();
-        console.log("fatchipCTSubmitCCForm INIT:");
-    },
-
-    preventFormSubmit: function () {
-        "use strict";
-        var me = this;
-        me.applyDataAttributes();
-        console.log("fatchipCTSubmitCCForm INIT:");
-        me.$el.on("submit", function (e) {
-            console.log("before FatchipCTShippingPayment");
-            e.preventDefault();
-            console.log("after FatchipCTShippingPayment");
-
-        });
-    },
-
-    destroy: function () {
-        "use strict";
-        console.log("destroy Plugin triggered");
-        var me = this;
-        me._destroy();
-    }
-});
 
 function fatchipCTInputChanged() {
     "use strict";
-    $("input[name=\"sDispatch\"]").on("change", function (e) {
+    $("input[name=\"sDispatch\"]").on("change", function () {
         console.log("Dispatch changed");
-        return true;
+        if ("9" === $(this).val()) {
+            console.log("Dispatch Treffer");
+        }
+        //var currentDispatch = $("input[name=\"sDispatch\"]").data("value");
+        //console.log(currentDispatch);
+        return "dispatch";
+    });
+    $("input[name=\"payment\"]").on("change", function () {
+        console.log("payment changed");
+        if ("7" === $(this).val()) {
+            console.log("Payment Treffer");
+        }
+        var currentPayment = $("input[name=\"payment\"]").data("value");
+        console.log(currentPayment);
+        return "payment";
     });
 }
 
@@ -83,3 +94,4 @@ $.subscribe("plugin/swShippingPayment/onInputChanged", function () {
 });
 
 $("#fatchipCTCreditCard").fatchipCTCreditCard();
+$("#fatchipCTCreditCardIFrame").fatchipCTCreditCardIFrame();

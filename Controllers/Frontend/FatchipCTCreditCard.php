@@ -47,11 +47,15 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     public function gatewayAction()
     {
         $payment = $this->getPaymentClassForGatewayAction();
-        //only Creditcard has URLBck
         if ($this->config['creditCardMode'] != 'SILENT') {
+            $payment = $this->getPaymentClassForGatewayAction();
+            //only Creditcard has URLBck
+            $payment->setUrlBack($this->router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]));
+
             $params = $payment->getRedirectUrlParams();
             $this->session->offsetSet('fatchipCTRedirectParams', $params);
-            $this->redirect($payment->getHTTPGetURL($params));
+
+            $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params)));
         } else {
             die('should not happen');
             //$payment->setUrlBack($this->router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]));
@@ -64,6 +68,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
      */
     public function iframeAction()
     {
+        $this->view->loadTemplate('frontend/fatchipCTCreditCard/index.tpl');
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
         $requestParams = $this->Request()->getParams();
         $this->view->assign('fatchipCTIframeURL', $requestParams['fatchipCTRedirectURL']);
