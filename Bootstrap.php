@@ -35,7 +35,9 @@ use Shopware\Plugins\FatchipCTPayment\Bootstrap\RiskRules;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Models;
 use Doctrine\Common\Collections\ArrayCollection;
 
-
+/**
+ * Class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+ */
 class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
     /**
@@ -343,7 +345,15 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
 
     // ToDo refactor both methods into a single one
-    // this wrapper is used for logging Server requests and responses to our shopware model
+    /**
+     * this wrapper is used for logging Server requests and responses to our shopware model
+     *
+     * @param $requestParams
+     * @param $payment
+     * @param $requestType
+     * @param $url
+     * @return \Fatchip\CTPayment\CTResponse
+     */
     public function callComputopService($requestParams, $payment, $requestType, $url){
         $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
         $log->setPaymentName($payment::paymentClass);
@@ -361,7 +371,14 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         return $response;
     }
 
-    // this wrapper is used for logging Redirectrequests and responses to our shopware model
+    /**
+     * this wrapper is used for logging Redirectrequests and responses to our shopware model
+     * @param $requestParams
+     * @param $paymentName
+     * @param $requestType
+     * @param $response
+     * @return mixed
+     */
     public function logRedirectParams($requestParams, $paymentName, $requestType, $response){
         $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
         $log->setPaymentName($paymentName);
@@ -378,7 +395,15 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     }
 
     // ToDo refactor both methods into a single one
-    // this wrapper is used for logging Server requests and responses to our shopware model
+    //
+    /**
+     * this wrapper is used for logging Server requests and responses to our shopware model
+     * @param $requestParams
+     * @param $crif
+     * @param $requestType
+     * @param $url
+     * @return \Fatchip\CTPayment\CTResponse
+     */
     public function callComputopCRIFService($requestParams, $crif, $requestType, $url){
         $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
         $log->setPaymentName('RiskCheck');

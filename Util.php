@@ -32,9 +32,14 @@ use Shopware;
 
 require_once 'Components/Api/vendor/autoload.php';
 
+/**
+ * Class Util
+ * @package Shopware\Plugins\FatchipCTPayment
+ */
 class Util
 {
     /**
+     * creates a CTAddress object from a Shopware address array
      * @param array $swAddress
      * @return CTAddress
      * @throws \Exception
@@ -71,12 +76,22 @@ class Util
         return Shopware()->Db()->fetchOne($countrySql, [$countryId]);
     }
 
+    /**
+     * @ignore <description>
+     * @param $countryId
+     * @return string
+     */
     public function getCTCountryIso3($countryId)
     {
         $countrySql = 'SELECT iso3 FROM s_core_countries WHERE id=?';
         return Shopware()->Db()->fetchOne($countrySql, [$countryId]);
     }
 
+    /**
+     * @ignore <description>
+     * @param $countryIso
+     * @return string
+     */
     public function getCountryIdFromIso($countryIso)
     {
         $countrySql = 'SELECT id FROM s_core_countries WHERE countryiso=?';
@@ -88,6 +103,11 @@ class Util
     // 5.1 - check
     // 5.2 - check
     // 5.3 - check
+    /**
+     * gets the user customer number from user array, depending on SW version
+     * @param $user
+     * @return null
+     */
     public function getUserCustomerNumber($user)
     {
         $customerNumber = null;
@@ -104,6 +124,11 @@ class Util
     // 5.1 - check
     // 5.2 - check
     // 5.3 - check
+    /**
+     * gets the users Date of Birth from user array, depending on SW version
+     * @param $user
+     * @return null
+     */
     public function getUserDoB($user)
     {
         $birthdate = null;
@@ -120,6 +145,11 @@ class Util
     // 5.1 - check
     // 5.2 - check
     // 5.3 - check
+    /**
+     * gets user phone number from database
+     * @param $user
+     * @return mixed
+     */
     public function getUserPhone($user)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
@@ -129,6 +159,11 @@ class Util
         return $billing->getPhone();
     }
 
+    /**
+     * gets Users Socical Security Number from Customer attributes
+     * @param $user
+     * @return mixed
+     */
     public function getUserSSN($user)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
@@ -138,6 +173,11 @@ class Util
         return $attribute->getFatchipctSocialsecuritynumber();
     }
 
+    /**
+     * gets users Annual Salary from customer attributes
+     * @param $user
+     * @return mixed
+     */
     public function getUserAnnualSalary($user)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
@@ -147,6 +187,11 @@ class Util
         return $attribute->getFatchipctAnnualSalary();
     }
 
+    /**
+     * gets Bank for Lastschrift from customer attributes
+     * @param $user
+     * @return mixed
+     */
     public function getUserLastschriftBank($user)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
@@ -156,6 +201,11 @@ class Util
         return $attribute->getFatchipctLastschriftbank();
     }
 
+    /**
+     * gets Iban for Lastschrift from customer attributes
+     * @param $user
+     * @return mixed
+     */
     public function getUserLastschriftIban($user)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
@@ -165,6 +215,11 @@ class Util
         return $attribute->getFatchipctLastschriftiban();
     }
 
+    /**
+     * gets Accountowner for Lastschrift from customer attributes
+     * @param $user
+     * @return mixed
+     */
     public function getUserLastschriftKontoinhaber($user)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
@@ -179,6 +234,11 @@ class Util
     // 5.1 - check
     // 5.2 - check
     // 5.3 - check
+    /**
+     * gets CountryID from shopware address
+     * @param $swAddress
+     * @return null
+     */
     public function getCountryIdFromAddress($swAddress)
     {
         $countryId = null;
@@ -198,6 +258,11 @@ class Util
     // 5.1 - check
     // 5.2 - check
     // 5.3 - check
+    /**
+     * updates users Date of Birth in Customer atrributes
+     * @param $userId
+     * @param $birthday
+     */
     public function updateUserDoB($userId, $birthday)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
@@ -220,6 +285,11 @@ class Util
     // 5.1 - check
     // 5.2 -
     // 5.3 -
+    /**
+     * updates users phone number in customer attributes
+     * @param $userId
+     * @param $phone
+     */
     public function updateUserPhone($userId, $phone)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
@@ -231,6 +301,11 @@ class Util
     }
 
 
+    /**
+     * updates users Social Security Number in customer attributes
+     * @param $userId
+     * @param $ssn
+     */
     public function updateUserSSN($userId, $ssn)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
@@ -242,6 +317,11 @@ class Util
 
     }
 
+    /**
+     * updates users Annual Salary in customer attributes
+     * @param $userId
+     * @param $ssn
+     */
     public function updateUserAnnualSalary($userId, $ssn)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
@@ -253,6 +333,11 @@ class Util
 
     }
 
+    /**
+     * updates users Bank for Lastschrift in customer attributes
+     * @param $userId
+     * @param $bank
+     */
     public function updateUserLastschriftBank($userId, $bank)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
@@ -264,6 +349,11 @@ class Util
 
     }
 
+    /**
+     * updates users Iban for lastschrift in customer attributes
+     * @param $userId
+     * @param $iban
+     */
     public function updateUserLastschriftIban($userId, $iban)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
@@ -275,6 +365,11 @@ class Util
 
     }
 
+    /**
+     * updates user account owner in customer attributes
+     * @param $userId
+     * @param $kontoinhaber
+     */
     public function updateUserLastschriftKontoinhaber($userId, $kontoinhaber)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
@@ -287,6 +382,7 @@ class Util
     }
 
     /**
+     * Loads customer adress by ID
      * @param $id
      * @param $type
      * @return null|object
@@ -326,7 +422,8 @@ class Util
         return Shopware()->Db()->fetchOne($sql, $paymentName);
     }
 
-    /***
+    /**
+     * Saves CRIF result in Address attributes
      * @param $addressID
      * @param $type - billing or shipping
      * @param $response
@@ -375,6 +472,11 @@ class Util
         return $payment->getActive();
     }
 
+    /**
+     * checks social security number should be collected for this order.
+     * SSN is needed in DK, FI, SE and NO and not in other countries
+     * @return bool
+     */
     public function needSocialSecurityNumberForKlarna() {
         if ($countryIso = $this->getBillingIsoForCurrentOrder()) {
             //only if billingcountry in DK, FI, SE, NO we show the social security number field
@@ -386,11 +488,10 @@ class Util
         return false;
     }
 
-    /***
+    /**
+     * * Klarna is only available for Private persons in DE, AT and NL. So for companies we block Klarna in these countries
      * @param $userData
      * @return bool
-     *
-     * Klarna is only available for Private persons in DE, AT and NL. So for companies we block Klarna in these countries
      */
     public function isKlarnaBlocked($userData) {
 
@@ -406,6 +507,12 @@ class Util
     }
 
 
+    /**
+     * returns the label for the SSN field for klarna
+     * For comapanies the label is Handelsregisternummer, for NO we add last 5 digits
+     * @param $userData
+     * @return string
+     */
     public function getSocialSecurityNumberLabelForKlarna($userData) {
         $label = 'Sozialversicherungsnummer (letzte 4 Ziffern)';
         //For comapnies, the field is called Handelsregisternummer
@@ -422,11 +529,10 @@ class Util
         return $label;
     }
 
-    /***
+    /**
+     * Annual salary is mandatory for Private Customers in Denmark
      * @param $userData
      * @return bool
-     *
-     * Annual salary is mandatory for Private Customers in Denmark
      */
     public function needAnnualSalaryForKlarna($userData) {
         if (!isset($userData['billingaddress']['company']) && $countryIso = $this->getBillingIsoForCurrentOrder()) {
@@ -439,6 +545,11 @@ class Util
         return false;
     }
 
+    /**
+     * Returns the length for the SSN field - for NO its 5, for other countries 4. For companies there is no max length
+     * @param $userData
+     * @return int|null
+     */
     public function getSSNLength($userData) {
         //for companies, we do not need a max length
         if (!isset($userData['billingaddress']['company']) && $countryIso = $this->getBillingIsoForCurrentOrder()) {
@@ -450,6 +561,10 @@ class Util
         return null;
     }
 
+    /**
+     * returns the ISO country code for the billing address of the current order
+     * @return null|string
+     */
     private function getBillingIsoForCurrentOrder() {
         if($orderVars = Shopware()->Session()->sOrderVariables) {
             $userData = $orderVars['sUserData'];

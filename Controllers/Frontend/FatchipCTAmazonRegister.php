@@ -71,7 +71,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
     }
 
-    /*
+    /**
      * Amazon redirects here after Login
      */
     public function loginAction()
@@ -150,6 +150,10 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         return  $this->plugin->callComputopService($requestParams, $payment, 'LGN', $payment->getCTPaymentURL());
     }
 
+    /**
+     * @param $arrayObjs
+     * @return array
+     */
     public function getArrayFromArrayObjs($arrayObjs)
     {
         $array = [];
@@ -162,6 +166,9 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         return $array;
     }
 
+    /**
+     * @param $params
+     */
     public function saveParamsToSession($params)
     {
         $session = Shopware()->Session();
