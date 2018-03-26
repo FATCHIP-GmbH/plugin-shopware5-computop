@@ -28,6 +28,11 @@
 
 use Fatchip\CTPayment\CTPaymentService;
 
+/**
+ * Backend order controller
+ *
+ * Class Shopware_Controllers_Backend_FatchipCTOrder
+ */
 class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_Backend_ExtJs
 {
 
@@ -38,21 +43,32 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
     const PAYMENTSTATUSRECREDITING = 20;
 
     /**
-     * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     * FatchipCTpayment Plugin Bootstrap Class
+     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
     private $plugin;
 
+    /**
+     * FatchipCTPayment Configuration
+     * @var array
+     */
     private $config;
 
     /**
+     * Payment Service
      * @var CTPaymentService
      */
     private $paymentService;
 
-    /** @var \Shopware\Plugins\FatchipCTPayment\Util $utils * */
+    /**
+     * Utlis
+     * @var \Shopware\Plugins\FatchipCTPayment\Util $utils * */
     protected $utils;
 
 
+    /**
+     * Initialises backend order
+     */
     public function init()
     {
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
@@ -62,6 +78,11 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         parent::init();
     }
 
+    /**
+     * Action to make a debit for selected positions
+     * If successful, positions are marked as debited. A call to inquire.aspx is made and paymentstatus updated
+     *
+     */
     public function fatchipCTDebitAction()
     {
         try {
@@ -126,6 +147,9 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
     }
 
+    /**
+     * Action to enable/disable the capture and debit buttons depending on order status
+     */
     public function fatchipCTTGetButtonStateAction()
     {
 
@@ -145,6 +169,11 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
     }
 
+    /**
+     * Action to make a capture for selected positions
+     * If successful, positions are marked as captured. A call to inquire.aspx is made and paymentstatus updated
+     *
+     */
     public function fatchipCTCaptureOrderAction()
     {
         $request = $this->Request();
@@ -207,6 +236,14 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         $this->View()->assign($response);
     }
 
+    /**
+     * Checks if capture can be made for an order. A capture is possible if:
+     * 1. it is a Computop payment
+     * 2. this payment method offers a capture url in the library
+     *
+     * @param $order
+     * @return bool
+     */
     private function fcct_isOrderCapturable($order)
     {
 
@@ -224,6 +261,14 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         return true;
     }
 
+    /**
+     * Checks if debit can be made for an order. A debit is possible if:
+     * 1. it is a Computop payment
+     * 2. this payment method offers a refund url in the library
+     *
+     * @param $order
+     * @return bool
+     */
     private function fcct_isOrderRefundable($order)
     {
         if (!$this->orderHasComputopPayment($order)) {
@@ -237,6 +282,11 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         return !empty($refundURL);
     }
 
+    /**
+     * Creates a Computop Order object from a Shopware order object.
+     * @param $swOrder
+     * @return \Fatchip\CTPayment\CTOrder\CTOrder
+     */
     private function createCTOrderFromSWorder($swOrder)
     {
         $swShipping = $swOrder->getShipping();
@@ -358,6 +408,12 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         return $amount;
     }
 
+    /**
+     * Saves the amount captured in position attributes and the amount shipping captured in the order attributes
+     * @param $order
+     * @param $positionIds
+     * @param bool $includeShipment
+     */
     private function markPositionsAsCaptured($order, $positionIds, $includeShipment = false)
     {
         foreach ($order->getDetails() as $position) {
@@ -385,6 +441,13 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         }
     }
 
+    /**
+     * Saves the amount debited in position attributes and the amount shipping debited in the order attributes
+     *
+     * @param $order
+     * @param $positionIds
+     * @param bool $includeShipment
+     */
     private function markPositionsAsRefunded($order, $positionIds, $includeShipment = false)
     {
         foreach ($order->getDetails() as $position) {
@@ -412,6 +475,12 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         }
     }
 
+    /**
+     * cheks if an order was paid with a computop payment method
+     *
+     * @param $order
+     * @return bool
+     */
     private function orderHasComputopPayment($order)
     {
         if (strpos($order->getPayment()->getName(), 'fatchip_computop') !== 0) {
@@ -421,6 +490,11 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         return true;
     }
 
+    /**
+     * Returns the payment class name that has to be instantiated for this order
+     * @param $order
+     * @return mixed
+     */
     private function getCTPaymentClassNameForOrder($order)
     {
         $name = $order->getPayment()->getName();
@@ -436,6 +510,11 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
     }
 
+    /**
+     * Returns an intantiated payment class object for the current order
+     * @param $order
+     * @return \Fatchip\CTPayment\CTPaymentMethodsIframe\Sofort
+     */
     private function getCTPaymentClassForOrder($order)
     {
         $ctOrder = $this->createCTOrderFromSWorder($order);
@@ -468,6 +547,14 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         }
     }
 
+    /**
+     * If current payment status is reserverd or partially paid, a call to inquire.aspx is made.
+     * If the order is fully captured, order payment status is updated to fully paid.
+     * If the order is partially captured, order payment status is updated to partially paid.
+     *
+     * @param $order
+     * @param $paymentClass
+     */
     private function inquireAndupdatePaymentStatusAfterCapture($order, $paymentClass)
     {
 
@@ -500,6 +587,13 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         }
     }
 
+    /**
+     * If current payment status is fully paid or partially paid, a call to inquire.aspx is made.
+     * If the order is partially or fully debited, order payment status is updated to crediting
+     *
+     * @param $order
+     * @param $paymentClass
+     */
     private function inquireAndupdatePaymentStatusAfterRefund($order, $paymentClass)
     {
 
@@ -527,6 +621,12 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         }
     }
 
+    /**
+     * For klarna capture or debit actions, a certain formatting of the orderdescription is needed.
+     * @param $order
+     * @param $positionIds
+     * @return string
+     */
     private function getKlarnaOrderDesc($order, $positionIds)
     {
         $orderDesc = '';
@@ -548,6 +648,10 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         }
     }
 
+    /**
+     * Saves the InvoiceNr from Computop response in order attributes for Klarna payments
+     * @param $response
+     */
     private function saveInvNo($response)
     {
         $transactionId = $response->getTransID();

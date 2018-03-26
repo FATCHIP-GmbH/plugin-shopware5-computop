@@ -25,8 +25,7 @@
  */
 
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
-use Fatchip\CTPayment\CTOrder\CTOrder;
-
+use Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna;
 // add baseclass via require_once so we can extend
 // ToDo find a better solution for this
 require_once 'FatchipCTPayment.php';
@@ -86,7 +85,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
      *
      * Furthermore SSN, AnnualSalary, Phone and DOB need to be set
      *
-     * @return \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna
+     * @return Klarna
      */
     protected function getPaymentClassForGatewayAction() {
         $orderVars = $this->session->sOrderVariables;

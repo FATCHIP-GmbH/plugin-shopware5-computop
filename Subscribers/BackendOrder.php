@@ -1,5 +1,7 @@
 <?php
 
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,14 +16,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Subscibers
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
@@ -31,6 +34,11 @@ use Shopware\Components\DependencyInjection\Container;
 use Shopware\Models\Order\Detail;
 use Shopware\Models\Attribute\OrderDetail;
 
+/**
+ * Class BackendOrder
+ *
+ * @package Shopware\Plugins\FatchipCTPayment\Subscribers
+ */
 class BackendOrder implements SubscriberInterface
 {
 
@@ -66,6 +74,10 @@ class BackendOrder implements SubscriberInterface
         );
     }
 
+    /**
+     * Adds Javascript to order backend
+     * @param \Enlight_Controller_ActionEventArgs $args
+     */
     public function fatchipCTExtendController_Backend_Order(\Enlight_Controller_ActionEventArgs $args)
     {
         $view = $args->getSubject()->View();
@@ -107,6 +119,12 @@ class BackendOrder implements SubscriberInterface
         $args->setReturn($return);
     }
 
+    /**
+     * Gets the OrderDetail Attributes from $detailObject or creates them if no attributes exist yet
+     * @param $detailObject
+     * @return null|object|OrderDetail
+     * @throws \Exception
+     */
     private function getOrderDetailAttributes($detailObject) {
         if (!empty($detailObject) && $attribute = $detailObject->getAttribute()) {
             return $attribute;

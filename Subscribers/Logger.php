@@ -1,5 +1,7 @@
 <?php
 
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,14 +16,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Subscibers
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
@@ -29,17 +32,27 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 use Enlight\Event\SubscriberInterface;
 
 /**
- * Class Service
+ * Class Logger
  *
  * @package Shopware\Plugins\FatchipCTPayment\Subscribers
  */
 class Logger implements SubscriberInterface
 {
-    /*  @var $logger \Shopware\Components\Logger */
+    /**
+     * @var $logger \Shopware\Components\Logger
+     */
     private $logger;
 
+    /**
+     * FatchipCTpayment Plugin Bootstrap Class
+     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     */
     protected $plugin;
 
+    /**
+     * FatchipCTPayment Configuration
+     * @var array
+     */
     protected $config;
 
     /**
@@ -59,6 +72,9 @@ class Logger implements SubscriberInterface
         ];
     }
 
+    /**
+     * Logger constructor
+     */
     public function __construct(){
 
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
@@ -77,6 +93,11 @@ class Logger implements SubscriberInterface
         $this->logger->pushHandler($rfh);
     }
 
+    /**
+     * Checks if it is a cotnroller for a FatchipCT Payment Method
+     * @param $controllerName
+     * @return bool
+     */
     public function isFatchipCTController($controllerName)
     {
         // strpos returns false or int for position
@@ -85,6 +106,11 @@ class Logger implements SubscriberInterface
 
     // Todo check here for any exceptions and log them with stack trace??
     // in addition log json response of our Ajax Controllers
+    /**
+     * Logs Requestpamaters for FatchipCT controllers if Debuglogging is activated in Pluginsettings
+     *
+     * @param \Enlight_Controller_ActionEventArgs $args
+     */
     public function onPostDispatchFatchipCT(\Enlight_Controller_ActionEventArgs $args)
     {
         $request = $args->getRequest();
@@ -95,6 +121,11 @@ class Logger implements SubscriberInterface
     }
 
     // should only be triggered when no exceptions occured
+    /**
+     * Logs Requestpamaters and Template information for FatchipCT controllers if Debuglogging is activated in Pluginsettings
+     *
+     * @param \Enlight_Controller_ActionEventArgs $args
+     */
     public function onPostDispatchSecureFatchipCT(\Enlight_Controller_ActionEventArgs $args)
     {
         $subject = $args->getSubject();
@@ -112,6 +143,8 @@ class Logger implements SubscriberInterface
         }
     }
     /**
+     * Extends Backend header with CSS to display CT-Icon in Menu
+     *
      * @param \Enlight_Event_EventArgs $args
      */
     public function onPostDispatchBackendIndex(\Enlight_Event_EventArgs $args)

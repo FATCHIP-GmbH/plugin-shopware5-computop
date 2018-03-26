@@ -1,5 +1,7 @@
 <?php
 
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,21 +16,26 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Subscibers
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 use Shopware\Components\DependencyInjection\Container;
-
+/**
+ * Class BackendRiskManagement
+ *
+ * @package Shopware\Plugins\FatchipCTPayment\Subscribers
+ */
 class BackendRiskManagement implements SubscriberInterface
 {
 
@@ -50,7 +57,7 @@ class BackendRiskManagement implements SubscriberInterface
     }
 
     /**
-     * return array with all subsribed events
+     * return array with all subscribed events
      *
      * @return array
      */
@@ -62,6 +69,10 @@ class BackendRiskManagement implements SubscriberInterface
         );
     }
 
+    /**
+     * Adds Javascript to Riskmanagement backend
+     * @param \Enlight_Controller_ActionEventArgs $args
+     */
     public function onBackendRiskManagementPostDispatch(\Enlight_Controller_ActionEventArgs $args)
     {
         $view = $args->getSubject()->View();

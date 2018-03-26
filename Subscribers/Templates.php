@@ -1,4 +1,6 @@
 <?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13,14 +15,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Subscibers
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
@@ -28,19 +31,27 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 use Enlight\Event\SubscriberInterface;
 use \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap as Bootstrap;
 
-
+/**
+ * Class Templates
+ *
+ * @package Shopware\Plugins\FatchipCTPayment\Subscribers
+ */
 class Templates implements SubscriberInterface
 {
     /**
+     * Path.
      * @var string $path
      */
     private $path;
     /**
+     * Templatemanager.
      * @var Enlight_Template_Manager $templateManager
      */
     private $templateManager;
 
     /**
+     * Templates constructor.
+     *
      * @param Bootstrap $bootstrap
      */
     public function __construct(Bootstrap $bootstrap)
@@ -50,6 +61,7 @@ class Templates implements SubscriberInterface
     }
 
     /**
+     * returns array with all subsribed events.
      * @return array<string,string>
      */
     public static function getSubscribedEvents()
@@ -79,6 +91,10 @@ class Templates implements SubscriberInterface
         );
     }
 
+    /**
+     * adds template directory
+     * @param Enlight_Event_EventArgs $args
+     */
     public function addTemplateDir(Enlight_Event_EventArgs $args)
     {
         // Add the template directory for the used template type

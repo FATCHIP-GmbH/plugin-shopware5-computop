@@ -1,5 +1,7 @@
 <?php
 
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,14 +16,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Subscibers
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
@@ -33,7 +36,7 @@ use Shopware\Components\DependencyInjection\Container;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
 /**
- * Class AddressCheck
+ * Class FrontendRiskManagement
  *
  * @package Shopware\Plugins\MoptPaymentPayone\Subscribers
  */
@@ -80,11 +83,11 @@ class FrontendRiskManagement implements SubscriberInterface
     }
 
 
-    /***
-     * @param \Enlight_Hook_HookArgs $args
+    /**
+     * Fired after a user updates an address in SW >=5.2
+     * If a CRIF result is available, it will be invalidated / deleted
      *
-     * Fired after a user updates an address in SW >=5.2 If a CRIF result is available, it will be
-     * invalidated / deleted
+     * @param \Enlight_Hook_HookArgs $args
      */
     public function afterAddressUpdate(\Enlight_Hook_HookArgs $args)
     {
@@ -97,6 +100,12 @@ class FrontendRiskManagement implements SubscriberInterface
     }
 
 
+    /**
+     * Fired after a user updates a billing address in SW < 5.2
+     * If a CRIF result is available, it will be invalidated / deleted
+     *
+     * @param \Enlight_Hook_HookArgs $arguments
+     */
     public function onValidateStep2BillingAddress(\Enlight_Hook_HookArgs $arguments)
     {
         //check in Session if we autoupated the address with the corrected Address from CRIF
@@ -116,6 +125,12 @@ class FrontendRiskManagement implements SubscriberInterface
         }
     }
 
+    /**
+     * Fired after a user updates a shipping address in SW < 5.2
+     * If a CRIF result is available, it will be invalidated / deleted
+     *
+     * @param \Enlight_Hook_HookArgs $arguments
+     */
     public function onValidateStep2ShippingAddress(\Enlight_Hook_HookArgs $arguments)
     {
         //check in Session if we autoupated the address with the corrected Address from CRIF
@@ -135,6 +150,12 @@ class FrontendRiskManagement implements SubscriberInterface
         }
     }
 
+    /**
+     * Checks if relevant parts of an address have changed that make a new CRIF-Rikscheck necessary.
+     * @param $oldAddress
+     * @param $newAddress
+     * @return bool
+     */
     private function addressChanged($oldAddress, $newAddress)
     {
         //we consider the address changed if street, zipcode, city or country changed
@@ -143,9 +164,8 @@ class FrontendRiskManagement implements SubscriberInterface
     }
 
     /**
+     * removes CRIF results from Address.
      * @param \Shopware\Models\Customer\Address $address
-     *
-     * removes CRIF results from Address
      */
     private function invalidateCrifFOrAddress($address)
     {
@@ -160,6 +180,11 @@ class FrontendRiskManagement implements SubscriberInterface
         }
     }
 
+    /**
+     * Removes CRIF results from address with addresID.
+     * @param $addressID
+     * @param $type
+     */
     private function invalidateCrifResult($addressID, $type)
     {
         $util = new Util();
@@ -179,7 +204,7 @@ class FrontendRiskManagement implements SubscriberInterface
      * returns true if risk condition is fulfilled
      * arguments: $rule, $user, $basket, $value
      *
-     * * @param \Enlight_Hook_HookArgs $arguments
+     * @param \Enlight_Hook_HookArgs $arguments
      */
     public function onExecuteRiskRule(\Enlight_Hook_HookArgs $arguments)
     {
@@ -276,6 +301,11 @@ class FrontendRiskManagement implements SubscriberInterface
         }
     }
 
+    /**
+     * Returns CRIF results in an array.
+     * @param $crifResponseObject
+     * @return array
+     */
     private function getCRIFResponseArray($crifResponseObject)
     {
         $crifResponseArray = array();
@@ -287,7 +317,13 @@ class FrontendRiskManagement implements SubscriberInterface
         return $crifResponseArray;
     }
 
-    /***
+    /**
+     * Checks if a CRIF risk check is necessary:
+     * 1. Only if billing country in allowed countries array because for other countries crif has no data available
+     * 2. If a call failed we wait one hour to try again, to prevent making hundreds of calls within minutes
+     * 3. Check both in session and in database. If no crif results in both, check is necessary
+     * 4. If a CRIF result exists, check if it is expired according to plugin settings
+     *
      * @param $addressArray
      * @param null $type : billing or shipping
      * @return bool
@@ -356,6 +392,11 @@ class FrontendRiskManagement implements SubscriberInterface
         return false;
     }
 
+    /**
+     * Returns crifstatus from an addressarray, depending on SW version.
+     * @param $aAddress
+     * @return null
+     */
     private function getCrifStatusFromAddressArray($aAddress)
     {
         // SW 5.0
@@ -374,6 +415,11 @@ class FrontendRiskManagement implements SubscriberInterface
         return null;
     }
 
+    /**
+     * Returns CRIF result from an addressarray, depending on SW version.
+     * @param $aAddress
+     * @return null
+     */
     private function getCrifResultFromAddressArray($aAddress)
     {
         // SW 5.0
@@ -392,6 +438,11 @@ class FrontendRiskManagement implements SubscriberInterface
         return null;
     }
 
+    /**
+     * Returns CRIF date from an addressarray, depending on SW version.
+     * @param $aAddress
+     * @return \DateTime|null
+     */
     private function getCrifDateFromAddressArray($aAddress)
     {
         // SW 5.0
@@ -440,7 +491,9 @@ class FrontendRiskManagement implements SubscriberInterface
         return !$this->sRiskFATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS($scoring, $value);
     }
 
-    /***
+    /**
+     * Updates billingaddress from address in CRIF response, but only if something has changed.
+     *
      * @param $addressID
      * @param $crifResponse CTResponse
      */
@@ -475,6 +528,11 @@ class FrontendRiskManagement implements SubscriberInterface
         }
     }
 
+    /**
+     * Checks in session if adress was auto updated. This happens if CRIF corrected an adress
+     * and it is activated in pluginsettings that corrected addresses should be used.
+     * @return bool
+     */
     private function addressWasAutoUpdated()
     {
         if (Shopware()->Session()->offsetExists('fatchipComputopCrifAutoAddressUpdate')) {

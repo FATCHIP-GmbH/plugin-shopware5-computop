@@ -1,4 +1,6 @@
 <?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13,14 +15,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Subscibers
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
@@ -28,7 +31,11 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 use Enlight\Event\SubscriberInterface;
 use Shopware\Components\Theme\LessDefinition;
 use Shopware\Plugins\FatchipCTPayment\Util;
-
+/**
+ * Class Checkout
+ *
+ * @package Shopware\Plugins\FatchipCTPayment\Subscribers
+ */
 class Checkout implements SubscriberInterface
 {
 
@@ -36,6 +43,8 @@ class Checkout implements SubscriberInterface
     protected $utils;
 
     /**
+     * return array with all subscribed events
+     *
      * @return array<string,string>
      */
     public static function getSubscribedEvents()
@@ -90,6 +99,10 @@ class Checkout implements SubscriberInterface
 
 
     /**
+     * 1. Assigns template variables for the ShippingPayment action
+     * 2. Extends templates for AmazonPay and PaypalExpress
+     * 3. Extends confirm template for Easycredit to show Easycredit conditions on confirm page
+     *
      * @param \Enlight_Controller_ActionEventArgs $args
      * @return void
      */
@@ -210,6 +223,13 @@ class Checkout implements SubscriberInterface
         }
     }
 
+    /**
+     * Saves date of birth info from template params
+     *
+     * @param $paymentName
+     * @param $userId
+     * @param $params
+     */
     private function updateUserDoB($paymentName, $userId, $params)
     {
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_birthyear'])) {
@@ -221,6 +241,13 @@ class Checkout implements SubscriberInterface
         }
     }
 
+    /**
+     * Saves Phone info from template params in user billing attributes
+     *
+     * @param $paymentName
+     * @param $userId
+     * @param $params
+     */
     private function updateUserPhone($paymentName, $userId, $params)
     {
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_phone'])) {
@@ -230,6 +257,12 @@ class Checkout implements SubscriberInterface
         }
     }
 
+    /**
+     * Saves social security number from template params in user attributes
+     * @param $paymentName
+     * @param $userId
+     * @param $params
+     */
     private function updateUserSSN($paymentName, $userId, $params)
     {
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_socialsecuritynumber'])) {
@@ -239,7 +272,12 @@ class Checkout implements SubscriberInterface
         }
     }
 
-
+    /**
+     * Saves annual salary from template params in user attributes
+     * @param $paymentName
+     * @param $userId
+     * @param $params
+     */
     private function updateUserAnnualSalary($paymentName, $userId, $params)
     {
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_annualsalary'])) {
@@ -249,6 +287,12 @@ class Checkout implements SubscriberInterface
         }
     }
 
+    /**
+     * Saves bank info from template params in user attributes
+     * @param $paymentName
+     * @param $userId
+     * @param $params
+     */
     private function updateUserLastschriftBank($paymentName, $userId, $params)
     {
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_bank'])) {
@@ -258,6 +302,12 @@ class Checkout implements SubscriberInterface
         }
     }
 
+    /**
+     * Saves iban from template params in user attributes
+     * @param $paymentName
+     * @param $userId
+     * @param $params
+     */
     private function updateUserLastschriftIban($paymentName, $userId, $params)
     {
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_iban'])) {
@@ -267,6 +317,12 @@ class Checkout implements SubscriberInterface
         }
     }
 
+    /**
+     * Saves accountholder info from template params in user attributes
+     * @param $paymentName
+     * @param $userId
+     * @param $params
+     */
     private function updateUserLastschriftKontoinhaber($paymentName, $userId, $params)
     {
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_kontoinhaber'])) {
@@ -276,6 +332,12 @@ class Checkout implements SubscriberInterface
         }
     }
 
+    /**
+     * Saves issuer info in session
+     *
+     * @param $paymentName
+     * @param $params
+     */
     private function setIssuerInSession($paymentName, $params)
     {
         $session = Shopware()->Session();
@@ -295,6 +357,7 @@ class Checkout implements SubscriberInterface
 
 
     /**
+     * Adds all.less to less definistion
      * @return LessDefinition
      */
     public function onThemeCompilerCollectPluginLess()
