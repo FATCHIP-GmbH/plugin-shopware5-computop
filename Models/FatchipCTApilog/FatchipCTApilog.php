@@ -1,5 +1,7 @@
 <?php
 
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,24 +16,30 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Models_FatchipCTApilog
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
+
+
 
 namespace Shopware\CustomModels\FatchipCTApilog;
 
 use Shopware\Components\Model\ModelEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Common\Collections\ArrayCollection;
+
 
 /**
+ * Class FatchipCTApilog
+
+ *
  * @ORM\Entity(repositoryClass="Repository")
  * @ORM\Table(name="s_plugin_fatchip_computop_api_log")
  * @ORM\HasLifecycleCallbacks
@@ -40,6 +48,8 @@ class FatchipCTApilog extends ModelEntity
 {
 
   /**
+   * Id of the Log entry
+   *
    * @var integer $id
    *
    * @ORM\Column(name="id", type="integer", nullable=false)
@@ -64,39 +74,46 @@ class FatchipCTApilog extends ModelEntity
     private $response;
 
    /**
+    * Date the entry was created
    * @ORM\Column(name="creation_date", type="datetime", precision=0, scale=0, nullable=false, unique=false)
    */
     private $creationDate;
 
     /**
+     * Paymentname
      * @ORM\Column(name="payment_name", type="string", length=255, precision=0, scale=0, nullable=true, unique=false)
      */
     private $paymentName;
 
 
     /**
+     * Contains all details of the request
    * @ORM\Column(name="request_details", type="array", precision=0, scale=0, nullable=true, unique=false)
    */
     private $requestDetails;
 
   /**
+   * Contains all details of the response
    * @ORM\Column(name="response_details", type="array", precision=0, scale=0, nullable=true, unique=false)
    */
     private $responseDetails;
 
     /**
+     * TransactionsID
      * @var string $transId
      * @ORM\Column(name="trans_id", length=255, type="string", nullable=true)
      */
     private $transId;
 
     /**
+     * PayID
      * @var string $PayId
      * @ORM\Column(name="pay_id", length=255, type="string", nullable=true)
      */
     private $payId;
 
     /**
+     * XID
      * @var string $x
      * @ORM\Column(name="x_id", length=255, type="string", nullable=true)
      */
@@ -114,6 +131,7 @@ class FatchipCTApilog extends ModelEntity
 
 
     /**
+     * @ignore <description>
      * @return mixed
      */
     public function getRequest()
@@ -122,6 +140,7 @@ class FatchipCTApilog extends ModelEntity
     }
 
     /**
+     * @ignore <description>
      * @param mixed $request
      */
     public function setRequest($request)
@@ -130,6 +149,7 @@ class FatchipCTApilog extends ModelEntity
     }
 
     /**
+     * @ignore <description>
      * @return mixed
      */
     public function getResponse()
@@ -138,6 +158,7 @@ class FatchipCTApilog extends ModelEntity
     }
 
     /**
+     * @ignore <description>
      * @param mixed $response
      */
     public function setResponse($response)
@@ -146,6 +167,7 @@ class FatchipCTApilog extends ModelEntity
     }
 
     /**
+     * @ignore <description>
      * @return mixed
      */
     public function getPaymentName()
@@ -154,7 +176,8 @@ class FatchipCTApilog extends ModelEntity
     }
 
     /**
-     * @param mixed $response
+     * @ignore <description>
+     * @param mixed $paymentName
      */
     public function setPaymentName($paymentName)
     {
@@ -163,6 +186,7 @@ class FatchipCTApilog extends ModelEntity
 
 
     /**
+     * @ignore <description>
      * @return mixed
      */
     public function getCreationDate()
@@ -171,6 +195,7 @@ class FatchipCTApilog extends ModelEntity
     }
 
     /**
+     * @ignore <description>
      * @param mixed $creationDate
      */
     public function setCreationDate($creationDate)
@@ -179,6 +204,7 @@ class FatchipCTApilog extends ModelEntity
     }
 
     /**
+     * @ignore <description>
      * @return mixed
      */
     public function getRequestDetails()
@@ -187,6 +213,7 @@ class FatchipCTApilog extends ModelEntity
     }
 
     /**
+     * @ignore <description>
      * @param mixed $requestDetails
      */
     public function setRequestDetails($requestDetails)
@@ -195,6 +222,7 @@ class FatchipCTApilog extends ModelEntity
     }
 
     /**
+     * @ignore <description>
      * @return mixed
      */
     public function getResponseDetails()
@@ -203,6 +231,7 @@ class FatchipCTApilog extends ModelEntity
     }
 
     /**
+     * @ignore <description>
      * @param mixed $responseDetails
      */
     public function setResponseDetails($responseDetails)
@@ -211,6 +240,7 @@ class FatchipCTApilog extends ModelEntity
     }
 
     /**
+     * @ignore <description>
      * @return string
      */
     public function getTransId()
@@ -219,6 +249,7 @@ class FatchipCTApilog extends ModelEntity
     }
 
     /**
+     * @ignore <description>
      * @param string $transId
      */
     public function setTransId($transId)
@@ -227,6 +258,7 @@ class FatchipCTApilog extends ModelEntity
     }
 
     /**
+     * @ignore <description>
      * @return string
      */
     public function getPayId()
@@ -235,6 +267,7 @@ class FatchipCTApilog extends ModelEntity
     }
 
     /**
+     * @ignore <description>
      * @param string $payId
      */
     public function setPayId($payId)
@@ -243,6 +276,7 @@ class FatchipCTApilog extends ModelEntity
     }
 
     /**
+     * @ignore <description>
      * @return string
      */
     public function getXId()
@@ -251,6 +285,7 @@ class FatchipCTApilog extends ModelEntity
     }
 
     /**
+     * @ignore <description>
      * @param string $xId
      */
     public function setXId($xId)
