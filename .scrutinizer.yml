@@ -5,7 +5,7 @@ checks:
         duplication: true
         fix_php_opening_tag: false
         remove_php_closing_tag: false
-        one_class_per_file: false
+        one_class_per_file: true
         side_effects_or_types: true
         no_mixed_inline_html: false
         require_braces_around_control_structures: false
