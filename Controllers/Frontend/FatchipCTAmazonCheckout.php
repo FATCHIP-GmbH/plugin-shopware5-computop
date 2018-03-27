@@ -1,5 +1,7 @@
 <?php
 
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,14 +16,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 use Shopware\Plugins\FatchipCTPayment\Util;
@@ -33,7 +36,10 @@ use Shopware\Components\CSRFWhitelistAware;
 class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Controllers_Frontend_Checkout implements CSRFWhitelistAware
 {
 
-    /** @var \Fatchip\CTPayment\CTPaymentService $service */
+    /**
+     * PaymentService
+     * @var \Fatchip\CTPayment\CTPaymentService $service
+     */
     protected $paymentService;
 
     /**
@@ -42,6 +48,10 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
      */
     protected $plugin;
 
+    /**
+     * Array containing the pluginsettings
+     * @var array
+     */
     protected $config;
 
     /** @var Util $utils * */
@@ -52,6 +62,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
      */
     public function init()
     {
+        // init method may or may not exists depending on sw version
         if (method_exists(parent::init())) {
             parent::init();
         }
@@ -62,6 +73,11 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
     }
 
+    /**
+     *  extends shippingPayment with custom template
+     *
+     * @return void|Enlight_View_Default
+     */
     public function shippingPaymentAction()
     {
         parent::shippingPaymentAction();
@@ -71,7 +87,6 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         $this->view->assign('fatchipCTAmazonpayID', $fatchipCTAmazonpayID);
         $this->view->assign('fatchipCTResponse', $params['fatchipCTResponse']);
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
-        // ToDO check why active step has to be reassigned
         $this->view->assign('sStepActive', 'paymentShipping');
 
         // override template with ours for xhr requests
@@ -83,6 +98,9 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         $this->view->loadTemplate('frontend/fatchipCTAmazonCheckout/shipping_payment.tpl');
     }
 
+    /**
+     * {inheritdoc}
+     */
     public function getWhitelistedCSRFActions()
     {
         $returnArray = array(
@@ -91,13 +109,25 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         return $returnArray;
     }
 
+    /**
+     *  extends confirm with custom template
+     *
+     * @return void|Enlight_View_Default
+     */
     public function confirmAction()
     {
         parent::confirmAction();
-        $response = $this->ctGetOrderDetails();
         $this->view->loadTemplate('frontend/fatchipCTAmazonCheckout/confirm.tpl');
     }
 
+    /**
+     *  extends finish with custom template
+     *
+     * also unsets all session variables and refreshes basket
+     *
+     * @throws Exception
+     * @return void
+     */
     public function finishAction()
     {
         parent::finishAction();
@@ -106,10 +136,15 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         Shopware()->Modules()->Basket()->sRefreshBasket();
     }
 
-    // ToDo think about what to do if errors occur in this step
+    /**
+     *  get amazon order information from computop api
+     *
+     * @return \Fatchip\CTPayment\CTResponse $response
+     */
     public function ctGetOrderDetails()
     {
         $session = Shopware()->Session();
+        # TODO use default orderDesc
         $orderDesc = "Test";
 
         /** @var \Fatchip\CTPayment\CTPaymentMethods\AmazonPay $payment */

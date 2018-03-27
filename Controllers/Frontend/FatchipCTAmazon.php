@@ -40,8 +40,13 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
     public $paymentClass = 'AmazonPay';
 
     /**
+     * Success action method.
+     *
+     * Called after Computop redirects to SuccessURL
+     * If everything is OK, order is created with status Paid, TransactionIDs are saved,
+     * RefNr is updated and user is redirected to finish page
+     *
      * @return void
-     * @throws Exception
      */
     public function gatewayAction()
     {
@@ -65,8 +70,11 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
     }
 
     /**
+     * Cancel action method.
+     *
+     * If an error occurs in the Computop call, and FailureURL is set, user is redirected to this
+     * Reads error message from Response and redirects to Amazon Register Page
      * @return void
-     * Cancel action method
      */
     public function failureAction()
     {
@@ -79,6 +87,11 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
         return $this->forward('index', 'FatchipCTAmazonRegister', null, ['CTError' => $ctError]);
     }
 
+    /**
+     * finishes the order by calling the computop api.
+     *
+     * @return void
+     */
     public function ctSetAndConfirmOrderDetails()
     {
         $session = Shopware()->Session();

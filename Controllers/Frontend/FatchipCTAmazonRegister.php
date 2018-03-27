@@ -33,7 +33,10 @@ use Shopware\Components\CSRFWhitelistAware;
 class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Controllers_Frontend_Register implements CSRFWhitelistAware
 {
 
-    /** @var \Fatchip\CTPayment\CTPaymentService $service */
+    /**
+     * PaymentService
+     * @var \Fatchip\CTPayment\CTPaymentService $service
+     */
     protected $paymentService;
 
     /**
@@ -42,6 +45,10 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
      */
     protected $plugin;
 
+    /**
+     * Array containing the pluginsettings
+     * @var array
+     */
     protected $config;
 
     /** @var Util $utils * */
@@ -52,15 +59,6 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
      */
     public function init()
     {
-        // init method does not exist in
-        // SW >5.2
-        // SW 5.4 check
-        // SW 5.3 check
-        // SW 5.2 check
-        // SW 5.1 check
-        // SW 5.0 check
-        // also session property was removed in SW5.2? 5.3
-
         if (method_exists('Shopware_Controllers_Frontend_Register', 'init')) {
             parent::init();
         }
@@ -90,6 +88,11 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         $this->forward('index', null, null, ['fatchipCTResponse' => $response]);
     }
 
+    /**
+     *  replaces the standard shopware user registration with the amazon widgets
+     *
+     * users are forwarded to this action after returning from amazonpay login
+     */
     public function indexAction()
     {
         $session = Shopware()->Session();
@@ -98,20 +101,20 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
 
         // Not Compatible with SW 5.3 since 5.2? verfiy
         // ToDO check if Version Check work for all SW Versions
-        if (version_compare(\Shopware::VERSION, '5.2', '>=')){
+        if (version_compare(\Shopware::VERSION, '5.2', '>=')) {
             $register = $this->View()->getAssign('errors');
             $errors = array_merge($register['personal'], $register['billing'], $register['shipping']);
         } else {
             $registerArrObj = $this->View()->getAssign('register')->getArrayCopy();
             $register = $this->getArrayFromArrayObjs($registerArrObj);
             $merged_errors = array_merge($register['personal'], $register['billing'], $register['shipping']);
-            $errors =  $merged_errors['error_flags'];
+            $errors = $merged_errors['error_flags'];
         }
         if (!empty($errors)) {
             $errorMessage = 'Fehler bei der Shop Registrierung:<BR>' .
-                            'Bitte korrigieren Sie in Ihrem Amazon Konto folgende Angaben:<BR>';
+                'Bitte korrigieren Sie in Ihrem Amazon Konto folgende Angaben:<BR>';
             $this->view->assign('errorMessage', $errorMessage);
-            $this->view->assign('errorFields',array_keys($errors));
+            $this->view->assign('errorFields', array_keys($errors));
         }
         // unused
         //$this->view->assign('fatchipCTResponse', $params['fatchipCTResponse']);
@@ -122,6 +125,11 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
 
     }
 
+    /**
+     *  calls the computop api with AmazonLGN after user log-ins
+     *
+     * @return \Fatchip\CTPayment\CTResponse
+     */
     public function loginComputopAmazon()
     {
         // ToDO  get countryIso from session instead by calling sGetUserData
@@ -147,10 +155,12 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
             $countryIso,
             $router->assemble(['controller' => 'FatchipCTAmazon', 'action' => 'notify', 'forceSecure' => true])
         );
-        return  $this->plugin->callComputopService($requestParams, $payment, 'LGN', $payment->getCTPaymentURL());
+        return $this->plugin->callComputopService($requestParams, $payment, 'LGN', $payment->getCTPaymentURL());
     }
 
     /**
+     * converts arrayObjects from view template to an accessible array
+     *
      * @param $arrayObjs
      * @return array
      */
@@ -167,6 +177,8 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
     }
 
     /**
+     * saves relevant amazon tokens in user session
+     *
      * @param $params
      */
     public function saveParamsToSession($params)
@@ -187,6 +199,9 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         }
     }
 
+    /**
+     * {inheritdoc}
+     */
     public function getWhitelistedCSRFActions()
     {
         $returnArray = array(

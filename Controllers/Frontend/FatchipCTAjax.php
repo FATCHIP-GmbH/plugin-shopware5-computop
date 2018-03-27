@@ -1,5 +1,7 @@
 <?php
 
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,23 +16,29 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 use Shopware\Plugins\FatchipCTPayment\Util;
 
-
+/**
+ * Shopware_Controllers_Frontend_FatchipCTAjax
+ * Frontend controller for Ajax communication
+ */
 class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Action
 {
 
-    /** @var \Fatchip\CTPayment\CTPaymentService $service */
+    /**
+     * PaymentService
+     * @var \Fatchip\CTPayment\CTPaymentService $service */
     protected $paymentService;
 
     /**
@@ -47,8 +55,16 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
     /** @var Util $utils * */
     protected $utils;
 
+    /**
+     * shopware user session
+     * @var Enlight_Components_Session_Namespace
+     */
     protected $session;
 
+
+    /**
+     * Class contructor.
+     */
     public function init()
     {
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
@@ -60,6 +76,12 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
 
     }
 
+    /**
+     * calls the computop api with amazonpay GOD api call
+     * "returns" api response as json encoded echo for use in JQuery plugins
+     *
+     * @see AmazonPay::getAmazonGODParams()
+     */
     public function ctGetOrderDetailsAction()
     {
         $params = $this->Request()->getParams();
@@ -97,7 +119,12 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         echo $encoded;
     }
 
-    // ToDo leave Actions here, but move request response handling to payment service
+    /**
+     * calls the computop api with amazonpay SOD api call
+     * "returns" api response as json encoded echo for use in JQuery plugins
+     *
+     * @see AmazonPay::getAmazonSODParams()
+     */
     public function ctSetOrderDetailsAction()
     {
         $params = $this->Request()->getParams();
@@ -129,9 +156,11 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         echo $encoded;
     }
 
-    /* return error in case country of shippingaddress
-     * is not supported as delivery country
+    /**
+     * checks if shipping country of amazon address is supported by the shop
+     * "returns" success or error as json encoded echo for use in JQuery plugins
      *
+     * @see  getAllowedShippingCountries()
      */
     public function ctIsShippingCountrySupportedAction()
     {
@@ -152,7 +181,11 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         echo $encoded;
     }
 
-    // ToDO Move to Utils? Does this work with subshops?
+    /**
+     *  returns all shipping countries allowed in shopware configuration
+     *
+     * @return array
+     */
     public function getAllowedShippingCountries()
     {
         $activeCountries = $this->get('models')

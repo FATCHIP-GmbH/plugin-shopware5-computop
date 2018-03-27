@@ -46,7 +46,7 @@ class Models
     private $plugin;
 
     /**
-     * Model constructor.
+     * Models constructor.
      */
     public function __construct()
     {

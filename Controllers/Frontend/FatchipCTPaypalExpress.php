@@ -41,14 +41,26 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
      */
     public $paymentClass = 'PaypalExpress';
 
+    /**
+     * index action method
+     *
+     * redirects to confirm action
+     *
+     * @return void
+     */
     public function indexAction()
     {
         $this->forward('confirm');
     }
 
     /**
-     * @return void
+     * gateway action method.
+     *
+     * user is redirected here after clicking on the paypal express checkout button
+     * redirects the user to the paypal website
+     *
      * @throws Exception
+     * @return void
      */
     public function gatewayAction()
     {
@@ -83,7 +95,11 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
     }
 
     /**
-     * Cancel action method
+     * return action method.
+     *
+     * user is redirected here after returning from the paypal site
+     * forward user to paypalExpressRegister or to failure Action
+     *
      * @return void
      */
     public function returnAction()
@@ -111,9 +127,13 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
     }
 
     /**
-     * success action method
+     * Success action method.
+     *
+     * Called after Computop redirects to SuccessURL
+     * If everything is OK, order is created with status Paid, TransactionIDs are saved,
+     * RefNr is updated and user is redirected to finish page
+     *
      * @return void
-     * @throws Exception
      */
     public function confirmAction()
     {
@@ -131,7 +151,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
             $this->getCurrencyShortName()
         );
         // wrap this in a method we can hook for central logging
-        // refactor Amazon to use central Paymentservice to get rid of service Param
+        // TODO refactor Amazon to use central Paymentservice to get rid of service Param
         $response = $this->plugin->callComputopService($requestParams, $payment, 'ORDER', $payment->getCTPaymentURL());
 
         switch ($response->getStatus()) {
@@ -152,8 +172,12 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
     }
 
     /**
+     * Cancel action method.
+     *
+     * If an error occurs in the Computop call or user cancels on paypal page user is redirected here
+     * Reads error message from response and redirects to shippingpayment page
+     *
      * @return void
-     * Cancel action method
      */
     public function failureAction()
     {
