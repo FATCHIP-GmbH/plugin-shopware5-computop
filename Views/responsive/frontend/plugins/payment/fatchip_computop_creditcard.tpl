@@ -1,6 +1,22 @@
 <div class="fatchip-computop-payment-creditcard-form payment--form-group">
     {if $fatchipCTCreditCardMode}
         {block name="frontend_checkout_payment_fatchip_computop_creditcard_cardnumber_label"}
+            <div class="select-field">
+                {block name="frontend_checkout_payment_fatchip_computop_creditcard_brand_input"}
+                    <select name="FatchipComputopPaymentData[fatchip_computop_creditcard_brand]"
+                            id="fatchip_computop_creditcard_brand"
+                            class="is--required"
+                            {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
+                    >
+                        <option value="VISA">Visa</option>
+                        <option value="MasterCard">MasterCard</option>
+                        <option value="AMEX">American Express</option>
+                    </select>
+                {/block}
+            </div>
+        {/block}
+
+        {block name="frontend_checkout_payment_fatchip_computop_creditcard_cardnumber_label"}
             <p class="none">
                 <label for="fatchip_computop_creditcard_cardnumber">{s name='CreditcardCardnumberLabel'}Kartennummer{/s}</label>
             </p>
@@ -31,7 +47,7 @@
                 >
                     <option disabled="disabled" value="">-</option>
                     {section name="expirationdatemonth" start=1 loop=13 step=1}
-                        <option value="{if $smarty.section.expirationdatemonth.index < 10}0{/if}">
+                        <option value="{if $smarty.section.expirationdatemonth.index < 10}0{$smarty.section.expirationdatemonth.index}{else}{$smarty.section.expirationdatemonth.index}{/if}">
                             {if $smarty.section.expirationdatemonth.index < 10}0{/if}{$smarty.section.expirationdatemonth.index}
                         </option>
                     {/section}
@@ -73,13 +89,5 @@
                 />
             {/block}
         </div>
-        <div id="fatchipCTCreditCard" hidden
-             data-fatchipCTCCNr'123'
-             data-fatchipCTCCCVC='456'
-             data-fatchipCTCCExpiryYear='2018'
-             data-fatchipCTCCExpiryMonth='04'
-             data-fatchipCTCCBrand='Visa'
-             data-fatchipCTCCPaymentId={$payment_mean.id}
-        ></div>
     {/if}
 </div>

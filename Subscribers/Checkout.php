@@ -94,6 +94,13 @@ class Checkout implements SubscriberInterface
             if ($paymentName === 'fatchip_computop_easycredit') {
                 $subject->redirect(['controller' => 'FatchipCTEasyCredit', 'action' => 'gateway', 'forceSecure' => true]);
             }
+
+            if ($pluginConfig['creditCardMode'] === 'SILENT' && $paymentName == 'fatchip_computop_creditcard') {
+                $session->offsetSet('FatchipComputopPaymentData', $params['FatchipComputopPaymentData'] );
+                $subject->redirect(['controller' => 'FatchipCTCreditCard', 'action' => 'postForm', 'forceSecure' => true], ['FatchipComputopPaymentData' => $params['FatchipComputopPaymentData']]);
+            }
+
+
         }
      }
 
