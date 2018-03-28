@@ -360,12 +360,12 @@ class FrontendRiskManagement implements SubscriberInterface
                 if (!empty($address) && $attribute = $address->getAttribute()) {
                     $attributeData = Shopware()->Models()->toArray($address->getAttribute());
                     //in attributeData there are NO underscores in attribute names and Shopware ads CamelCase after fcct prefix
-                    if (!isset($attributeData['fcctCrifresult']) || !isset($attributeData['fcctCrifdate'])) {
+                    if (!isset($attributeData['fatchipctCrifresult']) || !isset($attributeData['fatchipctCrifdate'])) {
                         return true;
                     } else {
-                        //write the values from the database in the addressarray
-                        $addressArray['attribute']['fcct_crifresult'] = $attributeData['fcctCrifresult'];
-                        $addressArray['attribute']['fcct_crifdate'] = $attributeData['fcctCrifdate'];
+                        //write the values from the database in the addressarray, as they are needed later to check last time checked
+                        $addressArray['attributes']['fatchipctCrifresult'] = $attributeData['fatchipctCrifresult'];
+                        $addressArray['attributes']['fatchipctCrifdate'] = $attributeData['fatchipctCrifdate'];
                     }
                 } else {
                     return false;
@@ -405,7 +405,7 @@ class FrontendRiskManagement implements SubscriberInterface
         } // SW 5.3, SW 5.4
         else if (array_key_exists('fatchipct_crifstatus', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipct_crifstatus'];
-        } // SW 5.2
+        } // SW 5.
         else if (array_key_exists('fatchipCT_crifstatus', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipCT_crifstatus'];
         } // SW 5.1
@@ -431,7 +431,7 @@ class FrontendRiskManagement implements SubscriberInterface
         } // SW 5.2
         else if (array_key_exists('fatchipCT_crifresult', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipCT_crifresult'];
-        } // SW 5.1
+        } // SW 5.1fatchipct
         else if (array_key_exists('fatchipctCrifresult', $aAddress)) {
             return $aAddress['fatchipctCrifresult'];
         }
@@ -445,8 +445,13 @@ class FrontendRiskManagement implements SubscriberInterface
      */
     private function getCrifDateFromAddressArray($aAddress)
     {
+        /*not SW dependent, but might have been set in crifCheckNecessary*/
+        if (array_key_exists('fatchipctCrifdate', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fatchipctCrifdate'] instanceof \DateTime ?
+              $aAddress['attributes']['fatchipctCrifdate'] : new \DateTime($aAddress['attributes']['fatchipctCrifdate']);
+        }
         // SW 5.0
-        if (array_key_exists('fatchipCTCrifdate', $aAddress)) {
+        else if (array_key_exists('fatchipCTCrifdate', $aAddress)) {
             return $aAddress['fatchipCTCrifdate'] instanceof \DateTime ?
                 $aAddress['fatchipCTCrifdate'] : new \DateTime($aAddress['fatchipCTCrifdate']);
         } // SW 5.3, SW 5.4
