@@ -337,7 +337,7 @@ class FrontendRiskManagement implements SubscriberInterface
 
         // only check in allowed countries self::allowedCountries
         $util = new Util();
-        $countryIso = $util->getCTCountryIso($addressArray['countryId']);
+        $countryIso = $util->getCTCountryIso($util->getCountryIdFromAddress($addressArray));
         $allowedCountry = in_array($countryIso, self::allowedCountries) ? true : false;
         if (! $allowedCountry){
             return false;
