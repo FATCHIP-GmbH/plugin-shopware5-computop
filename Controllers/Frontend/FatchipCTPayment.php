@@ -334,6 +334,9 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 $attribute->setfatchipctTransid($response->getTransID());
                 $attribute->setfatchipctPayid($response->getPayID());
                 $attribute->setfatchipctXid($response->getXID());
+                $attribute->setfatchipctkreditkartepseudonummer($response->getPCNr());
+                $attribute->setfatchipctkreditkartebrand($response->getCCBrand());
+                $attribute->setfatchipctkreditkarteexpiry($response->getCCExpiry());
 
                 Shopware()->Models()->persist($attribute);
                 Shopware()->Models()->flush();
