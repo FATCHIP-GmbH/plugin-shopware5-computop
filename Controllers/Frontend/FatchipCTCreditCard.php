@@ -49,7 +49,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
      */
     public function gatewayAction()
     {
-        $payment = $this->getPaymentClassForGatewayAction();
+        //$payment = $this->getPaymentClassForGatewayAction();
         if ($this->config['creditCardMode'] !== 'SILENT') {
             $payment = $this->getPaymentClassForGatewayAction();
             //only Creditcard has URLBck

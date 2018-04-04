@@ -31,6 +31,7 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 use Enlight\Event\SubscriberInterface;
 use Shopware\Components\Theme\LessDefinition;
 use Shopware\Plugins\FatchipCTPayment\Util;
+use Fatchip\CTPayment\CTOrder\CTOrder;
 /**
  * Class Checkout
  *
@@ -39,8 +40,25 @@ use Shopware\Plugins\FatchipCTPayment\Util;
 class Checkout implements SubscriberInterface
 {
 
+    /**
+     * PaymentService
+     * @var \Fatchip\CTPayment\CTPaymentService $service */
+    protected $paymentService;
+
     /** @var Util $utils * */
     protected $utils;
+
+    /**
+     * Array containing the pluginsetting
+     * @var array
+     */
+    protected $config;
+
+    /**
+     * FatchipCTpayment Plugin Bootstrap Class
+     * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     */
+    protected $plugin;
 
     /**
      * return array with all subscribed events
@@ -94,13 +112,6 @@ class Checkout implements SubscriberInterface
             if ($paymentName === 'fatchip_computop_easycredit') {
                 $subject->redirect(['controller' => 'FatchipCTEasyCredit', 'action' => 'gateway', 'forceSecure' => true]);
             }
-
-            if ($pluginConfig['creditCardMode'] === 'SILENT' && $paymentName == 'fatchip_computop_creditcard') {
-                $session->offsetSet('FatchipComputopPaymentData', $params['FatchipComputopPaymentData'] );
-                $subject->redirect(['controller' => 'FatchipCTCreditCard', 'action' => 'postForm', 'forceSecure' => true], ['FatchipComputopPaymentData' => $params['FatchipComputopPaymentData']]);
-            }
-
-
         }
      }
 
@@ -116,7 +127,11 @@ class Checkout implements SubscriberInterface
     public function onPostdispatchFrontendCheckout(\Enlight_Controller_ActionEventArgs $args)
     {
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        // refactor to $this->config
         $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
+        $this->config = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
+        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
         $subject = $args->getSubject();
         $view = $subject->View();
         $request = $subject->Request();
@@ -196,6 +211,16 @@ class Checkout implements SubscriberInterface
 
             if ($pluginConfig['creditCardMode'] == 'SILENT' && $paymentName == 'fatchip_computop_creditcard'){
                 $view->assign('fatchipCTCreditCardMode', "1");
+                // the creditcard form send all data directly to payssl.aspx
+                // set the neccessary pre-encrypted fields in view
+                $payment = $this->getPaymentClassForGatewayAction();
+                $payment->setCapture('MANUAL');
+                $payment->setTxType('Order');
+                $requestParams = $payment->getRedirectUrlParams();
+                unset($requestParams['Template']);
+                $silentParams = $payment->prepareSilentRequest($requestParams);
+                $view->assign('fatchipCTCreditCardSilentParams', $silentParams);
+
             }
         }
 
@@ -373,6 +398,85 @@ class Checkout implements SubscriberInterface
             [],
             [__DIR__ . '/../Views/frontend/_public/src/less/all.less']
         );
+    }
+
+    /** Duplicate methods from payment controller
+     * to set pre-encrypted data into shippingpaxyment view
+     * Helper function that creates a payment object
+     * @return \Fatchip\CTPayment\CTPaymentMethodsIframe\
+     */
+    protected function getPaymentClassForGatewayAction() {
+
+        $ctOrder = $this->createCTOrder();
+        $router = Shopware()->Front()->Router();
+        $payment = $this->paymentService->getIframePaymentClass(
+            'CreditCard',
+            $this->config,
+            $ctOrder,
+            'https://testshop.de/sw537-computop/FatchipCTCreditCard/postFormSuccess',
+            'https://testshop.de/sw537-computop/fatchipCTCreditCard/failure',
+            null,
+            null,
+            null
+        );
+
+        return $payment;
+    }
+
+    /**
+     * Helper funciton to create a CTOrder object for the current order
+     * @return CTOrder|void
+     */
+    protected function createCTOrder() {
+        $session = Shopware()->Session();
+
+        $userData = $session->sRegister;
+
+
+        $ctOrder = new CTOrder();
+        //$ctOrder->setAmount($session->sBasketAmount * 100);
+        $ctOrder->setAmount('1190');
+        $ctOrder->setCurrency($test = Shopware()->Container()->get('currency')->getShortName());
+        // try catch in case Address Splitter retrun exceptions
+        try {
+            $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billing']));
+            // check if shipping address ist set
+            if (!empty($userData['shipping']['street'])) {
+                $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shipping']));
+            } else {
+                // use billingAddress as shippingAddress
+                $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['billing']));
+            }
+        } catch (Exception $e) {
+            $ctError = [];
+            $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
+            $ctError['CTErrorCode'] = $e->getMessage();
+            return $this->forward('shippingPayment', 'checkout', null,  ['CTError' => $ctError]);
+        }
+        $ctOrder->setEmail($userData['additional']['user']['email']);
+        $ctOrder->setCustomerID($session->sUserId);
+        // Mandatory for paypalStandard
+        $ctOrder->setOrderDesc(Shopware()->Config()->shopName);
+        return $ctOrder;
+    }
+
+    /**
+     * gets userData array from OrderVars from Session
+     * shoud be overridden in sublcasses if it is needed before an order exists
+     * @return mixed
+     */
+    protected function getUserData() {
+        $orderVars = $this->session->sOrderVariables;
+        return $orderVars['sUserData'];
+    }
+
+    /**
+     * Sets the userData paramater for Computop calls to Shopware Version and Module Version
+     * @return string
+     */
+    public function getUserDataParam()
+    {
+        return  'Shopware Version: ' .  \Shopware::VERSION . ', Modul Version: ' . $this->plugin->getVersion() ;;
     }
 
 }
