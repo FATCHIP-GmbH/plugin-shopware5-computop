@@ -434,8 +434,7 @@ class Checkout implements SubscriberInterface
 
 
         $ctOrder = new CTOrder();
-        //$ctOrder->setAmount($session->sBasketAmount * 100);
-        $ctOrder->setAmount('1190');
+        $ctOrder->setAmount($session->sBasketAmount * 100);
         $ctOrder->setCurrency($test = Shopware()->Container()->get('currency')->getShortName());
         // try catch in case Address Splitter retrun exceptions
         try {
