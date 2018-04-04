@@ -273,7 +273,7 @@ class FrontendRiskManagement implements SubscriberInterface
                 $crifParams = $crif->getRedirectUrlParams();
                 $crifResponse = $plugin->callComputopCRIFService($crifParams, $crif, 'CRIF', $crif->getCTPaymentURL());
 
-                /** @var \Fatchip\CTPayment\CTResponse\CTResponse $crifResponse */
+                /** @var \Fatchip\CTPayment\CTResponse $crifResponse */
                 $status = $crifResponse->getStatus();
                 $callResult = $crifResponse->getResult();
                 //write the result to the session for this billingaddressID
@@ -405,7 +405,11 @@ class FrontendRiskManagement implements SubscriberInterface
         } // SW 5.3, SW 5.4
         else if (array_key_exists('fatchipct_crifstatus', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipct_crifstatus'];
-        } // SW 5.
+        } //Also SW 5.4
+        else if (array_key_exists('fatchipctCrifstatus', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fatchipctCrifstatus'];
+        }
+        // SW 5.
         else if (array_key_exists('fatchipCT_crifstatus', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipCT_crifstatus'];
         } // SW 5.1
@@ -509,11 +513,15 @@ class FrontendRiskManagement implements SubscriberInterface
             //only update the address, if something changed. This check is important, because if nothing changed
             //callin persist and flush does not result in calling afterAddressUpdate and the session variable
             //fatchipComputopCrifAutoAddressUpdate woould not get cleared.
-            if ($address->getFirstName() !== $crifResponse->getFirstName() ||
-                $address->getLastName() !== $crifResponse->getLastName() ||
-                $address->getStreet() != $crifResponse->getAddrStreet() . ' ' . $crifResponse->getAddrStreetNr() ||
-                $address->getZipCode() !== $crifResponse->getAddrZip() ||
-                $address->getCity() !== $crifResponse->getAddrCity()
+            //also check if crifResponse contains addressdata at all, because an internal server error sometimes returns empty
+            //address data, which would result in clearing the billing address.
+            if ($this->crifResponseContainsAdressdata($crifResponse) &&
+                    (   $address->getFirstName() !== $crifResponse->getFirstName() ||
+                        $address->getLastName() !== $crifResponse->getLastName() ||
+                        $address->getStreet() != $crifResponse->getAddrStreet() . ' ' . $crifResponse->getAddrStreetNr() ||
+                        $address->getZipCode() !== $crifResponse->getAddrZip() ||
+                        $address->getCity() !== $crifResponse->getAddrCity()
+                    )
             ) {
                 $address->setFirstName($crifResponse->getFirstName());
                 $address->setLastName($crifResponse->getLastName());
@@ -531,6 +539,10 @@ class FrontendRiskManagement implements SubscriberInterface
 
             }
         }
+    }
+
+    private function crifResponseContainsAdressdata($crifResponse) {
+        return strlen($crifResponse->getAddrStreet()) > 0;
     }
 
     /**
