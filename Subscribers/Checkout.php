@@ -413,8 +413,8 @@ class Checkout implements SubscriberInterface
             'CreditCard',
             $this->config,
             $ctOrder,
-            'https://testshop.de/sw537-computop/FatchipCTCreditCard/postFormSuccess',
-            'https://testshop.de/sw537-computop/fatchipCTCreditCard/failure',
+            $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'postFormSuccess', 'forceSecure' => true]),
+            $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]),
             null,
             null,
             null

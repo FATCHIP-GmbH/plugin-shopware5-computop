@@ -20,22 +20,6 @@ $.plugin("fatchipCTCreditCardIFrame", {
     }
 });
 
-$.plugin("fatchipCTInputChanged", {
-
-    init: function () {
-        "use strict";
-        var me = this;
-        console.log("onInputChanged");
-
-    },
-
-    destroy: function () {
-        "use strict";
-        var me = this;
-        me._destroy();
-    }
-});
-
 $.plugin("fatchipCTCreditCardPaynow", {
 
     init: function () {

@@ -80,7 +80,7 @@
             {/block}
 
             {block name="frontend_checkout_payment_fatchip_computop_creditcard_cvc_input"}
-                <input name="FatchipComputopPaymentData[fatchip_computop_creditcard_cvc]" type="text"
+                <input name="CCCVC" type="text"
                        id="CCCVC"
                        class="payment--field is--required{if $error_flags.fatchip_computop__creditcard_cvc} has--error{/if}"
                        placeholder="{s name='creditcardCvc'}CVC Code{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
