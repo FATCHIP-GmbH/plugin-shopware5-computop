@@ -209,19 +209,6 @@ class Checkout implements SubscriberInterface
             // logic shouldnt be here or in the template ...
             $view->assign('CTError', $params['CTError']);
 
-            if ($pluginConfig['creditCardMode'] == 'SILENT' && $paymentName == 'fatchip_computop_creditcard'){
-                $view->assign('fatchipCTCreditCardMode', "1");
-                // the creditcard form send all data directly to payssl.aspx
-                // set the neccessary pre-encrypted fields in view
-                $payment = $this->getPaymentClassForGatewayAction();
-                $payment->setCapture('MANUAL');
-                $payment->setTxType('Order');
-                $requestParams = $payment->getRedirectUrlParams();
-                unset($requestParams['Template']);
-                $silentParams = $payment->prepareSilentRequest($requestParams);
-                $view->assign('fatchipCTCreditCardSilentParams', $silentParams);
-
-            }
         }
 
 
@@ -253,6 +240,22 @@ class Checkout implements SubscriberInterface
                 $view->assign('FatchipComputopEasyCreditInformation', $session->offsetGet('FatchipComputopEasyCreditInformation'));
             }
         }
+
+        if ($request->getActionName() == 'confirm' && $paymentName == 'fatchip_computop_creditcard' && $pluginConfig['creditCardMode'] == 'SILENT') {
+
+            $view->assign('fatchipCTCreditCardMode', "1");
+            // the creditcard form send all data directly to payssl.aspx
+            // set the neccessary pre-encrypted fields in view
+            $payment = $this->getPaymentClassForGatewayAction();
+            $payment->setCapture('MANUAL');
+
+            $requestParams = $payment->getRedirectUrlParams();
+            unset($requestParams['Template']);
+            $silentParams = $payment->prepareSilentRequest($requestParams);
+            $view->assign('fatchipCTCreditCardSilentParams', $silentParams);
+            $view->extendsTemplate('frontend/checkout/creditcard_confirm.tpl');
+        }
+
     }
 
     /**
@@ -413,7 +416,7 @@ class Checkout implements SubscriberInterface
             'CreditCard',
             $this->config,
             $ctOrder,
-            $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'postFormSuccess', 'forceSecure' => true]),
+            $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'success', 'forceSecure' => true]),
             $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]),
             null,
             null,

@@ -60,6 +60,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
 
             $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params)));
         } else {
+            //TODO: check if this can be removed
             $payID = $this->session->offsetGet('FatchipCTCCPayID');
             $transID = $this->session->offsetGet('FatchipCTCCTransID');
             /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\CreditCard $payment */
@@ -85,6 +86,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $this->view->assign('fatchipCTErrorMessage', $requestParams['CTError']['CTErrorMessage']);
         $this->view->assign('fatchipCTErrorCode', $requestParams['CTError']['CTErrorCode']);
     }
+
 
     /**
      * success action method
