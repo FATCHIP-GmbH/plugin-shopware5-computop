@@ -1,65 +1,86 @@
 $.plugin("fatchipCTCreditCardIFrame", {
-  defaults: {
-    fatchipCTCreditcardIFrameUrl: false,
-    fatchipCTErrorMessage: false,
-    fatchipCTErrorCode: false
-  },
+    defaults: {
+        fatchipCTCreditcardIFrameUrl: false,
+        fatchipCTErrorMessage: false,
+        fatchipCTErrorCode: false
+    },
 
-  init: function () {
-    "use strict";
-    var me = this;
-    me.applyDataAttributes();
+    init: function () {
+        "use strict";
+        var me = this;
+        me.applyDataAttributes();
 
-    window.top.location.href = me.opts.fatchipCTCreditcardIFrameUrl + "?CTError[CTErrorMessage]=" + me.opts.fatchipCTErrorMessage + "&CTError[CTErrorCode]=" + me.opts.fatchipCTErrorCode;
-  },
+        window.top.location.href = me.opts.fatchipCTCreditcardIFrameUrl + "?CTError[CTErrorMessage]=" + me.opts.fatchipCTErrorMessage + "&CTError[CTErrorCode]=" + me.opts.fatchipCTErrorCode;
+    },
 
-  destroy: function () {
-    "use strict";
-    var me = this;
-    me._destroy();
-  }
+    destroy: function () {
+        "use strict";
+        var me = this;
+        me._destroy();
+    }
 });
 
 $.plugin("fatchipCTCreditCardPaynow", {
 
-  init: function () {
-    "use strict";
-    var me = this;
-    console.log("preventing default2");
-    var action = $("#confirm--form").prop("action");
+    init: function () {
+        "use strict";
 
-    $("button[form=\"confirm--form\"]").on("click", function (event) {
-      event.preventDefault();
+        $("button[form=\"confirm--form\"]").on("click", function () {
+            //event.preventDefault();
 
+            var submitUrl = "https://www.computop-paygate.com/paynow.aspx";
+            $("#confirm--form").prop("action", submitUrl);
+            var expiryYear = $("select#CCExpiry").val();
+            var expiryMonth = $("select#CCExpiryMonth").val();
+            var expiry = expiryYear + expiryMonth;
+            console.log(expiry);
+            $("select#CCExpiry option:selected").val(expiry);
+        });
+    },
 
-      var agbElement = document.getElementById('sAGB');
-      if (agbElement) {
-        $(agbElement).removeClass('has--error');
-        if (!$(agbElement).is(':checked')) {
-          $(agbElement).addClass('has--error');
-          $(window).scrollTop($('#sAGB').offset().top);
-          return false;
-        }
-        var submitUrl = "https://www.computop-paygate.com/paynow.aspx";
-        var action = $("#confirm--form").prop("action");
-        $("#confirm--form").prop("action", submitUrl);
-        var expiryYear = $("select#CCExpiry option:selected").val();
-        var expiryMonth = $("select#CCExpiryMonth option:selected").val();
-        var expiry = expiryYear + expiryMonth;
-        $("select#CCExpiry option:selected").val(expiry)
-        $("#confirm--form").submit();
-      }
+    destroy: function () {
+        "use strict";
+        var me = this;
+        me._destroy();
+    }
 
-    });
-  },
+});
 
-  destroy: function () {
-    "use strict";
-    var me = this;
-    me._destroy();
-  }
+$.plugin("fatchipCTCCNrValidator", {
+    defaults: {
+        ibanbicReg: /^[0-9 ]+$/,
+        errorMessageClass: "register--error-msg",
+        moptIbanErrorMessage: "Dieses Feld darf nur Ziffern enthalten"
+    },
+    init: function () {
+        "use strict";
+        var me = this;
+        me.applyDataAttributes();
 
+        me.$el.bind("keyup change", function () {
+            $("#fatchipctiban--message").remove();
+            if (me.$el.val() && !me.opts.ibanbicReg.test(me.$el.val())) {
+                me.$el.addClass("has--error");
+                $("<div>", {
+                    "html": "<p>" + me.opts.moptIbanErrorMessage + "</p>",
+                    "id": "fatchipctiban--message",
+                    "class": me.opts.errorMessageClass
+                }).insertAfter(me.$el);
+
+            } else {
+                me.$el.removeClass("has--error");
+                $("#fatchipctiban--message").remove();
+            }
+        });
+    },
+    destroy: function () {
+        "use strict";
+        var me = this;
+        me._destroy();
+    }
 });
 
 $("#fatchipCTCreditCardPaynow").fatchipCTCreditCardPaynow();
 $("#fatchipCTCreditCardIFrame").fatchipCTCreditCardIFrame();
+$("#CCNr").fatchipCTCCNrValidator();
+$("#CCCVC").fatchipCTCCNrValidator();
