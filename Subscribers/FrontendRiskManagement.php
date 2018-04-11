@@ -267,9 +267,9 @@ class FrontendRiskManagement implements SubscriberInterface
                 $ctOrder->setEmail($user['additional']['user']['email']);
                 $ctOrder->setCustomerID($user['additional']['user']['id']);
 
-                //TODO: Set orderDesc and Userdata
+                //TODO: Set orderDesc
                 /** @var CRIF $crif */
-                $crif = $service->getCRIFClass($config, $ctOrder, 'testOrder', 'testUserData');
+                $crif = $service->getCRIFClass($config, $ctOrder, 'testOrder', $this->getUserDataParam());
                 $crifParams = $crif->getRedirectUrlParams();
                 $crifResponse = $plugin->callComputopCRIFService($crifParams, $crif, 'CRIF', $crif->getCTPaymentURL());
 
@@ -558,5 +558,15 @@ class FrontendRiskManagement implements SubscriberInterface
         }
 
         return false;
+    }
+
+    /**
+     * Duplicate methods from payment controller
+     * Sets the userData paramater for Computop calls to Shopware Version and Module Version
+     * @return string
+     */
+    private function getUserDataParam()
+    {
+        return  'Shopware Version: ' .  \Shopware::VERSION . ', Modul Version: ' . $this->plugin->getVersion() ;;
     }
 }

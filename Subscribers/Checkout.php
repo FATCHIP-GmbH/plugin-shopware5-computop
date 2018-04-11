@@ -419,7 +419,7 @@ class Checkout implements SubscriberInterface
             $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]),
             null,
             null,
-            null
+            $this->getUserDataParam()
         );
 
         return $payment;
@@ -465,12 +465,13 @@ class Checkout implements SubscriberInterface
     }
 
     /**
+     * Duplicate methods from payment controller
      * Sets the userData paramater for Computop calls to Shopware Version and Module Version
      * @return string
      */
     public function getUserDataParam()
     {
-        return  'Shopware Version: ' .  \Shopware::VERSION . ', Modul Version: ' . $this->plugin->getVersion() ;;
+        return  'Shopware Version: ' .  \Shopware::VERSION . ', Modul Version: ' . $this->plugin->getVersion();
     }
 
 }
