@@ -30,14 +30,11 @@ $.plugin("fatchipCTCreditCardPaynow", {
 
             var submitUrl = "https://www.computop-paygate.com/paynow.aspx";
             $("#confirm--form").prop("action", submitUrl);
-            var expiryLength = $("#CCExpiry").val().length;
-            if (expiryLength !== 6) {
-                var expiryYear = $("select#CCExpiryYear option:selected").val();
-                var expiryMonth = $("select#CCExpiryMonth option:selected").val();
-                var expiry = expiryYear + expiryMonth;
-                console.log(expiry);
-                $("#CCExpiry ").val(expiry);
-            }
+            var expiryYear = $("select#CCExpiryYear option:selected").val();
+            var expiryMonth = $("select#CCExpiryMonth option:selected").val();
+            var expiry = expiryYear + expiryMonth;
+            console.log(expiry);
+            $("#CCExpiry ").val(expiry);
         });
     },
 
