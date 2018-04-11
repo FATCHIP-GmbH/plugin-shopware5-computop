@@ -87,7 +87,6 @@ class Checkout implements SubscriberInterface
         $params = $request->getParams();
         $session = Shopware()->Session();
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
-        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
         // Todo check in all sw versions
         // sw 5.0
         // sw 5.1
@@ -406,7 +405,7 @@ class Checkout implements SubscriberInterface
     /** Duplicate methods from payment controller
      * to set pre-encrypted data into shippingpaxyment view
      * Helper function that creates a payment object
-     * @return \Fatchip\CTPayment\CTPaymentMethodsIframe\
+     * @return \Fatchip\CTPayment\CTPaymentMethodIframe
      */
     protected function getPaymentClassForGatewayAction() {
 
@@ -428,27 +427,20 @@ class Checkout implements SubscriberInterface
 
     /**
      * Helper funciton to create a CTOrder object for the current order
-     * @return CTOrder|void
+     * @return CTOrder
      */
     protected function createCTOrder() {
-        $session = Shopware()->Session();
-
-        $userData = $session->sRegister;
-
+        $basket = Shopware()->Modules()->Basket()->sGetBasket();
+        $userData = $this->getUserData();
+        $shippingCosts = Shopware()->Modules()->Admin()->sGetPremiumShippingcosts();
 
         $ctOrder = new CTOrder();
-        $ctOrder->setAmount($session->sBasketAmount * 100);
-        $ctOrder->setCurrency($test = Shopware()->Container()->get('currency')->getShortName());
+        $ctOrder->setAmount(($basket['AmountNumeric'] + $shippingCosts['brutto']) * 100);
+        $ctOrder->setCurrency(Shopware()->Container()->get('currency')->getShortName());
         // try catch in case Address Splitter retrun exceptions
         try {
-            $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billing']));
-            // check if shipping address ist set
-            if (!empty($userData['shipping']['street'])) {
-                $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shipping']));
-            } else {
-                // use billingAddress as shippingAddress
-                $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['billing']));
-            }
+            $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
+            $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
         } catch (Exception $e) {
             $ctError = [];
             $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
@@ -456,8 +448,7 @@ class Checkout implements SubscriberInterface
             return $this->forward('shippingPayment', 'checkout', null,  ['CTError' => $ctError]);
         }
         $ctOrder->setEmail($userData['additional']['user']['email']);
-        $ctOrder->setCustomerID($session->sUserId);
-        // Mandatory for paypalStandard
+        $ctOrder->setCustomerID($userData['additional']['user']['id']);
         $ctOrder->setOrderDesc(Shopware()->Config()->shopName);
         return $ctOrder;
     }
@@ -468,7 +459,8 @@ class Checkout implements SubscriberInterface
      * @return mixed
      */
     protected function getUserData() {
-        $orderVars = $this->session->sOrderVariables;
+        $session = Shopware()->Session();
+        $orderVars = $session->sOrderVariables;
         return $orderVars['sUserData'];
     }
 

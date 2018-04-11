@@ -67,8 +67,8 @@
                 <div class="select-field">
                     {block name="frontend_checkout_payment_fatchip_computop_creditcard_expirationdate_year_input"}
                         {assign var=thisyear value=$smarty.now|date_format:"%Y"}
-                        <select name="CCExpiry"
-                                id="CCExpiry"
+                        <select name="CCExpiryYear"
+                                id="CCExpiryYear"
                                 class="is--required"
                                 {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
                                 >
@@ -100,6 +100,7 @@
                                 />
                         <input type="hidden" name="MerchantID" id="MerchantID"
                                value="{$fatchipCTCreditCardSilentParams.MerchantID}">
+                        <input type="hidden" name="CCExpiry" id="CCExpiry" value=" ">
                         <input type="hidden" name="Len" id="Len" value="{$fatchipCTCreditCardSilentParams.Len}">
                         <input type="hidden" name="Data" id="Data" value="{$fatchipCTCreditCardSilentParams.Data}">
                     {/block}
