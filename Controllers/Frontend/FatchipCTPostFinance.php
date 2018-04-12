@@ -20,7 +20,7 @@
  *
  * @category   Payment
  * @package    FatchipCTPayment
- * @subpackage Controllers/Frontend
+ * @subpackage Controllers_Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
@@ -34,7 +34,7 @@ require_once 'FatchipCTPayment.php';
  *
  * @category   Payment
  * @package    FatchipCTPayment
- * @subpackage Controllers/Frontend
+ * @subpackage Controllers_Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
@@ -44,6 +44,8 @@ class Shopware_Controllers_Frontend_FatchipCTPostFinance extends Shopware_Contro
 {
     /**
      * {@inheritdoc}
+     *
+     * @var string
      */
     public $paymentClass = 'PostFinance';
 }
