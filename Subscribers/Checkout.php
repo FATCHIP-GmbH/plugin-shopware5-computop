@@ -251,6 +251,7 @@ class Checkout implements SubscriberInterface
             $requestParams = $payment->getRedirectUrlParams();
             unset($requestParams['Template']);
             $silentParams = $payment->prepareSilentRequest($requestParams);
+            $session->offsetSet('fatchipCTRedirectParams', $requestParams);
             $view->assign('fatchipCTCreditCardSilentParams', $silentParams);
             $view->extendsTemplate('frontend/checkout/creditcard_confirm.tpl');
         }

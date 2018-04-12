@@ -49,27 +49,15 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
      */
     public function gatewayAction()
     {
-        //$payment = $this->getPaymentClassForGatewayAction();
-        if ($this->config['creditCardMode'] !== 'SILENT') {
-            $payment = $this->getPaymentClassForGatewayAction();
-            //only Creditcard has URLBck
-            $payment->setUrlBack($this->router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]));
+        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\CreditCard $payment */
+        $payment = $this->getPaymentClassForGatewayAction();
 
-            $params = $payment->getRedirectUrlParams();
-            $this->session->offsetSet('fatchipCTRedirectParams', $params);
+        //only Creditcard has URLBck
+        $payment->setUrlBack($this->router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]));
 
-            $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params)));
-        } else {
-            //TODO: check if this can be removed
-            $payID = $this->session->offsetGet('FatchipCTCCPayID');
-            $transID = $this->session->offsetGet('FatchipCTCCTransID');
-            /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\CreditCard $payment */
-            $payment = $this->getPaymentClassForGatewayAction();
-
-            $params = $payment->getAuthorizeParams($payID, $transID, $payment->getAmount(), $payment->getCurrency(), $this->config['creditCardCaption'] );
-            $response = $this->plugin->callComputopService($params, $payment, 'AUTH', $payment->getAuthorizeURL());
-            $this->forward('success', null, null, ['response' => $response]);
-        }
+        $params = $payment->getRedirectUrlParams();
+        $this->session->offsetSet('fatchipCTRedirectParams', $params);
+        $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params)));
     }
 
 
@@ -85,33 +73,6 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $this->view->assign('fatchipCTURL', $requestParams['fatchipCTURL']);
         $this->view->assign('fatchipCTErrorMessage', $requestParams['CTError']['CTErrorMessage']);
         $this->view->assign('fatchipCTErrorCode', $requestParams['CTError']['CTErrorCode']);
-    }
-
-
-    /**
-     * success action method
-     * Overridden because for Creditcards we forward to IFrameAction
-     * @return void     *
-     */
-    public function postFormSuccessAction()
-    {
-        $requestParams = $this->Request()->getParams();
-
-        /** @var \Fatchip\CTPayment\CTResponse $response */
-        $response = $this->paymentService->getDecryptedResponse($requestParams);
-
-        $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'PREAUTH', $response);
-
-        switch ($response->getStatus()) {
-            case 'success':
-                $this->session->offsetSet('FatchipCTCCPayID', $response->getPayID());
-                $this->session->offsetSet('FatchipCTCCTransID', $response->getTransID());
-                $this->forward('confirm', 'checkout');
-                break;
-            default:
-                $this->forward('failure');
-                break;
-        }
     }
 
     /**
@@ -130,10 +91,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
             $response = $this->paymentService->getDecryptedResponse($requestParams);
         }
 
-
-        if (!$this->config['creditCardCaption'] === 'SILENT'){
-            $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
-        }
+        $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'AUTH', $response);
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
@@ -148,8 +106,14 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
 
                 $url = $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'finish']);
-                $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTURL' => $url));
-                break;
+                if (!$this->config['creditCardCaption'] ==='SILENT') {
+                    $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTURL' => $url));
+                    break;
+                } else {
+                    $this->redirect($url);
+                    break;
+                }
+
             default:
                 $this->forward('failure');
                 break;
@@ -167,9 +131,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
 
         $response = $this->paymentService->getDecryptedResponse($requestParams);
 
-        if (!$this->config['creditCardCaption'] === 'SILENT'){
-            $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
-        }
+        $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
 
         $ctError['CTErrorMessage'] = self::ERRORMSG . $response->getDescription();
         $ctError['CTErrorCode'] = $response->getCode();
