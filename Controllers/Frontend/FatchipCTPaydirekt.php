@@ -34,9 +34,9 @@ require_once 'FatchipCTPayment.php';
  *
  * Frontend Controller for Paydirekt
  *
- * @category   Payment
+ * @category   Payment_Controller
  * @package    FatchipCTPayment
- * @subpackage Controllers/Frontend
+ * @subpackage Controllers_Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License

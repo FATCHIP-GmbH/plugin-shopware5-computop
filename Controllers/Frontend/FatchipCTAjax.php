@@ -31,6 +31,7 @@ use Shopware\Plugins\FatchipCTPayment\Util;
 
 /**
  * Shopware_Controllers_Frontend_FatchipCTAjax
+ *
  * Frontend controller for Ajax communication
  *
  * @category   Payment_Controller
