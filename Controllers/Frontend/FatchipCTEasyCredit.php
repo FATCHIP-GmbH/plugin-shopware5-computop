@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7.0 , 7.1
+ * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
  * @package    FatchipCTPayment
@@ -27,17 +27,21 @@
  * @link       https://www.computop.com
  */
 
+require_once 'FatchipCTPayment.php';
 
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Fatchip\CTPayment\CTEnums\CTEnumEasyCredit;
-use Fatchip\CTPayment\CTPaymentMethodsIframe\EasyCredit;
-
-require_once 'FatchipCTPayment.php';
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTEasyCredit *
- * Frontend controller for EasyCredit
+ *
+ * @category  Payment_Controller
+ * @package   Computop_Shopware5_Plugin
+ * @author    FATCHIP GmbH <support@fatchip.de>
+ * @copyright 2018 Computop
+ * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link      https://www.computop.com
  */
 class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
@@ -46,20 +50,27 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
      */
     public $paymentClass = 'EasyCredit';
 
+    /**
+     * Shopware basket
+     *
+     * @var array $basket Basket content
+     */
     protected $basket;
 
     /**
-    * index action method
-    * @return void
-    * @throws Exception
-*/
+     * Index action method.
+     *
+     * @return void
+     * @throws Exception
+     */
     public function indexAction()
     {
         $this->forward('confirm');
     }
 
     /**
-     * gateway action method
+     * Gateway action method.
+     *
      * @return void
      * @throws Exception
      */
@@ -71,20 +82,15 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $shippingCosts = Shopware()->Modules()->Admin()->sGetPremiumShippingcosts();
         $amount = $this->basket['AmountNumeric'] + $shippingCosts['brutto'];
 
-
-            // ToDo refactor ctOrder creation
+        // TODO refactor ctOrder creation
         $ctOrder = new CTOrder();
-        //important: multiply amount by 100
         $ctOrder->setAmount($amount * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($this->utils->getCTAddress($user['billingaddress']));
         $ctOrder->setShippingAddress($this->utils->getCTAddress($user['shippingaddress']));
-        // Sw 5.04 user email
-        // check other versions
         $ctOrder->setEmail($user['additional']['user']['email']);
         $ctOrder->setCustomerID($user['additional']['user']['id']);
 
-        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\EasyCredit $payment */
         $payment = $this->paymentService->getIframePaymentClass(
             $this->paymentClass,
             $this->config,
@@ -104,9 +110,10 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
     }
 
     /**
+     * Action is trigerred when the user returns from Easycredit.
      *
-     * Action is trigerred when the user returns from Easycredit
      * @return void
+     * @throws Exception
      */
     public function returnAction()
     {
@@ -126,7 +133,6 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $ctOrder->setEmail($userData['additional']['user']['email']);
         $ctOrder->setCustomerID($userData['additional']['user']['id']);
 
-        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\EasyCredit $payment */
         $payment = $this->paymentService->getIframePaymentClass(
             $this->paymentClass,
             $this->config,
@@ -141,7 +147,6 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
 
         $payment->setDateOfBirth($this->utils->getUserDoB($userData));
 
-        /** @var \Fatchip\CTPayment\CTResponse $response */
         $response = $this->paymentService->getDecryptedResponse($requestParams);
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
 
@@ -156,12 +161,12 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
 
                 if (!($decision['entscheidung']['entscheidungsergebnis'] === 'GRUEN')) {
                     $this->forward('failure');
-                    break;
-                }
+                } else {
 
-                $this->session->offsetSet('FatchipComputopEasyCreditInformation', $this->getConfirmPageInformation($responseObject));
-                $this->session->offsetSet('fatchipComputopEasyCreditPayId', $response->getPayID());
-                $this->redirect(['controller' => 'checkout', 'action' => 'confirm']);
+                    $this->session->offsetSet('FatchipComputopEasyCreditInformation', $this->getConfirmPageInformation($responseObject));
+                    $this->session->offsetSet('fatchipComputopEasyCreditPayId', $response->getPayID());
+                    $this->redirect(['controller' => 'checkout', 'action' => 'confirm']);
+                }
                 break;
             default:
                 $this->forward('failure');
@@ -170,7 +175,11 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
     }
 
     /**
-     * success action method
+     * Success action method.
+     *
+     * This method is triggered after the customer successfully
+     * finishes the order on the confirm page
+     *
      * @return void
      * @throws Exception
      */
@@ -182,9 +191,8 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $shippingCosts = Shopware()->Modules()->Admin()->sGetPremiumShippingcosts();
         $amount = $this->basket['AmountNumeric'] + $shippingCosts['brutto'];
 
-        // ToDo refactor ctOrder creation
+        // TODO refactor ctOrder creation
         $ctOrder = new CTOrder();
-        //important: multiply amount by 100
         $ctOrder->setAmount($amount * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
         $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
@@ -192,7 +200,6 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $ctOrder->setEmail($userData['additional']['user']['email']);
         $ctOrder->setCustomerID($userData['additional']['user']['id']);
 
-        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\EasyCredit $payment */
         $payment = $this->paymentService->getIframePaymentClass(
             $this->paymentClass,
             $this->config,
@@ -219,7 +226,6 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
                 $this->saveTransactionResult($response);
                 $this->session->offsetUnSet('FatchipComputopEasyCreditInformation');
                 $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
-                //$this->redirect(['controller' => 'checkout', 'action' => 'finish']);
                 $this->forward('finish', 'checkout', null, ['sAGB' => 1]);
                 break;
             default:
@@ -230,7 +236,9 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
 
     /**
      * Gets inforation from response to be displayed on the order confirmation page
-     * @param $responseObject
+     *
+     * @param \Fatchip\CTPayment\CTResponse $responseObject Easycredit financing information
+     *
      * @return array
      */
     private function getConfirmPageInformation($responseObject)
@@ -251,18 +259,5 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $easyCreditInformation['urlVorvertraglicheInformationen'] = $process['allgemeineVorgangsdaten']['urlVorvertraglicheInformationen'];
         $easyCreditInformation['urlVorvertraglicheInformationen'] = $process['allgemeineVorgangsdaten']['urlVorvertraglicheInformationen'];
         return $easyCreditInformation;
-    }
-
-    /**
-     * Get shipping costs
-     * @param $dispatchId
-     * @return string
-     */
-    public function getShippingCosts($dispatchId)
-    {
-        /** @var \Shopware\Models\Dispatch\Dispatch $dispatch */
-        $dispatch = Shopware()->Models()->getRepository('Shopware\Models\Dispatch\ShippingCost')->find($dispatchId);
-        return "3,90";
-
     }
 }

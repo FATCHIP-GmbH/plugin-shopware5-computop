@@ -1,5 +1,7 @@
 <?php
 
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,24 +16,32 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0, 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
+
+require_once 'FatchipCTPayment.php';
 
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 
-require_once 'FatchipCTPayment.php';
-
-
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTPaypalStandard
+ *
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
@@ -42,9 +52,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
     public $paymentClass = 'PaypalExpress';
 
     /**
-     * index action method
-     *
-     * redirects to confirm action
+     * Forwards to confirm action
      *
      * @return void
      */
@@ -54,10 +62,10 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
     }
 
     /**
-     * gateway action method.
+     * Gateway action method.
      *
-     * user is redirected here after clicking on the paypal express checkout button
-     * redirects the user to the paypal website
+     * User is redirected here after clicking on the paypal express checkout button
+     * Redirects the user to the paypal website
      *
      * @throws Exception
      * @return void
@@ -66,15 +74,13 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
     {
         $basket= Shopware()->Modules()->Basket()->sGetBasket();
 
-        // ToDo refactor ctOrder creation
+        // TODO refactor ctOrder creation
         $ctOrder = new CTOrder();
-        //important: multiply amount by 100
         $ctOrder->setAmount($basket['AmountNumeric'] * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
-        // Mandatory for paypalStandard
+        // mandatory for paypalStandard
         $ctOrder->setOrderDesc($this->getOrderDesc());
 
-        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard $payment */
         $payment = $this->paymentService->getIframePaymentClass(
             'PaypalStandard',
             $this->config,
@@ -95,10 +101,10 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
     }
 
     /**
-     * return action method.
+     * Return action method.
      *
-     * user is redirected here after returning from the paypal site
-     * forward user to paypalExpressRegister or to failure Action
+     * User is redirected here after returning from the paypal site
+     * Forwards user to paypalExpressRegister or to failure Action
      *
      * @return void
      */
@@ -106,17 +112,13 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
     {
         $requestParams = $this->Request()->getParams();
         $session = Shopware()->Session();
-
         $response = $this->paymentService->getDecryptedResponse($requestParams);
 
         switch ($response->getStatus()) {
             case CTEnumStatus::AUTHORIZE_REQUEST;
-                $session->offsetSet('FatchipCTPaypalExpressPayID', $response->getPayID() );
+                $session->offsetSet('FatchipCTPaypalExpressPayID', $response->getPayID());
                 $session->offsetSet('FatchipCTPaypalExpressXID', $response->getXID());
                 $session->offsetSet('FatchipCTPaypalExpressTransID', $response->getXID());
-
-                // forward to PP Express register Controller to login the User with an
-                // "Schnellbesteller" Account
 
                 $this->forward('register', 'FatchipCTPaypalExpressRegister', null, [ 'CTResponse' => $response]);
                 break;
@@ -130,18 +132,15 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
      * Success action method.
      *
      * Called after Computop redirects to SuccessURL
-     * If everything is OK, order is created with status Paid, TransactionIDs are saved,
+     * Order is created with status paid, transactionIDs are saved,
      * RefNr is updated and user is redirected to finish page
      *
      * @return void
+     * @throws Exception
      */
     public function confirmAction()
     {
         $session = Shopware()->Session();
-        $orderVars = Shopware()->Session()->sOrderVariables;
-        $userData = $orderVars['sUserData'];
-
-        /** @var \Fatchip\CTPayment\CTPaymentMethods\PaypalExpress $payment */
         $payment = $this->paymentService->getPaymentClass($this->paymentClass, $this->config);
 
         $requestParams =  $payment->getPaypalExpressCompleteParams(
@@ -150,8 +149,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
             $this->getAmount() * 100,
             $this->getCurrencyShortName()
         );
-        // wrap this in a method we can hook for central logging
-        // TODO refactor Amazon to use central Paymentservice to get rid of service Param
+
         $response = $this->plugin->callComputopService($requestParams, $payment, 'ORDER', $payment->getCTPaymentURL());
 
         switch ($response->getStatus()) {
@@ -182,12 +180,11 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
     public function failureAction()
     {
         $requestParams = $this->Request()->getParams();
-        $ctError = [];
-
         $response = $this->paymentService->getDecryptedResponse($requestParams);
+        $ctError = [];
         $ctError['CTErrorMessage'] = self::ERRORMSG . $response->getDescription();
         $ctError['CTErrorCode'] = $response->getCode();
-        return $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
+        $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
     }
 }
 

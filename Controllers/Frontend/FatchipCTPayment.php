@@ -1,5 +1,7 @@
 <?php
 
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,14 +16,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0, 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 use Shopware\Plugins\FatchipCTPayment\Util;
@@ -31,7 +34,16 @@ use Shopware\Components\CSRFWhitelistAware;
 
 /**
  * Abstract base class for Payment Controllers
+ *
  * Class Shopware_Controllers_Frontend_FatchipCTPayment
+ *
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controllers_Frontend_Payment implements CSRFWhitelistAware
 {
@@ -44,47 +56,62 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     const ERRORMSG = 'Es ist ein Fehler aufgetreten. Bitte wählen Sie eine andere Zahlungsart oder versuchen Sie es später noch einmal.<br>';
 
     /**
-     * PaymentService
-     * @var \Fatchip\CTPayment\CTPaymentService $service */
+     * Fatchip PaymentService
+     *
+     * @var \Fatchip\CTPayment\CTPaymentService $service
+     */
     protected $paymentService;
 
     /**
-     * PaymentClass, needed for instatiating payment objects of the correct type     *
-     * @var string
-     */
-    public $paymentClass = '';
-
-    /**
      * FatchipCTpayment Plugin Bootstrap Class
+     *
      * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
     protected $plugin;
 
     /**
-     * Array containing the pluginsetting
+     * FatchipCTPayment plugin settings
+     *
      * @var array
      */
     protected $config;
 
-    /** @var Util $utils * */
+    /**
+     * FatchipCTPaymentUtils
+     *
+     * @var Util $utils *
+     */
     protected $utils;
 
     /**
-     * contains the session
-     * @var  Enlight_Components_Session_Namespace */
+     * Shopware Session
+     *
+     * @var Enlight_Components_Session_Namespace
+     */
     protected $session;
 
     /**
-     *  contains the router instance
-     * @var  Enlight_Controller_Router */
+     *  Shopware router instance
+     *
+     * @var Enlight_Controller_Router
+     */
     protected $router;
 
     /**
-     * init payment controller
+     * PaymentClass, needed for instatiating payment objects of the correct type
+     *
+     * @var string
+     */
+    public $paymentClass = '';
+
+    /**
+     * Init payment controller
+     *
+     * @return void
+     * @throws Exception
      */
     public function init()
     {
-        // ToDo handle possible Exception
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $this->config = $this->plugin->Config()->toArray();
@@ -94,7 +121,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     /**
-     * index action method
+     * Index action method
+     *
      * @return void
      */
     public function indexAction()
@@ -103,8 +131,9 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     /**
-     * Whitelist notifyAction
-     * $return array
+     * {@inheritdoc}
+     *
+     * @return array
      */
     public function getWhitelistedCSRFActions()
     {
@@ -112,61 +141,58 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     /**
-     * Gatewayaction method
+     * Gateway action method
+     *
      * Creates paymentclass and redirects to Computop URL
      * Should be overridden in subclasses that need different behaviour
-     * @throws \Exception
+     *
+     * @return void
+     * @throws Exception
      */
     public function gatewayAction()
     {
         $payment = $this->getPaymentClassForGatewayAction();
-
         $params = $payment->getRedirectUrlParams();
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
         $this->redirect($payment->getHTTPGetURL($params));
     }
 
-
     /**
      * Cancel action method
+     *
      * If an error occurs in the Computop call, and FailureURL is set, user is redirected to this
      * Reads error message from Response and redirects to shippingPayment page
+     *
      * @return void
      */
     public function failureAction()
     {
         $requestParams = $this->Request()->getParams();
-        $ctError = [];
-
         $response = $this->paymentService->getDecryptedResponse($requestParams);
-
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
 
+        $ctError = [];
         $ctError['CTErrorMessage'] = self::ERRORMSG . $response->getDescription();
         $ctError['CTErrorCode'] = $response->getCode();
-
-        // remove easycredit session var
         $this->session->offsetUnset('fatchipComputopEasyCreditPayId');
 
-        return $this->forward('shippingPayment', 'checkout', null, $this->hideError($response->getCode()) ? null : ['CTError' => $ctError]);
+        $this->forward('shippingPayment', 'checkout', null, $this->hideError($response->getCode()) ? null : ['CTError' => $ctError]);
     }
 
     /**
-     * Success action method
+     * Success action method.
+     *
      * Called after Computop redirects to SuccessURL
      * If everything is OK, order is created with status Reserved, TransactionIDs are saved,
      * RefNr is updated and user is redirected to finish page
+     *
      * @return void
      */
     public function successAction()
     {
         $requestParams = $this->Request()->getParams();
-
-        /** @var \Fatchip\CTPayment\CTResponse $response */
         $response = $this->paymentService->getDecryptedResponse($requestParams);
-
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
-
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
                 $orderNumber = $this->saveOrder(
@@ -186,25 +212,23 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     /**
-     * notify action method
-     * Called if Computop sends notifications to NotifyURL, used to update payment status info
+     * Notify action method
+     *
+     * Called if Computop sends notifications to NotifyURL,
+     * used to update payment status info
+     *
      * @return void
      * @throws Exception
      */
     public function notifyAction()
     {
         $this->Front()->Plugins()->ViewRenderer()->setNoRender();
-
         $requestParams = $this->Request()->getParams();
-        /** @var \Fatchip\CTPayment\CTResponse $response */
         $response = $this->paymentService->getDecryptedResponse($requestParams);
-
         $this->plugin->logRedirectParams(null, $this->paymentClass, 'NOTIFY', $response);
-
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
-                $transactionId = $response->getTransID();
                 if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $response->getTransID()])) {
                     $this->updateRefNrWithComputop($order, $this->paymentClass);
                     $this->inquireAndupdatePaymentStatus($order, $this->paymentClass);
@@ -221,31 +245,35 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
     /**
      * Helper function that creates a payment object
-     * @return \Fatchip\CTPayment\CTPaymentMethodsIframe\
+     *
+     * @return \Fatchip\CTPayment\CTPaymentMethodIframe
+     * @throws Exception
      */
-    protected function getPaymentClassForGatewayAction() {
+    protected function getPaymentClassForGatewayAction()
+    {
         $ctOrder = $this->createCTOrder();
         $payment = $this->paymentService->getIframePaymentClass(
-          $this->paymentClass,
-          $this->config,
-          $ctOrder,
-          $this->router->assemble(['action' => 'success', 'forceSecure' => true]),
-          $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
-          $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
-          $this->getOrderDesc(),
-          $this->getUserDataParam());
-
+            $this->paymentClass,
+            $this->config,
+            $ctOrder,
+            $this->router->assemble(['action' => 'success', 'forceSecure' => true]),
+            $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
+            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $this->getOrderDesc(),
+            $this->getUserDataParam()
+        );
         return $payment;
     }
 
     /**
      * Helper funciton to create a CTOrder object for the current order
+     *
      * @return CTOrder|void
+     * @throws Exception
      */
-    protected function createCTOrder() {
-
+    protected function createCTOrder()
+    {
         $userData = $this->getUserData();
-
 
         $ctOrder = new CTOrder();
         $ctOrder->setAmount($this->getAmount() * 100);
@@ -258,7 +286,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $ctError = [];
             $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
             $ctError['CTErrorCode'] = $e->getMessage();
-            return $this->forward('shippingPayment', 'checkout', null,  ['CTError' => $ctError]);
+            return $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
         }
         $ctOrder->setEmail($userData['additional']['user']['email']);
         $ctOrder->setCustomerID($userData['additional']['user']['id']);
@@ -268,20 +296,26 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     /**
-     * gets userData array from OrderVars from Session
-     * shoud be overridden in sublcasses if it is needed before an order exists
-     * @return mixed
+     * Gets userData array from Session
+     *
+     * Should be overridden in subclasses userData is needed before the order exists
+     *
+     * @return array
      */
-    protected function getUserData() {
+    protected function getUserData()
+    {
         $orderVars = $this->session->sOrderVariables;
         return $orderVars['sUserData'];
     }
 
     /**
-     * try to load order via transaction id
+     * Loads order by transactionId
      *
-     * @param string $transactionId
-     * @return order
+     * TODO Refactor with SW Model
+     *
+     * @param string $transactionId Order TransactionId
+     *
+     * @return \Shopware\Models\Order\Order
      */
     protected function loadOrderByTransactionId($transactionId)
     {
@@ -295,10 +329,12 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     /**
-     * The order description as sent to Computop.
-     * Default it contains the shopname. If a paymentmethod needs a different Orderdescription, override this function.
+     * Order description sent to Computop.
      *
-     * @return mixed
+     * Returns shopname.
+     * If a paymentmethod needs a different Orderdescription, override this method.
+     *
+     * @return string
      */
     public function getOrderDesc()
     {
@@ -307,21 +343,22 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
     /**
      * Sets the userData paramater for Computop calls to Shopware Version and Module Version
+     *
      * @return string
+     * @throws Exception
      */
     public function getUserDataParam()
     {
-        return  'Shopware Version: ' .  \Shopware::VERSION . ', Modul Version: ' . $this->plugin->getVersion() ;;
+        return 'Shopware Version: ' . \Shopware::VERSION . ', Modul Version: ' . $this->plugin->getVersion();;
     }
 
-    // SW 5.0 - 5.3 Compatibility
-    // 5.0 - check
-    // 5.1 -
-    // 5.2 -
-    // 5.3 - check
     /**
-     * Saves the TransationIds in the Order attributes
-     * @param $response \Fatchip\CTPayment\CTResponse
+     * Saves the TransationIds in the Order attributes.
+     *
+     * @param \Fatchip\CTPayment\CTResponse $response Computop Api response
+     *
+     * @return void
+     * @throws Exception
      */
     public function saveTransactionResult($response)
     {
@@ -343,22 +380,22 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     /**
-     * marks all OrderDetails and Shipping as Fully Captured
-     * @param $order
+     * Marks all OrderDetails and Shipping as Fully Captured
+     *
+     * @param Shopware\Models\Order\Order $order shopware order object
+     *
+     * @return void
+     * @throws Exception
      */
     private function markOrderDetailsAsFullyCaptured($order)
     {
-
-        //mark all orderDetails as fully captured
         foreach ($order->getDetails() as $position) {
-
             $positionAttribute = $position->getAttribute();
             $positionAttribute->setfatchipctCaptured($position->getPrice() * $position->getQuantity());
             Shopware()->Models()->persist($positionAttribute);
         }
         Shopware()->Models()->flush();
 
-        //and mark shipping as captured
         $orderAttribute = $order->getAttribute();
         $orderAttribute->setfatchipctShipcaptured($order->getInvoiceShipping());
         Shopware()->Models()->persist($orderAttribute);
@@ -367,8 +404,11 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
     /**
      * Updates Paymentstatus for an order
-     * @param $order
-     * @param $statusID
+     *
+     * @param Shopware\Models\Order\Order $order    shopware order object
+     * @param integer                     $statusID shopware  paymentStatus id
+     *
+     * @return void
      */
     private function setOrderPaymentStatus($order, $statusID)
     {
@@ -378,69 +418,85 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     /**
-     * For computop credit card and paydirekt it is possible to set Capture to delayed in the plugin settings.
-     * With delayed Captures, no Notify is sent to the shop. But because the capture is guaranteed to happen
+     * For computop credit card and paydirekt it is possible
+     * to set capture to delayed in the plugin settings.
+     * With delayed captures no notify is sent to the shop!
+     * Computop guarantess the capture so
      * we mark the order as fully paid
      *
-     * @param $orderNumber
+     * @param string $orderNumber shopware order-number
+     *
+     * @return void
+     * @throws Exception
      */
     protected function handleDelayedCapture($orderNumber)
     {
         $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number' => $orderNumber]);
         if ($order) {
             $paymentName = $order->getPayment()->getName();
-            if (
-                ($paymentName == 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] == 'DELAYED') ||
-                ($paymentName == 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] == 'DELAYED') ||
-                ($paymentName == 'fatchip_computop_lastschrift' && $this->config['lastschriftCaption'] == 'DELAYED')
+            if (($paymentName == 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] == 'DELAYED')
+                || ($paymentName == 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] == 'DELAYED')
+                || ($paymentName == 'fatchip_computop_lastschrift' && $this->config['lastschriftCaption'] == 'DELAYED')
             ) {
                 $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSPAID);
                 $this->markOrderDetailsAsFullyCaptured($order);
             }
-
         }
     }
 
     /**
-     * Trys to update RefNr in Computop Analytics for Order with OrderNumber = $Ordernumber
-     * @param $orderNumber
+     * Update RefNr for Computop analytics
+     *
+     * @param string $orderNumber shopware orderNumber
+     *
+     * @return void
      */
-    protected function updateRefNrWithComputopFromOrderNumber($orderNumber) {
+    protected function updateRefNrWithComputopFromOrderNumber($orderNumber)
+    {
         if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number' => $orderNumber])) {
             $this->updateRefNrWithComputop($order, $this->paymentClass);
         }
     }
 
     /**
-     * The RefNr for Computop has to be equal to the ordernumber. As we do not have an ordernumber on the initial call,
-     * we update the RefNr after order creation
-     * @param $order
-     * @param $paymentClass
+     * The RefNr for Computop has to be equal to the ordernumber.
+     * Because the ordernumber is only known after successful payments
+     * and successful saveOrder() call update the RefNr AFTER order creation
+     *
+     * @param \Shopware\Models\Order\Order $order        shopware order
+     * @param string                       $paymentClass name of the payment class
+     *
+     * @return void
      */
-    private function updateRefNrWithComputop($order, $paymentClass) {
+    private function updateRefNrWithComputop($order, $paymentClass)
+    {
         if ($order) {
             $ctOrder = $this->createCTOrderFromSWorder($order);
-            if ($paymentClass !== 'PaypalExpress' && $paymentClass !== 'AmazonPay') {
+            if ($paymentClass !== 'PaypalExpress'
+                && $paymentClass !== 'AmazonPay'
+            ) {
                 $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->config, $ctOrder);
             } else {
                 $payment = $this->paymentService->getPaymentClass($paymentClass, $this->config, $ctOrder);
             }
             $payID = $order->getAttribute()->getfatchipctPayid();
             $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getNumber());
+            // response is ignored
             $response = $this->plugin->callComputopService($RefNrChangeParams, $payment, 'REFNRCHANGE', $payment->getCTRefNrChangeURL());
         }
     }
 
-
     /**
-     * checks if error with $errorCode should be hidden from user
-     * @param $errorCode
-     * @return bool
+     * Checks if error with $errorCode should be hidden from user
      *
-     * Error code exists of numbers
-     * 1st = Result
+     * ErrorCodes number positions:
+     * 1   = Result
      * 2-4 = Category/Paymentmethod
      * 5-8 = Details
+     *
+     * @param integer $errorCode Computop errorcode
+     *
+     * @return bool
      */
     private function hideError($errorCode)
     {
@@ -454,47 +510,48 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                     return true;
             }
         }
-
         return false;
     }
 
     /**
      * Calls Inquire.aspx at Computop, but only if Order has status 'Reserved'
+     *
      * If the order is Fully or Partly captured, the Order PaymentStatus is updated accordingly
      * If nothing has been captured, an error is thrown, so Computop will try again
-     * @param $order
-     * @param $paymentClass
-     * @throws RuntimeException
+     *
+     * @param \Shopware\Models\Order\Order $order        shopware order
+     * @param string                       $paymentClass paymentclass name
+     *
+     * @return void
+     * @throws Exception
      */
     private function inquireAndupdatePaymentStatus($order, $paymentClass)
     {
-
         $currentPaymentStatus = $order->getPaymentStatus()->getId();
 
-        //Only when the current payment status = reserved or partly paid, we update the payment status
         if ($currentPaymentStatus == self::PAYMENTSTATUSRESERVED || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID) {
             $payID = $order->getAttribute()->getfatchipctPayid();
             $ctOrder = $this->createCTOrderFromSWorder($order);
-            if ($paymentClass !== 'PaypalExpress' && $paymentClass !== 'AmazonPay') {
+            if ($paymentClass !== 'PaypalExpress'
+                && $paymentClass !== 'AmazonPay'
+            ) {
                 $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->config, $ctOrder);
             } else {
                 $payment = $this->paymentService->getPaymentClass($paymentClass, $this->config, $ctOrder);
             }
+
             $inquireParams = $payment->getInquireParams($payID);
-
-
             $inquireResponse = $this->plugin->callComputopService($inquireParams, $payment, 'INQUIRE', $payment->getCTInquireURL());
-
 
             if ($inquireResponse->getStatus() == 'OK') {
                 if ($inquireResponse->getAmountAuth() == $inquireResponse->getAmountCap()) {
-                    //Fully paid
+                    // fully paid
                     $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', self::PAYMENTSTATUSPAID);
                     $order->setPaymentStatus($paymentStatus);
                     $this->markOrderDetailsAsFullyCaptured($order);
                     $this->get('models')->flush($order);
                 } else if ($inquireResponse->getAmountCap() > 0) {
-                    //partially paid
+                    // partially paid
                     $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', self::PAYMENTSTATUSPARTIALLYPAID);
                     $order->setPaymentStatus($paymentStatus);
                     $this->get('models')->flush($order);
@@ -503,7 +560,6 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                     //if the capture has been made either manually or delayed within 24 hours, we will get a notification and be able
                     //to mark the order as captured
                     throw new \RuntimeException('No Capture in InquireResponse within first hour');
-
                 }
             }
         }
@@ -511,14 +567,16 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
     /**
      * Helper function to create a CTOrder object from a Shopware order Object
-     * @param $swOrder
-     * @return CTOrder /FatchipCTPayment/CTOrder
+     *
+     * @param \Shopware\Models\Order\Order $swOrder shopware order
+     *
+     * @return CTOrder $ctOrder Computop order object
      */
     private function createCTOrderFromSWorder($swOrder)
     {
         $swShipping = $swOrder->getShipping();
-
-        $ctShippingAddress = new \Fatchip\CTPayment\CTAddress\CTAddress($swShipping->getSalutation(),
+        $ctShippingAddress = new \Fatchip\CTPayment\CTAddress\CTAddress(
+            $swShipping->getSalutation(),
             $swShipping->getCompany(),
             $swShipping->getFirstName(),
             $swShipping->getLastName(),
@@ -529,11 +587,12 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $this->utils->getCTCountryIso($swOrder->getShipping()->getCountry()->getId()),
             $this->utils->getCTCountryIso3($swOrder->getShipping()->getCountry()->getId()),
             '',
-            '');
+            ''
+        );
 
         $swBilling = $swOrder->getBilling();
-
-        $ctBillingAddress = new \Fatchip\CTPayment\CTAddress\CTAddress($swBilling->getSalutation(),
+        $ctBillingAddress = new \Fatchip\CTPayment\CTAddress\CTAddress(
+            $swBilling->getSalutation(),
             $swBilling->getCompany(),
             $swBilling->getFirstName(),
             $swBilling->getLastName(),
@@ -544,10 +603,10 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $this->utils->getCTCountryIso($swOrder->getBilling()->getCountry()->getId()),
             $this->utils->getCTCountryIso3($swOrder->getBilling()->getCountry()->getId()),
             '',
-            '');
+            ''
+        );
 
-
-        $ctOrder = new \Fatchip\CTPayment\CTOrder\CTOrder();
+        $ctOrder = new CTOrder();
         $ctOrder->setBillingAddress($ctBillingAddress);
         $ctOrder->setShippingAddress($ctShippingAddress);
         if ($email = $swOrder->getCustomer()->getEmail()) {
@@ -556,3 +615,4 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         return $ctOrder;
     }
 }
+

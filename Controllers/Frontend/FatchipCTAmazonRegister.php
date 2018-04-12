@@ -1,5 +1,7 @@
 <?php
 
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,14 +16,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0, 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 use Shopware\Plugins\FatchipCTPayment\Util;
@@ -29,40 +32,55 @@ use Shopware\Components\CSRFWhitelistAware;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTAmazonRegister
+ *
+ * @category  Payment_Controller
+ * @package   Computop_Shopware5_Plugin
+ * @author    FATCHIP GmbH <support@fatchip.de>
+ * @copyright 2018 Computop
+ * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link      https://www.computop.com
  */
 class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Controllers_Frontend_Register implements CSRFWhitelistAware
 {
-
     /**
-     * PaymentService
+     * Fatchip PaymentService
+     *
      * @var \Fatchip\CTPayment\CTPaymentService $service
      */
     protected $paymentService;
 
     /**
      * FatchipCTpayment Plugin Bootstrap Class
+     *
      * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
     protected $plugin;
 
     /**
-     * Array containing the pluginsettings
+     * FatchipCTPayment plugin settings
+     *
      * @var array
      */
     protected $config;
 
-    /** @var Util $utils * */
+    /**
+     * FatchipCTPaymentUtils
+     *
+     * @var Util $utils *
+     */
     protected $utils;
 
     /**
-     * init payment controller
+     * Init payment controller.
+     *
+     * @return void
+     * @throws Exception
      */
     public function init()
     {
         if (method_exists('Shopware_Controllers_Frontend_Register', 'init')) {
             parent::init();
         }
-        // ToDo handle possible Exception
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $this->config = $this->plugin->Config()->toArray();
@@ -70,7 +88,9 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
     }
 
     /**
-     * Amazon redirects here after Login
+     * Amazon redirects here after Login.
+     *
+     * @return void
      */
     public function loginAction()
     {
@@ -89,9 +109,11 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
     }
 
     /**
-     *  replaces the standard shopware user registration with the amazon widgets
+     * Replaces the standard shopware user registration with the amazon widgets.
      *
-     * users are forwarded to this action after returning from amazonpay login
+     * Users are forwarded to this action after returning from amazonpay login
+     *
+     * @return void
      */
     public function indexAction()
     {
@@ -99,8 +121,6 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         // this has to be set so shipping methods will work
         $session->offsetSet('sPaymentID', $this->utils->getPaymentIdFromName('fatchip_computop_amazonpay'));
 
-        // Not Compatible with SW 5.3 since 5.2? verfiy
-        // ToDO check if Version Check work for all SW Versions
         if (version_compare(\Shopware::VERSION, '5.2', '>=')) {
             $register = $this->View()->getAssign('errors');
             $errors = array_merge($register['personal'], $register['billing'], $register['shipping']);
@@ -116,35 +136,29 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
             $this->view->assign('errorMessage', $errorMessage);
             $this->view->assign('errorFields', array_keys($errors));
         }
-        // unused
-        //$this->view->assign('fatchipCTResponse', $params['fatchipCTResponse']);
-        // add a config->toView method which removed sensitive data from view
+        // TODO  add a config->toView method which removed sensitive data from view
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
-        // load Template to avoid annoying uppercase to _lowercase conversion
         $this->view->loadTemplate('frontend/fatchipCTAmazonRegister/index.tpl');
-
     }
 
     /**
-     *  calls the computop api with AmazonLGN after user log-ins
+     *  Calls the computop api with AmazonLGN after user log-ins.
      *
      * @return \Fatchip\CTPayment\CTResponse
      */
     public function loginComputopAmazon()
     {
-        // ToDO  get countryIso from session instead by calling sGetUserData
+        // TODO  get countryIso from session instead by calling sGetUserData
         $user = Shopware()->Modules()->Admin()->sGetUserData();
         $countryIso = $user['additional']['country']['countryiso'];
         $router = $this->Front()->Router();
         $session = Shopware()->Session();
 
-        // generate transID for payment and save in Session
         mt_srand((double)microtime() * 1000000);
         $transID = (string)mt_rand();
         $transID .= date('yzGis');
         $session->offsetSet('fatchipCTPaymentTransID', $transID);
 
-        /** @var \Fatchip\CTPayment\CTPaymentMethods\AmazonPay $payment */
         $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
         $requestParams = $payment->getAmazonLGNParams(
             $session->fatchipCTPaymentTransID,
@@ -159,12 +173,14 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
     }
 
     /**
-     * converts arrayObjects from view template to an accessible array
+     * Converts arrayObjects from view template to an accessible array.
      *
-     * @param $arrayObjs
+     * @param array $arrayObjs Enlight_View_Default->getAssign()->toArray()
+     *
+     * @see    Enlight_View_Default::getAssign()
      * @return array
      */
-    public function getArrayFromArrayObjs($arrayObjs)
+    private function getArrayFromArrayObjs($arrayObjs)
     {
         $array = [];
         foreach ($arrayObjs as $key => $arrayObj) {
@@ -177,11 +193,13 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
     }
 
     /**
-     * saves relevant amazon tokens in user session
+     * Saves relevant amazon tokens in user session.
      *
-     * @param $params
+     * @param array $params amazon tokens obtained after successful login
+     *
+     * @return void
      */
-    public function saveParamsToSession($params)
+    private function saveParamsToSession($params)
     {
         $session = Shopware()->Session();
 
@@ -201,6 +219,8 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
 
     /**
      * {inheritdoc}
+     *
+     * @return array
      */
     public function getWhitelistedCSRFActions()
     {

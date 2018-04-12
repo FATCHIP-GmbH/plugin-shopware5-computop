@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7.0 , 7.1
+ * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
  * @package    FatchipCTPayment
@@ -27,14 +27,20 @@
  * @link       https://www.computop.com
  */
 
-use Fatchip\CTPayment\CTOrder\CTOrder;
-
 require_once 'FatchipCTPayment.php';
 
-
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTIdeal
+ * Class Shopware_Controllers_Frontend_FatchipCTIdeal.
+ *
  * Frontend controller for Ideal
+ *
+ * @category   Payment_Controller
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 class Shopware_Controllers_Frontend_FatchipCTIdeal extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
@@ -44,7 +50,10 @@ class Shopware_Controllers_Frontend_FatchipCTIdeal extends Shopware_Controllers_
     public $paymentClass = 'Ideal';
 
     /**
-     * gatewayAction is overridden because issuerID needs to be set.
+     * GatewayAction is overridden because issuerID needs to be set.
+     *
+     * @return void
+     * @throws Exception
      */
     public function gatewayAction()
     {

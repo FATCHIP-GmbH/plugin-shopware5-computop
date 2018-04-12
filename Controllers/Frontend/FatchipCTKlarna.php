@@ -1,5 +1,7 @@
 <?php
 
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,25 +16,32 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0, 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
+
+require_once 'FatchipCTPayment.php';
 
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna;
-// add baseclass via require_once so we can extend
-// ToDo find a better solution for this
-require_once 'FatchipCTPayment.php';
-
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTKlarna
+ * Class Shopware_Controllers_Frontend_FatchipCTKlarna.
+ *
+ * @category   Payment_Controller
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controllers_Frontend_FatchipCTPayment
 {
@@ -43,14 +52,15 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
     public $paymentClass = 'Klarna';
 
     /**
-     * gatewayAction is overridden because there is no redirect but a server to server call is made
+     * GatewayAction is overridden because there is no redirect but a server to server call is made
+     *
      * On success create the order and forward to checkout/finish
      * On failure forward to checkout/payment and set the error message
      *
+     * @return void
      */
     public function gatewayAction()
     {
-        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna $payment */
         // getPaymentClassForGatewayAction is overridden
         $payment = $this->getPaymentClassForGatewayAction();
         $requestParams = $payment->getRedirectUrlParams();
@@ -58,15 +68,13 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
-                $orderNumber =  $this->saveOrder(
+                $orderNumber = $this->saveOrder(
                     $response->getTransID(),
                     $response->getPayID(),
                     self::PAYMENTSTATUSRESERVED
                 );
                 $this->saveTransactionResult($response);
                 $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
-                //$this->redirect(['controller' => 'checkout', 'action' => 'finish', ['sAGB' => 'true']]);
-                $params = $this->Request()->getParams();
                 $this->forward('finish', 'checkout', null, ['sAGB' => 1]);
                 break;
             default:
@@ -80,14 +88,16 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
     }
 
     /**
-     * getPaymentClassForGatewayAction is overridden cause call to getIframePaymentClass has no URLSuccess, URLFailure
-     * and params isFirm and $klarnaAction
+     * GetPaymentClassForGatewayAction is overridden because call to
+     * getIframePaymentClass has no parameters
+     * URLSuccess, URLFailure, isFirm and $klarnaAction parameters
      *
-     * Furthermore SSN, AnnualSalary, Phone and DOB need to be set
+     * Furthermore SSN, AnnualSalary, Phone and DoB need to be set
      *
      * @return Klarna
      */
-    protected function getPaymentClassForGatewayAction() {
+    protected function getPaymentClassForGatewayAction()
+    {
         $orderVars = $this->session->sOrderVariables;
         $userData = $orderVars['sUserData'];
 
@@ -95,22 +105,25 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
 
         $usesInvoice = ($userData['additional']['payment']['name'] === 'fatchip_computop_klarna_invoice');
         $isFirm = !empty($userData['billingaddress']['company']);
-        //Klarna acttion = -1 for Klarna Invoice, or comes from the Pluginsettings for Klarna Installment
         $klarnaAction = $usesInvoice ? '-1' : $this->config['klarnaaction'];
 
-        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna $payment */
+        /**
+         * Klarna Payment Class.
+         *
+         * @var \Fatchip\CTPayment\CTPaymentMethodsIframe\Klarna $payment
+         */
         $payment = $this->paymentService->getIframePaymentClass(
-          $this->paymentClass,
-          $this->config,
-          $ctOrder,
-          null,
-          null,
-          $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
-          $this->getOrderDesc(),
-          $this->getUserDataParam(),
-          null,
-          $isFirm,
-          $klarnaAction
+            $this->paymentClass,
+            $this->config,
+            $ctOrder,
+            null,
+            null,
+            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $this->getOrderDesc(),
+            $this->getUserDataParam(),
+            null,
+            $isFirm,
+            $klarnaAction
         );
 
         $payment->setSocialSecurityNumber($this->utils->getUserSSN($userData));
@@ -142,17 +155,18 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
      *
      * @return string
      */
-    public function getOrderDesc() {
-        $basket =  $this->getBasket();
+    public function getOrderDesc()
+    {
+        $basket = $this->getBasket();
         $orderDesc = '';
-        foreach($basket['content'] as $position) {
+        foreach ($basket['content'] as $position) {
             if (!empty($orderDesc)) {
                 $orderDesc .= ' + ';
             }
             //careful: $position['amount'] contains the total for the position, so QTY*Price
             //in controllers/backend/FatchipCTOrder $position->getPrice() returns price of only 1 article
             $orderDesc .= $position['quantity'] . ';' . $position['articleID'] . ';' . $position['articlename'] . ';'
-              . $position['amount'] * 100 / $position['quantity'] . ';' . $position['tax_rate'] . ';0;0';
+                . $position['amount'] * 100 / $position['quantity'] . ';' . $position['tax_rate'] . ';0;0';
         }
         //add shipping if > 0
         if ($basket['sShippingcosts'] != 0) {
@@ -164,7 +178,6 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
 
         return $orderDesc;
     }
-
 
 
 }

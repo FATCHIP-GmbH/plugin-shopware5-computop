@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7.0 , 7.1
+ * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
  * @package    FatchipCTPayment
@@ -27,14 +27,22 @@
  * @link       https://www.computop.com
  */
 
-use Fatchip\CTPayment\CTOrder\CTOrder;
-use Fatchip\CTPayment\CTEnums\CTEnumStatus;
-
 require_once 'FatchipCTPayment.php';
+
+use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTLastschrift
+ *
  * Frontend controller for Lastschrift
+ *
+ * @category   Payment_Controller
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
@@ -47,6 +55,7 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
      * Sets the correct paymentclass depending on the pluginsetting lastschriftDienst
      *
      * @return void
+     * @throws Exception
      */
     public function init()
     {
@@ -65,9 +74,13 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
     }
 
     /**
-     *  gatewaAction is overridden for Lastschrift because there is no redirect but a server to server call is made
-     *  On success create the order and forward to checkout/finish
-     *  On failure forward to checkout/payment and set the error message
+     * GatewaAction is overridden for Lastschrift because there is no redirect
+     * but a server to server call is made
+     *
+     * On success create the order and forward to checkout/finish
+     * On failure forward to checkout/payment and set the error message
+     *
+     * @return void
      */
     public function gatewayAction()
     {
@@ -84,10 +97,10 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
-                $orderNumber =  $this->saveOrder(
-                  $response->getTransID(),
-                  $response->getPayID(),
-                  self::PAYMENTSTATUSRESERVED
+                $orderNumber = $this->saveOrder(
+                    $response->getTransID(),
+                    $response->getPayID(),
+                    self::PAYMENTSTATUSRESERVED
                 );
                 $this->saveTransactionResult($response);
                 $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
@@ -105,12 +118,13 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
         }
     }
 
-
     /**
-     * Overridden: because we do not have order yet
+     * Overridden: because we do not have order yet.
+     *
      * @return array|false
      */
-    protected function getUserData() {
+    protected function getUserData()
+    {
         return Shopware()->Modules()->Admin()->sGetUserData();
     }
 }

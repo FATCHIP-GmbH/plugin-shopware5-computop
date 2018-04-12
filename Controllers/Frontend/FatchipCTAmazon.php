@@ -1,5 +1,7 @@
 <?php
 
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,23 +16,30 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7 , 7.1
+ * PHP version 5.6, 7.0, 7.1
  *
- * @category  Payment
- * @package   Computop_Shopware5_Plugin
- * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
- * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @category   Payment
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 
 require_once 'FatchipCTPayment.php';
 
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 
-
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTAmazon
+ *
+ * @category  Payment_Controller
+ * @package   Computop_Shopware5_Plugin
+ * @author    FATCHIP GmbH <support@fatchip.de>
+ * @copyright 2018 Computop
+ * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link      https://www.computop.com
  */
 class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
@@ -47,6 +56,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
      * RefNr is updated and user is redirected to finish page
      *
      * @return void
+     * @throws Exception
      */
     public function gatewayAction()
     {
@@ -74,6 +84,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
      *
      * If an error occurs in the Computop call, and FailureURL is set, user is redirected to this
      * Reads error message from Response and redirects to Amazon Register Page
+     *
      * @return void
      */
     public function failureAction()
@@ -88,16 +99,15 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
     }
 
     /**
-     * finishes the order by calling the computop api.
+     * Finishes the order by calling the computop api.
      *
-     * @return void
+     * @return \Fatchip\CTPayment\CTResponse
      */
     public function ctSetAndConfirmOrderDetails()
     {
         $session = Shopware()->Session();
         $orderDesc = "Test";
 
-        /** @var \Fatchip\CTPayment\CTPaymentMethods\AmazonPay $payment */
         $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
         $requestParams = $payment->getAmazonSCOParams(
             $session->offsetGet('fatchipCTPaymentPayID'),

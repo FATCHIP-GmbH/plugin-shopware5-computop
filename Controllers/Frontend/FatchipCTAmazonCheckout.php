@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7.0 , 7.1
+ * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
  * @package    FatchipCTPayment
@@ -32,33 +32,50 @@ use Shopware\Components\CSRFWhitelistAware;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTAmazonRegister
+ *
+ * @category  Payment_Controller
+ * @package   Computop_Shopware5_Plugin
+ * @author    FATCHIP GmbH <support@fatchip.de>
+ * @copyright 2018 Computop
+ * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link      https://www.computop.com
  */
 class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Controllers_Frontend_Checkout implements CSRFWhitelistAware
 {
 
     /**
-     * PaymentService
+     * Fatchip PaymentService
+     *
      * @var \Fatchip\CTPayment\CTPaymentService $service
      */
     protected $paymentService;
 
     /**
      * FatchipCTpayment Plugin Bootstrap Class
+     *
      * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
     protected $plugin;
 
     /**
-     * Array containing the pluginsettings
+     * FatchipCTPayment plugin settings
+     *
      * @var array
      */
     protected $config;
 
-    /** @var Util $utils * */
+    /**
+     * FatchipCTPaymentUtils
+     *
+     * @var Util $utils *
+     */
     protected $utils;
 
     /**
-     * init payment controller
+     * Init payment controller
+     *
+     * @return void
+     * @throws Exception
      */
     public function init()
     {
@@ -74,7 +91,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
     }
 
     /**
-     *  extends shippingPayment with custom template
+     *  Extends shippingPayment with custom template
      *
      * @return void|Enlight_View_Default
      */
@@ -100,6 +117,8 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
 
     /**
      * {inheritdoc}
+     *
+     * @return array
      */
     public function getWhitelistedCSRFActions()
     {
@@ -110,7 +129,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
     }
 
     /**
-     *  extends confirm with custom template
+     *  Extends confirm with custom template
      *
      * @return void|Enlight_View_Default
      */
@@ -121,9 +140,8 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
     }
 
     /**
-     *  extends finish with custom template
-     *
-     * also unsets all session variables and refreshes basket
+     *  Extends finish with custom template
+     *  Also unsets all session variables and refreshes basket
      *
      * @throws Exception
      * @return void
@@ -137,24 +155,22 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
     }
 
     /**
-     *  get amazon order information from computop api
+     *  Get amazon order information from computop api
      *
      * @return \Fatchip\CTPayment\CTResponse $response
      */
     public function ctGetOrderDetails()
     {
         $session = Shopware()->Session();
-        # TODO use default orderDesc
+        // TODO use default orderDesc
         $orderDesc = "Test";
 
-        /** @var \Fatchip\CTPayment\CTPaymentMethods\AmazonPay $payment */
         $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
         $requestParams = $payment->getAmazonGODParams(
             $session->offsetGet('fatchipCTPaymentPayID'),
             $orderDesc,
             $session->offsetGet('fatchipCTAmazonReferenceID')
         );
-
         $response = $this->plugin->callComputopService($requestParams, $payment, 'GOD', $payment->getCTPaymentURL());
         return $response;
     }

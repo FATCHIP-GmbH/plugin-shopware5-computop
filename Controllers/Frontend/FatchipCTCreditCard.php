@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7.0 , 7.1
+ * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
  * @package    FatchipCTPayment
@@ -32,7 +32,15 @@ require_once 'FatchipCTPayment.php';
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTCreditCard
+ * Class Shopware_Controllers_Frontend_FatchipCTCreditCard.
+ *
+ * @category   Payment_Controller
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
@@ -43,16 +51,15 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     public $paymentClass = 'CreditCard';
 
     /**
-     *  gatewaAction is overridden for Creditcard because:
+     *  GatewaAction is overridden for Creditcard because:
      *  1. extra param URLBack
      *  2. forward to iframe controller instead of Computop Gateway, so the Computop IFrame is shown within Shop layout
+     *
+     * @return void
      */
     public function gatewayAction()
     {
-        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\CreditCard $payment */
         $payment = $this->getPaymentClassForGatewayAction();
-
-        //only Creditcard has URLBck
         $payment->setUrlBack($this->router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]));
 
         $params = $payment->getRedirectUrlParams();
@@ -60,9 +67,10 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params)));
     }
 
-
     /**
-     * action to show Computop Creditcard Iframe within shop layout
+     * Shows Computop Creditcard Iframe within shop layout
+     *
+     * @return void
      */
     public function iframeAction()
     {
@@ -76,20 +84,18 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     }
 
     /**
-     * success action method
+     * Handle successful payments.
+     *
      * Overridden because for Creditcards we forward to IFrameAction
-     * @return void     *
+     *
+     * @return void
      */
     public function successAction()
     {
         $requestParams = $this->Request()->getParams();
         // used for paynow silent mode
-        if (!empty($requestParams['response'])){
-            $response = $requestParams['response'];
-        } else {
-            /** @var \Fatchip\CTPayment\CTResponse $response */
-            $response = $this->paymentService->getDecryptedResponse($requestParams);
-        }
+
+        $response = !empty($requestParams['response']) ? $requestParams['response'] : $this->paymentService->getDecryptedResponse($requestParams);
 
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'AUTH', $response);
 
@@ -106,14 +112,12 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
 
                 $url = $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'finish']);
-                if (!$this->config['creditCardCaption'] ==='SILENT') {
+                if (!$this->config['creditCardCaption'] === 'SILENT') {
                     $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTURL' => $url));
-                    break;
                 } else {
                     $this->redirect($url);
-                    break;
                 }
-
+                break;
             default:
                 $this->forward('failure');
                 break;
@@ -121,7 +125,10 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     }
 
     /**
-     * Cancel action method. Overridden cause for Creditcard we forward to iframe action
+     * Handle user cancellation.
+     *
+     * Overridden cause for Creditcard we forward to iframe action.
+     *
      * @return void
      */
     public function failureAction()
@@ -136,12 +143,11 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $ctError['CTErrorMessage'] = self::ERRORMSG . $response->getDescription();
         $ctError['CTErrorCode'] = $response->getCode();
         $url = $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'shippingPayment']);
-        if (!$this->config['creditCardCaption'] ==='SILENT'){
+        if (!$this->config['creditCardCaption'] === 'SILENT') {
             $this->forward('iframe', 'FatchipCTCreditCard', null, ['fatchipCTURL' => $url, 'CTError' => $ctError]);
         } else {
             $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
         }
     }
-
-
 }
+

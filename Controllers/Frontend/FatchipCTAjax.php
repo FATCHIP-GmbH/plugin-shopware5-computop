@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7.0 , 7.1
+ * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
  * @package    FatchipCTPayment
@@ -32,31 +32,49 @@ use Shopware\Plugins\FatchipCTPayment\Util;
 /**
  * Shopware_Controllers_Frontend_FatchipCTAjax
  * Frontend controller for Ajax communication
+ *
+ * @category   Payment_Controller
+ * @package    FatchipCTPayment
+ * @subpackage Controllers/Frontend
+ * @author     FATCHIP GmbH <support@fatchip.de>
+ * @copyright  2018 Computop
+ * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
+ * @link       https://www.computop.com
  */
 class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Action
 {
 
     /**
-     * PaymentService
-     * @var \Fatchip\CTPayment\CTPaymentService $service */
+     * Fatchip PaymentService
+     *
+     * @var \Fatchip\CTPayment\CTPaymentService $service
+     */
     protected $paymentService;
 
     /**
      * FatchipCTpayment Plugin Bootstrap Class
+     *
      * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
     protected $plugin;
 
     /**
-     * {inheritdoc}
+     * FatchipCTPayment plugin settings
+     *
+     * @var array
      */
     protected $config;
 
-    /** @var Util $utils * */
+    /**
+     * FatchipCTPaymentUtils
+     *
+     * @var Util $utils *
+     */
     protected $utils;
 
     /**
-     * shopware user session
+     * Shopware Session
+     *
      * @var Enlight_Components_Session_Namespace
      */
     protected $session;
@@ -64,6 +82,9 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
 
     /**
      * Class contructor.
+     *
+     * @return void
+     * @throws Exception
      */
     public function init()
     {
@@ -73,14 +94,14 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
         Shopware()->Plugins()->Controller()->ViewRenderer()->setNoRender();
         $this->session = Shopware()->Session();
-
     }
 
     /**
-     * calls the computop api with amazonpay GOD api call
-     * "returns" api response as json encoded echo for use in JQuery plugins
+     * Calls the computop api with amazonpay GOD api call.
+     * returns  api response json encoded for use with JQuery plugins
      *
-     * @see AmazonPay::getAmazonGODParams()
+     * @see    AmazonPay::getAmazonGODParams()
+     * @return void
      */
     public function ctGetOrderDetailsAction()
     {
@@ -89,7 +110,6 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         $this->session->offsetSet('fatchipCTAmazonReferenceID', $referenceId);
         $orderDesc = "Test";
 
-        /** @var \Fatchip\CTPayment\CTPaymentMethods\AmazonPay $payment */
         $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
 
         $requestParams = $payment->getAmazonGODParams(
@@ -120,10 +140,12 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
     }
 
     /**
-     * calls the computop api with amazonpay SOD api call
-     * "returns" api response as json encoded echo for use in JQuery plugins
+     * Calls the computop api with amazonpay SOD api call.
+     * returns api response as json encoded for use with JQuery plugins
      *
-     * @see AmazonPay::getAmazonSODParams()
+     * @see    AmazonPay::getAmazonSODParams()
+     * @return void
+     * @throws Exception
      */
     public function ctSetOrderDetailsAction()
     {
@@ -131,11 +153,10 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         $referenceId = $params['referenceId'];
         $basket = Shopware()->Modules()->Basket()->sGetBasket();
         $amount = $basket['AmountNumeric'] * 100;
-        // ToDo use REAL Currency !!!!
+        // ToDo use REAL Currency and OrderDesc !!!!
         $currency = 'EUR';
         $orderDesc = "Test";
 
-        /** @var \Fatchip\CTPayment\CTPaymentMethods\AmazonPay $payment */
         $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
 
         $requestParams = $payment->getAmazonSODParams(
@@ -157,10 +178,11 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
     }
 
     /**
-     * checks if shipping country of amazon address is supported by the shop
-     * "returns" success or error as json encoded echo for use in JQuery plugins
+     * Checks if shipping country of amazon address is supported by the shop.
+     * returns success or error json encoded for use with JQuery plugins
      *
-     * @see  getAllowedShippingCountries()
+     * @see    getAllowedShippingCountries()
+     * @return void
      */
     public function ctIsShippingCountrySupportedAction()
     {
@@ -168,7 +190,7 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         $shippingCountryID = $params['shippingCountryID'];
         $supportedShippingCountries = $this->getAllowedShippingCountries();
         $data = [];
-        // ToDO refactor
+
         if (in_array($shippingCountryID, $supportedShippingCountries)) {
             $data['status'] = 'success';
         } else {
@@ -182,19 +204,20 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
     }
 
     /**
-     *  returns all shipping countries allowed in shopware configuration
+     *  Returns all shipping countries allowed in shopware configuration.
      *
      * @return array
      */
-    public function getAllowedShippingCountries()
+    private function getAllowedShippingCountries()
     {
         $activeCountries = $this->get('models')
             ->getRepository('Shopware\Models\Country\Country')
             ->findBy(['active' => true]);
-        $allowedCountries = array_map(function ($el) {
-            /** @var \Shopware\Models\Country\Country $el */
-            return $el->getId();
-        }, $activeCountries);
+        $allowedCountries = array_map(
+            function ($el) {
+                return $el->getId();
+            }, $activeCountries
+        );
         return $allowedCountries;
     }
 }
