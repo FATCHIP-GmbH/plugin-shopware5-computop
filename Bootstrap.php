@@ -342,8 +342,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         ];
     }
 
-
-    // ToDo refactor both methods into a single one
     /**
      * this wrapper is used for logging Server requests and responses to our shopware model
      *
@@ -351,7 +349,9 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      * @param $payment
      * @param $requestType
      * @param $url
+     *
      * @return \Fatchip\CTPayment\CTResponse
+     * @throws Exception
      */
     public function callComputopService($requestParams, $payment, $requestType, $url){
         $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
@@ -372,44 +372,20 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
     /**
      * this wrapper is used for logging Redirectrequests and responses to our shopware model
+     *
      * @param $requestParams
      * @param $paymentName
      * @param $requestType
      * @param $response
+     *
      * @return mixed
+     * @throws Exception
      */
     public function logRedirectParams($requestParams, $paymentName, $requestType, $response){
         $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
         $log->setPaymentName($paymentName);
         $log->setRequest($requestType);
         $log->setRequestDetails(json_encode($requestParams));
-        $log->setTransId($response->getTransID());
-        $log->setPayId($response->getPayID());
-        $log->setXId($response->getXID());
-        $log->setResponse($response->getStatus());
-        $log->setResponseDetails(json_encode($response->toArray()));
-        Shopware()->Models()->persist($log);
-        Shopware()->Models()->flush($log);
-        return $response;
-    }
-
-    // ToDo refactor both methods into a single one
-    //
-    /**
-     * this wrapper is used for logging Server requests and responses to our shopware model
-     * @param $requestParams
-     * @param $crif
-     * @param $requestType
-     * @param $url
-     * @return \Fatchip\CTPayment\CTResponse
-     */
-    public function callComputopCRIFService($requestParams, $crif, $requestType, $url){
-        $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
-        $log->setPaymentName('RiskCheck');
-        $log->setRequest($requestType);
-        $log->setRequestDetails(json_encode($requestParams));
-        /** @var \Fatchip\CTPayment\CTResponse $response */
-        $response =  $crif->callComputop($requestParams, $url);
         $log->setTransId($response->getTransID());
         $log->setPayId($response->getPayID());
         $log->setXId($response->getXID());

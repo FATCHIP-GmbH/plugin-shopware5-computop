@@ -271,7 +271,7 @@ class FrontendRiskManagement implements SubscriberInterface
                 /** @var CRIF $crif */
                 $crif = $service->getCRIFClass($config, $ctOrder, 'testOrder', $this->getUserDataParam());
                 $crifParams = $crif->getRedirectUrlParams();
-                $crifResponse = $plugin->callComputopCRIFService($crifParams, $crif, 'CRIF', $crif->getCTPaymentURL());
+                $crifResponse = $plugin->callComputopService($crifParams, $crif, 'CRIF', $crif->getCTPaymentURL());
 
                 /** @var \Fatchip\CTPayment\CTResponse $crifResponse */
                 $status = $crifResponse->getStatus();
