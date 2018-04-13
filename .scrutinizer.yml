@@ -196,11 +196,11 @@ build:
             - true
 
     nodes:
-        php70:
+        php56:
             environment:
                 hosts:
                     local.dev: '127.0.0.1'
-                php: 7.0
+                php: 5.6
                 apache2:
                     modules: ['rewrite']
                     sites:
