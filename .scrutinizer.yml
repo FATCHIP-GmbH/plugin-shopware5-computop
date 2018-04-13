@@ -153,11 +153,11 @@ coding_style:
 build:
     tests:
         override:
-          command: "php -v"
-            # command: cd ${PLUGIN_DIRECTORY}/${PLUGIN_NAME} && vendor/phpunit/phpunit/phpunit --coverage-clover=/home/scrutinizer/build/clover-coverage
-            #coverage:
-            #    file: clover-coverage
-            #    format: clover
+        -
+            command: cd ${PLUGIN_DIRECTORY}/${PLUGIN_NAME} && vendor/phpunit/phpunit/phpunit --coverage-clover=/home/scrutinizer/build/clover-coverage
+            coverage:
+                file: clover-coverage
+                format: clover
 
     environment:
         php:
