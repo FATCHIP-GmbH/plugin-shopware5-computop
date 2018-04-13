@@ -151,13 +151,14 @@ coding_style:
                 true_false_null: lower
 
 build:
-    tests:
-        override:
-        -
-            command: cd ${PLUGIN_DIRECTORY}/${PLUGIN_NAME} && vendor/phpunit/phpunit/phpunit --coverage-clover=/home/scrutinizer/build/clover-coverage
-            coverage:
-                file: clover-coverage
-                format: clover
+    # tests:
+    #    override:
+        # -
+        #   command: cd ${PLUGIN_DIRECTORY}/${PLUGIN_NAME} && vendor/phpunit/phpunit/phpunit --coverage-clover=/home/scrutinizer/build/clover-coverage
+        #   coverage:
+        #        file: clover-coverage
+        #        format: clover
+        # -
 
     environment:
         php:

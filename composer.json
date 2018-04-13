@@ -2,5 +2,8 @@
   "name": "fatchip/plugin-shopware5-computop",
   "description": "FATCHIP Computop Payment Plugin",
   "license": "????",
-  "type": "shopware-plugin"
+  "type": "shopware-plugin",
+  "require": {
+    "squizlabs/php_codesniffer": "^3.2"
+  }
 }
