@@ -209,6 +209,11 @@ build:
                             host: 'local.dev'
 
                 mysql: 5.6
+        analysis:
+              dependencies:
+                after:
+                - composer require --dev "squizlabs/php_codesniffer"
+
 
 #            php70:
 #                environment:
