@@ -154,7 +154,7 @@ build:
     tests:
         override:
             -
-                command: cd ${PLUGIN_DIRECTORY}/${PLUGIN_NAME} && vendor/phpunit/phpunit/phpunit --coverage-clover=/home/scrutinizer/build/clover-coverage
+                command: cd ${PLUGIN_DIRECTORY}/${PLUGIN_NAME} && vendor/bin/phpunit --coverage-clover=/home/scrutinizer/build/clover-coverage
                 coverage:
                     file: clover-coverage
                     format: clover
@@ -209,11 +209,6 @@ build:
                             host: 'local.dev'
 
                 mysql: 5.6
-        analysis:
-              dependencies:
-                after:
-                - composer require --dev "squizlabs/php_codesniffer"
-
 
 #            php70:
 #                environment:
