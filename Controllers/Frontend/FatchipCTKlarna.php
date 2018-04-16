@@ -58,6 +58,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
      * On failure forward to checkout/payment and set the error message
      *
      * @return void
+     * @throws Exception
      */
     public function gatewayAction()
     {
@@ -95,6 +96,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
      * Furthermore SSN, AnnualSalary, Phone and DoB need to be set
      *
      * @return Klarna
+     * @throws Exception
      */
     protected function getPaymentClassForGatewayAction()
     {

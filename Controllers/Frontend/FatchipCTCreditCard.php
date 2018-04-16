@@ -56,6 +56,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
      *  2. forward to iframe controller instead of Computop Gateway, so the Computop IFrame is shown within Shop layout
      *
      * @return void
+     * @throws Exception
      */
     public function gatewayAction()
     {
@@ -89,6 +90,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
      * Overridden because for Creditcards we forward to IFrameAction
      *
      * @return void
+     * @throws Exception
      */
     public function successAction()
     {
@@ -130,6 +132,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
      * Overridden cause for Creditcard we forward to iframe action.
      *
      * @return void
+     * @throws Exception
      */
     public function failureAction()
     {

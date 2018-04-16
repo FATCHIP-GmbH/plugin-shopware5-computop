@@ -149,9 +149,9 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
             $this->getAmount() * 100,
             $this->getCurrencyShortName()
         );
+        $requestParams['EtId'] = $this->getUserDataParam();
 
         $response = $this->plugin->callComputopService($requestParams, $payment, 'ORDER', $payment->getCTPaymentURL());
-
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
                 $orderNumber = $this->saveOrder(

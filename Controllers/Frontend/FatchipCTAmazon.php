@@ -102,6 +102,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
      * Finishes the order by calling the computop api.
      *
      * @return \Fatchip\CTPayment\CTResponse
+     * @throws Exception
      */
     public function ctSetAndConfirmOrderDetails()
     {
@@ -117,6 +118,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
             $orderDesc,
             $session->offsetGet('fatchipCTAmazonReferenceID')
         );
+        $requestParams['EtId'] = $this->getUserDataParam();
         $response = $this->plugin->callComputopService($requestParams, $payment, 'SCO', $payment->getCTPaymentURL());
         return $response;
     }
