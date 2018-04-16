@@ -41,9 +41,9 @@ class Menu
      */
     private $plugin;
 
-    const labelParentFind = ['label' => 'Einstellungen'];
-    const labelComputopMenu = 'Computop';
-    const labelComputopApiLog = 'API Protokoll';
+    const LABELPARENTFIND = ['label' => 'Einstellungen'];
+    const LABELCOMPUTOPMENU = 'Computop';
+    const LABELCOMPUTOPAPILOG = 'API Protokoll';
 
     /**
      * Menu constructor.
@@ -64,15 +64,15 @@ class Menu
     {
         $item = $this->plugin->createMenuItem(
             [
-                'label' => self::labelComputopMenu,
+                'label' => self::LABELCOMPUTOPMENU,
                 'class' => 'computop-icon',
                 'active' => 1,
-                'parent' => $this->plugin->Menu()->findOneBy(self::labelParentFind),
+                'parent' => $this->plugin->Menu()->findOneBy(self::LABELPARENTFIND),
             ]
         );
         $this->plugin->createMenuItem(
             [
-                'label' => self::labelComputopApiLog,
+                'label' => self::LABELCOMPUTOPAPILOG,
                 'class' => 'computop-icon',
                 'active' => 1,
                 'action' => 'index',

@@ -83,7 +83,6 @@ class Models
                     $em->getClassMetadata('Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog'),
                 ]
             );
-
         } catch (\Exception $e) {
             // ignore
         }

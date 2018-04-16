@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<ruleset name="Fatchip">
+
+  <arg name="report" value="summary"/>
+  <arg name="colors"/>
+  <arg value="sp"/>
+
+  <description>Fatchip uses widescreens ;)</description>
+  <rule ref="Generic.Files.LineLength">
+    <properties>
+      <property name="lineLimit" value="120"/>
+      <property name="absoluteLineLimit" value="160"/>
+    </properties>
+  </rule>
+</ruleset>

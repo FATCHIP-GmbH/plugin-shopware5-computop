@@ -373,12 +373,12 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     /**
      * this wrapper is used for logging Redirectrequests and responses to our shopware model
      *
-     * @param $requestParams
-     * @param $paymentName
-     * @param $requestType
-     * @param $response
+     * @param array $requestParams
+     * @param string $paymentName
+     * @param string $requestType
+     * @param \Fatchip\CTPayment\CTResponse $response
      *
-     * @return mixed
+     * @return void
      * @throws Exception
      */
     public function logRedirectParams($requestParams, $paymentName, $requestType, $response){
@@ -393,6 +393,5 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $log->setResponseDetails(json_encode($response->toArray()));
         Shopware()->Models()->persist($log);
         Shopware()->Models()->flush($log);
-        return $response;
     }
 }

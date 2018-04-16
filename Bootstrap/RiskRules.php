@@ -153,7 +153,7 @@ class RiskRules
      *
      * @return integer
      */
-    function getNumberOfRiskrules($paymentName)
+    private function getNumberOfRiskrules($paymentName)
     {
         if ($paymentName == 'fatchip_computop_klarna_installment' || $paymentName == 'fatchip_computop_klarna_invoice') {
             return 5;

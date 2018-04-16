@@ -1,12 +1,24 @@
 <?xml version="1.0"?>
 <ruleset name="Shopware">
-  <description>Shopware Code Style Rules</description>
 
+  <arg name="report" value="summary"/>
+  <arg name="colors"/>
+  <arg value="sp"/>
+
+  <description>Shopware Code Style Rules</description>
   <rule ref="PSR2">
     <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps"/>
     <exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace"/>
 
     <exclude name="PEAR.Functions.FunctionCallSignature.ContentAfterOpenBracket"/>
     <exclude name="PEAR.Functions.FunctionCallSignature.CloseBracketLine"/>
+  </rule>
+
+  <description>Fatchip uses widescreens ;)</description>
+  <rule ref="Generic.Files.LineLength">
+    <properties>
+      <property name="lineLimit" value="120"/>
+      <property name="absoluteLineLimit" value="160"/>
+    </properties>
   </rule>
 </ruleset>

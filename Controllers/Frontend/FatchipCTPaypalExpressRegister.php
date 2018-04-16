@@ -106,7 +106,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpressRegister extends Shopw
         $this->view->assign('fatchipCTResponse', $params['CTResponse']);
         $this->view->assign('fatchipAddrCountryCodeID', $AddrCountryCodeID);
         $this->view->assign('fatchipAddrFirstName', $params['CTResponse']->getFirstName());
-        $this->view->assign('fatchipAddrLastName',  $params['CTResponse']->getLastName());
+        $this->view->assign('fatchipAddrLastName', $params['CTResponse']->getLastName());
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
         $this->view->loadTemplate('frontend/fatchipCTPaypalExpressRegister/index.tpl');
     }
