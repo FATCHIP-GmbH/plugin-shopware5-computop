@@ -127,6 +127,49 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
     {
         return Shopware()->Modules()->Admin()->sGetUserData();
     }
+
+    /**
+     * Recurring payment action method.
+     */
+    public function recurringAction()
+    {
+        $payment = $this->getPaymentClassForGatewayAction();
+
+        $user = $this->getUserData();
+
+        $payment->setAccBank($this->utils->getUserLastschriftBank($user));
+        $payment->setAccOwner($this->utils->getUserLastschriftKontoinhaber($user));
+        $payment->setIBAN($this->utils->getUserLastschriftIban($user));
+
+        $requestParams = $payment->getRedirectUrlParams();
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'LASTSCHRIFT', $payment->getCTPaymentURL());
+
+        if ($this->Request()->isXmlHttpRequest()) {
+            if ($response->getStatus() !== CTEnumStatus::OK) {
+                $data = [
+                    'success' => false,
+                    'message' => "fucking Error",
+                ];
+            } else {
+                $orderNumber = $this->saveOrder(
+                    $response->getTransID(),
+                    $response->getPayID(),
+                    self::PAYMENTSTATUSRESERVED
+                );
+                $this->saveTransactionResult($response);
+                $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
+                $data = [
+                    'success' => false,
+                    'data' => [
+                        'orderNumber' => $orderNumber,
+                        'transactionId' => $response->getTransID(),
+                    ],
+                ];
+            }
+            echo Zend_Json::encode($data);
+        }
+    }
+
 }
 
 
