@@ -247,9 +247,6 @@ class Checkout implements SubscriberInterface
             // set the neccessary pre-encrypted fields in view
             $payment = $this->getPaymentClassForGatewayAction();
             $payment->setCapture('MANUAL');
-            if ($this->utils->isAboCommerceArticleInBasket()) {
-                $payment->setRTF('I');
-            }
 
             $requestParams = $payment->getRedirectUrlParams();
             unset($requestParams['Template']);
