@@ -63,6 +63,10 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $payment = $this->getPaymentClassForGatewayAction();
         $payment->setUrlBack($this->router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]));
 
+        if ($this->utils->isAboCommerceArticleInBasket()) {
+            $payment->setRTF('I');
+        }
+
         $params = $payment->getRedirectUrlParams();
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
         $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params)));
@@ -151,6 +155,112 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         } else {
             $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
         }
+    }
+
+    /**
+     * Recurring payment action method.
+     */
+    public function recurringAction()
+    {
+        $params = $this->Request()->getParams();
+        $this->container->get('front')->Plugins()->ViewRenderer()->setNoRender();
+        $payment = $this->getPaymentClassForGatewayAction();
+        $payment->setRTF('R');
+        $requestParams = $payment->getRedirectUrlParams();
+        $requestParams['CCNr'] = $this->getParamCCPseudoCardNumber($params['orderId']);
+        $requestParams['CCBrand'] = $this->getParamCCCardBrand($params['orderId']);
+        $requestParams['CCExpiry'] = $this->getParamCCCardExpiry($params['orderId']);
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'CreditCardRecurring', $payment->getCTRecurringURL());
+
+//        if ($this->Request()->isXmlHttpRequest()) {
+            if ($response->getStatus() !== CTEnumStatus::OK) {
+                $data = [
+                     'success' => false,
+                    'message' => "fucking Error",
+                ];
+            } else {
+                $orderNumber = $this->saveOrder(
+                    $response->getTransID(),
+                    $response->getPayID(),
+                    self::PAYMENTSTATUSRESERVED
+                );
+                $this->saveTransactionResult($response);
+                $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
+                $data = [
+                    'success' => false,
+                    'data' => [
+                        'orderNumber' => $orderNumber,
+                        'transactionId' => $response->getTransID(),
+                    ],
+                ];
+            }
+            echo Zend_Json::encode($data);
+        }
+//    }
+
+// TODO refactor the 3 methods below because of code duplication
+
+    /**
+     * returns creditcard pseudocardnumber from
+     * the last order to use it to authorize
+     * recurring payments
+     *
+     * @param string $orderNumber shopware order-number
+     *
+     * @return boolean | string $pseudoCardNumber pseudo credit card number
+     */
+    protected function getParamCCPseudoCardNumber($orderNumber)
+    {
+        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['id' => $orderNumber]);
+        $pseudoCardNumber = false;
+        if ($order) {
+            $orderAttribute = $order->getAttribute();
+            $pseudoCardNumber = $orderAttribute->getfatchipctKreditkartepseudonummer();
+
+        }
+        return $pseudoCardNumber;
+    }
+
+    /**
+     * returns creditcard brand from
+     * the last order to use it to authorize
+     * recurring payments
+     *
+     * @param string $orderNumber shopware order-number
+     *
+     * @return boolean | string $cardBrand pseudo credit card number
+     */
+    protected function getParamCCCardBrand($orderNumber)
+    {
+        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['id' => $orderNumber]);
+        $cardBrand = false;
+        if ($order) {
+            $orderAttribute = $order->getAttribute();
+            $cardBrand = $orderAttribute->getfatchipctKreditkartebrand();
+
+        }
+        return $cardBrand;
+    }
+
+    /**
+     * returns creditcard expiry from
+     * the last order to use it to authorize
+     * recurring payments
+     *
+     * @param string $orderNumber shopware order-number
+     *
+     * @return boolean | string $cardexpiry pseudo credit card number
+     */
+    protected function getParamCCCardExpiry($orderNumber)
+    {
+        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['id' => $orderNumber]);
+        $cardexpiry = false;
+        if ($order) {
+            $orderAttribute = $order->getAttribute();
+            $cardexpiry = $orderAttribute->getfatchipctKreditkarteexpiry();
+
+        }
+        return $cardexpiry;
     }
 }
 

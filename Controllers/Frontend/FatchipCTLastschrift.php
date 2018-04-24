@@ -133,18 +133,17 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
      */
     public function recurringAction()
     {
+        $this->container->get('front')->Plugins()->ViewRenderer()->setNoRender();
         $payment = $this->getPaymentClassForGatewayAction();
-
         $user = $this->getUserData();
-
         $payment->setAccBank($this->utils->getUserLastschriftBank($user));
         $payment->setAccOwner($this->utils->getUserLastschriftKontoinhaber($user));
         $payment->setIBAN($this->utils->getUserLastschriftIban($user));
 
         $requestParams = $payment->getRedirectUrlParams();
-        $response = $this->plugin->callComputopService($requestParams, $payment, 'LASTSCHRIFT', $payment->getCTPaymentURL());
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'LASTSCHRIFTRecurring', $payment->getCTPaymentURL());
 
-        if ($this->Request()->isXmlHttpRequest()) {
+//        if ($this->Request()->isXmlHttpRequest()) {
             if ($response->getStatus() !== CTEnumStatus::OK) {
                 $data = [
                     'success' => false,
@@ -168,7 +167,7 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
             }
             echo Zend_Json::encode($data);
         }
-    }
+//    }
 
 }
 

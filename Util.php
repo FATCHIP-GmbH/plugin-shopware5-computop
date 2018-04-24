@@ -580,4 +580,46 @@ class Util
         return null;
 
     }
+
+    /**
+     * Return whether or not a abo-article is in the basket
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public function isAboCommerceArticleInBasket()
+    {
+        if (!$this->isAboCommerceActive()) {
+            return false;
+        }
+
+        $entityManager = Shopware()->Models();
+        $builder = $entityManager->createQueryBuilder();
+        $builder->select($entityManager->getExpressionBuilder()->count('basket.id'))
+            ->from('Shopware\Models\Order\Basket', 'basket')
+            ->innerJoin('basket.attribute', 'attribute')
+            ->where('basket.sessionId = :sessionId')
+            ->andWhere('attribute.swagAboCommerceDeliveryInterval IS NOT NULL')
+            ->setParameters(array('sessionId' => Shopware()->SessionID()));
+
+        $count = $builder->getQuery()->getSingleScalarResult();
+
+        return (bool) $count;
+    }
+
+    /**
+     * check if abo commerce plugin is activated
+     *
+     * @return bool
+     */
+    protected function isAboCommerceActive()
+    {
+        $sql = "SELECT 1 FROM s_core_plugins WHERE name='SwagAboCommerce' AND active=1";
+
+        $result = Shopware()->Db()->fetchOne($sql);
+        if ($result != 1) {
+            return false; //not installed
+        }
+        return true;
+    }
 }
