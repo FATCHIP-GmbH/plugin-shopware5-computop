@@ -61,7 +61,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalStandard extends Shopware_Con
     public function gatewayAction()
     {
         $payment = $this->getPaymentClassForGatewayAction();
-        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard  $payment*/
+        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard $payment */
 
         if ($this->utils->isAboCommerceArticleInBasket()) {
             $payment->setRTF('I');
@@ -71,7 +71,6 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalStandard extends Shopware_Con
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
         $this->redirect($payment->getHTTPGetURL($params));
     }
-
 
 
     /**
@@ -87,11 +86,11 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalStandard extends Shopware_Con
         $requestParams['BillingAgreementID'] = $this->getParamPaypalBillingAgreementId($params['orderId']);
         $response = $this->plugin->callComputopService($requestParams, $payment, 'PaypalRecurring', $payment->getRecurringURL());
 
-//        if ($this->Request()->isXmlHttpRequest()) {
+        if ($this->Request()->isXmlHttpRequest()) {
             if ($response->getStatus() !== CTEnumStatus::OK) {
                 $data = [
                     'success' => false,
-                    'message' => "fucking Error",
+                    'message' => "Error",
                 ];
             } else {
                 $orderNumber = $this->saveOrder(
@@ -111,7 +110,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalStandard extends Shopware_Con
             }
             echo Zend_Json::encode($data);
         }
-//    }
+    }
 
     /**
      * returns paypal billing agreementId from

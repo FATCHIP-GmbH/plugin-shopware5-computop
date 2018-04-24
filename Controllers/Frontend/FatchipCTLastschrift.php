@@ -88,6 +88,10 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
 
         $user = $this->getUserData();
 
+        if ($this->utils->isAboCommerceArticleInBasket()) {
+            $payment->setMdtSeqType('FRST');
+        }
+
         $payment->setAccBank($this->utils->getUserLastschriftBank($user));
         $payment->setAccOwner($this->utils->getUserLastschriftKontoinhaber($user));
         $payment->setIBAN($this->utils->getUserLastschriftIban($user));
@@ -134,20 +138,25 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
     public function recurringAction()
     {
         $this->container->get('front')->Plugins()->ViewRenderer()->setNoRender();
-        $payment = $this->getPaymentClassForGatewayAction();
-        $user = $this->getUserData();
-        $payment->setAccBank($this->utils->getUserLastschriftBank($user));
-        $payment->setAccOwner($this->utils->getUserLastschriftKontoinhaber($user));
-        $payment->setIBAN($this->utils->getUserLastschriftIban($user));
 
-        $requestParams = $payment->getRedirectUrlParams();
-        $response = $this->plugin->callComputopService($requestParams, $payment, 'LASTSCHRIFTRecurring', $payment->getCTPaymentURL());
+        if ($this->Request()->isXmlHttpRequest()) {
 
-//        if ($this->Request()->isXmlHttpRequest()) {
+            $payment = $this->getPaymentClassForGatewayAction();
+            $user = $this->getUserData();
+
+            $payment->setMdtSeqType('RCUR');
+
+            $payment->setAccBank($this->utils->getUserLastschriftBank($user));
+            $payment->setAccOwner($this->utils->getUserLastschriftKontoinhaber($user));
+            $payment->setIBAN($this->utils->getUserLastschriftIban($user));
+
+            $requestParams = $payment->getRedirectUrlParams();
+            $response = $this->plugin->callComputopService($requestParams, $payment, 'LASTSCHRIFTRecurring', $payment->getCTPaymentURL());
+
             if ($response->getStatus() !== CTEnumStatus::OK) {
                 $data = [
                     'success' => false,
-                    'message' => "fucking Error",
+                    'message' => "Error",
                 ];
             } else {
                 $orderNumber = $this->saveOrder(
@@ -158,7 +167,7 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
                 $this->saveTransactionResult($response);
                 $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
                 $data = [
-                    'success' => false,
+                    'success' => true,
                     'data' => [
                         'orderNumber' => $orderNumber,
                         'transactionId' => $response->getTransID(),
@@ -167,8 +176,7 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
             }
             echo Zend_Json::encode($data);
         }
-//    }
-
+    }
 }
 
 
