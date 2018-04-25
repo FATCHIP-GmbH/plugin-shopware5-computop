@@ -210,7 +210,6 @@ class Checkout implements SubscriberInterface
 
         }
 
-
         // ToDo find a better way, it would be nice to move this to the Amazon Controller
         if ($this->utils->isAmazonPayActive()) {
             // assign plugin Config to View
