@@ -45,7 +45,7 @@ class Templates implements SubscriberInterface
     private $path;
     /**
      * Templatemanager.
-     * @var Enlight_Template_Manager $templateManager
+     * @var \Enlight_Template_Manager $templateManager
      */
     private $templateManager;
 
@@ -93,9 +93,9 @@ class Templates implements SubscriberInterface
 
     /**
      * adds template directory
-     * @param Enlight_Event_EventArgs $args
+     * @param \Enlight_Event_EventArgs $args
      */
-    public function addTemplateDir(Enlight_Event_EventArgs $args)
+    public function addTemplateDir(\Enlight_Event_EventArgs $args)
     {
         // Add the template directory for the used template type
         $this->templateManager->addTemplateDir(
