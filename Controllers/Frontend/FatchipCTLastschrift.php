@@ -138,6 +138,7 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
     public function recurringAction()
     {
         $this->container->get('front')->Plugins()->ViewRenderer()->setNoRender();
+        $params = $this->Request()->getParams();
 
         if ($this->Request()->isXmlHttpRequest()) {
 
@@ -151,6 +152,8 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
             $payment->setIBAN($this->utils->getUserLastschriftIban($user));
 
             $requestParams = $payment->getRedirectUrlParams();
+            $requestParams['MandateID'] = $this->getParamLastschriftMandateId($params['orderId']);
+            $requestParams['DtOfSgntr'] = $this->getParamLastschriftDos($params['orderId']);
             $response = $this->plugin->callComputopService($requestParams, $payment, 'LASTSCHRIFTRecurring', $payment->getCTPaymentURL());
 
             if ($response->getStatus() !== CTEnumStatus::OK) {
@@ -177,6 +180,49 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
             echo Zend_Json::encode($data);
         }
     }
+
+    /**
+     * returns lastschrift mandateId from
+     * the last order to use it to authorize
+     * recurring payments
+     *
+     * @param string $orderNumber shopware order-number
+     *
+     * @return boolean | string lastschrift agrementId
+     */
+    protected function getParamLastschriftMandateId($orderNumber)
+    {
+        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['id' => $orderNumber]);
+        $agreementId = false;
+        if ($order) {
+            $orderAttribute = $order->getAttribute();
+            $agreementId = $orderAttribute->getfatchipctlastschriftmandateid();
+
+        }
+        return $agreementId;
+    }
+
+    /**
+     * returns lastschrift date of signature from
+     * the last order to use it to authorize
+     * recurring payments
+     *
+     * @param string $orderNumber shopware order-number
+     *
+     * @return boolean | string lastschrift DoS
+     */
+    protected function getParamLastschriftDos($orderNumber)
+    {
+        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['id' => $orderNumber]);
+        $DoS = false;
+        if ($order) {
+            $orderAttribute = $order->getAttribute();
+            $DoS = $orderAttribute->getfatchipctlastschriftdos();
+
+        }
+        return $DoS;
+    }
+
 }
 
 
