@@ -87,9 +87,9 @@ class FrontendRiskManagement implements SubscriberInterface
      * Fired after a user updates an address in SW >=5.2
      * If a CRIF result is available, it will be invalidated / deleted
      *
-     * @param \Enlight_Hook_HookArgs $args
+     * @param \Enlight_Event_EventArgs $args
      */
-    public function afterAddressUpdate(\Enlight_Hook_HookArgs $args)
+    public function afterAddressUpdate(\Enlight_Event_EventArgs $args)
     {
         //check in Session if we autoupated the address with the corrected Address from CRIF
         if (!$this->addressWasAutoUpdated()) {
