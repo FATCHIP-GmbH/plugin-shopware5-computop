@@ -32,6 +32,7 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 use Enlight\Event\SubscriberInterface;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTCrif\CRIF;
+use Fatchip\CTPayment\CTPaymentService;
 use Shopware\Components\DependencyInjection\Container;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
@@ -87,9 +88,9 @@ class FrontendRiskManagement implements SubscriberInterface
      * Fired after a user updates an address in SW >=5.2
      * If a CRIF result is available, it will be invalidated / deleted
      *
-     * @param \Enlight_Hook_HookArgs $args
+     * @param \Enlight_Event_EventArgs $args
      */
-    public function afterAddressUpdate(\Enlight_Hook_HookArgs $args)
+    public function afterAddressUpdate(\Enlight_Event_EventArgs $args)
     {
         //check in Session if we autoupated the address with the corrected Address from CRIF
         if (!$this->addressWasAutoUpdated()) {
@@ -104,9 +105,9 @@ class FrontendRiskManagement implements SubscriberInterface
      * Fired after a user updates a billing address in SW < 5.2
      * If a CRIF result is available, it will be invalidated / deleted
      *
-     * @param \Enlight_Hook_HookArgs $arguments
+     * @param \Enlight_Event_EventArgs $arguments
      */
-    public function onValidateStep2BillingAddress(\Enlight_Hook_HookArgs $arguments)
+    public function onValidateStep2BillingAddress(\Enlight_Event_EventArgs $arguments)
     {
         //check in Session if we autoupated the address with the corrected Address from CRIF
         if (!$this->addressWasAutoUpdated()) {
@@ -129,9 +130,9 @@ class FrontendRiskManagement implements SubscriberInterface
      * Fired after a user updates a shipping address in SW < 5.2
      * If a CRIF result is available, it will be invalidated / deleted
      *
-     * @param \Enlight_Hook_HookArgs $arguments
+     * @param \Enlight_Event_EventArgs $arguments
      */
-    public function onValidateStep2ShippingAddress(\Enlight_Hook_HookArgs $arguments)
+    public function onValidateStep2ShippingAddress(\Enlight_Event_EventArgs $arguments)
     {
         //check in Session if we autoupated the address with the corrected Address from CRIF
         if (!$this->addressWasAutoUpdated()) {
@@ -204,9 +205,9 @@ class FrontendRiskManagement implements SubscriberInterface
      * returns true if risk condition is fulfilled
      * arguments: $rule, $user, $basket, $value
      *
-     * @param \Enlight_Hook_HookArgs $arguments
+     * @param \Enlight_Event_EventArgs $arguments
      */
-    public function onExecuteRiskRule(\Enlight_Hook_HookArgs $arguments)
+    public function onExecuteRiskRule(\Enlight_Event_EventArgs $arguments)
     {
         $rule = $arguments->get('rule');
 
@@ -222,7 +223,7 @@ class FrontendRiskManagement implements SubscriberInterface
             );
         } else {
 
-            /** @var Fatchip\CTPayment\CTPaymentService $service */
+            /** @var CTPaymentService $service */
             $service = Shopware()->Container()->get('FatchipCTPaymentApiClient');
             $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
             $config = $plugin->Config()->toArray();
