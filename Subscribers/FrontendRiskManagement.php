@@ -263,11 +263,18 @@ class FrontendRiskManagement implements SubscriberInterface
                 $ctOrder = new CTOrder();
                 $ctOrder->setAmount($basket['AmountNumeric'] * 100);
                 $ctOrder->setCurrency(Shopware()->Container()->get('currency')->getShortName());
-                $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
-                $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
                 $ctOrder->setEmail($user['additional']['user']['email']);
                 $ctOrder->setCustomerID($user['additional']['user']['id']);
 
+                try {
+                    $ctOrder->setBillingAddress($util->getCTAddress($user['billingaddress']));
+                    $ctOrder->setShippingAddress($util->getCTAddress($user['shippingaddress']));
+                } catch (\Exception $e) {
+                    // fail risk checks if address has errors
+                    $arguments->setReturn(TRUE);
+                    return;
+
+                }
                 //TODO: Set orderDesc
                 /** @var CRIF $crif */
                 $crif = $service->getCRIFClass($config, $ctOrder, 'testOrder', $this->getUserDataParam());
