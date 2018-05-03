@@ -266,8 +266,8 @@ class Checkout implements SubscriberInterface
             } catch (\Exception $e) {
 
                 $ctError = [];
-                $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
-                $ctError['CTErrorCode'] = $e->getMessage();
+                $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten <BR>';
+                $ctError['CTErrorCode'] = 'Bitte prüfen Sie Straße und Hausnummer';
                 //$subject->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
                 $view->assign('CTError', $ctError);
                 return;
