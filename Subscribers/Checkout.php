@@ -145,6 +145,7 @@ class Checkout implements SubscriberInterface
         }
 
         if ($request->getActionName() == 'shippingPayment') {
+
             $birthday = explode('-', $this->utils->getUserDoB($userData));
             $paymentData['birthday'] = $birthday[2];
             $paymentData['birthmonth'] = $birthday[1];
@@ -255,6 +256,24 @@ class Checkout implements SubscriberInterface
             $view->extendsTemplate('frontend/checkout/creditcard_confirm.tpl');
         }
 
+        if ($request->getActionName() == 'confirm' && (strpos($paymentName, fatchip_computop) === 0 )){
+                // check for address splitting errors and handle them here
+            $util = new Util();
+            $ctOrder = new CTOrder();
+            try {
+                $ctOrder->setBillingAddress($util->getCTAddress($userData['billingaddress']));
+                $ctOrder->setShippingAddress($util->getCTAddress($userData['shippingaddress']));
+            } catch (\Exception $e) {
+
+                $ctError = [];
+                $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
+                $ctError['CTErrorCode'] = $e->getMessage();
+                //$subject->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
+                $view->assign('CTError', $ctError);
+                return;
+
+            }
+        }
     }
 
     /**
