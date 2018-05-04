@@ -317,6 +317,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      */
     public function update($oldVersion)
     {
+        $this->disable();
+        $this->install();
         return $this->invalidateCaches(true);
     }
 
