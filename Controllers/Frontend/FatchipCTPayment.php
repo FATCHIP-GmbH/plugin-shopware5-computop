@@ -173,7 +173,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
         $ctError = [];
         $ctError['CTErrorMessage'] = self::ERRORMSG; // . $response->getDescription();
-        $ctError['CTErrorCode'] = ''; //$response->getCode();
+        $ctError['CTErrorCode'] = $response->getCode();
         $this->session->offsetUnset('fatchipComputopEasyCreditPayId');
 
         $this->forward('shippingPayment', 'checkout', null, $this->hideError($response->getCode()) ? null : ['CTError' => $ctError]);
@@ -500,7 +500,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      *
      * @return bool
      */
-    private function hideError($errorCode)
+    protected function hideError($errorCode)
     {
         if (strlen($errorCode) > 4) {
             switch (substr($errorCode, -4)) {

@@ -143,7 +143,8 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
 
         $ctError['CTErrorMessage'] = self::ERRORMSG; // . $response->getDescription();
-        $ctError['CTErrorCode'] = ''; //$response->getCode();
+        $ctError['CTErrorCode'] = $response->getCode();
+        $ctError = $this->hideError($response->getCode()) ? null : $ctError;
         $url = $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'shippingPayment']);
         if ($this->config['creditCardMode'] === 'IFRAME') {
             $this->forward('iframe', 'FatchipCTCreditCard', null, ['fatchipCTURL' => $url, 'CTError' => $ctError]);
