@@ -265,7 +265,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     {
         return [
             'install' => true,
-            'update' => false,
+            'update' => true,
             'enable' => true,
             'secureUninstall' => true,
         ];
@@ -309,6 +309,16 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         return $this->disable();
     }
 
+    /**
+     * Updates the plugin
+     *
+     * @param string $oldVersion
+     * @return array
+     */
+    public function update($oldVersion)
+    {
+        return $this->invalidateCaches(true);
+    }
 
     /**
      * invalidates all caches

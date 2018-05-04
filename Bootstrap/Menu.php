@@ -62,23 +62,26 @@ class Menu
      */
     public function createMenu()
     {
-        $item = $this->plugin->createMenuItem(
-            [
-                'label' => self::LABELCOMPUTOPMENU,
-                'class' => 'computop-icon',
-                'active' => 1,
-                'parent' => $this->plugin->Menu()->findOneBy(self::LABELPARENTFIND),
-            ]
-        );
-        $this->plugin->createMenuItem(
-            [
-                'label' => self::LABELCOMPUTOPAPILOG,
-                'class' => 'computop-icon',
-                'active' => 1,
-                'action' => 'index',
-                'controller' => 'FatchipCTApilog',
-                'parent' => $item,
-            ]
-        );
+        $ret = $this->Menu()->findOneBy(self::LABELCOMPUTOPMENU);
+        if (!$ret) {
+            $item = $this->plugin->createMenuItem(
+                [
+                    'label' => self::LABELCOMPUTOPMENU,
+                    'class' => 'computop-icon',
+                    'active' => 1,
+                    'parent' => $this->plugin->Menu()->findOneBy(self::LABELPARENTFIND),
+                ]
+            );
+            $this->plugin->createMenuItem(
+                [
+                    'label' => self::LABELCOMPUTOPAPILOG,
+                    'class' => 'computop-icon',
+                    'active' => 1,
+                    'action' => 'index',
+                    'controller' => 'FatchipCTApilog',
+                    'parent' => $item,
+                ]
+            );
+        }
     }
 }
