@@ -172,8 +172,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
 
         $ctError = [];
-        $ctError['CTErrorMessage'] = self::ERRORMSG . $response->getDescription();
-        $ctError['CTErrorCode'] = $response->getCode();
+        $ctError['CTErrorMessage'] = self::ERRORMSG; // . $response->getDescription();
+        $ctError['CTErrorCode'] = ''; //$response->getCode();
         $this->session->offsetUnset('fatchipComputopEasyCreditPayId');
 
         $this->forward('shippingPayment', 'checkout', null, $this->hideError($response->getCode()) ? null : ['CTError' => $ctError]);
