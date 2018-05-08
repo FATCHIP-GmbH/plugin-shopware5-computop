@@ -76,7 +76,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
                 );
                 $this->saveTransactionResult($response);
                 $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
-                $this->forward('finish', 'checkout', null, ['sAGB' => 1]);
+                $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
                 break;
             default:
                 $ctError = [];
