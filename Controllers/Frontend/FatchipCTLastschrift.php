@@ -108,9 +108,7 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
                 );
                 $this->saveTransactionResult($response);
                 $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
-                //$this->redirect(['controller' => 'checkout', 'action' => 'finish', ['sAGB' => 'true']]);
-                $params = $this->Request()->getParams();
-                $this->forward('finish', 'checkout', null, ['sAGB' => 1]);
+                $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
                 break;
             default:
                 $ctError = [];
