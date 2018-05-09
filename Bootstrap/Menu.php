@@ -62,14 +62,14 @@ class Menu
      */
     public function createMenu()
     {
-        $ret = $this->Menu()->findOneBy(self::LABELCOMPUTOPMENU);
+        $ret = $this->plugin->Menu()->findOneBy(['label' => self::LABELCOMPUTOPAPILOG]);
         if (!$ret) {
             $item = $this->plugin->createMenuItem(
                 [
                     'label' => self::LABELCOMPUTOPMENU,
                     'class' => 'computop-icon',
                     'active' => 1,
-                    'parent' => $this->plugin->Menu()->findOneBy(self::LABELPARENTFIND),
+                    'parent' => $this->plugin->Menu()->findOneBy(['label' => self::LABELPARENTFIND]),
                 ]
             );
             $this->plugin->createMenuItem(
