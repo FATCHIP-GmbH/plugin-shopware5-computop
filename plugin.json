@@ -12,10 +12,10 @@
   "solution_name": "FatchipCTPayment",
   "changelog": {
     "de": {
-      "1.0": "Erstveröffentlichung - Weitere Updates in der Datei CHANGELOG.md"
+      "1.0.0": "Erstveröffentlichung - Weitere Updates in der Datei CHANGELOG.md"
     },
     "en": {
-      "1.0": "First release - Further updates in the file CHANGELOG.md"
+      "1.0.0": "First release - Further updates in the file CHANGELOG.md"
     }
   },
   "compatibility": {
