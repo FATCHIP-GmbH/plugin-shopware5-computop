@@ -1,18 +1,17 @@
-# Fatchip Computop Payments for Shopware 5
+# Fatchip Computop Payment for Shopware 5
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/badges/quality-score.png?b=master&s=ef80e9afd3621e208f7b8d6e2e1fa0d02672340c)](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/badges/coverage.png?b=master&s=17b8caeddcf39fc90dc791b9604ed7f97551c645)](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/?branch=master)
-[![Build Status](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/badges/build.png?b=master&s=b16401c505027a089d9c5bf322fb75aaaa70486d)](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/build-status/master)
 
-Licence ????
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
+Licence GPLv3
 
 ## About Fatchip Computop Payment
 For details about the plugin please visit [our website](https://www.fatchip.de/).
 
+In order to use Computop Payments via this plugin, you'll need a contract with Computop. Please contact sales via the form on https://www.computop.com/de/. In case you are already a customer of Computop, we kindly ask you to get in touch with your contact person. Following that, you'll receive your access data with which you'll be able to use the Shopware plugin. You will then be able to to use Computop payments in your shop.
+
 
 ## Installation and usage
-Visit our Wiki pages to read the [plugin documentation](https://wiki.fatchip.de/public/faqhermes).
+Visit our Wiki pages to read the [plugin documentation](https://wiki.fatchip.de/public/shopware-fatchipctpayment).
 
 ## Author
 FATCHIP GmbH | https://www.fatchip.de | support@fatchip.de 
@@ -23,8 +22,8 @@ Please see the [License File](LICENSE.md) for more information.
 ## Credits
 This plugin makes use of the following projects:
 
-* [Bootstrap](https://getbootstrap.com/) including [Glyphicons Halflings](https://glyphicons.com/)
-* [jQuery](https://js.foundation) and the [jQuery UI Datepicker](https://jqueryui.com)
+* [jQuery](https://js.foundation)
 * [Ext JS 4.1](http://cdn.sencha.com/ext/gpl/4.1.1/) by Sencha
+
 
 We express our thanks to their developers, designers and other contributers for their great work!
