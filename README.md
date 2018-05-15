@@ -11,7 +11,7 @@ In order to use Computop Payments via this plugin, you'll need a contract with C
 
 
 ## Installation and usage
-Visit our Wiki pages to read the [plugin documentation](https://wiki.fatchip.de/public/shopware-fatchipctpayment).
+Visit our Wiki pages to read the [plugin documentation](https://github.com/FATCHIP-GmbH/plugin-shopware5-computop/releases).
 
 ## Author
 FATCHIP GmbH | https://www.fatchip.de | support@fatchip.de 
