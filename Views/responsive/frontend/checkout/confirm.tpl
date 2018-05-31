@@ -8,3 +8,17 @@
         {/if}
     </div>
 {/block}
+
+{block name='frontend_checkout_confirm_left_payment_method'}
+    {$smarty.block.parent}
+    {if $sUserData.additional.payment.name === 'fatchip_computop_lastschrift'}
+        <p class="payment--method-info">
+            <strong class="payment--title">Bank:</strong>
+            <span class="payment--description">{$sUserData.additional.user.fatchipct_lastschriftbank}</span>
+        </p>
+        <p class="payment--method-info">
+            <strong class="payment--title">IBAN:</strong>
+            <span class="payment--description">{$sUserData.additional.user.fatchipct_lastschriftiban|truncate:18:"XXXXX":true}</span>
+        </p>
+    {/if}
+{/block}
