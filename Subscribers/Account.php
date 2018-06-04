@@ -44,7 +44,8 @@ class Account implements SubscriberInterface
     {
         return array(
             // load payment data from db to use for payment
-            'Shopware_Controllers_Frontend_Account::paymentAction::after' => 'onPaymentAction'
+            'Shopware_Controllers_Frontend_Account::paymentAction::after' => 'onPaymentAction',
+            'Shopware_Controllers_Frontend_Account::savePaymentAction::after' => 'onSavePaymentAction',
         );
     }
 
@@ -67,6 +68,24 @@ class Account implements SubscriberInterface
 
         if (!empty($paymentData)) {
             $subject->View()->FatchipCTPaymentData = $paymentData;
+        }
+    }
+    /**
+     * assign saved paymend data to view
+     *
+     * @param \Enlight_Hook_HookArgs $arguments
+     */
+    public function onSavePaymentAction(\Enlight_Hook_HookArgs $arguments)
+    {
+        $subject = $arguments->getSubject();
+        $params = $subject->Request()->getParams();
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+
+        if (!empty($params['FatchipComputopPaymentData'])){
+            $this->utils->updateUserLastschriftBank($userData['additional']['user']['userID'] ,$params['FatchipComputopPaymentData']['fatchip_computop_lastschrift_bank']);
+            $this->utils->updateUserLastschriftKontoinhaber($userData['additional']['user']['userID'] ,$params['FatchipComputopPaymentData']['fatchip_computop_lastschrift_kontoinhaber']);
+            $this->utils->updateUserLastschriftIban($userData['additional']['user']['userID'] ,$params['FatchipComputopPaymentData']['fatchip_computop_lastschrift_iban']);
         }
     }
 }
