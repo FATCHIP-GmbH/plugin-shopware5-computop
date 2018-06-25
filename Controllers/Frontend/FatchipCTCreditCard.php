@@ -110,7 +110,8 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $this->saveTransactionResult($response);
 
                 $this->handleDelayedCapture($orderNumber);
-                $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
+                $customOrdernumber = $this->customizeOrdernumber($orderNumber);
+                $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
 
                 $url = $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'finish']);
                 if ($this->config['creditCardMode'] === 'IFRAME') {
@@ -183,6 +184,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 );
                 $this->saveTransactionResultRecurring($response, $requestParams['CCNr'], $requestParams['CCBrand'], $requestParams['CCExpiry']);
 
+                $this->customizeOrdernumber($orderNumber);
                 $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
                 $data = [
                     'success' => true,

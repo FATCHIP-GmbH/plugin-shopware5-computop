@@ -447,6 +447,42 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     /**
+     * Update ordernumber with xustom prefix and custom suffix
+     *
+     * @param string $orderNumber shopware orderNumber
+     *
+     * @return void
+     */
+    protected function customizeOrdernumber($orderNumber)
+    {
+        if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number' => $orderNumber])) {
+            $payID = $order->getAttribute()->getfatchipctPayid();
+            $transID = $order->getAttribute()->getfatchipctTransid();
+            $xID = $order->getAttribute()->getfatchipctPayid();
+            $orderPrefix = $this->config['prefixOrdernumber'];
+            $orderSuffix = $this->config['suffixOrdernumber'];
+            $newOrdernumber = $orderPrefix.$orderNumber.$orderSuffix;
+
+            // replace placeholders
+            $newOrdernumber = str_replace('%transid%', $transID, $newOrdernumber);
+            $newOrdernumber = str_replace('%payid%', $payID, $newOrdernumber);
+            $newOrdernumber = str_replace('%xid%', $xID, $newOrdernumber);
+
+            $sql = 'UPDATE  `s_order` SET ordernumber = ? WHERE ordernumber = ?';
+            Shopware()->Db()->query($sql, [$newOrdernumber, $orderNumber]);
+
+            // update ordernumber in Session
+            $this->session['sOrderVariables']->sOrderNumber = $newOrdernumber;
+
+            // update order details with new ordernumber
+            $sql = 'UPDATE  `s_order_details` SET ordernumber = ? WHERE ordernumber = ?';
+            Shopware()->Db()->query($sql, [$newOrdernumber, $orderNumber]);
+
+        }
+        return isset($newOrdernumber) ? $newOrdernumber : $orderNumber;
+    }
+
+    /**
      * Update RefNr for Computop analytics
      *
      * @param string $orderNumber shopware orderNumber
