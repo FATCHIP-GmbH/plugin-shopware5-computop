@@ -202,7 +202,9 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 );
                 $this->saveTransactionResult($response);
                 $this->handleDelayedCapture($orderNumber);
-                $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
+
+                $customOrdernumber = $this->customizeOrdernumber($orderNumber);
+                $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
                 $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
                 break;
             default:
