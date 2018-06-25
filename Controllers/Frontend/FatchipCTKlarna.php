@@ -75,7 +75,9 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
                     self::PAYMENTSTATUSRESERVED
                 );
                 $this->saveTransactionResult($response);
-                $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
+
+                $customOrdernumber = $this->customizeOrdernumber($orderNumber);
+                $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
                 $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
                 break;
             default:

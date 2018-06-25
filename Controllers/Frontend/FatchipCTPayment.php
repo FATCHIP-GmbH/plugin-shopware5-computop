@@ -447,11 +447,11 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     /**
-     * Update ordernumber with xustom prefix and custom suffix
+     * Update ordernumber with custom prefix and custom suffix
      *
      * @param string $orderNumber shopware orderNumber
      *
-     * @return void
+     * @return string new shopware ordnernumber
      */
     protected function customizeOrdernumber($orderNumber)
     {
