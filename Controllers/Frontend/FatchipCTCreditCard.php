@@ -110,6 +110,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $this->saveTransactionResult($response);
 
                 $this->handleDelayedCapture($orderNumber);
+
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
                 $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
 
@@ -184,12 +185,12 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 );
                 $this->saveTransactionResultRecurring($response, $requestParams['CCNr'], $requestParams['CCBrand'], $requestParams['CCExpiry']);
 
-                $this->customizeOrdernumber($orderNumber);
-                $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
+                $customOrdernumber = $this->customizeOrdernumber($orderNumber);
+                $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
                 $data = [
                     'success' => true,
                     'data' => [
-                        'orderNumber' => $orderNumber,
+                        'orderNumber' => $customOrdernumber,
                         'transactionId' => $response->getTransID(),
                     ],
                 ];

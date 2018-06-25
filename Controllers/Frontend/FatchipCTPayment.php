@@ -468,8 +468,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $newOrdernumber = str_replace('%payid%', $payID, $newOrdernumber);
             $newOrdernumber = str_replace('%xid%', $xID, $newOrdernumber);
 
-            $sql = 'UPDATE  `s_order` SET ordernumber = ? WHERE ordernumber = ?';
-            Shopware()->Db()->query($sql, [$newOrdernumber, $orderNumber]);
+            $order->setNumber($newOrdernumber);
+            Shopware()->Models()->flush($order);
 
             // update ordernumber in Session
             $this->session['sOrderVariables']->sOrderNumber = $newOrdernumber;

@@ -99,11 +99,13 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalStandard extends Shopware_Con
                     self::PAYMENTSTATUSRESERVED
                 );
                 $this->saveTransactionResult($response);
-                $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
+
+                $customOrdernumber = $this->customizeOrdernumber($orderNumber);
+                $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
                 $data = [
                     'success' => true,
                     'data' => [
-                        'orderNumber' => $orderNumber,
+                        'orderNumber' => $customOrdernumber,
                         'transactionId' => $response->getTransID(),
                     ],
                 ];
