@@ -117,12 +117,27 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
             $session->offsetGet('fatchipCTPaymentTransID'),
             $this->getAmount() * 100,
             $this->getCurrencyShortName(),
-            $orderDesc,
+            $this->getOrderDesc(),
             $session->offsetGet('fatchipCTAmazonReferenceID')
         );
         $requestParams['EtId'] = $this->getUserDataParam();
         $response = $this->plugin->callComputopService($requestParams, $payment, 'SCO', $payment->getCTPaymentURL());
         return $response;
+    }
+
+    /**
+     * Order description sent to Computop.
+     *
+     * Returns shopname.
+     * If a paymentmethod needs a different Orderdescription, override this method.
+     *
+     * @return string
+     */
+    public function getOrderDesc()
+    {
+        $shopContext = $this->get('shopware_storefront.context_service')->getShopContext();
+        $shopName = $shopContext->getShop()->getName();
+        return $shopName;
     }
 }
 

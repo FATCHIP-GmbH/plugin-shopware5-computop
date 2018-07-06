@@ -340,7 +340,9 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     public function getOrderDesc()
     {
-        return Shopware()->Config()->shopName;
+        $shopContext = $this->get('shopware_storefront.context_service')->getShopContext();
+        $shopName = $shopContext->getShop()->getName();
+        return $shopName;
     }
 
     /**
