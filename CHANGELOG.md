@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.3
+Released -
+* bugfix: orderDesc Parameter now uses the correct subshop name 
+
 ## 1.0.2
 Released 2018-06-25
 * added fetature to show iban anonymized on comfirm and account page
