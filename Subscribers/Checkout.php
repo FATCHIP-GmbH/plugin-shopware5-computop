@@ -248,6 +248,10 @@ class Checkout implements SubscriberInterface
             $payment = $this->getPaymentClassForGatewayAction();
             $payment->setCapture('MANUAL');
 
+            $shopContext = Shopware()->Container()->get('shopware_storefront.context_service')->getShopContext();
+            $shopName = $shopContext->getShop()->getName();
+            $payment->setOrderDesc($shopName);
+
             $requestParams = $payment->getRedirectUrlParams();
             unset($requestParams['Template']);
             $silentParams = $payment->prepareSilentRequest($requestParams);
