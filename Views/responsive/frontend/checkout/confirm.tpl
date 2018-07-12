@@ -18,7 +18,11 @@
         </p>
         <p class="payment--method-info">
             <strong class="payment--title">IBAN:</strong>
-            <span class="payment--description">{$sUserData.additional.user.fatchipct_lastschriftiban|truncate:18:"XXXXX":true}</span>
+            {if $FatchipCTPaymentIbanAnon == 1}
+                <span class="payment--description">{$sUserData.additional.user.fatchipct_lastschriftiban|truncate:18:"XXXXX":true}</span>
+            {else}
+                <span class="payment--description">{$sUserData.additional.user.fatchipct_lastschriftiban}</span>
+            {/if}
         </p>
     {/if}
 {/block}

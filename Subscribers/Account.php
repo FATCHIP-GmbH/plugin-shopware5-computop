@@ -81,11 +81,19 @@ class Account implements SubscriberInterface
         $params = $subject->Request()->getParams();
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
+        $isIbanAnon = $pluginConfig['lastschriftAnon'] == 'Aus' ? false : true;
 
         if (!empty($params['FatchipComputopPaymentData'])){
             $this->utils->updateUserLastschriftBank($userData['additional']['user']['userID'] ,$params['FatchipComputopPaymentData']['fatchip_computop_lastschrift_bank']);
             $this->utils->updateUserLastschriftKontoinhaber($userData['additional']['user']['userID'] ,$params['FatchipComputopPaymentData']['fatchip_computop_lastschrift_kontoinhaber']);
-            $this->utils->updateUserLastschriftIban($userData['additional']['user']['userID'] ,$params['FatchipComputopPaymentData']['fatchip_computop_lastschrift_iban']);
+            if (!$isIbanAnon ) {
+                $this->utils->updateUserLastschriftIban($userData['additional']['user']['userID'], $params['FatchipComputopPaymentData']['fatchip_computop_lastschrift_iban']);
+            } elseif (preg_match('#XXXX#', $params['FatchipComputopPaymentData']['fatchip_computop_lastschrift_iban_anon'])) {
+                $this->utils->updateUserLastschriftIban($userData['additional']['user']['userID'], $params['FatchipComputopPaymentData']['fatchip_computop_lastschrift_iban']);
+            } else {
+                $this->utils->updateUserLastschriftIban($userData['additional']['user']['userID'], $params['FatchipComputopPaymentData']['fatchip_computop_lastschrift_iban_anon']);
+            }
         }
     }
 }

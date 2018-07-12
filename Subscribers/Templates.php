@@ -85,6 +85,11 @@ class Templates implements SubscriberInterface
      */
     public function onPostDispatchSecure(\Enlight_Event_EventArgs $args)
     {
+        $subject = $args->getSubject();
+        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
+
+        $subject->View()->FatchipCTPaymentIbanAnon = $pluginConfig['lastschriftAnon'] == 'Aus' ? 0 : 1;
+
         // Add the template directory for the used template type
         $this->templateManager->addTemplateDir(
             $this->path . 'Views/' . 'responsive' . '/'

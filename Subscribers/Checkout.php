@@ -367,10 +367,23 @@ class Checkout implements SubscriberInterface
      */
     private function updateUserLastschriftIban($paymentName, $userId, $params)
     {
+        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
+        $isIbanAnon = $pluginConfig['lastschriftAnon'] == 'Aus' ? false : true;
+
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_iban'])) {
-            $this->utils->updateUserLastschriftIban($userId,
-              $params['FatchipComputopPaymentData'][ $paymentName . '_iban']
-            );
+            if (!$isIbanAnon ) {
+                $this->utils->updateUserLastschriftIban($userId,
+                    $params['FatchipComputopPaymentData'][ $paymentName . '_iban']
+                );
+            } elseif (preg_match('#XXXX#', $params['FatchipComputopPaymentData']['fatchip_computop_lastschrift_iban_anon'])) {
+                $this->utils->updateUserLastschriftIban($userId,
+                    $params['FatchipComputopPaymentData'][ $paymentName . '_iban']
+                );
+            } else {
+                $this->utils->updateUserLastschriftIban($userId,
+                    $params['FatchipComputopPaymentData'][ $paymentName . '_iban_anon']
+                );
+            }
         }
     }
 
