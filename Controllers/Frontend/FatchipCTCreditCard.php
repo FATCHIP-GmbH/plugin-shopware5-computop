@@ -100,13 +100,9 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
 
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'AUTH', $response);
 
-        # TODO: hotfix for live payments: handle all responses beginning with 0 as OK
-        if ($response->getStatus() == CTEnumStatus::OK || substr($response->getStatus(),0,1) == '0') {
-            $response->setStatus(CTEnumStatus::OK);
-        }
-
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
+            case CTEnumStatus::AUTHORIZED:
                 $orderNumber = $this->saveOrder(
                     $response->getTransID(),
                     $response->getPayID(),
@@ -177,12 +173,14 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
             $requestParams['CCExpiry'] = $this->getParamCCCardExpiry($params['orderId']);
             $response = $this->plugin->callComputopService($requestParams, $payment, 'CreditCardRecurring', $payment->getCTRecurringURL());
 
-            # TODO: hotfix for live payments: handle all responses beginning with 0 as OK
-            if ($response->getStatus() == CTEnumStatus::OK || substr($response->getStatus(),0,1) == '0') {
-                $response->setStatus(CTEnumStatus::OK);
-            }
+            $status = $response->getStatus();
+            $allowedStatuses = array(
+                CTEnumStatus::OK,
+                CTEnumStatus::AUTHORIZED,
+            );
+            $statusHasErrors = !in_array($status,$allowedStatuses);
 
-            if ($response->getStatus() !== CTEnumStatus::OK) {
+            if ($statusHasErrors) {
                 $data = [
                     'success' => false,
                     'message' => "Error",
