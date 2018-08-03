@@ -113,10 +113,11 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $this->handleDelayedCapture($orderNumber);
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
+                $ccMode = strtolower($this->config['creditCardMode']);
                 $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
-
                 $url = $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'finish']);
-                if ($this->config['creditCardMode'] === 'IFRAME') {
+
+                if ($ccMode === 'iframe') {
                     $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTURL' => $url));
                 } else {
                     $this->redirect($url);
@@ -149,7 +150,9 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $ctError['CTErrorCode'] = $response->getCode();
         $ctError = $this->hideError($response->getCode()) ? null : $ctError;
         $url = $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'shippingPayment']);
-        if ($this->config['creditCardMode'] === 'IFRAME') {
+        $ccMode = strtolower($this->config['creditCardMode']);
+
+        if ($ccMode === 'iframe') {
             $this->forward('iframe', 'FatchipCTCreditCard', null, ['fatchipCTURL' => $url, 'CTError' => $ctError]);
         } else {
             $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
