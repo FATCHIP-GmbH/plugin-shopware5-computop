@@ -340,19 +340,31 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
     protected function getCaptureAmount($order, $positionIds, $includeShipment = false)
     {
         $amount = 0;
+        $isTaxFree = $order->getTaxFree();
+        $isNet = $order->getNet();
+        $calcBrutto = (!$isTaxFree && $isNet);;
 
         foreach ($order->getDetails() as $position) {
             if (!in_array($position->getId(), $positionIds)) {
                 continue;
             }
 
+
             $positionAttribute = $position->getAttribute();
 
             $alreadyCapturedAmount = $positionAttribute ? $positionAttribute->getfatchipctCaptured() : 0;
             //add difference between total price and already captured amount
             $positionPrice = round($position->getPrice(), 2);
+            $taxRate = $position->getTaxRate();
 
-            $amount += ($positionPrice * $position->getQuantity()) - $alreadyCapturedAmount;
+            if (!$calcBrutto) {
+                $amount += ($positionPrice * $position->getQuantity());
+            } else {
+                $amount += (($positionPrice * $position->getQuantity()) * (1 + ($taxRate / 100)));
+            }
+
+            $amount = round($amount,2);
+            $amount -=  $alreadyCapturedAmount;
 
             if ($position->getArticleNumber() == 'SHIPPING') {
                 $includeShipment = false;
@@ -360,7 +372,11 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         }
 
         if ($includeShipment) {
-            $amount += $order->getInvoiceShipping();
+            if (!$calcBrutto) {
+                $amount += $order->getInvoiceShipping();
+            } else {
+                $amount += round(($order->getInvoiceShippingNet() * (1 + ($taxRate / 100))),2);
+            }
         }
 
         /*Important: multiply by 100*/
@@ -380,6 +396,9 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
     protected function getRefundAmount($order, $positionIds, $includeShipment = false)
     {
         $amount = 0;
+        $isTaxFree = $order->getTaxFree();
+        $isNet = $order->getNet();
+        $calcBrutto = (!$isTaxFree && $isNet);;
 
         foreach ($order->getDetails() as $position) {
             if (!in_array($position->getId(), $positionIds)) {
@@ -390,16 +409,28 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             $alreadyRefundedAmount = $positionAttribute ? $positionAttribute->getfatchipctDebit() : 0;
             //add difference between total price and already captured amount
             $positionPrice = round($position->getPrice(), 2);
+            $taxRate = $position->getTaxRate();
 
-            $amount += ($positionPrice * $position->getQuantity()) - $alreadyRefundedAmount;
+            if (!$calcBrutto) {
+                $amount += ($positionPrice * $position->getQuantity());
+            } else {
+                $amount += (($positionPrice * $position->getQuantity()) * (1 + ($taxRate / 100)));
+            }
+            $amount = round($amount,2);
+            $amount -=  $alreadyRefundedAmount;
 
             if ($position->getArticleNumber() == 'SHIPPING') {
                 $includeShipment = false;
             }
         }
 
+
         if ($includeShipment) {
-            $amount += $order->getInvoiceShipping();
+            if (!$calcBrutto) {
+                $amount += $order->getInvoiceShipping();
+            } else {
+                $amount += round(($order->getInvoiceShippingNet() * (1 + ($taxRate / 100))),2);
+            }
         }
 
         /*Important: multiply by 100*/
