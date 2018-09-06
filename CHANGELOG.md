@@ -1,7 +1,7 @@
 # Changelog - Shopware Computop Payment Connector
 
 ## 1.0.6
-Released 2018-08-6
+Released 2018-09-6
 * bugfix: Fixed wrong capture and refund amount calculation for net orders 
 
 ## 1.0.5
