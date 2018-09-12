@@ -154,7 +154,11 @@ class Util
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
             ->find($user['additional']['user']['id']);
-        $billing = $user->getBilling();
+        if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
+            $billing = $user->getDefaultBillingAddress();
+        } else {
+            $billing = $user->getBilling();
+        }
 
         return $billing->getPhone();
     }
@@ -273,7 +277,11 @@ class Util
             Shopware()->Models()->flush($user);
 
         } else {
-            $billing = $user->getBilling();
+            if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
+                $billing = $user->getDefaultBillingAddress();
+            } else {
+                $billing = $user->getBilling();
+            }
             $billing->setBirthday($birthday);
             Shopware()->Models()->persist($billing);
             Shopware()->Models()->flush($billing);
@@ -294,7 +302,11 @@ class Util
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
 
-        $billing = $user->getBilling();
+        if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
+            $billing = $user->getDefaultBillingAddress();
+        } else {
+            $billing = $user->getBilling();
+        }
         $billing->setPhone($phone);
         Shopware()->Models()->persist($billing);
         Shopware()->Models()->flush($billing);
