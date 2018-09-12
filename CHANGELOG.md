@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.7
+Released 2018-09-12
+* Added version switch for billing address
+
 ## 1.0.6
 Released 2018-09-6
 * bugfix: Fixed wrong capture and refund amount calculation for net orders 
