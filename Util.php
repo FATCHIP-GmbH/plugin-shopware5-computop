@@ -277,11 +277,7 @@ class Util
             Shopware()->Models()->flush($user);
 
         } else {
-            if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
-                $billing = $user->getDefaultBillingAddress();
-            } else {
-                $billing = $user->getBilling();
-            }
+            $billing = $user->getBilling();
             $billing->setBirthday($birthday);
             Shopware()->Models()->persist($billing);
             Shopware()->Models()->flush($billing);
