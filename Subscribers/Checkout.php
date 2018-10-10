@@ -439,7 +439,7 @@ class Checkout implements SubscriberInterface
     }
 
     /** Duplicate methods from payment controller
-     * to set pre-encrypted data into shippingpaxyment view
+     * to set pre-encrypted data into shippingpayment view
      * Helper function that creates a payment object
      * @return \Fatchip\CTPayment\CTPaymentMethodIframe
      */

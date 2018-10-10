@@ -98,7 +98,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     protected $router;
 
     /**
-     * PaymentClass, needed for instatiating payment objects of the correct type
+     * PaymentClass, needed for instantiating payment objects of the correct type
      *
      * @var string
      */
