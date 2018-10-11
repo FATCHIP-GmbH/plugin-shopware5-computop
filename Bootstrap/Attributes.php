@@ -30,6 +30,7 @@
 namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
 
 use Fatchip\CTPayment\CTPaymentAttributes;
+use Shopware\Bundle\AttributeBundle\Service\CrudService;
 
 /**
  * Class Attributes.
@@ -95,6 +96,7 @@ class Attributes
      *
      * @see \Shopware\Components\Model\ModelManager::addAttribute()
      * @see \Shopware\Components\Model\ModelManager::generateAttributeModels()
+     * @see \Shopware\Bundle\AttributeBundle\Service\CrudService::update()
      *
      * @param string $prefix prefix for attribute db columns
      * @param string $table database table
@@ -115,7 +117,13 @@ class Attributes
     {
         foreach ($attributes as $name => $attribute) {
             try {
-                $this->plugin->get('models')->addAttribute($table, $prefix, $name, $attribute['type']);
+                if (version_compare(\Shopware::VERSION, '5.2', '>=')) {
+                    /** @var CrudService $crudService */
+                    $crudService = Shopware()->Container()->get('shopware_attribute.crud_service');
+                    $crudService->update($table, $prefix . '_'. $name, $attribute['type']);
+                } else {
+                    $this->plugin->get('models')->addAttribute($table, $prefix, $name, $attribute['type']);
+                }
             } catch (\Exception $e) {
                 // do nothing
             }
@@ -161,8 +169,8 @@ class Attributes
         foreach ($attributes as $name => $attribute) {
             try {
                 if (isset($attribute['additionalInfo'])) {
-                    $service = $this->plugin->get('shopware_attribute.crud_service');
-                    $service->update($table, $prefix . '_' . $name, $attribute['type'], [
+                    $crudService = $this->plugin->get('shopware_attribute.crud_service');
+                    $crudService->update($table, $prefix . '_' . $name, $attribute['type'], [
                         'label' => $attribute['additionalInfo']['label'],
                         'displayInBackend' => $attribute['additionalInfo']['displayInBackend']
                     ]);
