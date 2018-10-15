@@ -127,6 +127,8 @@ class Shopware_Controllers_Frontend_FatchipCTAfterpay extends Shopware_Controlle
                 );
                 $this->saveTransactionResult($response);
 
+                $this->session->offsetUnSet('FatchipComputopAfterpayProductNr');
+
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
                 $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
                 $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
