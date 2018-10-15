@@ -104,7 +104,8 @@ class Shopware_Controllers_Frontend_FatchipCTAfterpay extends Shopware_Controlle
             */
             case 'fatchip_computop_afterpay_installment':
                 $requestParams['PayType'] = 'Installment';
-                $requestParams['ProductNr'] = "2";
+                $requestParams['ProductNr'] = $this->session->get('FatchipComputopAfterpayProductNr');
+                $requestParams['IBAN'] = $this->utils->getUserAfterpayInstallmentIban($user);
                 break;
 
             /* TODO

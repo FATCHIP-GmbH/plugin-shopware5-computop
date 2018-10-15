@@ -220,6 +220,20 @@ class Util
     }
 
     /**
+     * gets Iban for Afterpay from customer attributes
+     * @param $user
+     * @return mixed
+     */
+    public function getUserAfterpayInstallmentIban($user)
+    {
+        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
+            ->find($user['additional']['user']['id']);
+        $attribute = $user->getAttribute();
+
+        return $attribute->getFatchipctAfterpayinstallmentiban();
+    }
+
+    /**
      * gets Accountowner for Lastschrift from customer attributes
      * @param $user
      * @return mixed
@@ -368,6 +382,22 @@ class Util
 
         $attributes = $user->getAttribute();
         $attributes->setFatchipctLastschriftiban($iban);
+        Shopware()->Models()->persist($attributes);
+        Shopware()->Models()->flush($attributes);
+
+    }
+
+    /**
+     * updates users Iban for Afterpay in customer attributes
+     * @param $userId
+     * @param $iban
+     */
+    public function updateUserAfterpayInstallmentIban($userId, $iban)
+    {
+        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
+
+        $attributes = $user->getAttribute();
+        $attributes->setFatchipctAfterpayinstallmentiban($iban);
         Shopware()->Models()->persist($attributes);
         Shopware()->Models()->flush($attributes);
 

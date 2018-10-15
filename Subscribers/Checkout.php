@@ -105,7 +105,8 @@ class Checkout implements SubscriberInterface
             $this->updateUserLastschriftBank($paymentName, $session->get('sUserId'), $params);
             $this->updateUserLastschriftIban($paymentName, $session->get('sUserId'), $params);
             $this->updateUserLastschriftKontoinhaber($paymentName, $session->get('sUserId'), $params);
-
+            $this->updateUserAfterpayInstallmentIban($paymentName, $session->get('sUserId'), $params);
+            $this->setAfterpayProductNrInSession($params);
             $this->setIssuerInSession($paymentName, $params);
 
             if ($paymentName === 'fatchip_computop_easycredit') {
@@ -159,6 +160,7 @@ class Checkout implements SubscriberInterface
             $paymentData['lastschriftbank'] = $this->utils->getUserLastschriftBank($userData);
             $paymentData['lastschriftiban'] = $this->utils->getUserLastschriftIban($userData);
             $paymentData['lastschriftkontoinhaber'] = $this->utils->getUserLastschriftKontoinhaber($userData);
+            $paymentData['afterpayinstallmentiban'] = $this->utils->getUserAfterpayInstallmentIban($userData);
 
 
             if ($this->utils->needSocialSecurityNumberForKlarna()) {
@@ -278,6 +280,10 @@ class Checkout implements SubscriberInterface
 
             }
         }
+
+        if ($request->getActionName() == 'shippingPayment' && $paymentName == 'fatchip_computop_afterpay_installment') {
+            $view->assign('fatchipCTPaymentConfig', $pluginConfig);
+        }
     }
 
     /**
@@ -388,6 +394,21 @@ class Checkout implements SubscriberInterface
     }
 
     /**
+     * Saves iban from template params in user attributes
+     * @param $paymentName
+     * @param $userId
+     * @param $params
+     */
+    private function updateUserAfterpayInstallmentIban($paymentName, $userId, $params)
+    {
+        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_iban'])) {
+                $this->utils->updateUserAfterpayInstallmentIban($userId,
+                    $params['FatchipComputopPaymentData'][ $paymentName . '_iban']
+                );
+        }
+    }
+
+    /**
      * Saves accountholder info from template params in user attributes
      * @param $paymentName
      * @param $userId
@@ -423,6 +444,21 @@ class Checkout implements SubscriberInterface
              );
          }
         */
+    }
+
+    /**
+     * Saves Afterpay ProductNr in Session
+     *
+     * @param array $params
+     */
+    private function setAfterpayProductNrInSession($params)
+    {
+        $session = Shopware()->Session();
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_afterpay_installment_productnr'])) {
+            $session->offsetSet('FatchipComputopAfterpayProductNr',
+                $params['FatchipComputopPaymentData']['fatchip_computop_afterpay_installment_productnr']
+            );
+        }
     }
 
 
