@@ -284,6 +284,21 @@ class Checkout implements SubscriberInterface
         if ($request->getActionName() == 'shippingPayment' && $paymentName == 'fatchip_computop_afterpay_installment') {
             $view->assign('fatchipCTPaymentConfig', $pluginConfig);
         }
+
+        // prevent skipping of shippingpayment
+        if ($request->getActionName() == 'confirm' && $paymentName == 'fatchip_computop_afterpay_installment') {
+            $session = Shopware()->Session();
+            if (! $session->offsetExists('FatchipComputopAfterpayProductNr')) {
+                $subject->redirect(
+                    array(
+                        'controller' => 'checkout',
+                        'action' => 'shippingPayment',
+                    )
+                );
+            }
+
+        }
+
     }
 
     /**
