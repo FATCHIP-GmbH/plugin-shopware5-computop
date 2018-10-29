@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.9
+Released 2018-10-29
+* Use only 12 digits transID
+
 ## 1.0.7
 Released 2018-09-12
 * Added version switch for billing address
