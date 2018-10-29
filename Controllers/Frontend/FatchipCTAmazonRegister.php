@@ -27,6 +27,7 @@
  * @link       https://www.computop.com
  */
 
+use Fatchip\CTPayment\CTPaymentMethodIframe;
 use Shopware\Plugins\FatchipCTPayment\Util;
 use Shopware\Components\CSRFWhitelistAware;
 
@@ -154,9 +155,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         $router = $this->Front()->Router();
         $session = Shopware()->Session();
 
-        mt_srand((double)microtime() * 1000000);
-        $transID = (string)mt_rand();
-        $transID .= date('yzGis');
+        $transID = CTPaymentMethodIframe::generateTransID();
         $session->offsetSet('fatchipCTPaymentTransID', $transID);
 
         $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
