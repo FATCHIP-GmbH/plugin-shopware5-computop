@@ -91,7 +91,7 @@ class Forms
         $this->createAmazonPayConfigForm(CTPaymentConfigForms::formAmazonTextElements, CTPaymentConfigForms::formAmazonSelectElements);
 
         // afterpay
-        $this->createFormSelectElements(CTPaymentConfigForms::formAfterpaySelectElements);
+        // $this->createFormSelectElements(CTPaymentConfigForms::formAfterpaySelectElements);
 
         // riskchecks
         $this->createFormSelectElements(CTPaymentConfigForms::formBonitaetSelectElements);
