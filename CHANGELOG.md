@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.12
+Released 2018-10-29
+* Fix submodule ref
+
 ## 1.0.11
 Released 2018-10-29
 * Deactivate afterpay config form 
