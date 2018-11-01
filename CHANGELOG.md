@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.11
+Released 2018-10-29
+* Deactivate afterpay config form 
+
 ## 1.0.10
 Released 2018-10-29
 * Use only numeric transID
