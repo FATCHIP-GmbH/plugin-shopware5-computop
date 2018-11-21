@@ -163,7 +163,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
                 $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
-                $this->redirect(['controller' => 'FatchipCTPaypalExpressCheckout', 'action' => 'finish']);
+                $this->forward('finish', 'FatchipCTPaypalExpressCheckout', null, array('sUniqueID' => $response->getPayID()));
                 break;
             default:
                 $this->forward('failure');
