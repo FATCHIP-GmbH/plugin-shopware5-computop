@@ -110,7 +110,7 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
                 $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
-                $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
+                $this->forward('finish', 'checkout', null, ['sUniqueID' => $response->getPayID()]);
                 break;
             default:
                 $ctError = [];
