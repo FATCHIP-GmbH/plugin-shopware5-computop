@@ -1,5 +1,6 @@
 $.plugin("fatchipCTCreditCardIFrame", {
     defaults: {
+        fatchipCTUniqueID: false,
         fatchipCTCreditcardIFrameUrl: false,
         fatchipCTErrorMessage: false,
         fatchipCTErrorCode: false
@@ -10,7 +11,7 @@ $.plugin("fatchipCTCreditCardIFrame", {
         var me = this;
         me.applyDataAttributes();
 
-        window.top.location.href = me.opts.fatchipCTCreditcardIFrameUrl + "?CTError[CTErrorMessage]=" + me.opts.fatchipCTErrorMessage + "&CTError[CTErrorCode]=" + me.opts.fatchipCTErrorCode;
+        window.top.location.href = me.opts.fatchipCTCreditcardIFrameUrl + "?sUniqueID=" + me.opts.fatchipCTUniqueID + "&CTError[CTErrorMessage]=" + me.opts.fatchipCTErrorMessage + "&CTError[CTErrorCode]=" + me.opts.fatchipCTErrorCode;
     },
 
     destroy: function () {
