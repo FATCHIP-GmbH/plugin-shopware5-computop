@@ -72,7 +72,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
                 $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
-                $this->redirect(['controller' => 'FatchipCTAmazonCheckout', 'action' => 'finish']);
+                $this->forward('finish', 'FatchipCTAmazonCheckout', null, array('sUniqueID' => $response->getOrderid()));
                 break;
             default:
                 // ToDO Test this after reloading confirm page
