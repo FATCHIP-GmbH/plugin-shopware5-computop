@@ -1,5 +1,21 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.12
+Released 2018-10-29
+* Fix submodule ref
+
+## 1.0.11
+Released 2018-10-29
+* Deactivate afterpay config form 
+
+## 1.0.10
+Released 2018-10-29
+* Use only numeric transID
+
+## 1.0.9
+Released 2018-10-29
+* Use only 12 digits transID
+
 ## 1.0.7
 Released 2018-09-12
 * Added version switch for billing address
