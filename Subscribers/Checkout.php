@@ -32,6 +32,7 @@ use Enlight\Event\SubscriberInterface;
 use Shopware\Components\Theme\LessDefinition;
 use Shopware\Plugins\FatchipCTPayment\Util;
 use Fatchip\CTPayment\CTOrder\CTOrder;
+
 /**
  * Class Checkout
  *
@@ -42,7 +43,8 @@ class Checkout implements SubscriberInterface
 
     /**
      * PaymentService
-     * @var \Fatchip\CTPayment\CTPaymentService $service */
+     * @var \Fatchip\CTPayment\CTPaymentService $service
+     */
     protected $paymentService;
 
     /** @var Util $utils * */
@@ -105,14 +107,15 @@ class Checkout implements SubscriberInterface
             $this->updateUserLastschriftBank($paymentName, $session->get('sUserId'), $params);
             $this->updateUserLastschriftIban($paymentName, $session->get('sUserId'), $params);
             $this->updateUserLastschriftKontoinhaber($paymentName, $session->get('sUserId'), $params);
-
+            $this->updateUserAfterpayInstallmentIban($paymentName, $session->get('sUserId'), $params);
+            $this->setAfterpayProductNrInSession($params);
             $this->setIssuerInSession($paymentName, $params);
 
             if ($paymentName === 'fatchip_computop_easycredit') {
                 $subject->redirect(['controller' => 'FatchipCTEasyCredit', 'action' => 'gateway', 'forceSecure' => true]);
             }
         }
-     }
+    }
 
 
     /**
@@ -159,9 +162,10 @@ class Checkout implements SubscriberInterface
             $paymentData['lastschriftbank'] = $this->utils->getUserLastschriftBank($userData);
             $paymentData['lastschriftiban'] = $this->utils->getUserLastschriftIban($userData);
             $paymentData['lastschriftkontoinhaber'] = $this->utils->getUserLastschriftKontoinhaber($userData);
+            $paymentData['afterpayinstallmentiban'] = $this->utils->getUserAfterpayInstallmentIban($userData);
 
 
-            if ($this->utils->needSocialSecurityNumberForKlarna()) {
+            if ($this->utils->needSocialSecurityNumberForKlarna() || isset($userData['billingaddress']['company'])) {
                 $paymentData['socialsecuritynumber'] = $this->utils->getuserSSN($userData);
                 $paymentData['showsocialsecuritynumber'] = true;
                 $paymentData['SSNLabel'] = $this->utils->getSocialSecurityNumberLabelForKlarna($userData);
@@ -173,7 +177,6 @@ class Checkout implements SubscriberInterface
                 $paymentData['annualsalary'] = $this->utils->getUserAnnualSalary($userData);
             }
 
-            // remove AmazonPay and Paypal Express from Payment List
             $payments = $view->getAssign('sPayments');
 
             foreach ($payments as $index => $payment) {
@@ -190,6 +193,23 @@ class Checkout implements SubscriberInterface
                     $klarnaInsatallmentIndex = $index;
                 }
 
+                if ($payment['name'] === 'fatchip_computop_afterpay_installment') {
+                    $afterpayInstallmentIndex = $index;
+                }
+                if ($payment['name'] === 'fatchip_computop_afterpay_invoice') {
+                    $afterpayInvoiceIndex = $index;
+                }
+            }
+
+            // remove afterpay_installment if there are no installment conditions available
+            if (!$this->utils->afterpayProductExistsforBasketValue($this->config['merchantID'], $userData, true)
+                || !empty($userData['billingaddress']['company']))
+            {
+                unset($payments[$afterpayInstallmentIndex]);
+            }
+            if (!empty($userData['billingaddress']['company']))
+            {
+                unset($payments[$afterpayInvoiceIndex]);
             }
 
             unset ($payments[$amazonPayIndex]);
@@ -260,8 +280,8 @@ class Checkout implements SubscriberInterface
             $view->extendsTemplate('frontend/checkout/creditcard_confirm.tpl');
         }
 
-        if ($request->getActionName() == 'confirm' && (strpos($paymentName, fatchip_computop) === 0 )){
-                // check for address splitting errors and handle them here
+        if ($request->getActionName() == 'confirm' && (strpos($paymentName, fatchip_computop) === 0)) {
+            // check for address splitting errors and handle them here
             $util = new Util();
             $ctOrder = new CTOrder();
             try {
@@ -278,6 +298,25 @@ class Checkout implements SubscriberInterface
 
             }
         }
+
+        if ($request->getActionName() == 'shippingPayment' && $paymentName == 'fatchip_computop_afterpay_installment') {
+            $view->assign('fatchipCTPaymentConfig', $pluginConfig);
+        }
+
+        // prevent skipping of shippingpayment
+        if ($request->getActionName() == 'confirm' && $paymentName == 'fatchip_computop_afterpay_installment') {
+            $session = Shopware()->Session();
+            if (!$session->offsetExists('FatchipComputopAfterpayProductNr')) {
+                $subject->redirect(
+                    array(
+                        'controller' => 'checkout',
+                        'action' => 'shippingPayment',
+                    )
+                );
+            }
+
+        }
+
     }
 
     /**
@@ -354,7 +393,7 @@ class Checkout implements SubscriberInterface
     {
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_bank'])) {
             $this->utils->updateUserLastschriftBank($userId,
-              $params['FatchipComputopPaymentData'][ $paymentName . '_bank']
+                $params['FatchipComputopPaymentData'][$paymentName . '_bank']
             );
         }
     }
@@ -371,19 +410,34 @@ class Checkout implements SubscriberInterface
         $isIbanAnon = $pluginConfig['lastschriftAnon'] == 'Aus' ? false : true;
 
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_iban'])) {
-            if (!$isIbanAnon ) {
+            if (!$isIbanAnon) {
                 $this->utils->updateUserLastschriftIban($userId,
-                    $params['FatchipComputopPaymentData'][ $paymentName . '_iban']
+                    $params['FatchipComputopPaymentData'][$paymentName . '_iban']
                 );
             } elseif (preg_match('#XXXX#', $params['FatchipComputopPaymentData']['fatchip_computop_lastschrift_iban_anon'])) {
                 $this->utils->updateUserLastschriftIban($userId,
-                    $params['FatchipComputopPaymentData'][ $paymentName . '_iban']
+                    $params['FatchipComputopPaymentData'][$paymentName . '_iban']
                 );
             } else {
                 $this->utils->updateUserLastschriftIban($userId,
-                    $params['FatchipComputopPaymentData'][ $paymentName . '_iban_anon']
+                    $params['FatchipComputopPaymentData'][$paymentName . '_iban_anon']
                 );
             }
+        }
+    }
+
+    /**
+     * Saves iban from template params in user attributes
+     * @param $paymentName
+     * @param $userId
+     * @param $params
+     */
+    private function updateUserAfterpayInstallmentIban($paymentName, $userId, $params)
+    {
+        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_iban'])) {
+            $this->utils->updateUserAfterpayInstallmentIban($userId,
+                $params['FatchipComputopPaymentData'][$paymentName . '_iban']
+            );
         }
     }
 
@@ -397,7 +451,7 @@ class Checkout implements SubscriberInterface
     {
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_kontoinhaber'])) {
             $this->utils->updateUserLastschriftKontoinhaber($userId,
-              $params['FatchipComputopPaymentData'][ $paymentName . '_kontoinhaber']
+                $params['FatchipComputopPaymentData'][$paymentName . '_kontoinhaber']
             );
         }
     }
@@ -425,6 +479,21 @@ class Checkout implements SubscriberInterface
         */
     }
 
+    /**
+     * Saves Afterpay ProductNr in Session
+     *
+     * @param array $params
+     */
+    private function setAfterpayProductNrInSession($params)
+    {
+        $session = Shopware()->Session();
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_afterpay_installment_productnr'])) {
+            $session->offsetSet('FatchipComputopAfterpayProductNr',
+                $params['FatchipComputopPaymentData']['fatchip_computop_afterpay_installment_productnr']
+            );
+        }
+    }
+
 
     /**
      * Adds all.less to less definistion
@@ -439,11 +508,12 @@ class Checkout implements SubscriberInterface
     }
 
     /** Duplicate methods from payment controller
-     * to set pre-encrypted data into shippingpaxyment view
+     * to set pre-encrypted data into shippingpayment view
      * Helper function that creates a payment object
      * @return \Fatchip\CTPayment\CTPaymentMethodIframe
      */
-    protected function getPaymentClassForGatewayAction() {
+    protected function getPaymentClassForGatewayAction()
+    {
 
         $ctOrder = $this->createCTOrder();
         $router = Shopware()->Front()->Router();
@@ -465,7 +535,8 @@ class Checkout implements SubscriberInterface
      * Helper funciton to create a CTOrder object for the current order
      * @return CTOrder
      */
-    protected function createCTOrder() {
+    protected function createCTOrder()
+    {
         $basket = Shopware()->Modules()->Basket()->sGetBasket();
         $userData = $this->getUserData();
         $shippingCosts = Shopware()->Modules()->Admin()->sGetPremiumShippingcosts();
@@ -481,7 +552,7 @@ class Checkout implements SubscriberInterface
             $ctError = [];
             $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
             $ctError['CTErrorCode'] = $e->getMessage();
-            return $this->forward('shippingPayment', 'checkout', null,  ['CTError' => $ctError]);
+            return $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
         }
         $ctOrder->setEmail($userData['additional']['user']['email']);
         $ctOrder->setCustomerID($userData['additional']['user']['id']);
@@ -494,7 +565,8 @@ class Checkout implements SubscriberInterface
      * shoud be overridden in sublcasses if it is needed before an order exists
      * @return mixed
      */
-    protected function getUserData() {
+    protected function getUserData()
+    {
         $session = Shopware()->Session();
         $orderVars = $session->sOrderVariables;
         return $orderVars['sUserData'];
@@ -507,7 +579,7 @@ class Checkout implements SubscriberInterface
      */
     public function getUserDataParam()
     {
-        return  'Shopware Version: ' .  \Shopware::VERSION . ', Modul Version: ' . $this->plugin->getVersion();
+        return 'Shopware Version: ' . \Shopware::VERSION . ', Modul Version: ' . $this->plugin->getVersion();
     }
 
 }
