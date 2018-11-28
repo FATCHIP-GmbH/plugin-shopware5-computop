@@ -71,20 +71,16 @@ class Shopware_Controllers_Frontend_FatchipCTAfterpay extends Shopware_Controlle
 
         $payment->setOrder($basket);
 
-        // TODO add and Test AbocOmmerce Support
-        /* if ($this->utils->isAboCommerceArticleInBasket()) {
-            $payment->setMdtSeqType('FRST');
-        }
-        */
-
         $requestParams = $payment->getRedirectUrlParams();
         $requestParams['DateOfBirth'] = $this->utils->getUserDoB($user);
         if (!empty($this->utils->getUserPhone($user))) {
-            $requestParams['bdPhone'] =  $this->utils->getUserPhone($user);
+            $requestParams['bdPhone'] = $this->utils->getUserPhone($user);
         }
-         $requestParams['SocialSecurityNumber'] = $this->utils->getUserSSN($user);
-         unset($requestParams['EtiId']);
-         unset($requestParams['userData']);
+        if (!empty($this->utils->getUserSSN($user))) {
+            $requestParams['SocialSecurityNumber'] = $this->utils->getUserSSN($user);
+        }
+        unset($requestParams['EtiId']);
+        unset($requestParams['userData']);
 
 
         switch ($paymentName) {
@@ -139,5 +135,59 @@ class Shopware_Controllers_Frontend_FatchipCTAfterpay extends Shopware_Controlle
         }
     }
 
+    /**
+     * Recurring payment action method.
+     */
+    public function recurringAction()
+    {
+        $this->container->get('front')->Plugins()->ViewRenderer()->setNoRender();
+        $params = $this->Request()->getParams();
+
+        if ($this->Request()->isXmlHttpRequest()) {
+
+            $basket = $this->getBasket();
+            $payment = $this->getPaymentClassForGatewayAction();
+            $user = $this->getUserData();
+
+            $payment->setOrder($basket);
+
+            $requestParams = $payment->getRedirectUrlParams();
+            $requestParams['PayType'] = 'Invoice';
+            $requestParams['DateOfBirth'] = $this->utils->getUserDoB($user);
+            if (!empty($this->utils->getUserPhone($user))) {
+                $requestParams['bdPhone'] = $this->utils->getUserPhone($user);
+            }
+            if (!empty($this->utils->getUserSSN($user))) {
+                $requestParams['SocialSecurityNumber'] = $this->utils->getUserSSN($user);
+            }
+            unset($requestParams['EtiId']);
+            unset($requestParams['userData']);
+
+            $response = $this->plugin->callComputopService($requestParams, $payment, 'AfterpayInvoiceRecurring', $payment->getCTPaymentURL());
+
+            if ($response->getStatus() !== CTEnumStatus::OK) {
+                $data = [
+                    'success' => false,
+                    'message' => "Error",
+                ];
+            } else {
+                $orderNumber = $this->saveOrder(
+                    $response->getTransID(),
+                    $response->getPayID(),
+                    self::PAYMENTSTATUSRESERVED
+                );
+                $this->saveTransactionResult($response);
+                $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
+                $data = [
+                    'success' => true,
+                    'data' => [
+                        'orderNumber' => $orderNumber,
+                        'transactionId' => $response->getTransID(),
+                    ],
+                ];
+            }
+            echo Zend_Json::encode($data);
+        }
+    }
 }
 
