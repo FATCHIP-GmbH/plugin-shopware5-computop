@@ -59,6 +59,7 @@ class Shopware_Controllers_Frontend_FatchipCTAfterpay extends Shopware_Controlle
      * On failure forward to checkout/payment and set the error message
      *
      * @return void
+     * @throws Exception
      */
     public function gatewayAction()
     {
@@ -68,7 +69,7 @@ class Shopware_Controllers_Frontend_FatchipCTAfterpay extends Shopware_Controlle
         $basket = $this->get('modules')->Basket()->sGetBasket();
         $paymentName = $user['additional']['payment']['name'];
 
-        $test = $payment->setOrder($basket);
+        $payment->setOrder($basket);
 
         // TODO add and Test AbocOmmerce Support
         /* if ($this->utils->isAboCommerceArticleInBasket()) {
@@ -76,18 +77,12 @@ class Shopware_Controllers_Frontend_FatchipCTAfterpay extends Shopware_Controlle
         }
         */
 
-        // TODO implement optional parameters
-        // $payment->setAccBank($this->utils->getUserLastschriftBank($user));
-        // $payment->setAccOwner($this->utils->getUserLastschriftKontoinhaber($user));
-        // $payment->setIBAN($this->utils->getUserLastschriftIban($user));
-
         $requestParams = $payment->getRedirectUrlParams();
-        $requestParams['bdEmail'] = $user['additional']['user']['email'];
-        $requestParams['Email'] = $user['additional']['user']['email'];
-        $requestParams['CompanyOrPerson'] = 'Person';
-        // Mandatory ????
-        $requestParams['DateOfBirth'] = '1977-12-12';
-         // unset($requestParams['sdZip']);
+        $requestParams['DateOfBirth'] = $this->utils->getUserDoB($user);
+        if (!empty($this->utils->getUserPhone($user))) {
+            $requestParams['bdPhone'] =  $this->utils->getUserPhone($user);
+        }
+        // $requestParams['SocialSecurityNumber'] ='HRB 14 904';
          unset($requestParams['EtiId']);
          unset($requestParams['userData']);
 
@@ -105,7 +100,7 @@ class Shopware_Controllers_Frontend_FatchipCTAfterpay extends Shopware_Controlle
             case 'fatchip_computop_afterpay_installment':
                 $requestParams['PayType'] = 'Installment';
                 $requestParams['ProductNr'] = $this->session->get('FatchipComputopAfterpayProductNr');
-                $requestParams['IBAN'] = $this->utils->getUserAfterpayInstallmentIban($user);
+                $requestParams['IBAN'] = $this->utils->removeWhitespaces($this->utils->getUserAfterpayInstallmentIban($user));
                 break;
 
             /* TODO

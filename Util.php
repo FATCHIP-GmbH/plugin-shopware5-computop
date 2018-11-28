@@ -51,8 +51,8 @@ class Util
         return new CTAddress(
             ($swAddress['salutation'] == 'mr') ? 'Herr' : 'Frau',
             $swAddress['company'],
-            ($swAddress['firstname']) ? $swAddress['firstname'] : $swAddress['firstName'] ,
-            ($swAddress['lastname']) ? $swAddress['lastname'] : $swAddress['lastName'] ,
+            ($swAddress['firstname']) ? $swAddress['firstname'] : $swAddress['firstName'],
+            ($swAddress['lastname']) ? $swAddress['lastname'] : $swAddress['lastName'],
             $splitAddress['streetName'],
             $splitAddress['houseNumber'],
             ($swAddress['zipcode']) ? $swAddress['zipcode'] : $swAddress['zipCode'],
@@ -133,7 +133,7 @@ class Util
     {
         $birthdate = null;
         if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
-            $birthdate = isset($user['billing']['birthday']) ? $user['billing']['birthday'] : $user['additional']['user']['birthday'] ;
+            $birthdate = isset($user['billing']['birthday']) ? $user['billing']['birthday'] : $user['additional']['user']['birthday'];
         } else {
             $birthdate = $user['billingaddress']['birthday'];
         }
@@ -171,7 +171,7 @@ class Util
     public function getUserSSN($user)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
-          ->find($user['additional']['user']['id']);
+            ->find($user['additional']['user']['id']);
         $attribute = $user->getAttribute();
 
         return $attribute->getFatchipctSocialsecuritynumber();
@@ -185,7 +185,7 @@ class Util
     public function getUserAnnualSalary($user)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
-          ->find($user['additional']['user']['id']);
+            ->find($user['additional']['user']['id']);
         $attribute = $user->getAttribute();
 
         return $attribute->getFatchipctAnnualSalary();
@@ -199,7 +199,7 @@ class Util
     public function getUserLastschriftBank($user)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
-          ->find($user['additional']['user']['id']);
+            ->find($user['additional']['user']['id']);
         $attribute = $user->getAttribute();
 
         return $attribute->getFatchipctLastschriftbank();
@@ -213,7 +213,7 @@ class Util
     public function getUserLastschriftIban($user)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
-          ->find($user['additional']['user']['id']);
+            ->find($user['additional']['user']['id']);
         $attribute = $user->getAttribute();
 
         return $attribute->getFatchipctLastschriftiban();
@@ -241,7 +241,7 @@ class Util
     public function getUserLastschriftKontoinhaber($user)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
-          ->find($user['additional']['user']['id']);
+            ->find($user['additional']['user']['id']);
         $attribute = $user->getAttribute();
 
         return $attribute->getFatchipctLastschriftaccowner();
@@ -267,7 +267,7 @@ class Util
             $countryId = $swAddress['countryID'];
         }
         */
-        $countryId = ($swAddress['countryId']) ? $swAddress['countryId'] :  $swAddress['countryID'];
+        $countryId = ($swAddress['countryId']) ? $swAddress['countryId'] : $swAddress['countryID'];
         return $countryId;
     }
 
@@ -515,7 +515,8 @@ class Util
      * SSN is needed in DK, FI, SE and NO and not in other countries
      * @return bool
      */
-    public function needSocialSecurityNumberForKlarna() {
+    public function needSocialSecurityNumberForKlarna()
+    {
         if ($countryIso = $this->getBillingIsoForCurrentOrder()) {
             //only if billingcountry in DK, FI, SE, NO we show the social security number field
             if ($countryIso == 'DK' || $countryIso == 'FI' || $countryIso == 'SE' || $countryIso == 'NO') {
@@ -531,12 +532,13 @@ class Util
      * @param $userData
      * @return bool
      */
-    public function isKlarnaBlocked($userData) {
+    public function isKlarnaBlocked($userData)
+    {
 
         $countryIso = $this->getBillingIsoForCurrentOrder();
 
         if ($countryIso == 'DE' || $countryIso == 'AT' || $countryIso == 'NL') {
-            if (!empty($userData['billingaddress']['company'])){
+            if (!empty($userData['billingaddress']['company'])) {
                 return true;
             }
         }
@@ -551,13 +553,14 @@ class Util
      * @param $userData
      * @return string
      */
-    public function getSocialSecurityNumberLabelForKlarna($userData) {
+    public function getSocialSecurityNumberLabelForKlarna($userData)
+    {
         $label = 'Sozialversicherungsnummer (letzte 4 Ziffern)';
         //For comapnies, the field is called Handelsregisternummer
         if (isset($userData['billingaddress']['company'])) {
-            $label = 'Handelsregisternummer';
-        }
-        else if ($countryIso = $this->getBillingIsoForCurrentOrder()) {
+            $label = '
+            Handelsregisternummer';
+        } else if ($countryIso = $this->getBillingIsoForCurrentOrder()) {
             //only if billingcountry in DK, FI, SE, NO we show the social security number field
             if ($countryIso == 'NO') {
                 $label = 'Sozialversicherungsnummer (letzte 5 Ziffern)';
@@ -572,10 +575,11 @@ class Util
      * @param $userData
      * @return bool
      */
-    public function needAnnualSalaryForKlarna($userData) {
+    public function needAnnualSalaryForKlarna($userData)
+    {
         if (!isset($userData['billingaddress']['company']) && $countryIso = $this->getBillingIsoForCurrentOrder()) {
             //only if billingcountry in DK, FI, SE, NO we show the social security number field
-            if ($countryIso == 'DK' ) {
+            if ($countryIso == 'DK') {
                 return true;
             }
         }
@@ -588,7 +592,8 @@ class Util
      * @param $userData
      * @return int|null
      */
-    public function getSSNLength($userData) {
+    public function getSSNLength($userData)
+    {
         //for companies, we do not need a max length
         if (!isset($userData['billingaddress']['company']) && $countryIso = $this->getBillingIsoForCurrentOrder()) {
             if ($countryIso == 'NO') {
@@ -603,8 +608,9 @@ class Util
      * returns the ISO country code for the billing address of the current order
      * @return null|string
      */
-    private function getBillingIsoForCurrentOrder() {
-        if($orderVars = Shopware()->Session()->sOrderVariables) {
+    private function getBillingIsoForCurrentOrder()
+    {
+        if ($orderVars = Shopware()->Session()->sOrderVariables) {
             $userData = $orderVars['sUserData'];
             $countryID = $this->getCountryIdFromAddress($userData['billingaddress']);
         } else if ($user = Shopware()->Modules()->Admin()->sGetUserData()) {
@@ -642,7 +648,7 @@ class Util
 
         $count = $builder->getQuery()->getSingleScalarResult();
 
-        return (bool) $count;
+        return (bool)$count;
     }
 
     /**
@@ -659,5 +665,57 @@ class Util
             return false; //not installed
         }
         return true;
+    }
+
+    /**
+     * Remove whitespaces from input string
+     * @param $input String
+     * @return string without whitespaces
+     */
+    public function removeWhitespaces($input)
+    {
+        return preg_replace('/\s+/', '', $input);
+    }
+
+    /** retrieve json config file from afterbuy
+     * @param $merchantId String
+     * @param $userData array
+     * @return bool
+     */
+    public function afterpayProductExistsforBasketValue($merchantId, $userData, $fallback = true)
+    {
+        $countryCode = strtolower($userData['additional']['country']['countryiso']);
+        $afterpayMerchantId = 'CP_'.$merchantId;
+        $orderVars = Shopware()->Session()->sOrderVariables->getArrayCopy();
+        $basket = $orderVars['sBasket'];
+
+        $handle = curl_init('https://cdn.myafterpay.com/config/'.$countryCode.'/'.$afterpayMerchantId.'json');
+        curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+
+        /* Get the HTML or whatever is linked in $url. */
+        $response = curl_exec($handle);
+
+        /* Check for 404 (file not found). */
+        $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+        curl_close($handle);
+        if($httpCode == 404) {
+            if (!$fallback) {
+                return false;
+            } else {
+                $handle = curl_init('https://cdn.myafterpay.com/config/de/4564.json');
+                curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+                /* Get the HTML or whatever is linked in $url. */
+                $response = curl_exec($handle);
+                curl_close($handle);
+            }
+        }
+        $availableProducts = json_decode($response);
+        $minBasketValues = array_column($availableProducts->availablePaymentMethods->installments, 'minAmount');
+        $maxBasketValues = array_column($availableProducts->availablePaymentMethods->installments, 'maxAmount');
+
+        $min = min($minBasketValues);
+        $max = max($maxBasketValues);
+
+        return ($basket['AmountNumeric'] >= $min && $basket['AmountNumeric'] <= $max);
     }
 }
