@@ -82,7 +82,7 @@ class Shopware_Controllers_Frontend_FatchipCTAfterpay extends Shopware_Controlle
         if (!empty($this->utils->getUserPhone($user))) {
             $requestParams['bdPhone'] =  $this->utils->getUserPhone($user);
         }
-        // $requestParams['SocialSecurityNumber'] ='HRB 14 904';
+         $requestParams['SocialSecurityNumber'] = $this->utils->getUserSSN($user);
          unset($requestParams['EtiId']);
          unset($requestParams['userData']);
 

@@ -686,8 +686,7 @@ class Util
     {
         $countryCode = strtolower($userData['additional']['country']['countryiso']);
         $afterpayMerchantId = 'CP_'.$merchantId;
-        $orderVars = Shopware()->Session()->sOrderVariables->getArrayCopy();
-        $basket = $orderVars['sBasket'];
+        $basket = Shopware()->Modules()->Basket()->sGetBasket();
 
         $handle = curl_init('https://cdn.myafterpay.com/config/'.$countryCode.'/'.$afterpayMerchantId.'json');
         curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
