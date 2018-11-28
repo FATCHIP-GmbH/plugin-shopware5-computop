@@ -196,12 +196,22 @@ class Checkout implements SubscriberInterface
                 if ($payment['name'] === 'fatchip_computop_afterpay_installment') {
                     $afterpayInstallmentIndex = $index;
                 }
+                if ($payment['name'] === 'fatchip_computop_afterpay_invoice') {
+                    $afterpayInvoiceIndex = $index;
+                }
             }
 
             // remove afterpay_installment if there are no installment conditions available
-            if (!$this->utils->afterpayProductExistsforBasketValue($this->config['merchantID'], $userData, true)) {
+            if (!$this->utils->afterpayProductExistsforBasketValue($this->config['merchantID'], $userData, true)
+                || !empty($userData['billingaddress']['company']))
+            {
                 unset($payments[$afterpayInstallmentIndex]);
             }
+            if (!empty($userData['billingaddress']['company']))
+            {
+                unset($payments[$afterpayInvoiceIndex]);
+            }
+
             unset ($payments[$amazonPayIndex]);
             unset ($payments[$paypalExpressIndex]);
 
