@@ -202,7 +202,7 @@ class Checkout implements SubscriberInterface
             }
 
             // remove afterpay_installment if there are no installment conditions available
-            if (!$this->utils->afterpayProductExistsforBasketValue($this->config['merchantID'], $userData, true)
+            if (!$this->utils->afterpayProductExistsforBasketValue($this->config['merchantID'], $userData, false)
                 || !empty($userData['billingaddress']['company']))
             {
                 unset($payments[$afterpayInstallmentIndex]);
