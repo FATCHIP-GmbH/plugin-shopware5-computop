@@ -70,6 +70,11 @@ class Payments
 
         foreach ($paymentMethods as $paymentMethod) {
             if ($this->plugin->Payments()->findOneBy(array('name' => $paymentMethod['name']))) {
+                if ($paymentMethod['name'] === 'fatchip_computop_afterpay_invoice' ||
+                    $paymentMethod['name'] === 'fatchip_computop_afterpay_installment'
+                ) {
+                    $this->updateAfterpay($paymentMethod);
+                }
                 continue;
             }
 
@@ -90,14 +95,33 @@ class Payments
         }
     }
 
+    /** make sure afterpay template names are set correctly
+     * needed for upgrading form 1.0.12 / 1.0.13 to 1.0.14
+     * @param $paymentMethod
+     * @return void
+     */
+    protected function updateAfterpay($paymentMethod)
+    {
+        $payment = $this->plugin->Payments()->findOneBy(array('name' => $paymentMethod['name']));
+        // update payment template
+        if ($paymentMethod['name'] === 'fatchip_computop_afterpay_installment') {
+            $payment->setTemplate('fatchip_computop_afterpay_installment.tpl');
+        }
+        if ($paymentMethod['name'] === 'fatchip_computop_afterpay_invoice') {
+            $payment->setTemplate('fatchip_computop_afterpay_invoice.tpl');
+        }
+        Shopware()->Models()->persist($payment);
+        Shopware()->Models()->flush($payment);
+    }
+
     /**
      * Restrict payment method to countries.
      *
      *
      * @see \Shopware\Models\Payment\Payment::setCountries()
      *
-     * @param Payment $paymentObject        payment method to restrict
-     * @param ArrayCollection $countries    countries to restrict
+     * @param Payment $paymentObject payment method to restrict
+     * @param ArrayCollection $countries countries to restrict
      *
      * @return void
      */
