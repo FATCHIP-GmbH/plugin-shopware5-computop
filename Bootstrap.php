@@ -177,7 +177,9 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             new Shopware\Plugins\FatchipCTPayment\Subscribers\BackendRiskManagement($container),
             new Shopware\Plugins\FatchipCTPayment\Subscribers\FrontendRiskManagement($container),
             new Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder($container),
-            new Shopware\Plugins\FatchipCTPayment\Subscribers\Logger(),
+            new Shopware\Plugins\FatchipCTPayment\Subscribers\Logger\PostDispatchFrontendLogger(),
+            new Shopware\Plugins\FatchipCTPayment\Subscribers\Logger\SecurePostDispatchFrontendLogger(),
+            new Shopware\Plugins\FatchipCTPayment\Subscribers\PostDispatchBackendIndex(),
         ];
 
         foreach ($subscribers as $subscriber) {
