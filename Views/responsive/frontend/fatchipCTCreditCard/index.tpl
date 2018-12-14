@@ -50,6 +50,7 @@
 {block name='frontend_register_index_registration'}
     {if $fatchipCTURL}
         <div id="fatchipCTCreditCardIFrame" hidden
+             data-fatchipCTUniqueID='{$fatchipCTUniqueID}'
              data-fatchipCTCreditcardIFrameUrl='{$fatchipCTURL}'
              data-fatchipCTErrorMessage='{$fatchipCTErrorMessage}'
              data-fatchipCTErrorCode='{$fatchipCTErrorCode}'

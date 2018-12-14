@@ -78,6 +78,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
         $requestParams = $this->Request()->getParams();
         $this->view->assign('fatchipCTIframeURL', $requestParams['fatchipCTRedirectURL']);
+        $this->view->assign('fatchipCTUniqueID', $requestParams['fatchipCTUniqueID']);
         $this->view->assign('fatchipCTURL', $requestParams['fatchipCTURL']);
         $this->view->assign('fatchipCTErrorMessage', $requestParams['CTError']['CTErrorMessage']);
         $this->view->assign('fatchipCTErrorCode', $requestParams['CTError']['CTErrorCode']);
@@ -118,9 +119,9 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $url = $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'finish']);
 
                 if ($ccMode === 'iframe') {
-                    $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTURL' => $url));
+                    $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTURL' => $url, 'fatchipCTUniqueID' => $response->getPayID()));
                 } else {
-                    $this->redirect($url);
+                    $this->forward('finish', 'Checkout', null, array('sUniqueID' => $response->getPayID()));
                 }
                 break;
             default:

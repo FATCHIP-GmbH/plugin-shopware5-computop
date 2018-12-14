@@ -228,7 +228,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
                 $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
-                $this->forward('finish', 'checkout', null, ['sAGB' => 1]);
+                $this->forward('finish', 'checkout', null, ['sAGB' => 1, 'sUniqueID' => $response->getPayID()]);
                 break;
             default:
                 $this->forward('failure');

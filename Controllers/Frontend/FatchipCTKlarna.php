@@ -78,7 +78,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarna extends \Shopware_Controller
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
                 $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
-                $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
+                $this->forward('finish', 'checkout', null, ['sUniqueID' => $response->getPayID()]);
                 break;
             default:
                 $ctError = [];

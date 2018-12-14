@@ -205,7 +205,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
                 $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
-                $this->redirect(['controller' => 'checkout', 'action' => 'finish']);
+                $this->forward('finish', 'checkout', null, ['sUniqueID' => $response->getPayID()]);
                 break;
             default:
                 $this->forward('failure');
