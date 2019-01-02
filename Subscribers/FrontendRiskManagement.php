@@ -73,7 +73,7 @@ class FrontendRiskManagement implements SubscriberInterface
 
         $events = ['sAdmin::executeRiskRule::replace' => 'onExecuteRiskRule',];
 
-        if (\Shopware::VERSION === '___VERSION___' || version_compare(\Shopware::VERSION, '5.2.0', '>=')) {
+        if (Util::isShopwareVersionGreaterThanOrEqual('5.2')) {
             $events['Shopware\Models\Customer\Address::postUpdate'] = 'afterAddressUpdate';
         } else {
             $events['Shopware_Modules_Admin_ValidateStep2Shipping_FilterResult'] = 'onValidateStep2ShippingAddress';

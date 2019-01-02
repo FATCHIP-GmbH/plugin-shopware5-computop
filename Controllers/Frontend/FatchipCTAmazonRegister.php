@@ -122,7 +122,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         // this has to be set so shipping methods will work
         $session->offsetSet('sPaymentID', $this->utils->getPaymentIdFromName('fatchip_computop_amazonpay'));
 
-        if (version_compare(\Shopware::VERSION, '5.2', '>=')) {
+        if (Util::isShopwareVersionGreaterThanOrEqual('5.2')) {
             $register = $this->View()->getAssign('errors');
             $errors = array_merge($register['personal'], $register['billing'], $register['shipping']);
         } else {

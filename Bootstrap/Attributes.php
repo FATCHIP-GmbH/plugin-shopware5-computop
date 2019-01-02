@@ -31,6 +31,7 @@ namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
 
 use Fatchip\CTPayment\CTPaymentAttributes;
 use Shopware\Bundle\AttributeBundle\Service\CrudService;
+use Shopware\Plugins\FatchipCTPayment\Util;
 
 /**
  * Class Attributes.
@@ -79,7 +80,7 @@ class Attributes
         $this->addAttributes('fatchipct', 's_order_attributes', CTPaymentAttributes::orderAttributes);
         $this->addAttributes('fatchipct', 's_order_details_attributes', CTPaymentAttributes::orderDetailsAttributes);
         $this->addAttributes('fatchipct', 's_user_attributes', CTPaymentAttributes::userAttributes);
-        if (version_compare(\Shopware::VERSION, '5.2.0', '>=')) {
+        if (Util::isShopwareVersionGreaterThanOrEqual('5.2')) {
             $this->addAttributes('fatchipct', 's_user_addresses_attributes', CTPaymentAttributes::userAddressAttributes);
         } else {
             $this->addAttributes('fatchipct', 's_user_billingaddress_attributes', CTPaymentAttributes::userAddressAttributes);
@@ -117,7 +118,7 @@ class Attributes
     {
         foreach ($attributes as $name => $attribute) {
             try {
-                if (version_compare(\Shopware::VERSION, '5.2', '>=')) {
+                if (Util::isShopwareVersionGreaterThanOrEqual('5.2')) {
                     /** @var CrudService $crudService */
                     $crudService = Shopware()->Container()->get('shopware_attribute.crud_service');
                     $crudService->update($table, $prefix . '_'. $name, $attribute['type']);
@@ -135,7 +136,7 @@ class Attributes
             ]
         );
 
-        if (version_compare(\Shopware::VERSION, '5.2', '>=')) {
+        if (Util::isShopwareVersionGreaterThanOrEqual('5.2')) {
             $this->setAttributeVisibilityInBackend($prefix, $table, $attributes);
         }
     }

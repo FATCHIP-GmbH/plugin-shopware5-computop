@@ -39,6 +39,31 @@ require_once 'Components/Api/vendor/autoload.php';
 class Util
 {
     /**
+     *
+     * @param $compareVersion
+     *
+     * @return bool
+     */
+    public static function isShopwareVersionGreaterThanOrEqual($compareVersion)
+    {
+        $isVersionEmpty = ($currentVersion = \Shopware::VERSION) === '___VERSION___';
+        $isComposerShop = class_exists('ShopwareVersion') && class_exists('PackageVersions\Versions');
+        if ($isVersionEmpty) {
+            if ($isComposerShop) {
+                /** @noinspection PhpUndefinedClassInspection */
+                /** @noinspection PhpUndefinedNamespaceInspection */
+                $currentVersion = \ShopwareVersion::parseVersion(
+                    \PackageVersions\Versions::getVersion('shopware/shopware')
+                )['version'];
+            } else {
+                return true;
+            }
+        }
+
+        return version_compare($currentVersion, $compareVersion, '>=');
+    }
+
+    /**
      * creates a CTAddress object from a Shopware address array
      * @param array $swAddress
      * @return CTAddress
@@ -111,7 +136,7 @@ class Util
     public function getUserCustomerNumber($user)
     {
         $customerNumber = null;
-        if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
+        if (self::isShopwareVersionGreaterThanOrEqual('5.2')) {
             $customerNumber = $user['billing']['customernumber'];
         } else {
             $customerNumber = $user['billingaddress']['customernumber'];
@@ -132,7 +157,7 @@ class Util
     public function getUserDoB($user)
     {
         $birthdate = null;
-        if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
+        if (self::isShopwareVersionGreaterThanOrEqual('5.2')) {
             $birthdate = isset($user['billing']['birthday']) ? $user['billing']['birthday'] : $user['additional']['user']['birthday'];
         } else {
             $birthdate = $user['billingaddress']['birthday'];
@@ -154,7 +179,7 @@ class Util
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
             ->find($user['additional']['user']['id']);
-        if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
+        if (self::isShopwareVersionGreaterThanOrEqual('5.2')) {
             $billing = $user->getDefaultBillingAddress();
         } else {
             $billing = $user->getBilling();
@@ -261,7 +286,7 @@ class Util
     {
         $countryId = null;
         /*
-        if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
+        if (Util::isShopwareVersionGreaterThanOrEqual('5.2')) {
             $countryId = $swAddress['countryId'];
         } else {
             $countryId = $swAddress['countryID'];
@@ -285,7 +310,7 @@ class Util
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
 
-        if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
+        if (Util::isShopwareVersionGreaterThanOrEqual('5.2')) {
             $user->setBirthday($birthday);
             Shopware()->Models()->persist($user);
             Shopware()->Models()->flush($user);
@@ -312,7 +337,7 @@ class Util
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
 
-        if (Shopware::VERSION === '___VERSION___' || version_compare(Shopware::VERSION, '5.2.0', '>=')) {
+        if (Util::isShopwareVersionGreaterThanOrEqual('5.2')) {
             $billing = $user->getDefaultBillingAddress();
         } else {
             $billing = $user->getBilling();
@@ -427,7 +452,7 @@ class Util
      */
     public function getCustomerAddressById($id, $type)
     {
-        if (version_compare(\Shopware::VERSION, '5.2.0', '<')) {
+        if ( ! self::isShopwareVersionGreaterThanOrEqual('5.2')) {
             $address = $type == 'shipping' ? $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Shipping')->find($id) :
                 $address = Shopware()->Models()->getRepository('Shopware\Models\Customer\Billing')->find($id);
         } else {
