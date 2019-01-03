@@ -27,16 +27,19 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Logger;
+namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
 use Enlight_Controller_ActionEventArgs;
+use Enlight_Exception;
+
+use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscribers\AbstractLoggerSubscriber;
 
 /**
  * Class Logger
  *
  * @package Shopware\Plugins\FatchipCTPayment\Subscribers
  */
-class PostDispatchFrontendLogger extends AbstractLoggerSubscriber
+class SecurePostDispatchFrontendLogger extends AbstractLoggerSubscriber
 {
     /**
      * Returns the subscribed events
@@ -45,34 +48,34 @@ class PostDispatchFrontendLogger extends AbstractLoggerSubscriber
      */
     public static function getSubscribedEvents()
     {
-        return [
-            'Enlight_Controller_Action_PostDispatch_Frontend' =>
-                'onPostDispatchFatchipCT',
-        ];
+        return ['Enlight_Controller_Action_PostDispatchSecure_Frontend' => 'onPostDispatchSecure'];
     }
 
-    // Todo check here for any exceptions and log them with stack trace??
-    // in addition log json response of our Ajax Controllers
+    // should only be triggered when no exceptions occurred
+
     /**
-     * Logs Requestpamaters for FatchipCT controllers if Debuglogging is activated in Pluginsettings
+     * Logs request parameters and Template information for FatchipCT controllers if debug logging is activated in
+     * plugin settings
      *
      * @param Enlight_Controller_ActionEventArgs $args
+     *
+     * @throws Enlight_Exception
      */
-    public function onPostDispatchFatchipCT(
-        Enlight_Controller_ActionEventArgs $args
-    ) {
+    public function onPostDispatchSecure(Enlight_Controller_ActionEventArgs $args)
+    {
+        $subject = $args->getSubject();
         $request = $args->getRequest();
 
-        if (
-            $this->config['debuglog'] === 'active'
-            && $this->isFatchipCTController($request->getControllerName())
-        ) {
+        if ($this->config['debuglog'] === 'active' && $this->isFatchipCTController($request->getControllerName())) {
             $this->logger->debug(
-                'postDispatch: '
-                . $request->getControllerName() . ' '
-                . $request->getActionName() . ':'
+                'postDispatchSecure: ' . $request->getControllerName() . ' ' . $request->getActionName() . ':'
             );
             $this->logger->debug('RequestParams: ', $request->getParams());
+
+            if ($subject->View()->hasTemplate()) {
+                $this->logger->debug('Template Name:', [$subject->View()->Template()->template_resource]);
+                $this->logger->debug('Template Vars:', $subject->View()->Engine()->smarty->tpl_vars);
+            }
         }
     }
 }

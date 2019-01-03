@@ -27,7 +27,7 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
+namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Backend;
 
 use Enlight\Event\SubscriberInterface;
 use Enlight_Event_EventArgs;
@@ -46,10 +46,7 @@ class PostDispatchBackendIndex implements SubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return [
-            'Enlight_Controller_Action_PostDispatch_Backend_Index' =>
-                'onPostDispatchBackendIndex',
-        ];
+        return ['Enlight_Controller_Action_PostDispatch_Backend_Index' => 'onPostDispatchBackendIndex'];
     }
 
     /**
@@ -65,13 +62,12 @@ class PostDispatchBackendIndex implements SubscriberInterface
         $response = $subject->Response();
         $view = $subject->View();
 
-        $view->addTemplateDir(__DIR__ . '/../Views');
+        $view->addTemplateDir(__DIR__ . '/../../Views');
 
         if ( ! $request->isDispatched()
             || $response->isException()
             || $request->getModuleName() !== 'backend'
-            ||
-            ! $view->hasTemplate()
+            || ! $view->hasTemplate()
         ) {
             return;
         }

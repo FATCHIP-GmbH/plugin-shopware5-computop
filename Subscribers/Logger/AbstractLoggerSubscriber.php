@@ -49,7 +49,7 @@ abstract class AbstractLoggerSubscriber implements SubscriberInterface
     protected $logger;
 
     /**
-     * FatchipCTpayment Plugin Bootstrap Class
+     * FatchipCTPayment Plugin Bootstrap Class
      *
      * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
@@ -67,14 +67,10 @@ abstract class AbstractLoggerSubscriber implements SubscriberInterface
      */
     public function __construct()
     {
-        $this->plugin = Shopware()
-            ->Container()
-            ->get('plugins')
-            ->Frontend()
-            ->FatchipCTPayment();
+        $this->plugin = Shopware()->Container()->get('plugins')->Frontend()->FatchipCTPayment();
         $this->config = $this->plugin->Config()->toArray();
 
-        // ToDO use terniary operator here
+        // ToDO use ternary operator here
         // Shopware()->Application() is deprecated
         $logPath = Shopware()->DocPath();
         if (version_compare(Shopware::VERSION, '5.1', '>=')) {
@@ -88,7 +84,7 @@ abstract class AbstractLoggerSubscriber implements SubscriberInterface
     }
 
     /**
-     * Checks if it is a cotnroller for a FatchipCT Payment Method
+     * Checks if it is a controller for a FatchipCT Payment Method
      *
      * @param $controllerName
      *
