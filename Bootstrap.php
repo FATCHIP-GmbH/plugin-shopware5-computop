@@ -41,6 +41,7 @@ use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\PostDispatchFrontendL
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\SecurePostDispatchFrontendLogger;
 
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendIndex;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendRiskManagement;
 
 /**
  * Class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
@@ -181,7 +182,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             new Shopware\Plugins\FatchipCTPayment\Subscribers\Templates($this),
             new Shopware\Plugins\FatchipCTPayment\Subscribers\Checkout(),
             new Shopware\Plugins\FatchipCTPayment\Subscribers\Account(),
-            new Shopware\Plugins\FatchipCTPayment\Subscribers\BackendRiskManagement($container),
             new Shopware\Plugins\FatchipCTPayment\Subscribers\FrontendRiskManagement($container),
             new Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder($container),
             // new Shopware\Plugins\FatchipCTPayment\Subscribers\Logger(),
@@ -194,6 +194,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             new PostDispatchFrontendLogger(),
             new SecurePostDispatchFrontendLogger(),
             new PostDispatchBackendIndex(),
+            new PostDispatchBackendRiskManagement(),
         ];
 
         foreach ($subscribers as $subscriber) {
