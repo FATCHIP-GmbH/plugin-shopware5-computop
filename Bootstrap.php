@@ -27,13 +27,20 @@
 // needed for CSRF Protection compatibility SW versions < 5.2 lba
 require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
 
+
+use Doctrine\Common\Collections\ArrayCollection;
+
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Forms;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Attributes;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Payments;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Menu;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\RiskRules;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Models;
-use Doctrine\Common\Collections\ArrayCollection;
+
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\PostDispatchFrontendLogger;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\SecurePostDispatchFrontendLogger;
+
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendIndex;
 
 /**
  * Class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
@@ -177,7 +184,16 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             new Shopware\Plugins\FatchipCTPayment\Subscribers\BackendRiskManagement($container),
             new Shopware\Plugins\FatchipCTPayment\Subscribers\FrontendRiskManagement($container),
             new Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder($container),
-            new Shopware\Plugins\FatchipCTPayment\Subscribers\Logger(),
+            // new Shopware\Plugins\FatchipCTPayment\Subscribers\Logger(),
+
+            // new Shopware\Plugins\FatchipCTPayment\Subscribers\PostDispatchBackendRiskManagement(),
+            // new Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder\AfterBackendOrderGetListHook(),
+            // new Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder\PostDispatchBackendOrder(),
+            // new Shopware\Plugins\FatchipCTPayment\Subscribers\Account\AfterAccountSavePaymentActionHook(),
+            // new Shopware\Plugins\FatchipCTPayment\Subscribers\Account\AfterAccountPaymentActionHook(),
+            new PostDispatchFrontendLogger(),
+            new SecurePostDispatchFrontendLogger(),
+            new PostDispatchBackendIndex(),
         ];
 
         foreach ($subscribers as $subscriber) {
