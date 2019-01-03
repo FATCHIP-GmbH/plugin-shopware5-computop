@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.16
+Released 2019-01-03
+* Add composer compatibility
+
 ## 1.0.15
 Released 2018-12-14
 * Fix minimumBasketValue
