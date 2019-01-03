@@ -27,7 +27,7 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Logger;
+namespace Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscribers;
 
 use Monolog\Handler\RotatingFileHandler;
 
