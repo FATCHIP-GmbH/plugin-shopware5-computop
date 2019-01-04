@@ -39,6 +39,8 @@ use Shopware\Plugins\FatchipCTPayment\Bootstrap\Models;
 
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\PostDispatchFrontendLogger;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\SecurePostDispatchFrontendLogger;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AfterAccountPaymentActionHook;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AfterAccountSavePaymentActionHook;
 
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendIndex;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendRiskManagement;
@@ -176,28 +178,28 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $container = Shopware()->Container();
 
         $subscribers = [
-            new Shopware\Plugins\FatchipCTPayment\Subscribers\ControllerPath($this->Path()),
-            new Shopware\Plugins\FatchipCTPayment\Subscribers\Service(),
-            new Shopware\Plugins\FatchipCTPayment\Subscribers\Utils(),
-            new Shopware\Plugins\FatchipCTPayment\Subscribers\Templates($this),
-            new Shopware\Plugins\FatchipCTPayment\Subscribers\Checkout(),
-            new Shopware\Plugins\FatchipCTPayment\Subscribers\Account(),
-            new Shopware\Plugins\FatchipCTPayment\Subscribers\FrontendRiskManagement($container),
-            new Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder($container),
-            // new Shopware\Plugins\FatchipCTPayment\Subscribers\Logger(),
+            [Shopware\Plugins\FatchipCTPayment\Subscribers\ControllerPath::class, $this->Path()],
+            [Shopware\Plugins\FatchipCTPayment\Subscribers\Service::class, null],
+            [Shopware\Plugins\FatchipCTPayment\Subscribers\Utils::class, null],
+            [Shopware\Plugins\FatchipCTPayment\Subscribers\Templates::class, $this],
+            [Shopware\Plugins\FatchipCTPayment\Subscribers\Checkout::class, null],
+            [Shopware\Plugins\FatchipCTPayment\Subscribers\FrontendRiskManagement::class, $container],
+            [Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder::class, $container],
+            // [Shopware\Plugins\FatchipCTPayment\Subscribers\Logger::class, null],
 
-            // new Shopware\Plugins\FatchipCTPayment\Subscribers\PostDispatchBackendRiskManagement(),
-            // new Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder\AfterBackendOrderGetListHook(),
-            // new Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder\PostDispatchBackendOrder(),
-            // new Shopware\Plugins\FatchipCTPayment\Subscribers\Account\AfterAccountSavePaymentActionHook(),
-            // new Shopware\Plugins\FatchipCTPayment\Subscribers\Account\AfterAccountPaymentActionHook(),
-            new PostDispatchFrontendLogger(),
-            new SecurePostDispatchFrontendLogger(),
-            new PostDispatchBackendIndex(),
-            new PostDispatchBackendRiskManagement(),
+            // [Shopware\Plugins\FatchipCTPayment\Subscribers\PostDispatchBackendRiskManagement::class, null],
+            // [Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder\AfterBackendOrderGetListHook::class, null],
+            // [Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder\PostDispatchBackendOrder::class, null],
+            [PostDispatchFrontendLogger::class, null],
+            [SecurePostDispatchFrontendLogger::class, null],
+            [PostDispatchBackendIndex::class, null],
+            [PostDispatchBackendRiskManagement::class, null],
+            [AfterAccountSavePaymentActionHook::class, null],
+            [AfterAccountPaymentActionHook::class, null],
         ];
 
-        foreach ($subscribers as $subscriber) {
+        foreach ($subscribers as $subscriberClass) {
+            $subscriber = new $subscriberClass[0]($subscriberClass[1]);
             $this->Application()->Events()->addSubscriber($subscriber);
         }
     }
