@@ -44,6 +44,8 @@ use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AfterAccountSavePayme
 
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendIndex;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendRiskManagement;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\AfterBackendOrderGetListHook;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendOrder;
 
 /**
  * Class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
@@ -184,18 +186,18 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Templates::class, $this],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Checkout::class, null],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\FrontendRiskManagement::class, $container],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder::class, $container],
+            // [Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder::class, $container],
             // [Shopware\Plugins\FatchipCTPayment\Subscribers\Logger::class, null],
 
             // [Shopware\Plugins\FatchipCTPayment\Subscribers\PostDispatchBackendRiskManagement::class, null],
-            // [Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder\AfterBackendOrderGetListHook::class, null],
-            // [Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder\PostDispatchBackendOrder::class, null],
             [PostDispatchFrontendLogger::class, null],
             [SecurePostDispatchFrontendLogger::class, null],
             [PostDispatchBackendIndex::class, null],
             [PostDispatchBackendRiskManagement::class, null],
             [AfterAccountSavePaymentActionHook::class, null],
             [AfterAccountPaymentActionHook::class, null],
+            [AfterBackendOrderGetListHook::class, null],
+            [PostDispatchBackendOrder::class, null],
         ];
 
         foreach ($subscribers as $subscriberClass) {
