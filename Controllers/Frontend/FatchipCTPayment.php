@@ -523,6 +523,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             }
             $payID = $order->getAttribute()->getfatchipctPayid();
             $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getNumber());
+            $RefNrChangeParams['EtId'] = $this->getUserDataParam();
             // response is ignored
             $response = $this->plugin->callComputopService($RefNrChangeParams, $payment, 'REFNRCHANGE', $payment->getCTRefNrChangeURL());
         }
