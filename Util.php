@@ -742,4 +742,16 @@ class Util
 
         return ($basket['AmountNumeric'] >= $min && $basket['AmountNumeric'] <= $max);
     }
+
+    /**
+     * Sets the userData paramater for Computop calls to Shopware Version and Module Version
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function getUserDataParam()
+    {
+        return 'Shopware Version: ' . \Shopware::VERSION . ', Modul Version: ' . Shopware()->Plugins()->Frontend()->FatchipCTPayment()->getVersion();
+    }
+
 }

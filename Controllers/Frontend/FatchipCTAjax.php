@@ -118,6 +118,7 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
             $orderDesc,
             $referenceId
         );
+        $requestParams['EtId'] = $this->utils->getUserDataParam();
 
         $response = $this->plugin->callComputopService($requestParams, $payment, 'GOD', $payment->getCTPaymentURL())->toArray();
         // Test data IT, Rome, Guiseppe Rossi needs this
@@ -168,6 +169,7 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
             $orderDesc,
             $referenceId
         );
+        $requestParams['EtId'] = $this->utils->getUserDataParam();
 
         $response = $this->plugin->callComputopService($requestParams, $payment, 'SOD', $payment->getCTPaymentURL())->toArray();
         $data = [];
