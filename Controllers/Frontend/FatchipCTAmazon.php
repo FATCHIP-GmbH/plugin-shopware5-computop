@@ -61,6 +61,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
     public function gatewayAction()
     {
         $response = $this->ctSetAndConfirmOrderDetails();
+        $this->ctFinishAuthorization();
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
                 $orderNumber = $this->saveOrder(
@@ -125,6 +126,25 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
         return $response;
     }
 
+    public function ctFinishAuthorization()
+    {
+        $session = Shopware()->Session();
+        $orderDesc = "Test";
+        $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
+        $requestParams = $payment->getAmazonATHParams(
+            $session->offsetGet('fatchipCTPaymentPayID'),
+            $session->offsetGet('fatchipCTPaymentTransID'),
+            $this->getAmount() * 100,
+            $this->getCurrencyShortName(),
+            $session->offsetGet('fatchipCTAmazonReferenceID'),
+            $this->getOrderDesc()
+        );
+        $requestParams['EtId'] = $this->getUserDataParam();
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'ATH', $payment->getCTPaymentURL());
+
+        return $response;
+    }
+
     /**
      * Order description sent to Computop.
      *
@@ -140,5 +160,3 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
         return $shopName;
     }
 }
-
-
