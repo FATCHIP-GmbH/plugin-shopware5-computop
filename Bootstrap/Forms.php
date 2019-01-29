@@ -96,6 +96,9 @@ class Forms
         // riskchecks
         $this->createFormSelectElements(CTPaymentConfigForms::formBonitaetSelectElements);
         $this->createFormTextElements(CTPaymentConfigForms::formBonitaetElements);
+
+        //TODO: remove capture delay form elements
+        $this->plugin->Form()->removeElement();
     }
 
     /**

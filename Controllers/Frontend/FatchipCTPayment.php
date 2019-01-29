@@ -205,6 +205,10 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
                 $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
+
+                //TODO: if AUTO and response successful -> capture order
+                //TODO: if matching payment type
+
                 $this->forward('finish', 'checkout', null, ['sUniqueID' => $response->getPayID()]);
                 break;
             default:
@@ -423,6 +427,51 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $this->get('models')->flush($order);
     }
 
+    protected function handleManualCapture($orderNumber) {
+        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number' => $orderNumber]);
+        if ($order) {
+
+            $paymentName = $order->getPayment()->getName();
+
+            if ($paymentName == 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] != 'MANUAL') {
+                $this->captureOrder($order);
+
+                //TODO: CAPTURE - wait for response
+                $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSPAID);
+                $this->markOrderDetailsAsFullyCaptured($order);
+            }
+        }
+    }
+
+    protected function captureOrder($order) {
+        /**
+         * @var \Shopware\Models\Order\Order $order
+         */
+        $paymentClass = $this->paymentClass;
+
+        $ctOrder = $this->createCTOrderFromSWorder($order);
+
+        if ($paymentClass !== 'PaypalExpress'
+            && $paymentClass !== 'AmazonPay'
+        ) {
+            $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->config, $ctOrder);
+        } else {
+            $payment = $this->paymentService->getPaymentClass($paymentClass, $this->config, $ctOrder);
+        }
+
+        $requestParams = $payment->getCaptureParams(
+            $order->getAttribute()->getfatchipctPayid(),
+            round($order->getInvoiceAmount() * 100, 2),
+            $order->getCurrency(),
+            $order->getAttribute()->getfatchipctTransid(),
+            $order->getAttribute()->getfatchipctXid(),
+            //TODO: klarna needs description
+            'none'
+        );
+
+        $captureResponse = $this->plugin->callComputopService($requestParams, $payment, 'CAPTURE', $payment->getCTCaptureURL());
+    }
+
     /**
      * For computop credit card and paydirekt it is possible
      * to set capture to delayed in the plugin settings.
@@ -439,6 +488,9 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     {
         $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number' => $orderNumber]);
         if ($order) {
+
+            //TODO: if credit card - no iframe - auto
+
             $paymentName = $order->getPayment()->getName();
             if (($paymentName == 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] == 'DELAYED')
                 || ($paymentName == 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] == 'DELAYED')
@@ -496,7 +548,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     protected function updateRefNrWithComputopFromOrderNumber($orderNumber)
     {
         if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number' => $orderNumber])) {
-            $this->updateRefNrWithComputop($order, $this->paymentClass);
+            return $this->updateRefNrWithComputop($order, $this->paymentClass);
         }
     }
 
@@ -526,6 +578,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $RefNrChangeParams['EtId'] = $this->getUserDataParam();
             // response is ignored
             $response = $this->plugin->callComputopService($RefNrChangeParams, $payment, 'REFNRCHANGE', $payment->getCTRefNrChangeURL());
+
+            return $response;
         }
     }
 
