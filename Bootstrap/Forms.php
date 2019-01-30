@@ -97,8 +97,38 @@ class Forms
         $this->createFormSelectElements(CTPaymentConfigForms::formBonitaetSelectElements);
         $this->createFormTextElements(CTPaymentConfigForms::formBonitaetElements);
 
-        //TODO: remove capture delay form elements
-        $this->plugin->Form()->removeElement();
+        $this->removeFormElements();
+    }
+
+    /**
+     * used for removal of older obsolete config elements
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
+     */
+    public function removeFormElements() {
+        $elements = [];
+        $em = Shopware()->Models();
+
+        if(!$this->plugin) {
+            return;
+        }
+
+        $elements[] = $this->plugin->Form()->getElement('creditCardDelay');
+        $elements[] = $this->plugin->Form()->getElement('lastschriftDelay');
+        $elements[] = $this->plugin->Form()->getElement('lastschriftEvoDebitDelay');
+        $elements[] = $this->plugin->Form()->getElement('payDirektCardDelay');
+
+        foreach ($elements as $element) {
+            //$element = $em->find('Shopware\Models\Config\Element', $elementId);
+
+            if($element) {
+                $em->remove($element);
+            }
+        }
+
+        $em->flush();
     }
 
     /**

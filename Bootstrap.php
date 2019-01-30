@@ -344,8 +344,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $payments = new Payments();
         $payments->createPayments();
 
-
-
         return $this->invalidateCaches(true);
     }
 
@@ -423,4 +421,5 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         Shopware()->Models()->persist($log);
         Shopware()->Models()->flush($log);
     }
+
 }

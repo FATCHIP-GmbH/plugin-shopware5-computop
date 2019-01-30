@@ -204,10 +204,18 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 $this->handleDelayedCapture($orderNumber);
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
-                $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
+                $result = $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
 
-                //TODO: if AUTO and response successful -> capture order
-                //TODO: if matching payment type
+                if(!is_null($result) && $result->getStatus() == 'OK') {
+
+                    if ($this->paymentClass == 'Paydirekt' && $this->config["payDirektCaption"] == 'AUTO') {
+                        $this->handleManualCapture($orderNumber);
+                    } elseif (strpos($this->paymentClass, 'Lastschrift') === 0  && $this->config["lastschriftCaption"] == 'AUTO') {
+                        $this->handleManualCapture($orderNumber);
+                    } elseif (strpos($this->paymentClass, 'Paypal') === 0  && $this->config["paypalCaption"] == 'AUTO') {
+                        $this->handleManualCapture($orderNumber);
+                    }
+                }
 
                 $this->forward('finish', 'checkout', null, ['sUniqueID' => $response->getPayID()]);
                 break;
@@ -433,7 +441,11 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
             $paymentName = $order->getPayment()->getName();
 
-            if ($paymentName == 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] != 'MANUAL') {
+            if (($paymentName == 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] != 'MANUAL') ||
+                ($paymentName == 'fatchip_computop_lastschrift' && $this->config['lastschriftCaption'] != 'MANUAL') ||
+                ($paymentName == 'fatchip_computop_paypal_standard' && $this->config['paypalCaption'] != 'MANUAL') ||
+                ($paymentName == 'fatchip_computop_paypal_express' && $this->config['paypalCaption'] != 'MANUAL') ||
+                ($paymentName == 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] != 'MANUAL')) {
                 $this->captureOrder($order);
 
                 //TODO: CAPTURE - wait for response
@@ -488,8 +500,6 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     {
         $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number' => $orderNumber]);
         if ($order) {
-
-            //TODO: if credit card - no iframe - auto
 
             $paymentName = $order->getPayment()->getName();
             if (($paymentName == 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] == 'DELAYED')
