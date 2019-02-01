@@ -109,7 +109,12 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
                 $this->saveTransactionResult($response);
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
-                $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
+                $result = $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
+
+                if(!is_null($result) && $result->getStatus() == 'OK' && $this->config["lastschriftCaption"] == 'AUTO') {
+                    $this->handleManualCapture($orderNumber);
+                }
+
                 $this->forward('finish', 'checkout', null, ['sUniqueID' => $response->getPayID()]);
                 break;
             default:
@@ -168,7 +173,12 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
                     self::PAYMENTSTATUSRESERVED
                 );
                 $this->saveTransactionResult($response);
-                $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
+                $result = $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
+
+                if(!is_null($result) && $result->getStatus() == 'OK' && $this->config["lastschriftCaption"] == 'AUTO') {
+                    $this->handleManualCapture($orderNumber);
+                }
+
                 $data = [
                     'success' => true,
                     'data' => [
