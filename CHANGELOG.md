@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+* Shop version nummer not always transmitted was fixed
+* Refactored auto-capture-process
+* Additional parameter for Amazon payment
+
 ## 1.0.16
 Released 2019-01-03
 * Add composer compatibility
