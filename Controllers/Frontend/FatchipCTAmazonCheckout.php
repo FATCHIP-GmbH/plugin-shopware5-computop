@@ -180,6 +180,12 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         return $response;
     }
 
+    /**
+     * Amazon is not providing birthday. If birthday is required by config for shopware user registration
+     * we do have to bypass this verification by adding a fake date at registration and removing it afterwards
+     *
+     * @param $userId
+     */
     public function unsetAmazonFakeBirthday($userId) {
 
         if (Util::isShopwareVersionGreaterThanOrEqual('5.2')) {
