@@ -1,5 +1,7 @@
 # Changelog - Shopware Computop Payment Connector
 
+* Removed duplicate readme file 
+
 ## 1.0.17
 Released 2019-02-06
 * Shop version nummer not always transmitted was fixed
