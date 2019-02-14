@@ -135,6 +135,10 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
      */
     public function confirmAction()
     {
+        $userId = Shopware()->Session()->get('sUserId');
+
+        $this->unsetAmazonFakeBirthday($userId);
+
         parent::confirmAction();
         $this->view->loadTemplate('frontend/fatchipCTAmazonCheckout/confirm.tpl');
     }
@@ -174,6 +178,27 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         $requestParams['EtId'] = $this->utils->getUserDataParam();
         $response = $this->plugin->callComputopService($requestParams, $payment, 'GOD', $payment->getCTPaymentURL());
         return $response;
+    }
+
+    public function unsetAmazonFakeBirthday($userId) {
+
+        if (Util::isShopwareVersionGreaterThanOrEqual('5.2')) {
+            $sql = "UPDATE shopware.s_user SET birthday = NULL WHERE id = ? AND birthday = '1901-02-28'";
+        }
+        else {
+            $sql = "UPDATE shopware.s_user_billingaddress SET birthday = NULL WHERE userID = ? AND birthday = '1901-02-28'";
+        }
+
+        try {
+            $config = Shopware()->Container()->get('config');
+
+            if($config['requireBirthdayField']) {
+                Shopware()->Db()->query($sql, array($userId));
+            }
+        }
+        catch(\Exception $e) {
+            //if for whatever reasons deleting birthday is not possible, we don't want to break the order process
+        }
     }
 }
 
