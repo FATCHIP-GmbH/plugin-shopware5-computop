@@ -196,11 +196,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         }
 
         try {
-            $config = Shopware()->Container()->get('config');
-
-            if($config['requireBirthdayField']) {
-                Shopware()->Db()->query($sql, array($userId));
-            }
+            Shopware()->Db()->query($sql, array($userId));
         }
         catch(\Exception $e) {
             //if for whatever reasons deleting birthday is not possible, we don't want to break the order process
