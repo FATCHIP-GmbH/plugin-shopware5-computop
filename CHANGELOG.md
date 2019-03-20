@@ -2,7 +2,7 @@
 
 ## 1.0.19
 Pre-Released 2019-03-20
-* Fix: Removed warnings regarding not existing Readme.html / thx to 
+* Fix: Removed warnings regarding not existing Readme.html / thx to bragento
 
 ## 1.0.18
 Released 2019-02-15
