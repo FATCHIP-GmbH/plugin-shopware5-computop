@@ -5,13 +5,13 @@
 Licence GPLv3
 
 ## About Shopware Computop Payment Connector
-For details about the plugin please visit [our website](https://www.fatchip.de/).
+For details about the plugin please visit [our website](https://www.fatchip.de/Plugins/Shopware/Shopware-Computop-Payment-Connector.html).
 
 In order to use Computop Payments via this plugin, you'll need a contract with Computop. Please contact sales via the form on https://www.computop.com/de/. In case you are already a customer of Computop, we kindly ask you to get in touch with your contact person. Following that, you'll receive your access data with which you'll be able to use the Shopware plugin. You will then be able to to use Computop payments in your shop.
 
 
 ## Installation and usage
-Visit our Wiki pages to read the [plugin documentation](https://github.com/FATCHIP-GmbH/plugin-shopware5-computop/releases).
+Visit our Wiki pages to read the [plugin documentation](https://wiki.fatchip.de/public/shopware-fatchipctpayment).
 
 ## Author
 FATCHIP GmbH | https://www.fatchip.de | support@fatchip.de 

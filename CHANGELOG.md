@@ -1,10 +1,13 @@
 # Changelog - Shopware Computop Payment Connector
 
-* Removed duplicate readme file 
+## 1.0.19
+Pre-Released 2019-03-20
+* Fix: Removed warnings regarding not existing Readme.html / thx to 
 
 ## 1.0.18
 Released 2019-02-15
 * Fix: AmazonPay failed if birthday field is setup as required for registration
+* Removed duplicate readme file 
 
 ## 1.0.17
 Released 2019-02-06
