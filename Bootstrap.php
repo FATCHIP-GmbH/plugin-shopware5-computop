@@ -239,8 +239,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         $info['label'] = $info['label']['de'];
         $info['version'] = $info['currentVersion'];
-        $info['description'] = '<p><img src="data:image/png;base64,' . $logo . '" /></p> '
-            . file_get_contents(__DIR__ . '/README.html');
+        $info['description'] = '<p><img src="data:image/png;base64,' . $logo . '" /></p>' .$info['description'];
 
         return $info;
     }
