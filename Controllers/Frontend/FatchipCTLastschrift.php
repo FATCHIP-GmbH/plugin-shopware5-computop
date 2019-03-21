@@ -112,7 +112,7 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
                 $result = $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
 
                 if(!is_null($result) && $result->getStatus() == 'OK' && $this->config["lastschriftCaption"] == 'AUTO') {
-                    $this->handleManualCapture($orderNumber);
+                    $this->handleManualCapture($customOrdernumber);
                 }
 
                 $this->forward('finish', 'checkout', null, ['sUniqueID' => $response->getPayID()]);

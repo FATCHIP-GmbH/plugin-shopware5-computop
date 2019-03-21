@@ -116,7 +116,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $result = $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
 
                 if(!is_null($result) && $this->config["creditCardCaption"] == 'AUTO' && $result->getStatus() == 'OK') {
-                    $this->handleManualCapture($orderNumber);
+                    $this->handleManualCapture($customOrdernumber);
                 }
 
                 $url = $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'finish']);

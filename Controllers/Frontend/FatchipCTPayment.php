@@ -209,11 +209,11 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 if(!is_null($result) && $result->getStatus() == 'OK') {
 
                     if ($this->paymentClass == 'Paydirekt' && $this->config["payDirektCaption"] == 'AUTO') {
-                        $this->handleManualCapture($orderNumber);
+                        $this->handleManualCapture($customOrdernumber);
                     } elseif (strpos($this->paymentClass, 'Lastschrift') === 0  && $this->config["lastschriftCaption"] == 'AUTO') {
-                        $this->handleManualCapture($orderNumber);
+                        $this->handleManualCapture($customOrdernumber);
                     } elseif (strpos($this->paymentClass, 'Paypal') === 0  && $this->config["paypalCaption"] == 'AUTO') {
-                        $this->handleManualCapture($orderNumber);
+                        $this->handleManualCapture($customOrdernumber);
                     }
                 }
 
