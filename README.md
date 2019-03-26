@@ -1,7 +1,5 @@
 # Shopware Computop Payment Connector
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/badges/quality-score.png?b=master&s=ef80e9afd3621e208f7b8d6e2e1fa0d02672340c)](https://scrutinizer-ci.com/g/FATCHIP-GmbH/plugin-shopware5-computop/?branch=master)
-
 Licence GPLv3
 
 ## About Shopware Computop Payment Connector
