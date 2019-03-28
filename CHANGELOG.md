@@ -1,5 +1,10 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.21
+Pre-Released N/Y
+* Remove scrutinizer
+* Config fields prefixOrdernumber and suffixOrdernumber are not required
+
 ## 1.0.20
 Pre-Released 2019-03-21
 * Fix: manual capture if prefix or suffix is set
