@@ -365,7 +365,17 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     public function getUserDataParam()
     {
-        return 'Shopware Version: ' . \Shopware::VERSION . ', Modul Version: ' . $this->plugin->getVersion();;
+        $info = 'Shopware Version: %s Modul Version: %s';
+        if (Util::isShopwareVersionGreaterThanOrEqual('5.4')) {
+            //since shopware 5.4.0 DIC parameter was introduced
+            return sprintf(
+                $info,
+                $this->container->getParameter('shopware.release.version'),
+                $this->plugin->getVersion()
+            );
+        }
+
+        return sprintf($info, \Shopware::VERSION, $this->plugin->getVersion());
     }
 
     /**
