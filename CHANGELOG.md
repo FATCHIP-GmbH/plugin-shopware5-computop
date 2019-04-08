@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.21
+Pre-Released 2019-03-21
+* Remove deprecated constants Shopware::VERSION since SW 5.5
+
 ## 1.0.20
 Pre-Released 2019-03-21
 * Fix: manual capture if prefix or suffix is set
