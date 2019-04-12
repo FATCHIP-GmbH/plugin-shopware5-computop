@@ -46,18 +46,20 @@ class Util
      */
     public static function isShopwareVersionGreaterThanOrEqual($compareVersion)
     {
-        $isVersionEmpty = ($currentVersion = \Shopware::VERSION) === '___VERSION___';
-        $isComposerShop = class_exists('ShopwareVersion') && class_exists('PackageVersions\Versions');
-        if ($isVersionEmpty) {
-            if ($isComposerShop) {
-                /** @noinspection PhpUndefinedClassInspection */
-                /** @noinspection PhpUndefinedNamespaceInspection */
-                $currentVersion = \ShopwareVersion::parseVersion(
-                    \PackageVersions\Versions::getVersion('shopware/shopware')
-                )['version'];
-            } else {
-                return true;
-            }
+        if(defined('\Shopware::VERSION')) {
+            $currentVersion = \Shopware::VERSION;
+        }
+
+        //get old composer versions
+        if($currentVersion === '___VERSION___' && class_exists('ShopwareVersion') && class_exists('PackageVersions\Versions')) {
+            $currentVersion = \ShopwareVersion::parseVersion(
+                \PackageVersions\Versions::getVersion('shopware/shopware')
+            )['version'];
+        }
+
+
+        if(!$currentVersion || $currentVersion === '___VERSION___') {
+            $currentVersion = Shopware()->Container()->getParameter('shopware.release.version');
         }
 
         return version_compare($currentVersion, $compareVersion, '>=');
