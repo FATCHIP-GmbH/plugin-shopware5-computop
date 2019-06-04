@@ -1,8 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
 ## 1.0.22
-Released 2019-03-28
+Released 2019-06-04
 * Remove deprecated constants Shopware::VERSION since SW 5.5
+* Import 2nd address line when using AmazonPay
 
 ## 1.0.21
 Released 2019-03-28
