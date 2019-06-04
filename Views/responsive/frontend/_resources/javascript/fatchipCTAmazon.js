@@ -16,6 +16,7 @@ $.plugin("fatchipCTAmazon", {
         birthdayMonth: "2",
         birthdayYear: "1901",
         street: false,
+        add: "",
         zip: false,
         city: false,
         countryCodeBillingID: false,
@@ -27,6 +28,7 @@ $.plugin("fatchipCTAmazon", {
         company2: "",
         department2: "",
         street2: false,
+        add2: "",
         zip2: false,
         city2: false,
         countryCodeShipping: false,
@@ -142,6 +144,7 @@ $.plugin("fatchipCTAmazon", {
 
                 "<input type=\"hidden\" name=\"register[billing][street]\" value=\"" + me.opts.street + "\"/>" +
                 "<input type=\"hidden\" name=\"register[billing][city]\" value=\"" + me.opts.city + "\"/>" +
+                "<input type=\"hidden\" name=\"register[billing][additionalAddressLine1]\" value=\"" + me.opts.add + "\"/>" +
                 "<input type=\"hidden\" name=\"register[billing][zipcode]\" value=\"" + me.opts.zip + "\"/>" +
                 "<input type=\"hidden\" name=\"register[billing][country]\" value=\"" + me.opts.countryCodeBillingID + "\"/>" +
                 "<input type=\"hidden\" name=\"register[billing][shippingAddress]\" value=\"" + me.opts.differentShipping + "\"/>" +
@@ -158,6 +161,7 @@ $.plugin("fatchipCTAmazon", {
                 "<input type=\"hidden\" name=\"register[shipping][company]\" value=\"" + me.opts.company2 + "\"/>" +
                 "<input type=\"hidden\" name=\"register[shipping][department]\" value=\"" + me.opts.department2 + "\"/>" +
                 "<input type=\"hidden\" name=\"register[shipping][street]\" value=\"" + me.opts.street2 + "\"/>" +
+                "<input type=\"hidden\" name=\"register[shipping][additionalAddressLine1]\" value=\"" + me.opts.add2 + "\"/>" +
                 "<input type=\"hidden\" name=\"register[shipping][city]\" value=\"" + me.opts.city2 + "\"/>" +
                 "<input type=\"hidden\" name=\"register[shipping][zipcode]\" value=\"" + me.opts.zip2 + "\"/>" +
                 "<input type=\"hidden\" name=\"register[shipping][country]\" value=\"" + me.opts.countryCodeShippingID + "\"/>" +
@@ -184,6 +188,7 @@ $.plugin("fatchipCTAmazon", {
         me.opts.phone = data.phonenumber;
         me.opts.email = data.buyermail;
         me.opts.street = data.bdaddrstreet2;
+        if(data.bdaddrstreet) me.opts.add = data.bdaddrstreet;
         me.opts.zip = data.bdaddrzip;
         me.opts.city = data.bdaddrcity;
         me.opts.countryCodeBilling = data.bdaddrcountrycode;
@@ -192,6 +197,7 @@ $.plugin("fatchipCTAmazon", {
         me.opts.firstname2 = sname[0];
         me.opts.lastname2 = sname[1];
         me.opts.street2 = data.AddrStreet2;
+        if(data.AddrStreet) me.opts.add2 = data.AddrStreet;
         me.opts.zip2 = data.AddrZip ? data.AddrZip : data.AddrZIP;
         me.opts.city2 = data.AddrCity;
         me.opts.countryCodeShipping = data.AddrCountryCode;
