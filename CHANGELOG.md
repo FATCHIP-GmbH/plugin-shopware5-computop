@@ -1,9 +1,10 @@
 # Changelog - Shopware Computop Payment Connector
 
 ## 1.0.22
-Released 2019-06-04
+Released 2019-06-13
 * Remove deprecated constants Shopware::VERSION since SW 5.5
 * Import 2nd address line when using AmazonPay
+* fixed rounding bug with PHP => 7.1 leading to wrong amount in APILog
 
 ## 1.0.21
 Released 2019-03-28
