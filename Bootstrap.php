@@ -408,6 +408,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      * @throws Exception
      */
     public function logRedirectParams($requestParams, $paymentName, $requestType, $response){
+        // fix wrong amount is logged PHP Version >= 7.1 see https://stackoverflow.com/questions/42981409/php7-1-json-encode-float-issue/43056278
+        $requestParams['amount'] = (string) $requestParams['amount'];
         $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
         $log->setPaymentName($paymentName);
         $log->setRequest($requestType);
