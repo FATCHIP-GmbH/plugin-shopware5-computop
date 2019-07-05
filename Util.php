@@ -227,6 +227,9 @@ class Util
             ->find($user['additional']['user']['id']);
         $attribute = $user->getAttribute();
 
+        if ($attribute === null) {
+            return null;
+        }
         return $attribute->getFatchipctLastschriftbank();
     }
 
@@ -241,6 +244,9 @@ class Util
             ->find($user['additional']['user']['id']);
         $attribute = $user->getAttribute();
 
+        if ($attribute === null) {
+            return null;
+        }
         return $attribute->getFatchipctLastschriftiban();
     }
 
@@ -255,6 +261,9 @@ class Util
             ->find($user['additional']['user']['id']);
         $attribute = $user->getAttribute();
 
+        if ($attribute === null) {
+            return null;
+        }
         return $attribute->getFatchipctAfterpayinstallmentiban();
     }
 
@@ -269,6 +278,9 @@ class Util
             ->find($user['additional']['user']['id']);
         $attribute = $user->getAttribute();
 
+        if ($attribute === null) {
+            return null;
+        }
         return $attribute->getFatchipctLastschriftaccowner();
     }
 
