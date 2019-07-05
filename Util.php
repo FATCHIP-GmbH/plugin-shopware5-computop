@@ -199,6 +199,10 @@ class Util
             ->find($user['additional']['user']['id']);
         $attribute = $user->getAttribute();
 
+        if ($attribute === null) {
+            return null;
+        }
+
         return $attribute->getFatchipctSocialsecuritynumber();
     }
 
@@ -212,6 +216,10 @@ class Util
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
             ->find($user['additional']['user']['id']);
         $attribute = $user->getAttribute();
+
+        if ($attribute === null) {
+            return null;
+        }
 
         return $attribute->getFatchipctAnnualSalary();
     }
