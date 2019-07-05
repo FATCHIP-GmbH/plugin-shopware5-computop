@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.23
+
+* fixed errors in attribute getters when users have no attributes 
+
 ## 1.0.22
 Released 2019-06-13
 * Remove deprecated constants Shopware::VERSION since SW 5.5
