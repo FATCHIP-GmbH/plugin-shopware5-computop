@@ -61,7 +61,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     public function gatewayAction()
     {
         $payment = $this->getPaymentClassForGatewayAction();
-        $payment->setUrlBack($this->router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]));
+        #$payment->setUrlBack($this->router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]));
         $params = $payment->getRedirectUrlParams();
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
         $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params)));
