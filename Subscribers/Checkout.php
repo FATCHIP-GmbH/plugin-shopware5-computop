@@ -523,7 +523,7 @@ class Checkout implements SubscriberInterface
             $ctOrder,
             $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'success', 'forceSecure' => true]),
             $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]),
-            null,
+            $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'notify', 'forceSecure' => true]),
             null,
             $this->getUserDataParam()
         );

@@ -51,6 +51,17 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     public $paymentClass = 'CreditCard';
 
     /**
+     * prevents CSRF Token errors
+     * @return array
+     */
+    public function getWhitelistedCSRFActions()
+    {
+        $csrfActions = ['success', 'failure', 'notify', 'iframe'];
+
+        return $csrfActions;
+    }
+
+    /**
      *  GatewaAction is overridden for Creditcard because:
      *  1. extra param URLBack
      *  2. forward to iframe controller instead of Computop Gateway, so the Computop IFrame is shown within Shop layout
@@ -61,7 +72,6 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     public function gatewayAction()
     {
         $payment = $this->getPaymentClassForGatewayAction();
-        $payment->setUrlBack($this->router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]));
         $params = $payment->getRedirectUrlParams();
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
         $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params)));
