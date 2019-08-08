@@ -77,7 +77,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
                 break;
             default:
                 // ToDO Test this after reloading confirm page
-                $this->forward('failure');
+                $this->redirect(['controller' => 'FatchipCTAmazon', 'action' => 'failure']);
                 break;
         }
     }
