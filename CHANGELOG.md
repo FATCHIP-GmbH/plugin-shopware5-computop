@@ -1,7 +1,12 @@
 # Changelog - Shopware Computop Payment Connector
 
-## 1.0.23
+## 1.0.24
+Pre-Released 2019-08-08
+* Fixed: Completing invalid AmazonPay Orders using browser reload function
+* Added: AmazonPay Decline-Handling
+* Added: 3D-Secure v2
 
+## 1.0.23
 * fixed errors in attribute getters when users have no attributes 
 
 ## 1.0.22
