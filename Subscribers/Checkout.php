@@ -233,6 +233,17 @@ class Checkout implements SubscriberInterface
 
         // ToDo find a better way, it would be nice to move this to the Amazon Controller
         if ($this->utils->isAmazonPayActive()) {
+
+            $amznLogout = $request->get('amznLogout');
+            $amznError = $request->get('amznError');
+
+            if($amznError) {
+                $view->assign('amznError', $amznError);
+            }
+
+            if($amznLogout) {
+                $view->assign('performAmazonLogout', true);
+            }
             // assign plugin Config to View
             $view->assign('fatchipCTPaymentConfig', $pluginConfig);
             // extend cart and ajax cart with Amazon Button
@@ -523,7 +534,7 @@ class Checkout implements SubscriberInterface
             $ctOrder,
             $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'success', 'forceSecure' => true]),
             $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]),
-            null,
+            $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'notify', 'forceSecure' => true]),
             null,
             $this->getUserDataParam()
         );
