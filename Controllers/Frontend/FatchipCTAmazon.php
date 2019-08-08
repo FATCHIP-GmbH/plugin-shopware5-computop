@@ -61,24 +61,29 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
     public function gatewayAction()
     {
         $response = $this->ctSetAndConfirmOrderDetails();
-        $this->ctFinishAuthorization();
-        switch ($response->getStatus()) {
-            case CTEnumStatus::OK:
-                $orderNumber = $this->saveOrder(
-                    $response->getTransID(),
-                    $response->getOrderid(),
-                    self::PAYMENTSTATUSPAID
-                );
-                $this->saveTransactionResult($response);
+        $response = $this->ctFinishAuthorization();
 
-                $customOrdernumber = $this->customizeOrdernumber($orderNumber);
-                $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
-                $this->forward('finish', 'FatchipCTAmazonCheckout', null, array('sUniqueID' => $response->getOrderid()));
-                break;
-            default:
-                // ToDO Test this after reloading confirm page
-                $this->redirect(['controller' => 'FatchipCTAmazon', 'action' => 'failure']);
-                break;
+        $amznStatus = $response->getAmazonstatus();
+
+        if($amznStatus == 'Declined') {
+            $this->redirect(['controller' => 'checkout', 'action' => 'cart', 'amznLogout' => true, 'error' => 'declined']);
+            return;
+        }
+
+        if($response->getStatus() == CTEnumStatus::OK) {
+            $orderNumber = $this->saveOrder(
+                $response->getTransID(),
+                $response->getOrderid(),
+                self::PAYMENTSTATUSPAID
+            );
+            $this->saveTransactionResult($response);
+
+            $customOrdernumber = $this->customizeOrdernumber($orderNumber);
+            $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
+            $this->forward('finish', 'FatchipCTAmazonCheckout', null, array('sUniqueID' => $response->getOrderid()));
+        }
+        else {
+            $this->redirect(['controller' => 'checkout', 'action' => 'cart', 'amznLogout' => true, 'amznError' => 'generic']);
         }
     }
 
