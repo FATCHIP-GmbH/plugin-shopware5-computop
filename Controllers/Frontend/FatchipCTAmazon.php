@@ -66,7 +66,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
         $amznStatus = $response->getAmazonstatus();
 
         if($amznStatus == 'Declined') {
-            $this->redirect(['controller' => 'checkout', 'action' => 'cart', 'amznLogout' => true, 'error' => 'declined']);
+            $this->redirect(['controller' => 'checkout', 'action' => 'cart', 'amznLogout' => true, 'amznError' => 'Declined']);
             return;
         }
 
