@@ -39,6 +39,8 @@ require_once 'Components/Api/vendor/autoload.php';
 class Util
 {
     public static function getShopwareVersion() {
+        $currentVersion = '';
+
         if(defined('\Shopware::VERSION')) {
             $currentVersion = \Shopware::VERSION;
         }
