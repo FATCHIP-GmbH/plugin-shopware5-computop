@@ -38,14 +38,7 @@ require_once 'Components/Api/vendor/autoload.php';
  */
 class Util
 {
-    /**
-     *
-     * @param $compareVersion
-     *
-     * @return bool
-     */
-    public static function isShopwareVersionGreaterThanOrEqual($compareVersion)
-    {
+    public static function getShopwareVersion() {
         if(defined('\Shopware::VERSION')) {
             $currentVersion = \Shopware::VERSION;
         }
@@ -57,10 +50,22 @@ class Util
             )['version'];
         }
 
-
         if(!$currentVersion || $currentVersion === '___VERSION___') {
             $currentVersion = Shopware()->Container()->getParameter('shopware.release.version');
         }
+
+        return $currentVersion;
+    }
+
+    /**
+     *
+     * @param $compareVersion
+     *
+     * @return bool
+     */
+    public static function isShopwareVersionGreaterThanOrEqual($compareVersion)
+    {
+        $currentVersion = self::getShopwareVersion();
 
         return version_compare($currentVersion, $compareVersion, '>=');
     }
@@ -773,7 +778,7 @@ class Util
      */
     public function getUserDataParam()
     {
-        return 'Shopware Version: ' . \Shopware::VERSION . ', Modul Version: ' . Shopware()->Plugins()->Frontend()->FatchipCTPayment()->getVersion();
+        return 'Shopware Version: ' . self::getShopwareVersion() . ', Modul Version: ' . Shopware()->Plugins()->Frontend()->FatchipCTPayment()->getVersion();
     }
 
 }

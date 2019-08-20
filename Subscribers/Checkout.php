@@ -590,7 +590,7 @@ class Checkout implements SubscriberInterface
      */
     public function getUserDataParam()
     {
-        return 'Shopware Version: ' . \Shopware::VERSION . ', Modul Version: ' . $this->plugin->getVersion();
+        return 'Shopware Version: ' . Util::getShopwareVersion() . ', Modul Version: ' . $this->plugin->getVersion();
     }
 
 }

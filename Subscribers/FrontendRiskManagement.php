@@ -576,6 +576,6 @@ class FrontendRiskManagement implements SubscriberInterface
     private function getUserDataParam()
     {
         $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-        return  'Shopware Version: ' .  \Shopware::VERSION . ', Modul Version: ' . $plugin->getVersion() ;;
+        return  'Shopware Version: ' .  Util::getShopwareVersion() . ', Modul Version: ' . $plugin->getVersion() ;;
     }
 }

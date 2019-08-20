@@ -32,6 +32,7 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscribers;
 use Monolog\Handler\RotatingFileHandler;
 
 use Enlight\Event\SubscriberInterface;
+use Shopware\Plugins\FatchipCTPayment\Util;
 
 use Shopware;
 use Shopware\Components\Logger;
@@ -73,7 +74,8 @@ abstract class AbstractLoggerSubscriber implements SubscriberInterface
         // ToDO use ternary operator here
         // Shopware()->Application() is deprecated
         $logPath = Shopware()->DocPath();
-        if (version_compare(Shopware::VERSION, '5.1', '>=')) {
+
+        if (Util::isShopwareVersionGreaterThanOrEqual('5.1')) {
             $logFile = $logPath . 'var/log/FatchipCTPayment_production.log';
         } else {
             $logFile = $logPath . 'logs/FatchipCTPayment_production.log';

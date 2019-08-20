@@ -375,7 +375,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             );
         }
 
-        return sprintf($info, \Shopware::VERSION, $this->plugin->getVersion());
+        return sprintf($info, Util::getShopwareVersion(), $this->plugin->getVersion());
     }
 
     /**
