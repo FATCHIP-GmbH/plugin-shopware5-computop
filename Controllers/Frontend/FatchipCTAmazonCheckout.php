@@ -42,7 +42,6 @@ use Shopware\Components\CSRFWhitelistAware;
  */
 class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Controllers_Frontend_Checkout implements CSRFWhitelistAware
 {
-
     /**
      * Fatchip PaymentService
      *
@@ -138,6 +137,9 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         $userId = Shopware()->Session()->get('sUserId');
 
         $this->unsetAmazonFakeBirthday($userId);
+
+        $this->view->assign('fatchipCTPaymentConfig', $this->config);
+        $this->view->assign('fatchipCTAmazonReferenceID', Shopware()->Session()->offsetGet('fatchipCTAmazonReferenceID'));
 
         parent::confirmAction();
         $this->view->loadTemplate('frontend/fatchipCTAmazonCheckout/confirm.tpl');

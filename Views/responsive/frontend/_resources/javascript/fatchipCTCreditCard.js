@@ -34,7 +34,6 @@ $.plugin("fatchipCTCreditCardPaynow", {
             var expiryYear = $("select#CCExpiryYear option:selected").val();
             var expiryMonth = $("select#CCExpiryMonth option:selected").val();
             var expiry = expiryYear + expiryMonth;
-            console.log(expiry);
             $("#CCExpiry ").val(expiry);
         });
     },

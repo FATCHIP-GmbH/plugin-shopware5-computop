@@ -10,6 +10,24 @@
                 {s name="AmazonErrorDeclined" namespace="frontend/checkout/CTErrors"}Es ist ein Fehler aufgetreten: Die Zahlung wurde seitens Amazon zurückgewiesen.{/s}
             </div>
         </div>
+    {elseif $amznError = 'SCO'}
+        <div class="alert is--error is--rounded">
+            <div class="alert--icon">
+                <i class="icon--element icon--cross"></i>
+            </div>
+            <div id="AmazonErrorContent" class="alert--content">
+                {s name="AmazonErrorSCO" namespace="frontend/checkout/CTErrors"}Es ist ein Fehler aufgetreten: Authentifizierung nicht erfolgreich.{/s}
+            </div>
+        </div>
+    {elseif $amznError}
+        <div class="alert is--error is--rounded">
+            <div class="alert--icon">
+                <i class="icon--element icon--cross"></i>
+            </div>
+            <div id="AmazonErrorContent" class="alert--content">
+                {s name="AmazonErrorGeneric" namespace="frontend/checkout/CTErrors"}Es ist ein Fehler aufgetreten: Die Zahlung konnte nicht verarbeitet werden.{/s}
+            </div>
+        </div>
     {/if}
 
     {$smarty.block.parent}
@@ -59,14 +77,11 @@
 
                             {if $smarty.server.REQUEST_SCHEME === 'https' && $smarty.server.HTTP_REFERER|strpos:'https://'=== 0}
                             // Do nothing
-                            console.log('Normal Mode');
                             {else}
                             // replace with https return Url
                             shopReturnUrl = shopReturnUrl.replace("http://", "https://");
-                            console.log('Cookie Mode');
                             {/if}
 
-                            console.log(shopReturnUrl);
                             authRequest = amazon.Login.authorize(loginOptions, shopReturnUrl);
                         },
                         onError: function (error) {

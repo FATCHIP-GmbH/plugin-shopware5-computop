@@ -60,7 +60,6 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
      */
     public function gatewayAction()
     {
-        $response = $this->ctSetAndConfirmOrderDetails();
         $response = $this->ctFinishAuthorization();
 
         $amznStatus = $response->getAmazonstatus();
