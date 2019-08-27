@@ -191,6 +191,11 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     public function successAction()
     {
         $requestParams = $this->Request()->getParams();
+
+        if(array_key_exists('fatchipCTPaymentClass', $requestParams) && $requestParams['fatchipCTPaymentClass'])  {
+            $this->paymentClass = $requestParams['fatchipCTPaymentClass'];
+        }
+
         $response = $this->paymentService->getDecryptedResponse($requestParams);
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
         switch ($response->getStatus()) {
@@ -217,7 +222,14 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                     }
                 }
 
-                $this->forward('finish', 'checkout', null, ['sUniqueID' => $response->getPayID()]);
+                if($this->paymentClass == 'AmazonPay') {
+                    $this->forward('finish', 'FatchipCTAmazonCheckout', null, ['sUniqueID' => $response->getPayID()]);
+                }
+                else {
+                    $this->forward('finish', 'checkout', null, ['sUniqueID' => $response->getPayID()]);
+                }
+
+
                 break;
             default:
                 $this->forward('failure');

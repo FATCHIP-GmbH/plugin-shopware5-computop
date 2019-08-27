@@ -98,6 +98,47 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
     }
 
     /**
+     * Calls the computop api with amazonpay SCO api call.
+     * returns  api response json encoded for use with JQuery plugins
+     *
+     * @see    AmazonPay::getAmazonSCOParams()
+     * @return void
+     */
+    public function ctAmznSetOrderDetailsAndConfirmOrderAction()
+    {
+        $params = $this->Request()->getParams();
+        $referenceId = $params['referenceId'];
+        $basket = Shopware()->Session()->sOrderVariables;
+        $amount = $basket["sBasket"]["AmountNumeric"] * 100;
+
+        // ToDo use REAL Currency and OrderDesc !!!!
+        $currency = $basket["sBasket"]["sCurrencyName"];
+        $orderDesc = "Test";
+
+        $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
+
+        $requestParams = $payment->getAmazonSCOParams(
+            $this->session->offsetGet('fatchipCTPaymentPayID'),
+            $this->session->offsetGet('fatchipCTPaymentTransID'),
+            $amount,
+            $currency,
+            $orderDesc,
+            $referenceId
+        );
+        $requestParams['EtId'] = $this->utils->getUserDataParam();
+
+        $response = $this->plugin->callComputopService($requestParams, $payment, 'SCO', $payment->getCTPaymentURL())->toArray();
+
+        if($response['Code'] != '00000000') {
+            $this->Response()->setHttpResponseCode(418);
+            return;
+        }
+
+        $this->session->offsetSet('fatchipCTPaymentSCOValid', true);
+
+        echo json_encode('OK');
+    }
+    /**
      * Calls the computop api with amazonpay GOD api call.
      * returns  api response json encoded for use with JQuery plugins
      *

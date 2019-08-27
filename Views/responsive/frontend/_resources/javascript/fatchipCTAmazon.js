@@ -206,7 +206,6 @@ $.plugin("fatchipCTAmazon", {
 
     destroy: function () {
         "use strict";
-        console.log("destroy Plugin triggered");
         var me = this;
         me._destroy();
     }
