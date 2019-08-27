@@ -1,8 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
-## 1.0.25
+## 1.0.30
 Pre-Released 2019-08-20
 * Added: SW 5.6 compatibility
+* Added: Amazon SCA confirmationFlow
 
 ## 1.0.24
 Pre-Released 2019-08-08
