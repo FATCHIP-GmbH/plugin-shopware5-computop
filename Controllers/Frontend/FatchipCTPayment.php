@@ -256,6 +256,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
             case CTEnumStatus::AUTHORIZED:
+            case CTEnumStatus::AUTHORIZE_REQUEST:
                 if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $response->getTransID()])) {
                     $this->updateRefNrWithComputop($order, $this->paymentClass);
                     $this->inquireAndupdatePaymentStatus($order, $this->paymentClass);
