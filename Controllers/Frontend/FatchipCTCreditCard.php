@@ -74,7 +74,8 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $payment = $this->getPaymentClassForGatewayAction();
         $params = $payment->getRedirectUrlParams();
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
-        $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params)));
+
+        $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params, $this->config['creditCardTemplate'])));
     }
 
     /**
