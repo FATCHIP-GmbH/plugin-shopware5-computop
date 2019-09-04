@@ -1,7 +1,7 @@
 # Changelog - Shopware Computop Payment Connector
 
 ## 1.0.26
-Pre-Released 2019-08-27
+Pre-Released 2019-09-04
 * Added: SW 5.6 compatibility
 * Added: Amazon SCA confirmationFlow
 * Added: CreditCard Testmode
