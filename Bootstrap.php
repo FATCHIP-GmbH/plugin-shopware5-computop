@@ -38,7 +38,6 @@ use Shopware\Plugins\FatchipCTPayment\Bootstrap\RiskRules;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Models;
 
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\PostDispatchFrontendLogger;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\SaveShippingPayment;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\SecurePostDispatchFrontendLogger;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AfterAccountPaymentActionHook;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AfterAccountSavePaymentActionHook;
@@ -200,7 +199,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             [AfterAccountPaymentActionHook::class, null],
             [AfterBackendOrderGetListHook::class, null],
             [PostDispatchBackendOrder::class, null],
-            [SaveShippingPayment::class, null],
         ];
 
         foreach ($subscribers as $subscriberClass) {

@@ -29,9 +29,12 @@
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
+use Exception;
+use Fatchip\CTPayment\CTPaymentMethodsIframe\KlarnaPayments;
 use Shopware\Components\Theme\LessDefinition;
 use Shopware\Plugins\FatchipCTPayment\Util;
 use Fatchip\CTPayment\CTOrder\CTOrder;
+use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap;
 
 /**
  * Class Checkout
@@ -40,6 +43,12 @@ use Fatchip\CTPayment\CTOrder\CTOrder;
  */
 class Checkout implements SubscriberInterface
 {
+    /**
+     * These params should not be send with the computop requests and are filtered out in prepareComputopRequest
+     */
+    const paramexcludes = ['MAC' => 'MAC', 'mac' => 'mac', 'blowfishPassword' => 'blowfishPassword', 'merchantID' => 'merchantID'];
+    private $router;
+    private $paymentClass = 'KlarnaPayments';
 
     /**
      * PaymentService
@@ -61,6 +70,11 @@ class Checkout implements SubscriberInterface
      * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
     protected $plugin;
+
+    public function __construct()
+    {
+        $this->router = Shopware()->Front()->Router();
+    }
 
     /**
      * return array with all subscribed events
@@ -148,6 +162,77 @@ class Checkout implements SubscriberInterface
         }
 
         if ($request->getActionName() == 'shippingPayment') {
+
+            if (strpos($paymentName, 'klarna') !== false && $request->isPost()) {
+                // TODO: create Klarna session
+
+                $payTypes = [
+                    'pay_now' => 'pay_now',
+                    'pay_later' => 'pay_later',
+                    'slice_it' => 'pay_over_time'
+                ];
+
+                foreach ($payTypes as $key => $value) {
+                    $length = strlen($key);
+                    if (substr($paymentName, -$length) === $key) {
+                        $payType = $value;
+                        break;
+                    }
+                }
+
+                if (isset($payType)) {
+                    $taxAmount = ((int)($args->getSubject()->View()->getAssign('sAmountTax') * 100));
+                    $taxAmount = 0;
+                    $articleList = [];
+
+                    foreach (Shopware()->Modules()->Basket()->sGetBasket()['content'] as $item) {
+                        $articleList['order_lines'][] = [
+                            'name' => $item['articlename'],
+                            'quantity' => (int)$item['quantity'],
+                            'unit_price' => round($item['priceNumeric'] * 100),
+                            'total_amount' => round(str_replace(',', '.',$item['price']) * 100),
+//                            'tax_rate' => $item['tax_rate'] * 100,
+//                            'total_tax_amount' => round(str_replace(',', '.',$item['tax']) * 100),
+                        ];
+                    }
+                    $articleList = base64_encode(json_encode($articleList));
+
+                    $URLConfirm = $this->router->assemble([
+                        'controller' => 'checkout',
+                        'action' => 'finish',
+                        'forceSecure' => true,
+                    ]);
+
+                    $payment = $this->getPaymentClassForGatewayAction1($taxAmount, $articleList, $URLConfirm, $payType);
+                    $payment->setOrderDesc('Demoshop');
+                    $payment->setBdCountryCode('DE');
+                    $payment->setAccount('test');
+
+                    $ctRequest = $payment->getRedirectUrlParams();
+//                    $test = [
+//                        'MerchantID',
+//                        'TransID',
+//                        'Amount',
+//                        'TaxAmount',
+//                        'Currency',
+//                        'bdCountryCode',
+//                        'MAC',
+//                        'IPAddr',
+//                        'ArticleList',
+//                        'URLConfirm',
+//                        'PayType',
+//                    ];
+//                    foreach ($ctRequest as $k => $item) {
+//                        if (! array_search($k, $test)) {
+//                            unset($ctRequest[$k]);
+//                        }
+//                    }
+                    $CTPaymentURL = $payment->getCTPaymentURL();
+                    $response = $this->plugin->callComputopService($ctRequest, $payment, 'KLARNA', $CTPaymentURL);
+
+                    $a = '';
+                }
+            }
 
             $birthday = explode('-', $this->utils->getUserDoB($userData));
             $paymentData['birthday'] = $birthday[2];
@@ -578,9 +663,7 @@ class Checkout implements SubscriberInterface
      */
     protected function getUserData()
     {
-        $session = Shopware()->Session();
-        $orderVars = $session->sOrderVariables;
-        return $orderVars['sUserData'];
+        return Shopware()->Modules()->Admin()->sGetUserData();
     }
 
     /**
@@ -593,4 +676,102 @@ class Checkout implements SubscriberInterface
         return 'Shopware Version: ' . Util::getShopwareVersion() . ', Modul Version: ' . $this->plugin->getVersion();
     }
 
+    /**
+     * Beschreibung der gebuchten Artikel:
+     * Menge, ArtikelNr, Bezeichnung, Preis, Arti-kelkennung. Rabatt und MwSt. als Prozentzahl angeben.
+     * Felder durch ";" und Rechnungspositionen durch "+" trennen.
+     * Preise ohne Komma in kleinster Wäh-rungseinheit angeben:
+     * <qty>;<artno>; <title>; <price>; <vat>;<discount>;<Artic-leFlag> +
+     *
+     * Beispiel: 25;12345;Kugelschreiber;890;19;1.5;0 + 1;11223;Versandkosten;490;19;0;8
+     *
+     * Werte und Wirkung des <ArticleFlag>:
+     * <0> keine Kennzeichnung,
+     * <1> Mengen-angabe in 1/1000,
+     * <2> Menge in 1/100,
+     * <4> Menge in 1/10,
+     * <8> Artikel ist eine Versandgebühr,
+     * <16> Artikel ist eine Bearbeitungsgebühr,
+     * <32> Preisangabe erfolgt inkl. MwSt.
+     *
+     * @return string
+     * @throws \Enlight_Event_Exception
+     * @throws \Enlight_Exception
+     * @throws \Zend_Db_Adapter_Exception
+     */
+    public function getOrderDesc()
+    {
+//        $basket = $this->getBasket();
+        $basket = Shopware()->Modules()->Basket()->sGetBasket();
+        $orderDesc = '';
+        foreach ($basket['content'] as $position) {
+            if (!empty($orderDesc)) {
+                $orderDesc .= ' + ';
+            }
+            //careful: $position['amount'] contains the total for the position, so QTY*Price
+            //in controllers/backend/FatchipCTOrder $position->getPrice() returns price of only 1 article
+            $orderDesc .= $position['quantity'] . ';' . $position['articleID'] . ';' . $position['articlename'] . ';'
+                . $position['amount'] * 100 / $position['quantity'] . ';' . $position['tax_rate'] . ';0;0';
+        }
+        //add shipping if > 0
+        if ($basket['sShippingcosts'] != 0) {
+            if (!empty($orderDesc)) {
+                $orderDesc .= ' + ';
+            }
+            $orderDesc .= '1;shipping;Versandkosten;' . $basket['sShippingcosts'] * 100 . ';' . $basket['sShippingcostsTax'] . ';0;8';
+        }
+
+        return $orderDesc;
+    }
+
+    /**
+     * GetPaymentClassForGatewayAction is overridden because call to
+     * getIframePaymentClass has no parameters
+     * URLSuccess, URLFailure, isFirm and $klarnaAction parameters
+     *
+     * Furthermore SSN, AnnualSalary, Phone and DoB need to be set
+     *
+     * @return KlarnaPayments
+     * @throws Exception
+     */
+    protected function getPaymentClassForGatewayAction1($taxAmount, $articleList, $URLConfirm, $payType)
+    {
+        $userData = $this->getUserData();
+
+        $ctOrder = $this->createCTOrder();
+
+        $usesInvoice = ($userData['additional']['payment']['name'] === 'fatchip_computop_klarna_invoice');
+        $isFirm = !empty($userData['billingaddress']['company']);
+        $klarnaAction = $usesInvoice ? '-1' : $this->config['klarnaaction'];
+
+        /**
+         * Klarna Payment Class.
+         *
+         * @var KlarnaPayments $payment
+         */
+        $payment = $this->paymentService->getIframePaymentClass(
+            $this->paymentClass,
+            $this->config,
+            $ctOrder,
+            null,
+            null,
+            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $this->getOrderDesc(),
+            $this->getUserDataParam(),
+            null,
+            $isFirm,
+            $klarnaAction
+        );
+
+        $payment->setTaxAmount($taxAmount);
+        $payment->setArticleList($articleList);
+        $payment->setURLConfirm($URLConfirm);
+        $payment->setPayType($payType);
+        $payment->setSocialSecurityNumber($this->utils->getUserSSN($userData));
+        $payment->setAnnualSalary($this->utils->getUserAnnualSalary($userData));
+        $payment->setPhone($this->utils->getUserPhone($userData));
+        $payment->setDateOfBirth($this->utils->getUserDoB($userData));
+
+        return $payment;
+    }
 }
