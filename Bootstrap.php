@@ -373,7 +373,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      * this wrapper is used for logging Server requests and responses to our shopware model
      *
      * @param $requestParams
-     * @param $payment
+     * @param $payment Fatchip\CTPayment\CTPaymentMethod
      * @param $requestType
      * @param $url
      *

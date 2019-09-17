@@ -29,7 +29,6 @@
 
 require_once 'FatchipCTPayment.php';
 
-use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Fatchip\CTPayment\CTPaymentMethodsIframe\KlarnaPayments;
 
 /**
@@ -52,6 +51,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
     public $paymentClass = 'KlarnaPayments';
 
     protected function getKlarnaSessionAction() {
+        /** @var KlarnaPayments $payment */
         $payment = $this->paymentService->getPaymentClass('KlarnaPayments', $this->config);
 
         $requestParams = $payment->getKlarnaSessionRequestParams(
