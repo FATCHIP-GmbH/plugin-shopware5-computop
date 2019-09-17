@@ -1,14 +1,23 @@
 {* The main container for filling in the birthday field *}
-<div class="fatchip-computop-payment-klarna-form payment--form-group">
+<div id="fatchip-computop-payment-klarna-form-slice-it">
 </div>
 
 <script>
-    window.klarnaAsyncCallback = function () {
-
-        // This is where you start calling Klarna's JS SDK functions
-        //
-        // Klarna.Payments.init()
-
-    };
+    // (function() {
+    //     console.log('slice it');
+    //
+    //     if (!window.Klarna) {
+    //         return;
+    //     }
+    //
+    //     console.log(window.Klarna);
+    // })();
+/*     Klarna.Payments.load({
+            container: '#klarna-payments-container',
+            payment_method_category: 'pay_over_time'
+        }, function (res) {
+            console.log(res);
+        }) };
+    };*/
 </script>
-<script src="https://x.klarnacdn.net/kp/lib/v1/api.js" async></script>
+

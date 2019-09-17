@@ -166,7 +166,9 @@ class Checkout implements SubscriberInterface
         if ($request->getActionName() == 'shippingPayment') {
 
             if (strpos($paymentName, 'klarna') !== false && $request->isPost()) {
-                $this->createKlarnaPayment($args, $paymentName);
+                $accessToken = $this->createKlarnaSession($args, $paymentName);
+                $session->offsetSet('FatchipComputopKlarnaAccessToken', $accessToken);
+                $view->assign('FatchipComputopKlarnaAccessToken', $accessToken);
             }
 
             $birthday = explode('-', $this->utils->getUserDoB($userData));
@@ -615,7 +617,7 @@ class Checkout implements SubscriberInterface
      * @param Enlight_Controller_ActionEventArgs $args
      * @param string $paymentName
      */
-    public function createKlarnaPayment(Enlight_Controller_ActionEventArgs $args, string $paymentName)
+    public function createKlarnaSession(Enlight_Controller_ActionEventArgs $args, string $paymentName)
     {
         $payTypes = [
             'pay_now' => 'pay_now',
@@ -632,56 +634,63 @@ class Checkout implements SubscriberInterface
             }
         }
 
-        if (isset($payType)) {
-            $taxAmount = ((int)($args->getSubject()->View()->getAssign('sAmountTax') * 100));
-            $taxAmount = 0;
-            $articleList = [];
+        if (!isset($payType)) {
+            return null;
+        }
 
-            try {
-                foreach (Shopware()->Modules()->Basket()->sGetBasket()['content'] as $item) {
-                    $articleList['order_lines'][] = [
-                        'name' => $item['articlename'],
-                        'quantity' => (int)$item['quantity'],
-                        'unit_price' => round($item['priceNumeric'] * 100),
-                        'total_amount' => round(str_replace(',', '.', $item['price']) * 100),
+        $taxAmount = ((int)($args->getSubject()->View()->getAssign('sAmountTax') * 100));
+        $taxAmount = 0;
+        $articleList = [];
+
+        try {
+            foreach (Shopware()->Modules()->Basket()->sGetBasket()['content'] as $item) {
+                $articleList['order_lines'][] = [
+                    'name' => $item['articlename'],
+                    'quantity' => (int)$item['quantity'],
+                    'unit_price' => round($item['priceNumeric'] * 100),
+                    'total_amount' => round(str_replace(',', '.', $item['price']) * 100),
 //                        'tax_rate' => $item['tax_rate'] * 100,
 //                        'total_tax_amount' => round(str_replace(',', '.',$item['tax']) * 100),
-                    ];
-                }
-            } catch (Exception $e) {
+                ];
             }
-            $articleList = base64_encode(json_encode($articleList));
-
-            $URLConfirm = $this->router->assemble([
-                'controller' => 'checkout',
-                'action' => 'finish',
-                'forceSecure' => true,
-            ]);
-
-            $order = $this->createCTOrder();
-
-            /** @var KlarnaPayments $payment */
-            $payment = $this->paymentService->getPaymentClass('KlarnaPayments', $this->config);
-            $requestParameter = $payment->getKlarnaSessionRequestParams(
-                $taxAmount,
-                $articleList,
-                $URLConfirm,
-                $payType,
-                'test', // TODO: get from plugin config
-                'DE',
-                $order->getAmount(),
-                $order->getCurrency(),
-                CTPaymentMethodIframe::generateTransID(),
-                $_SERVER['REMOTE_ADDR']
-            );
-
-            $ctRequest = $payment->cleanUrlParams($requestParameter);
-            $CTPaymentURL = $payment->getCTPaymentURL();
-            try {
-                $response = $this->plugin->callComputopService($ctRequest, $payment, 'KLARNA', $CTPaymentURL);
-                $a = '';
-            } catch (Exception $e) {
-            }
+        } catch (Exception $e) {
+            // TODO: log
+            return null;
         }
+        $articleList = base64_encode(json_encode($articleList));
+
+        $URLConfirm = $this->router->assemble([
+            'controller' => 'checkout',
+            'action' => 'finish',
+            'forceSecure' => true,
+        ]);
+
+        $order = $this->createCTOrder();
+
+        /** @var KlarnaPayments $payment */
+        $payment = $this->paymentService->getPaymentClass('KlarnaPayments', $this->config);
+        $requestParameter = $payment->getKlarnaSessionRequestParams(
+            $taxAmount,
+            $articleList,
+            $URLConfirm,
+            $payType,
+            'test', // TODO: get from plugin config
+            'DE',
+            $order->getAmount(),
+            $order->getCurrency(),
+            CTPaymentMethodIframe::generateTransID(),
+            $_SERVER['REMOTE_ADDR']
+        );
+
+        $ctRequest = $payment->cleanUrlParams($requestParameter);
+        $CTPaymentURL = $payment->getCTPaymentURL();
+        try {
+            $response = $this->plugin->callComputopService($ctRequest, $payment, 'KLARNA', $CTPaymentURL);
+        } catch (Exception $e) {
+            // TODO: log
+            return null;
+        }
+
+        return $response->getAccesstoken();
     }
 }
