@@ -131,7 +131,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTAmazon.js',
             $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTAmazonSCA.js',
             $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTPaypalExpress.js',
-            $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTKlarna.js',
             $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTCreditCard.js',
         ];
         return new ArrayCollection($jsFiles);

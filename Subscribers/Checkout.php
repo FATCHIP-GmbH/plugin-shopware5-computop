@@ -33,6 +33,7 @@ use Enlight_Controller_ActionEventArgs;
 use Exception;
 use Fatchip\CTPayment\CTPaymentMethodIframe;
 use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
+use Fatchip\CTPayment\CTResponse;
 use Shopware\Components\Theme\LessDefinition;
 use Shopware\Plugins\FatchipCTPayment\Util;
 use Fatchip\CTPayment\CTOrder\CTOrder;
@@ -165,10 +166,27 @@ class Checkout implements SubscriberInterface
 
         if ($request->getActionName() == 'shippingPayment') {
 
-            if (strpos($paymentName, 'klarna') !== false && $request->isPost()) {
-                $accessToken = $this->createKlarnaSession($args, $paymentName);
-                $session->offsetSet('FatchipComputopKlarnaAccessToken', $accessToken);
-                $view->assign('FatchipComputopKlarnaAccessToken', $accessToken);
+            if (stristr($paymentName, 'klarna')) {
+                $payment = $this->createCTKlarnaPayment($args, $paymentName);
+                $hash = $payment->getKlarnaSessionRequestParamsHash();
+
+                if ($session->offsetGet('FatchipCTKlarnaPaymentHash' . $paymentName) === $hash) {
+                    // hash exists already in session, so accessToken must also exist
+                    // basket, tax and amount (incl. shipping cost) did not change, so accessToken can be reused
+                    $accessToken =  $session->offsetGet('FatchipCTKlarnaAccessToken' . $paymentName);
+                } else {
+                    // hash does either not exist in session or basket, tax and amount (incl. shipping cost) changed,
+                    // so a new session must be created
+                    // TODO: log
+                    $CTResponse = $this->requestCTKlarnaSession($payment);
+
+                    $accessToken = $CTResponse->getAccesstoken();
+
+                    $session->offsetSet('FatchipCTKlarnaPaymentHash' . $paymentName, $hash);
+                    $session->offsetSet('FatchipCTKlarnaAccessToken' . $paymentName, $accessToken);
+                }
+
+                $view->assign('FatchipCTKlarnaAccessToken', $accessToken);
             }
 
             $birthday = explode('-', $this->utils->getUserDoB($userData));
@@ -616,8 +634,10 @@ class Checkout implements SubscriberInterface
     /**
      * @param Enlight_Controller_ActionEventArgs $args
      * @param string $paymentName
+     *
+     * @return KlarnaPayments
      */
-    public function createKlarnaSession(Enlight_Controller_ActionEventArgs $args, string $paymentName)
+    private function createCTKlarnaPayment(Enlight_Controller_ActionEventArgs $args, string $paymentName)
     {
         $payTypes = [
             'pay_now' => 'pay_now',
@@ -669,7 +689,7 @@ class Checkout implements SubscriberInterface
 
         /** @var KlarnaPayments $payment */
         $payment = $this->paymentService->getPaymentClass('KlarnaPayments', $this->config);
-        $requestParameter = $payment->getKlarnaSessionRequestParams(
+        $payment->storeKlarnaSessionRequestParams(
             $taxAmount,
             $articleList,
             $URLConfirm,
@@ -682,15 +702,25 @@ class Checkout implements SubscriberInterface
             $_SERVER['REMOTE_ADDR']
         );
 
-        $ctRequest = $payment->cleanUrlParams($requestParameter);
+        return $payment;
+    }
+
+    /**
+     * @param KlarnaPayments $payment
+     *
+     * @return CTResponse
+     */
+    private function requestCTKlarnaSession($payment) {
         $CTPaymentURL = $payment->getCTPaymentURL();
+        $ctRequest = $payment->cleanUrlParams($payment->getKlarnaSessionRequestParams());
+        $response = null;
+
         try {
             $response = $this->plugin->callComputopService($ctRequest, $payment, 'KLARNA', $CTPaymentURL);
         } catch (Exception $e) {
             // TODO: log
-            return null;
         }
 
-        return $response->getAccesstoken();
+        return $response;
     }
 }
