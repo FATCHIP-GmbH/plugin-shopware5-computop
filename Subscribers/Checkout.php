@@ -159,7 +159,9 @@ class Checkout implements SubscriberInterface
         $params = $request->getParams();
 
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        $paymentNamePrefix = 'fatchip_computop_klarna_';
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
+        $paymentType = substr($paymentName, strlen($paymentNamePrefix));
         if (!$request->isDispatched() || $response->isException()) {
             return;
         }
@@ -167,13 +169,13 @@ class Checkout implements SubscriberInterface
         if ($request->getActionName() == 'shippingPayment') {
 
             if (stristr($paymentName, 'klarna')) {
-                $payment = $this->createCTKlarnaPayment($args, $paymentName);
+                $payment = $this->createCTKlarnaPayment($args, $paymentType);
                 $hash = $payment->getKlarnaSessionRequestParamsHash();
 
-                if ($session->offsetGet('FatchipCTKlarnaPaymentHash' . $paymentName) === $hash) {
+                if ($session->offsetGet('FatchipCTKlarnaPaymentHash_' . $paymentType) === $hash) {
                     // hash exists already in session, so accessToken must also exist
                     // basket, tax and amount (incl. shipping cost) did not change, so accessToken can be reused
-                    $accessToken =  $session->offsetGet('FatchipCTKlarnaAccessToken' . $paymentName);
+                    $accessToken =  $session->offsetGet('FatchipCTKlarnaAccessToken_' . $paymentType);
                 } else {
                     // hash does either not exist in session or basket, tax and amount (incl. shipping cost) changed,
                     // so a new session must be created
@@ -182,8 +184,8 @@ class Checkout implements SubscriberInterface
 
                     $accessToken = $CTResponse->getAccesstoken();
 
-                    $session->offsetSet('FatchipCTKlarnaPaymentHash' . $paymentName, $hash);
-                    $session->offsetSet('FatchipCTKlarnaAccessToken' . $paymentName, $accessToken);
+                    $session->offsetSet('FatchipCTKlarnaPaymentHash_' . $paymentType, $hash);
+                    $session->offsetSet('FatchipCTKlarnaAccessToken_' . $paymentType, $accessToken);
                 }
 
                 $view->assign('FatchipCTKlarnaAccessToken', $accessToken);

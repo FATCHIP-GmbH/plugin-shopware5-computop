@@ -3,6 +3,7 @@
 
 {if $payment_mean.id == $form_data.payment}
     <script>
-        window.fatchipCTLoadKlarna('pay_later');
+        console.log('call fatchipCTFetchAccessToken from pay_later');
+        window.fatchipCTFetchAccessToken('pay_later');
     </script>
 {/if}
