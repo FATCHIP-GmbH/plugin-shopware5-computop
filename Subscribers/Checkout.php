@@ -182,6 +182,10 @@ class Checkout implements SubscriberInterface
                     // TODO: log
                     $CTResponse = $this->requestCTKlarnaSession($payment);
 
+                    $session->offsetSet('FatchipCTKlarnaPaymentSessionResponsePayID', $CTResponse->getPayID());
+                    // TODO: check, which field in payment is used for transID: TID, TransID or TransactionID
+                    $session->offsetSet('FatchipCTKlarnaPaymentSessionResponseTransID', $CTResponse->getTransID());
+
                     $accessToken = $CTResponse->getAccesstoken();
 
                     $session->offsetSet('FatchipCTKlarnaPaymentHash_' . $paymentType, $hash);
@@ -595,7 +599,7 @@ class Checkout implements SubscriberInterface
         $shippingCosts = Shopware()->Modules()->Admin()->sGetPremiumShippingcosts();
 
         $ctOrder = new CTOrder();
-        $ctOrder->setAmount(($basket['AmountNumeric'] + $shippingCosts['brutto']) * 100);
+        $ctOrder->setAmount($basket['AmountNumeric'] * 100);
         $ctOrder->setCurrency(Shopware()->Container()->get('currency')->getShortName());
         // try catch in case Address Splitter retrun exceptions
         try {

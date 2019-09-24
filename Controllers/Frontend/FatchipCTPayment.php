@@ -293,6 +293,10 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     /**
+     * @deprecated
+     * Scope sensitive
+     * Use Util->createCTOrder instead
+     *
      * Helper funciton to create a CTOrder object for the current order
      *
      * @return CTOrder|void

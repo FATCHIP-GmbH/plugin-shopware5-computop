@@ -29,7 +29,10 @@
 
 require_once 'FatchipCTPayment.php';
 
-use Fatchip\CTPayment\CTPaymentMethodsIframe\KlarnaPayments;
+use Fatchip\CTPayment\CTEnums\CTEnumStatus;
+use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
+use Fatchip\CTPayment\CTResponse;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTKlarna.
@@ -50,19 +53,127 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
      */
     public $paymentClass = 'KlarnaPayments';
 
+    private $tokenExt;
+//
+//    public function indexAction() {
+//        $a = '';
+//    }
+
     protected function getKlarnaSessionAction() {
         /** @var KlarnaPayments $payment */
         $payment = $this->paymentService->getPaymentClass('KlarnaPayments', $this->config);
 
-        $requestParams = $payment->getKlarnaSessionRequestParams(
-            $session->offsetGet('fatchipCTPaymentPayID'),
-            $session->offsetGet('fatchipCTPaymentTransID'),
-            $this->getAmount() * 100,
-            $this->getCurrencyShortName(),
+//        $requestParams = $payment->getKlarnaSessionRequestParams(
+//            $session->offsetGet('fatchipCTPaymentPayID'),
+//            $session->offsetGet('fatchipCTPaymentTransID'),
+//            $this->getAmount() * 100,
+//            $this->getCurrencyShortName(),
+//            $this->getOrderDesc(),
+//            $session->offsetGet('fatchipCTAmazonReferenceID')
+//        );
+        $requestParams = [];
+
+        try {
+            $response = $this->plugin->callComputopService($requestParams, $payment, 'SCO', $payment->getCTPaymentURL());
+        } catch (Exception $e) {
+            // TODO: log
+        }
+    }
+
+    protected function storeTokenExtAction() {
+        try {
+            $this->Front()->Plugins()->ViewRenderer()->setNoRender();
+        } catch (Exception $e) {
+            // TODO: log
+        }
+
+        $tokenExt = $this->request->getParam('tokenExt');
+
+        $this->session->offsetSet('FatchipCTKlarnaPaymentTokenExt', $tokenExt);
+    }
+
+    protected function getPaymentClassForGatewayAction()
+    {
+        $ctOrder = $this->createCTOrder();
+        $payment = $this->paymentService->getPaymentClass(
+            $this->paymentClass,
+            $this->config,
+            $ctOrder,
+            $this->router->assemble(['action' => 'success', 'forceSecure' => true]),
+            $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
+            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
             $this->getOrderDesc(),
-            $session->offsetGet('fatchipCTAmazonReferenceID')
+            $this->getUserDataParam()
+        );
+        return $payment;
+    }
+
+    /**
+     * GatewayAction is overridden because there is no redirect but a server to server call is made
+     *
+     * On success create the order and forward to checkout/finish
+     * On failure forward to checkout/payment and set the error message
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function gatewayAction()
+    {
+        /** @var CTOrder $ctOrder */
+        $ctOrder = $this->createCTOrder();
+
+        /** @var KlarnaPayments $payment */
+        $payment = $this->getPaymentClassForGatewayAction();
+
+        $CTPaymentURL = $payment->getCTPaymentURL();
+
+        $payId = $this->session->offsetGet('FatchipCTKlarnaPaymentSessionResponsePayID');
+        $transId = $this->session->offsetGet('FatchipCTKlarnaPaymentSessionResponseTransID');
+        $amount = $ctOrder->getAmount();
+        $currency = $ctOrder->getCurrency();
+        $tokenExt = $this->session->offsetGet('FatchipCTKlarnaPaymentTokenExt');
+        $eventToken = 'CNO';
+
+        $this->session->offsetUnset('FatchipCTKlarnaPaymentTokenExt');
+
+        $payment->storeKlarnaOrderRequestParams(
+            $payId,
+            $transId,
+            $amount,
+            $currency,
+            $tokenExt,
+            $eventToken
         );
 
-        $response = $this->plugin->callComputopService($requestParams, $payment, 'SCO', $payment->getCTPaymentURL());
+        $ctRequest = $payment->cleanUrlParams($payment->getKlarnaOrderRequestParams());
+        $response = null;
+
+        try {
+            $response = $this->plugin->callComputopService($ctRequest, $payment, 'KLARNA', $CTPaymentURL);
+        } catch (Exception $e) {
+            // TODO: log
+        }
+
+        switch ($response->getStatus()) {
+            case CTEnumStatus::OK:
+                $orderNumber = $this->saveOrder(
+                    $response->getTransID(),
+                    $response->getPayID(),
+                    self::PAYMENTSTATUSRESERVED
+                );
+                $this->saveTransactionResult($response);
+
+                $customOrdernumber = $this->customizeOrdernumber($orderNumber);
+                $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
+                $this->forward('finish', 'checkout', null, ['sUniqueID' => $response->getPayID()]);
+                break;
+            default:
+                $ctError = [];
+                $ctError['CTErrorMessage'] = self::ERRORMSG; // . $response->getDescription();
+                $ctError['CTErrorCode'] = ''; //$response->getCode();
+                return $this->forward('shippingPayment', 'checkout', null, array('CTError' => $ctError));
+
+                break;
+        }
     }
 }
