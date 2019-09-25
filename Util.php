@@ -26,7 +26,9 @@
 
 namespace Shopware\Plugins\FatchipCTPayment;
 
+use Exception;
 use Fatchip\CTPayment\CTAddress\CTAddress;
+use Fatchip\CTPayment\CTOrder\CTOrder;
 use VIISON\AddressSplitter\AddressSplitter;
 use Shopware;
 
@@ -783,4 +785,45 @@ class Util
         return 'Shopware Version: ' . self::getShopwareVersion() . ', Modul Version: ' . Shopware()->Plugins()->Frontend()->FatchipCTPayment()->getVersion();
     }
 
+    /**
+     * Creates a CTOrder. When return value is not instanceof CTOrder, an error occured and the return value is an error
+     * array:
+     *  ['CTError' => [
+     *      'CTErrorMessage',
+     *      'CTErrorCode'
+     *  ]]
+     *
+     * @param $userData
+     *
+     * @return array|CTOrder
+     */
+    public function createCTOrder($userData)
+    {
+        try {
+            $basket = Shopware()->Modules()->Basket()->sGetBasket();
+        } catch (Exception $e) {
+            $ctError = [];
+            $ctError['CTErrorMessage'] = 'Beim auslesen des Warenkorbs ist ein Fehler aufgetreten<BR>';
+            $ctError['CTErrorCode'] = $e->getMessage();
+            return ['CTError' => $ctError];
+        }
+
+        $ctOrder = new CTOrder();
+        $ctOrder->setAmount($basket['AmountNumeric'] * 100);
+        $ctOrder->setCurrency(Shopware()->Container()->get('currency')->getShortName());
+        // try catch in case Address Splitter return exceptions
+        try {
+            $ctOrder->setBillingAddress($this->getCTAddress($userData['billingaddress']));
+            $ctOrder->setShippingAddress($this->getCTAddress($userData['shippingaddress']));
+        } catch (Exception $e) {
+            $ctError = [];
+            $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
+            $ctError['CTErrorCode'] = $e->getMessage();
+            return ['CTError' => $ctError];
+        }
+        $ctOrder->setEmail($userData['additional']['user']['email']);
+        $ctOrder->setCustomerID($userData['additional']['user']['id']);
+        $ctOrder->setOrderDesc(Shopware()->Config()->shopName);
+        return $ctOrder;
+    }
 }

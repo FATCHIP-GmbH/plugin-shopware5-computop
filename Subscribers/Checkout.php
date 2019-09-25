@@ -172,7 +172,7 @@ class Checkout implements SubscriberInterface
                 $payment = $this->createCTKlarnaPayment($args, $paymentType);
                 $hash = $payment->getKlarnaSessionRequestParamsHash();
 
-                if ($session->offsetGet('FatchipCTKlarnaPaymentHash_' . $paymentType) === $hash) {
+                if ($session->offsetGet('FatchipCTKlarnaPaymentHash_' . $paymentType) === $hash && false) {
                     // hash exists already in session, so accessToken must also exist
                     // basket, tax and amount (incl. shipping cost) did not change, so accessToken can be reused
                     $accessToken =  $session->offsetGet('FatchipCTKlarnaAccessToken_' . $paymentType);
@@ -589,6 +589,10 @@ class Checkout implements SubscriberInterface
     }
 
     /**
+     * @deprecated
+     * Scope sensitive
+     * Use Util->createCTOrder instead
+     *
      * Helper funciton to create a CTOrder object for the current order
      * @return CTOrder
      */
@@ -664,6 +668,7 @@ class Checkout implements SubscriberInterface
             return null;
         }
 
+        // TODO: use correct value
         $taxAmount = ((int)($args->getSubject()->View()->getAssign('sAmountTax') * 100));
         $taxAmount = 0;
         $articleList = [];
@@ -675,6 +680,7 @@ class Checkout implements SubscriberInterface
                     'quantity' => (int)$item['quantity'],
                     'unit_price' => round($item['priceNumeric'] * 100),
                     'total_amount' => round(str_replace(',', '.', $item['price']) * 100),
+                    // TODO: use correct value
 //                        'tax_rate' => $item['tax_rate'] * 100,
 //                        'total_tax_amount' => round(str_replace(',', '.',$item['tax']) * 100),
                 ];
@@ -691,7 +697,12 @@ class Checkout implements SubscriberInterface
             'forceSecure' => true,
         ]);
 
-        $order = $this->createCTOrder();
+        $userData = $this->getUserData();
+        $ctOrder = $this->utils->createCTOrder($userData);
+
+        if (! $ctOrder instanceof CTOrder) {
+            $args->getSubject()->forward('shippingPayment', 'checkout', null, $ctOrder);
+        }
 
         /** @var KlarnaPayments $payment */
         $payment = $this->paymentService->getPaymentClass('KlarnaPayments', $this->config);
@@ -702,8 +713,8 @@ class Checkout implements SubscriberInterface
             $payType,
             'test', // TODO: get from plugin config
             'DE',
-            $order->getAmount(),
-            $order->getCurrency(),
+            $ctOrder->getAmount(),
+            $ctOrder->getCurrency(),
             CTPaymentMethodIframe::generateTransID(),
             $_SERVER['REMOTE_ADDR']
         );

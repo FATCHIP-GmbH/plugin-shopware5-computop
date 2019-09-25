@@ -120,7 +120,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
     public function gatewayAction()
     {
         /** @var CTOrder $ctOrder */
-        $ctOrder = $this->createCTOrder();
+        $ctOrder = $this->utils->createCTOrder($this->getUserData());
 
         /** @var KlarnaPayments $payment */
         $payment = $this->getPaymentClassForGatewayAction();
