@@ -305,16 +305,16 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $ctOrder = new CTOrder();
         $ctOrder->setAmount($this->getAmount() * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
-        // try catch in case Address Splitter retrun exceptions
-        try {
-            $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
-            $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
-        } catch (Exception $e) {
-            $ctError = [];
-            $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
-            $ctError['CTErrorCode'] = $e->getMessage();
-            return $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
+
+        //handle expired session
+        if (!array_key_exists('billingaddress', $userData)
+            || !array_key_exists('shippingaddress', $userData)
+        ) {
+            throw new Exception('Ihre Sitzung ist abgelaufen. Bitte loggen Sie sich erneut ein.');
         }
+
+        $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
+        $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
         $ctOrder->setEmail($userData['additional']['user']['email']);
         $ctOrder->setCustomerID($userData['additional']['user']['id']);
         // Mandatory for paypalStandard
