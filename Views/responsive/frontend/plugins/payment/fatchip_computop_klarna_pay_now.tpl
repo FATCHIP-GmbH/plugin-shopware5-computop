@@ -1,14 +1,9 @@
 {* The main container for filling in the birthday field *}
-<div class="fatchip-computop-payment-klarna-form payment--form-group">
-</div>
+<div id="fatchip-computop-payment-klarna-form-pay_now"></div>
 
-<script>
-    window.klarnaAsyncCallback = function () {
-
-        // This is where you start calling Klarna's JS SDK functions
-        //
-        // Klarna.Payments.init()
-
-    };
-</script>
-<script src="https://x.klarnacdn.net/kp/lib/v1/api.js" async></script>
+{if $payment_mean.id == $form_data.payment}
+    <script>
+        console.log('call fatchipCTFetchAccessToken from pay_now');
+        window.fatchipCTFetchAccessToken('pay_now');
+    </script>
+{/if}

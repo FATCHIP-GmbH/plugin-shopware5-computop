@@ -183,13 +183,12 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
     }
 
     /**
-     * @param $paymentName
      */
     public function ctGetOrCreateAccessTokenAction()
     {
         $params = $this->Request()->getParams();
-        $paymentName = $params['paymentName'];
-        $data = $this->session->offsetGet('FatchipCTKlarnaAccessToken_' . $paymentName);
+        $paymentType = $params['paymentType'];
+        $data = $this->session->offsetGet('FatchipCTKlarnaAccessToken_' . $paymentType);
         $encoded = json_encode($data);
 
         echo $encoded;

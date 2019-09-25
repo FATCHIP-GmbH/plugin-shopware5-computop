@@ -167,23 +167,18 @@ class Checkout implements SubscriberInterface
         }
 
         if ($request->getActionName() == 'shippingPayment') {
-
             if (stristr($paymentName, 'klarna')) {
                 $payment = $this->createCTKlarnaPayment($args, $paymentType);
                 $hash = $payment->getKlarnaSessionRequestParamsHash();
 
-                if ($session->offsetGet('FatchipCTKlarnaPaymentHash_' . $paymentType) === $hash && false) {
-                    // hash exists already in session, so accessToken must also exist
-                    // basket, tax and amount (incl. shipping cost) did not change, so accessToken can be reused
-                    $accessToken =  $session->offsetGet('FatchipCTKlarnaAccessToken_' . $paymentType);
-                } else {
+                // TODO: remove " || true"
+                if ($session->offsetGet('FatchipCTKlarnaPaymentHash_' . $paymentType) !== $hash || true) {
                     // hash does either not exist in session or basket, tax and amount (incl. shipping cost) changed,
                     // so a new session must be created
                     // TODO: log
                     $CTResponse = $this->requestCTKlarnaSession($payment);
 
                     $session->offsetSet('FatchipCTKlarnaPaymentSessionResponsePayID', $CTResponse->getPayID());
-                    // TODO: check, which field in payment is used for transID: TID, TransID or TransactionID
                     $session->offsetSet('FatchipCTKlarnaPaymentSessionResponseTransID', $CTResponse->getTransID());
 
                     $accessToken = $CTResponse->getAccesstoken();
@@ -192,7 +187,26 @@ class Checkout implements SubscriberInterface
                     $session->offsetSet('FatchipCTKlarnaAccessToken_' . $paymentType, $accessToken);
                 }
 
-                $view->assign('FatchipCTKlarnaAccessToken', $accessToken);
+                // prepare klarna authorize call
+                $view = $args->getSubject()->View();
+
+                $view->assign('paymentType', $paymentType);
+                $view->assign('billingAddressStreetAddress', $userData['billingaddress']['street']);
+                $view->assign('billingAddressCity', $userData['billingaddress']['city']);
+                $view->assign('billingAddressGivenName', $userData['billingaddress']['firstname']);
+                $view->assign('billingAddressPostalCode', $userData['billingaddress']['zipcode']);
+                $view->assign('billingAddressFamilyName', $userData['billingaddress']['lastname']);
+                $view->assign('billingAddressEmail', $userData['additional']['user']['email']);
+                $view->assign('purchaseCountry', $payment->getKlarnaSessionRequestParams()['bdCountryCode']);
+                $view->assign('purchaseCurrency', $payment->getKlarnaSessionRequestParams()['currency']);
+                $view->assign('locale', str_replace('_', '-', Shopware()->Shop()->getLocale()->getLocale()));
+                $view->assign('billingAddressCountry', $payment->getKlarnaSessionRequestParams()['bdCountryCode']);
+//                $view->assign('customerDateOfBirth', 'customerDateOfBirth');
+//                $view->assign('billingAddressPhone', 'billingAddressPhone');
+//                $view->assign('billingAddressTitle', 'billingAddressTitle');
+//                $view->assign('billingAddressStreetAddress2', 'billingAddressStreetAddress2');
+//                $view->assign('billingAddressRegion', 'billingAddressRegion');
+//                $view->assign('customerGender', 'customerGender');
             }
 
             $birthday = explode('-', $this->utils->getUserDoB($userData));

@@ -11,36 +11,53 @@
 
 {block name="frontend_index_content"}
     {* TODO: only load if any klarna payment method is active*}
-    <div id="fatchipCTKlarnaInformation" hidden data-access-token='{$FatchipCTKlarnaAccessToken}'></div>
-    <!--suppress JSUnresolvedVariable -->
+    <div id="fatchipCTKlarnaInformation" hidden
+         data-payment-type="{$paymentType}"
+         data-billing-address--street-address="{$billingAddressStreetAddress}"
+         data-billing-address--city="{$billingAddressCity}"
+         data-billing-address--given-name="{$billingAddressGivenName}"
+         data-billing-address--postal-code="{$billingAddressPostalCode}"
+         data-billing-address--family-name="{$billingAddressFamilyName}"
+         data-billing-address--email="{$billingAddressEmail}"
+         data-purchase-country="{$purchaseCountry}"
+         data-purchase-currency="{$purchaseCurrency}"
+         data-locale="{$locale}"
+         data-billing-address--country="{$billingAddressCountry}"
+{*         data-customer--date_of_birth="{$customerDateOfBirth}"*}
+{*         data-billing-address--phone="{$billingAddressPhone}"*}
+{*         data-billing-address--title="{$billingAddressTitle}"*}
+{*         data-billing-address--street-address2="{$billingAddressStreetAddress2}"*}
+{*         data-billing-address--region="{$billingAddressRegion}"*}
+{*         data-customer--gender="{$customerGender}"*}
+    ></div>
     <script>
-        window.callFatchipCTLoadKlarna = null;
+        window.fatchipCTKlarnaPaymentType = null;
 
         window.klarnaAsyncCallback = () => {
             console.log('async callback');
 
             window.Klarna = Klarna;
 
-            if (window.callFatchipCTLoadKlarna !== null) {
+            if (window.fatchipCTKlarnaPaymentType !== null) {
                 // window.fatchipCTLoadKlarna was called, but window.Klarna object did not exist
                 // so call window.fatchipCTLoadKlarna again
                 console.log('recall fatchipCTFetchAccessToken');
-                window.fatchipCTFetchAccessToken(window.callFatchipCTLoadKlarna);
+                window.fatchipCTFetchAccessToken(window.fatchipCTKlarnaPaymentType);
             }
         };
     </script>
     <script src="https://x.klarnacdn.net/kp/lib/v1/api.js" async></script>
     <script>
-        window.fatchipCTLoadKlarna = (paymentName, accessToken) => {
+        window.fatchipCTLoadKlarna = (paymentType, accessToken) => {
             console.log('fatchipCTLoadKlarna');
 
             if (!window.Klarna) {
-                window.callFatchipCTLoadKlarna = paymentName;
+                window.fatchipCTKlarnaPaymentType = paymentType;
 
                 return;
             }
 
-            window.callFatchipCTLoadKlarna = null;
+            window.fatchipCTKlarnaPaymentType = null;
 
             if (!accessToken || accessToken.length === 0) {
                 console.log('no token');
@@ -62,19 +79,21 @@
                     'pay_over_time'
             };
 
+            window.fatchipCTKlarnaPaymentType = payTypeTranslations[paymentType];
+
             if (! window.Klarna) return;
-            console.log(paymentName);
+            console.log(paymentType);
             Klarna.Payments.load({
-                container: '#fatchip-computop-payment-klarna-form-' + paymentName,
-                payment_method_category: payTypeTranslations[paymentName]
+                container: '#fatchip-computop-payment-klarna-form-' + paymentType,
+                payment_method_category: payTypeTranslations[paymentType]
             }, res => {
                 console.debug(res);
             });
         };
 
-        window.fatchipCTFetchAccessToken = paymentName => {
+        window.fatchipCTFetchAccessToken = paymentType => {
             const data = {
-                paymentName: paymentName
+                paymentType: paymentType
             };
 
             let url = '{url controller="FatchipCTAjax" action="ctGetOrCreateAccessToken" forceSecure}';
@@ -91,7 +110,7 @@
 
                 }).then(
                 accessToken => {
-                    window.fatchipCTLoadKlarna(paymentName, accessToken);
+                    window.fatchipCTLoadKlarna(paymentType, accessToken);
                 });
         };
     </script>
