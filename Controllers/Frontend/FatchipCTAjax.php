@@ -183,18 +183,6 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
     }
 
     /**
-     */
-    public function ctGetOrCreateAccessTokenAction()
-    {
-        $params = $this->Request()->getParams();
-        $paymentType = $params['paymentType'];
-        $data = $this->session->offsetGet('FatchipCTKlarnaAccessToken_' . $paymentType);
-        $encoded = json_encode($data);
-
-        echo $encoded;
-    }
-
-    /**
      * Calls the computop api with amazonpay SOD api call.
      * returns api response as json encoded for use with JQuery plugins
      *

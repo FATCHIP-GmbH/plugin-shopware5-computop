@@ -1,15 +1,64 @@
 ;(function ($, window) {
     'use strict';
+    console.log('DBG');
 
     const data = $('#fatchipCTKlarnaInformation').data();
 
+    if (!data) return;
+
+    registerPlugin();
+
+    // update on ajax changes
+    $.subscribe('plugin/swShippingPayment/onInputChanged', function () {
+        updatePlugin();
+        fatchipCTFetchAccessToken(window.fatchipCTPaymentType);
+    });
+
+    function fatchipCTLoadKlarna(paymentType, accessToken) {
+
+        if (!accessToken || accessToken.length === 0) {
+            console.log('no token');
+            return;
+        }
+
+        window.Klarna.Payments.init({
+            client_token: accessToken
+        });
+
+        const payTypeTranslations = {
+            pay_now:
+                'pay_now',
+            pay_later:
+                'pay_later',
+            slice_it:
+                'pay_over_time'
+        };
+
+        window.fatchipCTKlarnaPaymentType = payTypeTranslations[paymentType];
+
+        if (!window.Klarna) return;
+        Klarna.Payments.load({
+            container: '#fatchip-computop-payment-klarna-form-' + paymentType,
+            payment_method_category: payTypeTranslations[paymentType]
+        }, function(res) {
+            console.debug(res);
+        });
+    }
+
+    function fatchipCTFetchAccessToken(paymentType) {
+        const url = data['getAccessToken-Url'];
+        const parameter = {paymentType: paymentType};
+
+        $.post(url, parameter).done(function(response) {
+            fatchipCTLoadKlarna(paymentType, JSON.parse(response));
+        });
+    }
+
     function registerPlugin() {
-        console.log('register');
         StateManager.addPlugin('#shippingPaymentForm', 'fatchipCTKlarnaPaymentsAuthorize');
     }
 
     function updatePlugin() {
-        console.log('updatePlugin');
         StateManager.updatePlugin('#shippingPaymentForm', 'fatchipCTKlarnaPaymentsAuthorize');
     }
 
@@ -17,14 +66,12 @@
         defaults: {},
 
         init: function () {
-            console.log('init');
             const me = this;
 
             me.registerEventListeners();
         },
 
         update: function () {
-            // const me = this;
         },
 
         destroy: function () {
@@ -36,15 +83,18 @@
         registerEventListeners: function () {
             const me = this;
 
-            me._on(me.$el, 'submit', e => {
-                e.preventDefault();
-                me.authorize();
+            me.authorizationToken = null;
+
+            me._on(me.$el, 'submit', function(e) {
+                if (!me.authorizationToken) {
+                    e.preventDefault();
+
+                    me.authorize(e, me);
+                }
             });
         },
 
-        authorize: function () {
-            console.log('authorize');
-
+        authorize: function(event, plugin) {
             const authorizeData = {
                 purchase_country: data['purchaseCountry'],
                 purchase_currency: data['purchaseCurrency'],
@@ -60,50 +110,18 @@
                 }
             };
 
-            console.log(authorizeData);
-
             window.Klarna.Payments.authorize({
                     payment_method_category: window.fatchipCTKlarnaPaymentType
                 },
                 authorizeData,
-                res => {
-                    console.log('authorize result');
-                    console.log(res);
+                function(res) {
+                    const url = data['storeAuthorizationToken-Url'];
+                    const parameter = {'authorizationToken': res['authorization_token']};
+
+                    $.post(url, parameter).done(function(response) {
+                        event.target.submit();
+                    });
                 });
         },
-
-        // setConfirmOrder: function(confirmationFlow) {
-        //     const me = this;
-        //
-        //     const requestUrl = me.data.fatchipctamazonscourl;
-        //     const cartErrorUrl = me.data.fatchipctcarterrorurl;
-        //
-        //     $.ajax({
-        //             url: requestUrl,
-        //             success: function (data) {
-        //                 confirmationFlow.success();
-        //             },
-        //             error: function (data) {
-        //                 confirmationFlow.error();
-        //
-        //                 window.location.href = cartErrorUrl;
-        //             },
-        //             timeout: 30000
-        //         }
-        //     );
-        // }
-    });
-
-    $(function () {
-        console.log('anonymous function');
-
-        if (data) {
-            registerPlugin();
-
-            // update on ajax changes
-            $.subscribe('plugin/swShippingPayment/onInputChanged', function () {
-                updatePlugin();
-            });
-        }
     });
 })(jQuery, window);

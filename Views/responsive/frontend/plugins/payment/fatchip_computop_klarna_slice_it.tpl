@@ -4,7 +4,6 @@
 
 {if $payment_mean.id == $form_data.payment}
     <script>
-        console.log('call fatchipCTFetchAccessToken from slice_it');
-        window.fatchipCTFetchAccessToken('slice_it');
+        window.fatchipCTPaymentType = "slice_it";
     </script>
 {/if}

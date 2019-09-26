@@ -32,7 +32,6 @@ require_once 'FatchipCTPayment.php';
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
-use Fatchip\CTPayment\CTResponse;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTKlarna.
@@ -47,47 +46,19 @@ use Fatchip\CTPayment\CTResponse;
  */
 class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Controllers_Frontend_FatchipCTPayment
 {
-
     /**
      * {@inheritdoc}
      */
     public $paymentClass = 'KlarnaPayments';
 
-    private $tokenExt;
-//
-//    public function indexAction() {
-//        $a = '';
-//    }
-
-    protected function getKlarnaSessionAction() {
-        /** @var KlarnaPayments $payment */
-        $payment = $this->paymentService->getPaymentClass('KlarnaPayments', $this->config);
-
-//        $requestParams = $payment->getKlarnaSessionRequestParams(
-//            $session->offsetGet('fatchipCTPaymentPayID'),
-//            $session->offsetGet('fatchipCTPaymentTransID'),
-//            $this->getAmount() * 100,
-//            $this->getCurrencyShortName(),
-//            $this->getOrderDesc(),
-//            $session->offsetGet('fatchipCTAmazonReferenceID')
-//        );
-        $requestParams = [];
-
-        try {
-            $response = $this->plugin->callComputopService($requestParams, $payment, 'SCO', $payment->getCTPaymentURL());
-        } catch (Exception $e) {
-            // TODO: log
-        }
-    }
-
-    protected function storeTokenExtAction() {
+    protected function storeAuthorizationTokenAction() {
         try {
             $this->Front()->Plugins()->ViewRenderer()->setNoRender();
         } catch (Exception $e) {
             // TODO: log
         }
 
-        $tokenExt = $this->request->getParam('tokenExt');
+        $tokenExt = $this->request->getParam('authorizationToken');
 
         $this->session->offsetSet('FatchipCTKlarnaPaymentTokenExt', $tokenExt);
     }
@@ -175,5 +146,18 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
 
                 break;
         }
+    }
+
+    /**
+     */
+    public function getAccessTokenAction()
+    {
+        $this->container->get('front')->Plugins()->ViewRenderer()->setNoRender();
+
+        $paymentType = $this->Request()->getParam('paymentType');
+        $data = $this->session->offsetGet('FatchipCTKlarnaAccessToken_' . $paymentType);
+        $encoded = json_encode($data);
+
+        echo $encoded;
     }
 }
