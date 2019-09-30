@@ -85,18 +85,18 @@
 
             me.authorizationToken = null;
 
-            me._on(me.$el, 'submit', function(e) {
+            me._on(me.$el, 'submit', function(event) {
                 if (!me.authorizationToken) {
-                    e.preventDefault();
+                    event.preventDefault();
 
-                    me.authorize(e, me);
+                    me.authorize(event);
                 }
             });
         },
 
-        authorize: function(event, plugin) {
+        authorize: function(event) {
             const authorizeData = {
-                purchase_country: data['purchaseCountry'],
+                purchase_country: data['billingAddress-Country'],
                 purchase_currency: data['purchaseCurrency'],
                 locale: data['locale'],
                 billing_address: {
@@ -119,6 +119,7 @@
                     const parameter = {'authorizationToken': res['authorization_token']};
 
                     $.post(url, parameter).done(function(response) {
+                        // TODO: error handling
                         event.target.submit();
                     });
                 });

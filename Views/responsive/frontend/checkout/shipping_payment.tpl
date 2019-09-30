@@ -19,7 +19,6 @@
          data-billing-address--postal-code="{$billingAddressPostalCode}"
          data-billing-address--family-name="{$billingAddressFamilyName}"
          data-billing-address--email="{$billingAddressEmail}"
-         data-purchase-country="{$purchaseCountry}"
          data-purchase-currency="{$purchaseCurrency}"
          data-locale="{$locale}"
          data-billing-address--country="{$billingAddressCountry}"

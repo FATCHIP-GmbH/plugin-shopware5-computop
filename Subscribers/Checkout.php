@@ -171,8 +171,7 @@ class Checkout implements SubscriberInterface
                 $payment = $this->createCTKlarnaPayment($args, $paymentType);
                 $hash = $payment->getKlarnaSessionRequestParamsHash();
 
-                // TODO: remove " || true"
-                if ($session->offsetGet('FatchipCTKlarnaPaymentHash_' . $paymentType) !== $hash || true) {
+                if ($session->offsetGet('FatchipCTKlarnaPaymentHash_' . $paymentType) !== $hash) {
                     // hash does either not exist in session or basket, tax and amount (incl. shipping cost) changed,
                     // so a new session must be created
                     // TODO: log
@@ -186,28 +185,22 @@ class Checkout implements SubscriberInterface
                     $session->offsetSet('FatchipCTKlarnaPaymentHash_' . $paymentType, $hash);
                     $session->offsetSet('FatchipCTKlarnaAccessToken_' . $paymentType, $accessToken);
                 }
-
-                // prepare klarna authorize call
-                $view = $args->getSubject()->View();
-
-                $view->assign('paymentType', $paymentType);
-                $view->assign('billingAddressStreetAddress', $userData['billingaddress']['street']);
-                $view->assign('billingAddressCity', $userData['billingaddress']['city']);
-                $view->assign('billingAddressGivenName', $userData['billingaddress']['firstname']);
-                $view->assign('billingAddressPostalCode', $userData['billingaddress']['zipcode']);
-                $view->assign('billingAddressFamilyName', $userData['billingaddress']['lastname']);
-                $view->assign('billingAddressEmail', $userData['additional']['user']['email']);
-                $view->assign('purchaseCountry', $payment->getKlarnaSessionRequestParams()['bdCountryCode']);
-                $view->assign('purchaseCurrency', $payment->getKlarnaSessionRequestParams()['currency']);
-                $view->assign('locale', str_replace('_', '-', Shopware()->Shop()->getLocale()->getLocale()));
-                $view->assign('billingAddressCountry', $payment->getKlarnaSessionRequestParams()['bdCountryCode']);
-//                $view->assign('customerDateOfBirth', 'customerDateOfBirth');
-//                $view->assign('billingAddressPhone', 'billingAddressPhone');
-//                $view->assign('billingAddressTitle', 'billingAddressTitle');
-//                $view->assign('billingAddressStreetAddress2', 'billingAddressStreetAddress2');
-//                $view->assign('billingAddressRegion', 'billingAddressRegion');
-//                $view->assign('customerGender', 'customerGender');
             }
+
+            // prepare klarna authorize call
+            // TODO: only, when klarna payment active
+            // TODO: possibly store data in $paymentData?
+            $view->assign('paymentType', $paymentType);
+            $view->assign('billingAddressStreetAddress', $userData['billingaddress']['street']);
+            $view->assign('billingAddressCity', $userData['billingaddress']['city']);
+            $view->assign('billingAddressGivenName', $userData['billingaddress']['firstname']);
+            $view->assign('billingAddressPostalCode', $userData['billingaddress']['zipcode']);
+            $view->assign('billingAddressFamilyName', $userData['billingaddress']['lastname']);
+            $view->assign('billingAddressEmail', $userData['additional']['user']['email']);
+            $view->assign('purchaseCurrency', Shopware()->Container()->get('currency')->getShortName());
+            $view->assign('locale', str_replace('_', '-', Shopware()->Shop()->getLocale()->getLocale()));
+            $view->assign('billingAddressCountry', $userData['additional']['country']['countryiso']);
+            // END prepare klarna authorize call
 
             $birthday = explode('-', $this->utils->getUserDoB($userData));
             $paymentData['birthday'] = $birthday[2];
@@ -726,7 +719,7 @@ class Checkout implements SubscriberInterface
             $URLConfirm,
             $payType,
             'test', // TODO: get from plugin config
-            'DE',
+            $userData['additional']['country']['countryiso'],
             $ctOrder->getAmount(),
             $ctOrder->getCurrency(),
             CTPaymentMethodIframe::generateTransID(),

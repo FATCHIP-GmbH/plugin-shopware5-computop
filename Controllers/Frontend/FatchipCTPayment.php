@@ -605,6 +605,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $ctOrder = $this->createCTOrderFromSWorder($order);
             if ($paymentClass !== 'PaypalExpress'
                 && $paymentClass !== 'AmazonPay'
+                && $paymentClass !== 'KlarnaPayments'
             ) {
                 $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->config, $ctOrder);
             } else {
