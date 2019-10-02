@@ -4,14 +4,23 @@
 
     const data = $('#fatchipCTKlarnaInformation').data();
 
+    // no Klarna payment activated
     if (!data) return;
-
-    registerPlugin();
 
     // update on ajax changes
     $.subscribe('plugin/swShippingPayment/onInputChanged', function () {
+        if (!window.fatchipCTPaymentType) {
+            destroyPlugin();
+
+            return;
+        }
+
         updatePlugin();
+        // registerPlugin();
+
         fatchipCTFetchAccessToken(window.fatchipCTPaymentType);
+
+        delete window.fatchipCTPaymentType;
     });
 
     function fatchipCTLoadKlarna(paymentType, accessToken) {
@@ -55,11 +64,16 @@
     }
 
     function registerPlugin() {
-        StateManager.addPlugin('#shippingPaymentForm', 'fatchipCTKlarnaPaymentsAuthorize');
+        StateManager.addPlugin('#shippingPaymentForm', 'fatchipCTKlarnaPaymentsAuthorize', '', []);
     }
 
     function updatePlugin() {
         StateManager.updatePlugin('#shippingPaymentForm', 'fatchipCTKlarnaPaymentsAuthorize');
+    }
+
+    function destroyPlugin() {
+        StateManager.destroyPlugin('#shippingPaymentForm', 'fatchipCTKlarnaPaymentsAuthorize');
+        StateManager.removePlugin('#shippingPaymentForm', 'fatchipCTKlarnaPaymentsAuthorize', []);
     }
 
     $.plugin('fatchipCTKlarnaPaymentsAuthorize', {
