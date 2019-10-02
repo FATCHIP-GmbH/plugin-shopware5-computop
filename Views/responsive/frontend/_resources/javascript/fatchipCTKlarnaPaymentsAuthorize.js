@@ -88,6 +88,7 @@
             me._on(me.$el, 'submit', function(event) {
                 if (!me.authorizationToken) {
                     event.preventDefault();
+                    event.target[0].disabled = true;
 
                     me.authorize(event);
                 }
