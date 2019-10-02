@@ -7,8 +7,12 @@
     // no Klarna payment activated
     if (!data) return;
 
-    // update on ajax changes
-    $.subscribe('plugin/swShippingPayment/onInputChanged', function () {
+    reset();
+
+// update on ajax changes
+    $.subscribe('plugin/swShippingPayment/onInputChanged', reset);
+
+    function reset() {
         if (!window.fatchipCTPaymentType) {
             destroyPlugin();
 
@@ -21,7 +25,7 @@
         fatchipCTFetchAccessToken(window.fatchipCTPaymentType);
 
         delete window.fatchipCTPaymentType;
-    });
+    }
 
     function fatchipCTLoadKlarna(paymentType, accessToken) {
 
@@ -49,8 +53,8 @@
         Klarna.Payments.load({
             container: '#fatchip-computop-payment-klarna-form-' + paymentType,
             payment_method_category: payTypeTranslations[paymentType]
-        }, function(res) {
-            console.debug(res);
+        }, function (res) {
+            console.log(res);
         });
     }
 
@@ -58,7 +62,7 @@
         const url = data['getAccessToken-Url'];
         const parameter = {paymentType: paymentType};
 
-        $.post(url, parameter).done(function(response) {
+        $.post(url, parameter).done(function (response) {
             fatchipCTLoadKlarna(paymentType, JSON.parse(response));
         });
     }
@@ -99,17 +103,16 @@
 
             me.authorizationToken = null;
 
-            me._on(me.$el, 'submit', function(event) {
+            me._on(me.$el, 'submit', function (event) {
                 if (!me.authorizationToken) {
                     event.preventDefault();
-                    event.target[0].disabled = true;
 
                     me.authorize(event);
                 }
             });
         },
 
-        authorize: function(event) {
+        authorize: function (event) {
             const authorizeData = {
                 purchase_country: data['billingAddress-Country'],
                 purchase_currency: data['purchaseCurrency'],
@@ -125,18 +128,24 @@
                 }
             };
 
+            event.target[0].disabled = true;
             window.Klarna.Payments.authorize({
                     payment_method_category: window.fatchipCTKlarnaPaymentType
                 },
                 authorizeData,
-                function(res) {
+                function (res) {
                     const url = data['storeAuthorizationToken-Url'];
                     const parameter = {'authorizationToken': res['authorization_token']};
 
-                    $.post(url, parameter).done(function(response) {
-                        // TODO: error handling
-                        event.target.submit();
-                    });
+                    if (res['approved'] && res['authorization_token']) {
+                        // store authorization_token
+                        $.post(url, parameter).done(function (response) {
+                            // TODO: error handling
+                            event.target.submit();
+                        });
+                    } else {
+                        event.target[0].disabled = false;
+                    }
                 });
         },
     });
