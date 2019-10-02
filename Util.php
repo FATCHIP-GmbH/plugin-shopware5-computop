@@ -493,6 +493,35 @@ class Util
     }
 
     /**
+     * Returns an array with all activated Klarna payment names, such as
+     * 'fatchip_computop_klarna_slice_it'
+     *
+     * @return array
+     */
+    public function getActivatedKlarnaPaymentTypes()
+    {
+        $sql = 'SELECT name FROM s_core_paymentmeans WHERE name like "%klarna%"';
+
+        $result = Shopware()->Db()->fetchCol($sql);
+
+        foreach ($result as $key => $name) {
+            $result[$key] = $this->getKlarnaPaymentTypeFromPaymentName($name);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $paymentName
+     * @return string
+     */
+    public function getKlarnaPaymentTypeFromPaymentName($paymentName)
+    {
+        $paymentNamePrefix = 'fatchip_computop_klarna_';
+        return substr($paymentName, strlen($paymentNamePrefix));
+    }
+
+    /**
      * returns payment name
      *
      * @param string $paymentID

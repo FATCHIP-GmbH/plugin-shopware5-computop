@@ -159,9 +159,8 @@ class Checkout implements SubscriberInterface
         $params = $request->getParams();
 
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
-        $paymentNamePrefix = 'fatchip_computop_klarna_';
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
-        $paymentType = substr($paymentName, strlen($paymentNamePrefix));
+        $paymentType = $this->utils->getKlarnaPaymentTypeFromPaymentName($paymentName);
         if (!$request->isDispatched() || $response->isException()) {
             return;
         }

@@ -51,7 +51,8 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
      */
     public $paymentClass = 'KlarnaPayments';
 
-    protected function storeAuthorizationTokenAction() {
+    protected function storeAuthorizationTokenAction()
+    {
         try {
             $this->Front()->Plugins()->ViewRenderer()->setNoRender();
         } catch (Exception $e) {
