@@ -3,7 +3,6 @@
 
 {if $payment_mean.id == $form_data.payment}
     <script>
-        console.log('call fatchipCTFetchAccessToken from pay_now');
-        window.fatchipCTFetchAccessToken('pay_now');
+        window.fatchipCTPaymentType = "pay_now";
     </script>
 {/if}
