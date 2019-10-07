@@ -7,12 +7,16 @@
     let pluginRegistered = false;
 
     // no Klarna payment activated
-    if (!data) return;
+    if (!data) {
+        return;
+    }
 
     reset();
 
 // update on ajax changes
-    $.subscribe('plugin/swShippingPayment/onInputChanged', reset);
+    $.subscribe('plugin/swShippingPayment/onInputChanged', function () {
+        reset();
+    });
 
     function reset() {
         if (!window.fatchipCTPaymentType) {
@@ -55,7 +59,10 @@
 
         window.fatchipCTKlarnaPaymentType = payTypeTranslations[paymentType];
 
-        if (!window.Klarna) return;
+        if (!window.Klarna) {
+            return;
+        }
+
         Klarna.Payments.load({
             container: '#fatchip-computop-payment-klarna-form-' + paymentType,
             payment_method_category: payTypeTranslations[paymentType]
@@ -68,7 +75,7 @@
         const url = data['getAccessToken-Url'];
         const parameter = {paymentType: paymentType};
 
-        $.post(url, parameter).done(function (response) {
+        $.ajax({type: "POST", url, parameter}).done(function (response) {
             fatchipCTLoadKlarna(paymentType, JSON.parse(response));
         });
     }
@@ -140,17 +147,20 @@
                 },
                 authorizeData,
                 function (res) {
-                    const url = data['storeAuthorizationToken-Url'];
+                    console.log(res);
+                    const storeAuthorizationTokenUrl = data['storeAuthorizationToken-Url'];
+                    const fetchDefaultPaymentURL = data['fetchDefaultPayment-Url'];
                     const parameter = {'authorizationToken': res['authorization_token']};
 
                     if (res['approved'] && res['authorization_token']) {
                         // store authorization_token
-                        $.post(url, parameter).done(function (response) {
-                            // TODO: error handling
+                        $.ajax({type: "POST", storeAuthorizationTokenUrl, parameter}).done(function () {
                             event.target.submit();
                         });
                     } else {
-                        event.target[0].disabled = false;
+                        $.ajax({type: "POST", fetchDefaultPaymentURL}).done(function (defaultPaymentId) {
+                            $('.payment--method-list').find('.auto_submit[value=' + defaultPaymentId + ']').click()
+                        });
                     }
                 });
         },
