@@ -26,9 +26,12 @@
 
 namespace Shopware\Plugins\FatchipCTPayment;
 
+use Doctrine\ORM\OptimisticLockException;
 use Exception;
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTOrder\CTOrder;
+use Shopware\Components\Logger;
+use Shopware\Models\Customer\Customer;
 use VIISON\AddressSplitter\AddressSplitter;
 use Shopware;
 
@@ -40,6 +43,16 @@ require_once 'Components/Api/vendor/autoload.php';
  */
 class Util
 {
+    /**
+     * @var Logger
+     */
+    protected $logger;
+
+    public function __construct()
+    {
+        $this->logger = new Logger('FatchipCTPayment');
+    }
+
     public static function getShopwareVersion() {
         $currentVersion = '';
 
@@ -854,5 +867,27 @@ class Util
         $ctOrder->setCustomerID($userData['additional']['user']['id']);
         $ctOrder->setOrderDesc(Shopware()->Config()->shopName);
         return $ctOrder;
+    }
+
+    public function selectDefaultPaymentAfterKlarna($userData)
+    {
+        $defaultPayment = Shopware()->Config()->get('defaultpayment');
+        $modelManager = Shopware()->Models();
+        $repo = $modelManager->getRepository(Customer::class);
+
+        /** @var Customer $customer */
+        $customer = $repo->find($userData['additional']['user']['id']);
+        $customer->setPaymentId($defaultPayment);
+
+        $modelManager->persist($customer);
+        try {
+            $modelManager->flush();
+        } catch (OptimisticLockException $e) {
+            $this->logger->error('Unable to store default payment after klarna', [
+                'userID' => $userData['additional']['user']['id'],
+                'paymentID' => $userData['additional']['user']['paymentID'],
+                'defaultPayment' => $defaultPayment
+            ]);
+        }
     }
 }

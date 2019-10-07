@@ -146,6 +146,8 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
                 );
                 $this->saveTransactionResult($response);
 
+                $this->utils->selectDefaultPaymentAfterKlarna($this->getUserData());
+
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
                 $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
                 $this->forward('finish', 'checkout', null, ['sUniqueID' => $response->getPayID()]);
