@@ -75,7 +75,7 @@
         const url = data['getAccessToken-Url'];
         const parameter = {paymentType: paymentType};
 
-        $.ajax({type: "POST", url, parameter}).done(function (response) {
+        $.ajax({method: "POST", url: url, data: parameter}).done(function (response) {
             fatchipCTLoadKlarna(paymentType, JSON.parse(response));
         });
     }
@@ -154,11 +154,11 @@
 
                     if (res['approved'] && res['authorization_token']) {
                         // store authorization_token
-                        $.ajax({type: "POST", storeAuthorizationTokenUrl, parameter}).done(function () {
+                        $.ajax({method: "POST", url: storeAuthorizationTokenUrl, data: parameter}).done(function () {
                             event.target.submit();
                         });
                     } else {
-                        $.ajax({type: "POST", fetchDefaultPaymentURL}).done(function (defaultPaymentId) {
+                        $.ajax({method: "POST", url: fetchDefaultPaymentURL}).done(function (defaultPaymentId) {
                             $('.payment--method-list').find('.auto_submit[value=' + defaultPaymentId + ']').click()
                         });
                     }

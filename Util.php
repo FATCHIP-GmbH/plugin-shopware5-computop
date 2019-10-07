@@ -30,8 +30,11 @@ use Doctrine\ORM\OptimisticLockException;
 use Exception;
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
+use Fatchip\CTPayment\CTResponse;
 use Shopware\Components\Logger;
 use Shopware\Models\Customer\Customer;
+use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap;
 use VIISON\AddressSplitter\AddressSplitter;
 use Shopware;
 
@@ -867,6 +870,117 @@ class Util
         $ctOrder->setCustomerID($userData['additional']['user']['id']);
         $ctOrder->setOrderDesc(Shopware()->Config()->shopName);
         return $ctOrder;
+    }
+
+    /**
+     * @param $userData
+     * @return KlarnaPayments
+     */
+    public function createCTKlarnaPayment($userData)
+    {
+        // TODO: store payment as singleton?
+
+        $paymentName = $userData['additional']['payment']['name'];
+
+        $payTypes = [
+            'pay_now' => 'pay_now',
+            'pay_later' => 'pay_later',
+            'slice_it' => 'pay_over_time'
+        ];
+
+        // set payType to correct value
+        foreach ($payTypes as $key => $value) {
+            $length = strlen($key);
+            if (substr($paymentName, -$length) === $key) {
+                $payType = $value;
+                break;
+            }
+        }
+
+        if (!isset($payType)) {
+            return null;
+        }
+
+        $taxAmount = 0;
+        $articleList = [];
+
+        try {
+            foreach (Shopware()->Modules()->Basket()->sGetBasket()['content'] as $item) {
+                $itemTaxAmount = round(str_replace(',', '.', $item['tax']) * 100);
+                $quantity = (int)$item['quantity'];
+                $taxAmount += ($itemTaxAmount * $quantity);
+                $articleList['order_lines'][] = [
+                    'name' => $item['articlename'],
+                    'quantity' => $quantity,
+                    'unit_price' => round($item['priceNumeric'] * 100),
+                    'total_amount' => round(str_replace(',', '.', $item['price']) * 100),
+                    'tax_rate' => $item['tax_rate'] * 100,
+                    'total_tax_amount' => $itemTaxAmount,
+                ];
+            }
+        } catch (Exception $e) {
+            $this->logger->error('Error occured, when calling sGetBasket()');
+
+            return null;
+        }
+        $articleList = base64_encode(json_encode($articleList));
+
+        $URLConfirm = Shopware()->Front()->Router()->assemble([
+            'controller' => 'checkout',
+            'action' => 'finish',
+            'forceSecure' => true,
+        ]);
+
+        $ctOrder = $this->createCTOrder($userData);
+
+        if (!$ctOrder instanceof CTOrder) {
+            return null;
+        }
+
+        $container = Shopware()->Container();
+        $pluginConfig = $container->get('plugins')->Frontend()->FatchipCTPayment()->Config()->toArray();
+        $klarnaAccount = $pluginConfig['klarnaaccount'];
+
+        /** @var KlarnaPayments $payment */
+        $payment = $container->get('FatchipCTPaymentApiClient')->getPaymentClass('KlarnaPayments', $pluginConfig);
+        $payment->storeKlarnaSessionRequestParams(
+            $taxAmount,
+            $articleList,
+            $URLConfirm,
+            $payType,
+            $klarnaAccount, // TODO: get from plugin config
+            $userData['additional']['country']['countryiso'],
+            $ctOrder->getAmount(),
+            $ctOrder->getCurrency(),
+            $this->generateTransID(),
+            $_SERVER['REMOTE_ADDR']
+        );
+
+        return $payment;
+    }
+
+    /**
+     * @param int $digitCount Optional parameter for the length of resulting
+     *                        transID. The default value is 12.
+     *
+     * @return string The transID with a length of $digitCount.
+     */
+    public function generateTransID($digitCount = 12)
+    {
+        mt_srand((double)microtime() * 1000000);
+
+        $transID = (string)mt_rand();
+        // y: 2 digits for year
+        // m: 2 digits for month
+        // d: 2 digits for day of month
+        // H: 2 digits for hour
+        // i: 2 digits for minute
+        // s: 2 digits for second
+        $transID .= date('ymdHis');
+        // $transID = md5($transID);
+        $transID = substr($transID, 0, $digitCount);
+
+        return $transID;
     }
 
     public function selectDefaultPaymentAfterKlarna($userData)

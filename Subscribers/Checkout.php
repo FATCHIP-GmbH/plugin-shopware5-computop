@@ -29,11 +29,11 @@
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
-use Enlight_Controller_ActionEventArgs;
 use Exception;
 use Fatchip\CTPayment\CTPaymentMethodIframe;
 use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
 use Fatchip\CTPayment\CTResponse;
+use Shopware\Components\Logger;
 use Shopware\Components\Theme\LessDefinition;
 use Shopware\Plugins\FatchipCTPayment\Util;
 use Fatchip\CTPayment\CTOrder\CTOrder;
@@ -73,10 +73,12 @@ class Checkout implements SubscriberInterface
      * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
     protected $plugin;
+    protected $logger;
 
     public function __construct()
     {
         $this->router = Shopware()->Front()->Router();
+        $this->logger = new Logger('FatchipCTPayment');
     }
 
     /**
@@ -167,13 +169,17 @@ class Checkout implements SubscriberInterface
 
         if ($request->getActionName() == 'shippingPayment') {
             if (stristr($paymentName, 'klarna')) {
-                $payment = $this->createCTKlarnaPayment($args, $paymentType);
+                $payment = $this->utils->createCTKlarnaPayment($this->getUserData());
+
+                if (! $payment) {
+                    $args->getSubject()->forward('shippingPayment', 'checkout');
+                }
+
                 $hash = $payment->getKlarnaSessionRequestParamsHash();
 
                 if ($session->offsetGet('FatchipCTKlarnaPaymentHash_' . $paymentType) !== $hash) {
                     // hash does either not exist in session or basket, tax and amount (incl. shipping cost) changed,
                     // so a new session must be created
-                    // TODO: log
                     $CTResponse = $this->requestCTKlarnaSession($payment);
 
                     $session->offsetSet('FatchipCTKlarnaPaymentSessionResponsePayID', $CTResponse->getPayID());
@@ -648,87 +654,6 @@ class Checkout implements SubscriberInterface
     }
 
     /**
-     * @param Enlight_Controller_ActionEventArgs $args
-     * @param string $paymentName
-     *
-     * @return KlarnaPayments
-     */
-    private function createCTKlarnaPayment(Enlight_Controller_ActionEventArgs $args, string $paymentName)
-    {
-        $payTypes = [
-            'pay_now' => 'pay_now',
-            'pay_later' => 'pay_later',
-            'slice_it' => 'pay_over_time'
-        ];
-
-        // set payType to correct value
-        foreach ($payTypes as $key => $value) {
-            $length = strlen($key);
-            if (substr($paymentName, -$length) === $key) {
-                $payType = $value;
-                break;
-            }
-        }
-
-        if (!isset($payType)) {
-            return null;
-        }
-
-        // TODO: use correct value
-        $taxAmount = ((int)($args->getSubject()->View()->getAssign('sAmountTax') * 100));
-        $taxAmount = 0;
-        $articleList = [];
-
-        try {
-            foreach (Shopware()->Modules()->Basket()->sGetBasket()['content'] as $item) {
-                $articleList['order_lines'][] = [
-                    'name' => $item['articlename'],
-                    'quantity' => (int)$item['quantity'],
-                    'unit_price' => round($item['priceNumeric'] * 100),
-                    'total_amount' => round(str_replace(',', '.', $item['price']) * 100),
-                    // TODO: use correct value
-//                        'tax_rate' => $item['tax_rate'] * 100,
-//                        'total_tax_amount' => round(str_replace(',', '.',$item['tax']) * 100),
-                ];
-            }
-        } catch (Exception $e) {
-            // TODO: log
-            return null;
-        }
-        $articleList = base64_encode(json_encode($articleList));
-
-        $URLConfirm = $this->router->assemble([
-            'controller' => 'checkout',
-            'action' => 'finish',
-            'forceSecure' => true,
-        ]);
-
-        $userData = $this->getUserData();
-        $ctOrder = $this->utils->createCTOrder($userData);
-
-        if (! $ctOrder instanceof CTOrder) {
-            $args->getSubject()->forward('shippingPayment', 'checkout', null, $ctOrder);
-        }
-
-        /** @var KlarnaPayments $payment */
-        $payment = $this->paymentService->getPaymentClass('KlarnaPayments', $this->config);
-        $payment->storeKlarnaSessionRequestParams(
-            $taxAmount,
-            $articleList,
-            $URLConfirm,
-            $payType,
-            'test', // TODO: get from plugin config
-            $userData['additional']['country']['countryiso'],
-            $ctOrder->getAmount(),
-            $ctOrder->getCurrency(),
-            CTPaymentMethodIframe::generateTransID(),
-            $_SERVER['REMOTE_ADDR']
-        );
-
-        return $payment;
-    }
-
-    /**
      * @param KlarnaPayments $payment
      *
      * @return CTResponse
@@ -741,7 +666,12 @@ class Checkout implements SubscriberInterface
         try {
             $response = $this->plugin->callComputopService($ctRequest, $payment, 'KLARNA', $CTPaymentURL);
         } catch (Exception $e) {
-            // TODO: log
+            $this->logger->error('Error occured, when calling computopService', [
+                $ctRequest,
+                $payment,
+                'KLARNA',
+                $CTPaymentURL
+            ]);
         }
 
         return $response;
