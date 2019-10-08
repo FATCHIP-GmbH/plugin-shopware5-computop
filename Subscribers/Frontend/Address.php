@@ -32,6 +32,7 @@ use Enlight\Event\SubscriberInterface;
 use Enlight_Controller_ActionEventArgs;
 use Enlight_Controller_Request_RequestHttp as Request;
 use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
+use Shopware\Models\Customer\Address as ShopwareAddress;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
 class Address implements SubscriberInterface
@@ -158,5 +159,60 @@ class Address implements SubscriberInterface
      */
     public function onPostDispatchFrontendAddressHandleExtra(Enlight_Controller_ActionEventArgs $args)
     {
+        /** @var Util $utils */
+        $utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        $session = Shopware()->Session();
+        /** @var Request $request */
+        $request = $args->getSubject()->Request();
+
+        $userData = $session->sOrderVariables['sUserData'];
+        $usedPaymentID = $userData['additional']['user']['paymentID'];
+        $usedPaymentName = $utils->getPaymentNameFromId($usedPaymentID);
+
+        $extraData = $request->getParam('extraData');
+
+        if (!(
+            stristr($usedPaymentName, 'klarna')            // Klarna payment method
+            && is_array($extraData)                        // parameter 'extraData' is array
+            && array_key_exists('sessionKey', $extraData)  // 'sessionKey' exists in 'extraData'
+        )) {
+            return;
+        }
+
+        /** @var KlarnaPayments $payment */
+        $payment = $utils->createCTKlarnaPayment($userData);
+
+        $sessionKey = $extraData['sessionKey'];
+        $customerAddressID = $request->getParam('id');
+        $addressType = strstr($sessionKey, 'shipping') ? 'shipping' : 'billing';
+        /** @var ShopwareAddress $addressObject */
+        $addressObject = $utils->getCustomerAddressById($customerAddressID, $addressType);
+
+        $payId = $session->offsetGet('FatchipCTKlarnaPaymentSessionResponsePayID');
+        $eventToken = 'UCA';
+
+        $title = $addressObject->getSalutation() === 'mr' ? 'Herr' : 'Frau';
+        $countryCode = $utils->getCTCountryIso($addressObject->getCountry()->getIso());
+        $addressData = [
+            'Title' => $title,
+            'FirstName' => $addressObject->getFirstname(),
+            'LastName' => $addressObject->getLastname(),
+            'Company' => $addressObject->getCompany(),
+            'Street' => $addressObject->getStreet(),
+            'AddrAddition' => $addressObject->getAdditionalAddressLine1(),
+            'Zip' => $addressObject->getZipcode(),
+            'City' => $addressObject->getCity(),
+            'Region' => '',
+            'CountryCode' => $countryCode,
+            'Email' => '',
+            'Phone' => $addressObject->getPhone(),
+        ];
+
+        $billingData = strstr($sessionKey, 'checkoutBillingAddressId') ? $addressData : [];
+        $shippingData = strstr($sessionKey, 'checkoutShippingAddressId') ? $addressData : [];
+
+        $payment->storeKlarnaChangeBillingShippingRequestParams($payId, $eventToken, $billingData, $shippingData);
+
+        $utils->requestKlarnaChangeBillingShipping($payment);
     }
 }
