@@ -1019,7 +1019,7 @@ class Util
         try {
             /** @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap $plugin */
             $plugin = Shopware()->Container()->get('plugins')->Frontend()->FatchipCTPayment();
-            $response = $plugin->callComputopService($ctRequest, $payment, 'KLARNA', $CTPaymentURL);
+            $response = $plugin->callComputopService($ctRequest, $payment, 'KLARNA_CHANGE_BILLING_SHIPPING', $CTPaymentURL);
         } catch (Exception $e) {
             $this->logger->error('Error occured, when calling computopService', [
                 $ctRequest,

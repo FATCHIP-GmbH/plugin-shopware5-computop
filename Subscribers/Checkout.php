@@ -664,7 +664,7 @@ class Checkout implements SubscriberInterface
         $response = null;
 
         try {
-            $response = $this->plugin->callComputopService($ctRequest, $payment, 'KLARNA', $CTPaymentURL);
+            $response = $this->plugin->callComputopService($ctRequest, $payment, 'KLARNA_SESSION', $CTPaymentURL);
         } catch (Exception $e) {
             $this->logger->error('Error occured, when calling computopService', [
                 $ctRequest,
