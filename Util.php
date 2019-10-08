@@ -1004,4 +1004,30 @@ class Util
             ]);
         }
     }
+
+    /**
+     * @param KlarnaPayments $payment
+     * @return CTResponse|null
+     */
+    public function requestKlarnaChangeBillingShipping($payment)
+    {
+        $CTPaymentURL = $payment->getCTPaymentURL();
+        $ctRequest = $payment->cleanUrlParams($payment->getKlarnaChangeBillingShippingRequestParams());
+        $response = null;
+
+        try {
+            /** @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap $plugin */
+            $plugin = Shopware()->Container()->get('plugins')->Frontend()->FatchipCTPayment();
+            $response = $plugin->callComputopService($ctRequest, $payment, 'KLARNA', $CTPaymentURL);
+        } catch (Exception $e) {
+            $this->logger->error('Error occured, when calling computopService', [
+                $ctRequest,
+                $payment,
+                'KLARNA',
+                $CTPaymentURL
+            ]);
+        }
+
+        return $response;
+    }
 }
