@@ -909,11 +909,12 @@ class Util
                 $itemTaxAmount = round(str_replace(',', '.', $item['tax']) * 100);
                 $quantity = (int)$item['quantity'];
                 $taxAmount += ($itemTaxAmount * $quantity);
+                $totalAmount = round(str_replace(',', '.', $item['price']) * 100) * $quantity;
                 $articleList['order_lines'][] = [
                     'name' => $item['articlename'],
                     'quantity' => $quantity,
                     'unit_price' => round($item['priceNumeric'] * 100),
-                    'total_amount' => round(str_replace(',', '.', $item['price']) * 100),
+                    'total_amount' => $totalAmount,
                     'tax_rate' => $item['tax_rate'] * 100,
                     'total_tax_amount' => $itemTaxAmount,
                 ];
