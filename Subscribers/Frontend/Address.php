@@ -97,16 +97,13 @@ class Address implements SubscriberInterface
         /** @var Util $utils */
         $utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
         $session = Shopware()->Session();
+        /** @var Request $request */
+        $request = $args->getSubject()->Request();
+
         $userData = $session->sOrderVariables['sUserData'];
         $usedPaymentID = $userData['additional']['user']['paymentID'];
         $usedPaymentName = $utils->getPaymentNameFromId($usedPaymentID);
 
-        if (!stristr($usedPaymentName, 'klarna')) {
-            return;
-        }
-
-        /** @var Request $request */
-        $request = $args->getSubject()->Request();
         $extraData = $request->getParam('extraData');
         $saveAction = $request->getParam('saveAction');
 
@@ -131,23 +128,23 @@ class Address implements SubscriberInterface
         $title = $address['salutation'] === 'mr' ? 'Herr' : 'Frau';
         $company = key_exists('company', $address) ? $address['company'] : '';
         $countryCode = $utils->getCTCountryIso($address['country']);
-        $data = [
-            'bdTitle' => $title,
-            'bdFirstName' => $address['firstname'],
-            'bdLastName' => $address['lastname'],
-            'bdCompany' => $company,
-            'bdStreet' => $address['street'],
-            'bdAddrAddition' => '',
-            'bdZip' => $address['zipcode'],
-            'bdCity' => $address['city'],
-            'bdRegion' => '',
-            'bdCountryCode' => $countryCode,
-            'bdEmail' => '',
-            'bdPhone' => '',
+        $addressData = [
+            'Title' => $title,
+            'FirstName' => $address['firstname'],
+            'LastName' => $address['lastname'],
+            'Company' => $company,
+            'Street' => $address['street'],
+            'AddrAddition' => '',
+            'Zip' => $address['zipcode'],
+            'City' => $address['city'],
+            'Region' => '',
+            'CountryCode' => $countryCode,
+            'Email' => '',
+            'Phone' => '',
         ];
 
-        $billingData = strstr($sessionKey, 'checkoutBillingAddressId') ? $data : [];
-        $shippingData = strstr($sessionKey, 'checkoutShippingAddressId') ? $data : [];
+        $billingData = strstr($sessionKey, 'checkoutBillingAddressId') ? $addressData : [];
+        $shippingData = strstr($sessionKey, 'checkoutShippingAddressId') ? $addressData : [];
 
         $payment->storeKlarnaChangeBillingShippingRequestParams($payId, $eventToken, $billingData, $shippingData);
 
