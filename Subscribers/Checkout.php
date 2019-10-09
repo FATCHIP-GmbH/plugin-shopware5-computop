@@ -31,8 +31,6 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 use Enlight\Event\SubscriberInterface;
 use Exception;
 use Fatchip\CTPayment\CTPaymentMethodIframe;
-use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
-use Fatchip\CTPayment\CTResponse;
 use Shopware\Components\Logger;
 use Shopware\Components\Theme\LessDefinition;
 use Shopware\Plugins\FatchipCTPayment\Util;
@@ -169,7 +167,7 @@ class Checkout implements SubscriberInterface
 
         if ($request->getActionName() == 'shippingPayment') {
             if (stristr($paymentName, 'klarna')) {
-                $payment = $this->utils->createCTKlarnaPayment($this->getUserData());
+                $payment = $this->utils->createCTKlarnaPayment();
 
                 if (! $payment) {
                     $args->getSubject()->forward('shippingPayment', 'checkout');
@@ -180,8 +178,13 @@ class Checkout implements SubscriberInterface
                 if ($session->offsetGet('FatchipCTKlarnaPaymentHash_' . $paymentType) !== $hash) {
                     // hash does either not exist in session or basket, tax and amount (incl. shipping cost) changed,
                     // so a new session must be created
-                    $CTResponse = $this->requestCTKlarnaSession($payment);
+                    $CTResponse = $this->utils->requestKlarnaSession($payment);
 
+                    $articleList = $payment->getKlarnaSessionRequestParams()['ArticleList'];
+                    $amount = $payment->getKlarnaSessionRequestParams()['amount'];
+
+                    $session->offsetSet('FatchipCTKlarnaPaymentArticleList', $articleList);
+                    $session->offsetSet('FatchipCTKlarnaPaymentAmount', $amount);
                     $session->offsetSet('FatchipCTKlarnaPaymentSessionResponsePayID', $CTResponse->getPayID());
                     $session->offsetSet('FatchipCTKlarnaPaymentSessionResponseTransID', $CTResponse->getTransID());
 
@@ -651,29 +654,5 @@ class Checkout implements SubscriberInterface
     public function getUserDataParam()
     {
         return 'Shopware Version: ' . Util::getShopwareVersion() . ', Modul Version: ' . $this->plugin->getVersion();
-    }
-
-    /**
-     * @param KlarnaPayments $payment
-     *
-     * @return CTResponse
-     */
-    private function requestCTKlarnaSession($payment) {
-        $CTPaymentURL = $payment->getCTPaymentURL();
-        $ctRequest = $payment->cleanUrlParams($payment->getKlarnaSessionRequestParams());
-        $response = null;
-
-        try {
-            $response = $this->plugin->callComputopService($ctRequest, $payment, 'KLARNA_SESSION', $CTPaymentURL);
-        } catch (Exception $e) {
-            $this->logger->error('Error occured, when calling computopService', [
-                $ctRequest,
-                $payment,
-                'KLARNA',
-                $CTPaymentURL
-            ]);
-        }
-
-        return $response;
     }
 }

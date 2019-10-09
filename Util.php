@@ -34,7 +34,7 @@ use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
 use Fatchip\CTPayment\CTResponse;
 use Shopware\Components\Logger;
 use Shopware\Models\Customer\Customer;
-use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap;
+use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap as FatchipCTPayment;
 use VIISON\AddressSplitter\AddressSplitter;
 use Shopware;
 
@@ -50,10 +50,15 @@ class Util
      * @var Logger
      */
     protected $logger;
+    protected $container;
+    /** @var FatchipCTPayment $plugin */
+    protected $plugin;
 
     public function __construct()
     {
         $this->logger = new Logger('FatchipCTPayment');
+        $this->container = Shopware()->Container();
+        $this->plugin = $this->container->get('plugins')->Frontend()->FatchipCTPayment();
     }
 
     public static function getShopwareVersion() {
@@ -838,12 +843,13 @@ class Util
      *      'CTErrorCode'
      *  ]]
      *
-     * @param $userData
-     *
      * @return array|CTOrder
      */
-    public function createCTOrder($userData)
+    public function createCTOrder()
     {
+        // TODO: store ctOrder as singleton?
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+
         try {
             $basket = Shopware()->Modules()->Basket()->sGetBasket();
         } catch (Exception $e) {
@@ -873,13 +879,12 @@ class Util
     }
 
     /**
-     * @param $userData
      * @return KlarnaPayments
      */
-    public function createCTKlarnaPayment($userData)
+    public function createCTKlarnaPayment()
     {
         // TODO: store payment as singleton?
-
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $userData['additional']['payment']['name'];
 
         $payTypes = [
@@ -901,30 +906,8 @@ class Util
             return null;
         }
 
-        $taxAmount = 0;
-        $articleList = [];
-
-        try {
-            foreach (Shopware()->Modules()->Basket()->sGetBasket()['content'] as $item) {
-                $itemTaxAmount = round(str_replace(',', '.', $item['tax']) * 100);
-                $quantity = (int)$item['quantity'];
-                $taxAmount += ($itemTaxAmount * $quantity);
-                $totalAmount = round(str_replace(',', '.', $item['price']) * 100) * $quantity;
-                $articleList['order_lines'][] = [
-                    'name' => $item['articlename'],
-                    'quantity' => $quantity,
-                    'unit_price' => round($item['priceNumeric'] * 100),
-                    'total_amount' => $totalAmount,
-                    'tax_rate' => $item['tax_rate'] * 100,
-                    'total_tax_amount' => $itemTaxAmount,
-                ];
-            }
-        } catch (Exception $e) {
-            $this->logger->error('Error occured, when calling sGetBasket()');
-
-            return null;
-        }
-        $articleList = base64_encode(json_encode($articleList));
+        $articleList = $this->createKlarnaArticleList();
+        $taxAmount = $this->calculateKlarnaTaxAmount($articleList);
 
         $URLConfirm = Shopware()->Front()->Router()->assemble([
             'controller' => 'checkout',
@@ -932,18 +915,17 @@ class Util
             'forceSecure' => true,
         ]);
 
-        $ctOrder = $this->createCTOrder($userData);
+        $ctOrder = $this->createCTOrder();
 
         if (!$ctOrder instanceof CTOrder) {
             return null;
         }
 
-        $container = Shopware()->Container();
-        $pluginConfig = $container->get('plugins')->Frontend()->FatchipCTPayment()->Config()->toArray();
+        $pluginConfig = $this->plugin->Config()->toArray();
         $klarnaAccount = $pluginConfig['klarnaaccount'];
 
         /** @var KlarnaPayments $payment */
-        $payment = $container->get('FatchipCTPaymentApiClient')->getPaymentClass('KlarnaPayments', $pluginConfig);
+        $payment = $this->container->get('FatchipCTPaymentApiClient')->getPaymentClass('KlarnaPayments', $pluginConfig);
         $payment->storeKlarnaSessionRequestParams(
             $taxAmount,
             $articleList,
@@ -984,8 +966,66 @@ class Util
         return $transID;
     }
 
-    public function selectDefaultPaymentAfterKlarna($userData)
+    /**
+     * Creates the Klarna article list. The list is json and then base64 encoded.
+     *
+     * @return string
+     */
+    public function createKlarnaArticleList()
     {
+        $articleList = [];
+
+        try {
+            foreach (Shopware()->Modules()->Basket()->sGetBasket()['content'] as $item) {
+                $quantity = (int)$item['quantity'];
+                $itemTaxAmount = round(str_replace(',', '.', $item['tax']) * 100);
+                $totalAmount = round(str_replace(',', '.', $item['price']) * 100) * $quantity;
+                $articleList['order_lines'][] = [
+                    'name' => $item['articlename'],
+                    'quantity' => $quantity,
+                    'unit_price' => round($item['priceNumeric'] * 100),
+                    'total_amount' => $totalAmount,
+                    'tax_rate' => $item['tax_rate'] * 100,
+                    'total_tax_amount' => $itemTaxAmount,
+                ];
+            }
+        } catch (Exception $e) {
+            $this->logger->error('Error occured, when calling sGetBasket()');
+
+            return '';
+        }
+
+        /** @var string $articleList */
+        $articleList = base64_encode(json_encode($articleList));
+
+        return $articleList;
+    }
+
+    /**
+     * Calculates the Klarna tax amount by adding the tax amounts of each position in the article list.
+     *
+     * @param $articleList
+     *
+     * @return float
+     */
+    public function calculateKlarnaTaxAmount($articleList)
+    {
+        $taxAmount = 0;
+        $articleList = json_decode(base64_decode($articleList), true);
+        foreach ($articleList['order_lines'] as $article) {
+            $itemTaxAmount = $article['total_tax_amount'];
+            $taxAmount += $itemTaxAmount;
+        }
+
+        return $taxAmount;
+    }
+
+    /**
+     * Selects the store's default payment as default payment for the user.
+     */
+    public function selectDefaultPaymentAfterKlarna()
+    {
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $defaultPayment = Shopware()->Config()->get('defaultpayment');
         $modelManager = Shopware()->Models();
         $repo = $modelManager->getRepository(Customer::class);
@@ -1017,14 +1057,94 @@ class Util
         $response = null;
 
         try {
-            /** @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap $plugin */
+            /** @var FatchipCTPayment $plugin */
             $plugin = Shopware()->Container()->get('plugins')->Frontend()->FatchipCTPayment();
             $response = $plugin->callComputopService($ctRequest, $payment, 'KLARNA_CHANGE_BILLING_SHIPPING', $CTPaymentURL);
         } catch (Exception $e) {
             $this->logger->error('Error occured, when calling computopService', [
                 $ctRequest,
                 $payment,
-                'KLARNA',
+                'KLARNA_CHANGE_BILLING_SHIPPING',
+                $CTPaymentURL
+            ]);
+        }
+
+        return $response;
+    }
+
+    public function cleanKlarnaSessionVars()
+    {
+        $paymentTypes = $this->getActivatedKlarnaPaymentTypes();
+
+        $session = Shopware()->Session();
+        $sessionVars = [
+            'FatchipCTKlarnaPaymentSessionResponsePayID',
+            'FatchipCTKlarnaPaymentSessionResponseTransID',
+            'FatchipCTKlarnaPaymentTokenExt',
+            'FatchipCTKlarnaPaymentArticleList',
+            'FatchipCTKlarnaPaymentAmount',
+        ];
+        $sessionVarPrefixes = [
+            'FatchipCTKlarnaPaymentHash_',
+            'FatchipCTKlarnaAccessToken_',
+        ];
+
+        foreach ($paymentTypes as $paymentType) {
+            foreach ($sessionVarPrefixes as $sessionVarPrefix) {
+                $sessionVars[] = $sessionVarPrefix . $paymentType;
+            }
+        }
+
+        foreach ($sessionVars as $sessionVar) {
+            $session->offsetUnset($sessionVar);
+        }
+    }
+
+    /**
+     * @param KlarnaPayments $payment
+     *
+     * @return CTResponse
+     */
+    public function requestKlarnaSession($payment) {
+        $requestType = 'KLARNA_SESSION';
+        $CTPaymentURL = $payment->getCTPaymentURL();
+        $ctRequest = $payment->cleanUrlParams($payment->getKlarnaSessionRequestParams());
+
+        $response = null;
+
+        try {
+            $response = $this->plugin->callComputopService($ctRequest, $payment, $requestType, $CTPaymentURL);
+        } catch (Exception $e) {
+            $this->logger->error('Error occured, when calling computopService', [
+                $ctRequest,
+                $payment,
+                $requestType,
+                $CTPaymentURL
+            ]);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param KlarnaPayments $payment
+     *
+     * @return CTResponse
+     */
+    public function requestKlarnaUpdateArticleList($payment) {
+        $requestType = 'KLARNA_UPDATE_ARTICLE_LIST';
+        $CTPaymentURL = $payment->getCTPaymentURL();
+        $ctRequest = $payment->cleanUrlParams($payment->getKlarnaUpdateArtikelListRequestParams());
+
+        $response = null;
+
+        try {
+            $response = $this->plugin->callComputopService($ctRequest, $payment, $requestType, $CTPaymentURL);
+        } catch (Exception $e) {
+            $this->logger->error('Error occured, when calling computopService', [
+                $ctRequest,
+                $payment,
+                $requestType,
                 $CTPaymentURL
             ]);
         }

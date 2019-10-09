@@ -103,7 +103,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
     public function gatewayAction()
     {
         /** @var CTOrder $ctOrder */
-        $ctOrder = $this->utils->createCTOrder($this->getUserData());
+        $ctOrder = $this->utils->createCTOrder();
 
         /** @var KlarnaPayments $payment */
         $payment = $this->getPaymentClassForGatewayAction();
@@ -145,8 +145,6 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
                     self::PAYMENTSTATUSRESERVED
                 );
                 $this->saveTransactionResult($response);
-
-                $this->utils->selectDefaultPaymentAfterKlarna($this->getUserData());
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
                 $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);

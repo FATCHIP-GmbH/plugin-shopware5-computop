@@ -32,7 +32,7 @@ use Enlight\Event\SubscriberInterface;
 use Enlight_Controller_ActionEventArgs;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
-class CheckoutFinish implements SubscriberInterface
+class CheckoutPayment implements SubscriberInterface
 {
     /**
      * Returns an array of event names this subscriber wants to listen to.
@@ -65,26 +65,48 @@ class CheckoutFinish implements SubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostDispatchFrontendCheckoutFinish',
+            'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostDispatchFrontendCheckoutPayment',
         ];
     }
 
     /**
-     * Deletes all Klarna relevant session vars and selects the store's default payment as default payment for the user.
-     *
      * @param Enlight_Controller_ActionEventArgs $args
      */
-    public function onPostDispatchFrontendCheckoutFinish(Enlight_Controller_ActionEventArgs $args)
+    public function onPostDispatchFrontendCheckoutPayment(Enlight_Controller_ActionEventArgs $args)
     {
-        if ($args->getSubject()->Request()->getActionName() !== 'finish') {
+        if ($args->getSubject()->Request()->getActionName() !== 'payment') {
             return;
         }
 
         /** @var Util $utils */
         $utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
 
-        $utils->cleanKlarnaSessionVars();
+        $session = Shopware()->Session();
+        $sessionArticleList = $session->get('FatchipCTKlarnaPaymentArticleList', '');
+        $currentArticleList = $utils->createKlarnaArticleList();
 
-        $utils->selectDefaultPaymentAfterKlarna();
+        if ($sessionArticleList !== $currentArticleList) {
+            // make update article list call
+            $payment = $utils->createCTKlarnaPayment();
+            $ctOrder = $utils->createCTOrder();
+
+            $payId = $session->offsetGet('FatchipCTKlarnaPaymentSessionResponsePayID');
+            $transId = $session->offsetGet('FatchipCTKlarnaPaymentSessionResponseTransID');
+            $amount = $ctOrder->getAmount();
+            $currency = $ctOrder->getCurrency();
+            $eventToken = 'UEO';
+            $articleList = $currentArticleList;
+
+            $payment->storeKlarnaUpdateArtikelListRequestParams(
+                $payId,
+                $transId,
+                $amount,
+                $currency,
+                $eventToken,
+                $articleList
+            );
+
+            $utils->requestKlarnaUpdateArticleList($payment);
+        }
     }
 }

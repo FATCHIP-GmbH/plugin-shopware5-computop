@@ -117,7 +117,7 @@ class Address implements SubscriberInterface
         }
 
         /** @var KlarnaPayments $payment */
-        $payment = $this->utils->createCTKlarnaPayment($userData);
+        $payment = $this->utils->createCTKlarnaPayment();
 
         $sessionKey = $extraData['sessionKey'];
 
