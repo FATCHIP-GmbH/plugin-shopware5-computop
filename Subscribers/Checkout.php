@@ -167,9 +167,14 @@ class Checkout implements SubscriberInterface
 
         if ($request->getActionName() == 'shippingPayment') {
             if (stristr($paymentName, 'klarna')) {
+                if ($ctError = $session->offsetGet('CTError')) {
+                    $session->offsetUnset('CTError');
+                    $params['CTError'] = $ctError;
+                }
                 $payment = $this->utils->createCTKlarnaPayment();
 
                 if (! $payment) {
+                    // TODO: this makes no sense, as we are in checkout/shippingPayment?
                     $args->getSubject()->forward('shippingPayment', 'checkout');
                 }
 

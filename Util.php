@@ -1083,6 +1083,7 @@ class Util
             'FatchipCTKlarnaPaymentTokenExt',
             'FatchipCTKlarnaPaymentArticleList',
             'FatchipCTKlarnaPaymentAmount',
+            'CTError',
         ];
         $sessionVarPrefixes = [
             'FatchipCTKlarnaPaymentHash_',

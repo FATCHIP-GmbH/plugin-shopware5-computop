@@ -30,6 +30,7 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
 use Enlight\Event\SubscriberInterface;
 use Enlight_Controller_ActionEventArgs;
+use Exception;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
 class CheckoutPayment implements SubscriberInterface
@@ -74,7 +75,8 @@ class CheckoutPayment implements SubscriberInterface
      */
     public function onPostDispatchFrontendCheckoutPayment(Enlight_Controller_ActionEventArgs $args)
     {
-        if ($args->getSubject()->Request()->getActionName() !== 'payment') {
+        $controller = $args->getSubject();
+        if ($controller->Request()->getActionName() !== 'payment') {
             return;
         }
 
@@ -82,17 +84,41 @@ class CheckoutPayment implements SubscriberInterface
         $utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
 
         $session = Shopware()->Session();
+        $ctOrder = $utils->createCTOrder();
+
         $sessionArticleList = $session->get('FatchipCTKlarnaPaymentArticleList', '');
+        $sessionAmount = $session->get('FatchipCTKlarnaPaymentAmount', '');
         $currentArticleList = $utils->createKlarnaArticleList();
+        $currentAmount = $ctOrder->getAmount();
+
+        if($currentAmount > $sessionAmount) {
+            // redirect to shipping payment with error message
+            $ctError = [];
+            $ctError['CTErrorMessage'] = 'Durch die Nachträgliche Änderung des Warenkorbes ist der neue Endbetrag größer
+             als bei der ursprünglichen Zahlartauswahl. Bitte wählen Sie erneut eine Zahlart aus. Durch Klick auf
+              "Weiter" kann auch die aktuell ausgewählte Zahlart genutzt werden.';
+            $ctError['CTErrorCode'] = ''; //$response->getCode();
+
+            $session->offsetSet('CTError', $ctError);
+
+            try {
+                $controller->redirect([
+                    'action' => 'shippingPayment',
+                    'controller' => 'checkout'
+                ]);
+            } catch (Exception $e) {
+                // TODO: log
+            }
+
+            return;
+        }
 
         if ($sessionArticleList !== $currentArticleList) {
             // make update article list call
             $payment = $utils->createCTKlarnaPayment();
-            $ctOrder = $utils->createCTOrder();
 
             $payId = $session->offsetGet('FatchipCTKlarnaPaymentSessionResponsePayID');
             $transId = $session->offsetGet('FatchipCTKlarnaPaymentSessionResponseTransID');
-            $amount = $ctOrder->getAmount();
             $currency = $ctOrder->getCurrency();
             $eventToken = 'UEO';
             $articleList = $currentArticleList;
@@ -100,7 +126,7 @@ class CheckoutPayment implements SubscriberInterface
             $payment->storeKlarnaUpdateArtikelListRequestParams(
                 $payId,
                 $transId,
-                $amount,
+                $currentAmount,
                 $currency,
                 $eventToken,
                 $articleList
