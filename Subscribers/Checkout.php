@@ -183,7 +183,7 @@ class Checkout implements SubscriberInterface
                 if ($session->offsetGet('FatchipCTKlarnaPaymentHash_' . $paymentType) !== $hash) {
                     // hash does either not exist in session or basket, tax and amount (incl. shipping cost) changed,
                     // so a new session must be created
-                    $CTResponse = $this->utils->requestKlarnaSession($payment);
+                    $CTResponse = $payment->requestSession();
 
                     $articleList = $payment->getKlarnaSessionRequestParams()['ArticleList'];
                     $amount = $payment->getKlarnaSessionRequestParams()['amount'];

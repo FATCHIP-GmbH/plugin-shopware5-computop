@@ -83,8 +83,8 @@ class CheckoutFinish implements SubscriberInterface
         /** @var Util $utils */
         $utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
 
-        $utils->cleanKlarnaSessionVars();
+        $utils->cleanSessionVars();
 
-        $utils->selectDefaultPaymentAfterKlarna();
+        $utils->selectDefaultPayment();
     }
 }

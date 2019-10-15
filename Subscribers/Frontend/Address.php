@@ -132,7 +132,7 @@ class Address implements SubscriberInterface
 
         $payment->storeKlarnaChangeBillingShippingRequestParams($payId, $eventToken, $billingData, $shippingData);
 
-        $this->utils->requestKlarnaChangeBillingShipping($payment);
+        $payment->requestKlarnaChangeBillingShipping();
     }
 
     /**

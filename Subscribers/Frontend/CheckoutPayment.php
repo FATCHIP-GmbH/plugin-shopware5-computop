@@ -29,8 +29,11 @@
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
 use Enlight\Event\SubscriberInterface;
+use Enlight_Controller_Action;
 use Enlight_Controller_ActionEventArgs;
 use Exception;
+use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
 class CheckoutPayment implements SubscriberInterface
@@ -82,57 +85,77 @@ class CheckoutPayment implements SubscriberInterface
 
         /** @var Util $utils */
         $utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
-
-        $session = Shopware()->Session();
+        /** @var CTOrder $ctOrder */
         $ctOrder = $utils->createCTOrder();
+        /** @var KlarnaPayments $payment */
+        $payment = $utils->createCTKlarnaPayment();
+        $session = Shopware()->Session();
 
-        $sessionArticleList = $session->get('FatchipCTKlarnaPaymentArticleList', '');
         $sessionAmount = $session->get('FatchipCTKlarnaPaymentAmount', '');
-        $currentArticleList = $utils->createKlarnaArticleList();
         $currentAmount = $ctOrder->getAmount();
-
-        if($currentAmount > $sessionAmount) {
-            // redirect to shipping payment with error message
-            $ctError = [];
-            $ctError['CTErrorMessage'] = 'Durch die Nachträgliche Änderung des Warenkorbes ist der neue Endbetrag größer
-             als bei der ursprünglichen Zahlartauswahl. Bitte wählen Sie erneut eine Zahlart aus. Durch Klick auf
-              "Weiter" kann auch die aktuell ausgewählte Zahlart genutzt werden.';
-            $ctError['CTErrorCode'] = ''; //$response->getCode();
-
-            $session->offsetSet('CTError', $ctError);
-
-            try {
-                $controller->redirect([
-                    'action' => 'shippingPayment',
-                    'controller' => 'checkout'
-                ]);
-            } catch (Exception $e) {
-                // TODO: log
-            }
+        if ($currentAmount > $sessionAmount) {
+            $this->redirectToShippingPayment($controller);
 
             return;
         }
 
+        $sessionArticleList = $session->get('FatchipCTKlarnaPaymentArticleList', '');
+        $currentArticleList = $payment->createArticleList();
         if ($sessionArticleList !== $currentArticleList) {
-            // make update article list call
-            $payment = $utils->createCTKlarnaPayment();
+            $this->callUpdateArticleList($ctOrder, $payment);
+        }
+    }
 
-            $payId = $session->offsetGet('FatchipCTKlarnaPaymentSessionResponsePayID');
-            $transId = $session->offsetGet('FatchipCTKlarnaPaymentSessionResponseTransID');
-            $currency = $ctOrder->getCurrency();
-            $eventToken = 'UEO';
-            $articleList = $currentArticleList;
+    /**
+     * @param CTOrder $ctOrder
+     * @param KlarnaPayments $payment
+     */
+    public function callUpdateArticleList($ctOrder, $payment)
+    {
+        $session = Shopware()->Session();
+        $articleList = $payment->createArticleList();
+        $currentAmount = $ctOrder->getAmount();
 
-            $payment->storeKlarnaUpdateArtikelListRequestParams(
-                $payId,
-                $transId,
-                $currentAmount,
-                $currency,
-                $eventToken,
-                $articleList
-            );
+        $payId = $session->offsetGet('FatchipCTKlarnaPaymentSessionResponsePayID');
+        $transId = $session->offsetGet('FatchipCTKlarnaPaymentSessionResponseTransID');
+        $currency = $ctOrder->getCurrency();
+        $eventToken = 'UEO';
 
-            $utils->requestKlarnaUpdateArticleList($payment);
+        $payment->storeKlarnaUpdateArtikelListRequestParams(
+            $payId,
+            $transId,
+            $currentAmount,
+            $currency,
+            $eventToken,
+            $articleList
+        );
+
+        $payment->requestKlarnaUpdateArticleList();
+    }
+
+    /**2
+     * @param Enlight_Controller_Action $controller
+     */
+    public function redirectToShippingPayment($controller)
+    {
+        // redirect to shipping payment with error message
+        $session = Shopware()->Session();
+
+        $ctError = [];
+        $ctError['CTErrorMessage'] = 'Durch die Nachträgliche Änderung des Warenkorbes ist der neue Endbetrag größer
+             als bei der ursprünglichen Zahlartauswahl. Bitte wählen Sie erneut eine Zahlart aus. Durch Klick auf
+              "Weiter" kann auch die aktuell ausgewählte Zahlart genutzt werden.';
+        $ctError['CTErrorCode'] = ''; //$response->getCode();
+
+        $session->offsetSet('CTError', $ctError);
+
+        try {
+            $controller->redirect([
+                'action' => 'shippingPayment',
+                'controller' => 'checkout'
+            ]);
+        } catch (Exception $e) {
+            // TODO: log
         }
     }
 }

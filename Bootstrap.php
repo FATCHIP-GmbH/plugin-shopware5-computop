@@ -30,6 +30,8 @@ require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
 
 use Doctrine\Common\Collections\ArrayCollection;
 
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Forms;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Attributes;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Payments;
@@ -383,7 +385,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      * @param $url
      *
      * @return \Fatchip\CTPayment\CTResponse
-     * @throws Exception
      */
     public function callComputopService($requestParams, $payment, $requestType, $url){
         $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
@@ -397,8 +398,14 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $log->setXId($response->getXID());
         $log->setResponse($response->getStatus());
         $log->setResponseDetails(json_encode($response->toArray()));
-        Shopware()->Models()->persist($log);
-        Shopware()->Models()->flush($log);
+        try {
+            Shopware()->Models()->persist($log);
+            Shopware()->Models()->flush($log);
+        } catch (OptimisticLockException $e) {
+            // TODO: log
+        } catch (ORMException $e) {
+            // TODO: log
+        }
         return $response;
     }
 
