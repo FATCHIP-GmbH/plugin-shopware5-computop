@@ -1,6 +1,5 @@
 ;(function ($, window) {
     'use strict';
-    console.log('DBG');
 
     const data = $('#fatchipCTKlarnaInformation').data();
 
@@ -67,7 +66,6 @@
             container: '#fatchip-computop-payment-klarna-form-' + paymentType,
             payment_method_category: payTypeTranslations[paymentType]
         }, function (res) {
-            console.log(res);
         });
     }
 
@@ -147,7 +145,6 @@
                 },
                 authorizeData,
                 function (res) {
-                    console.log(res);
                     const storeAuthorizationTokenUrl = data['storeAuthorizationToken-Url'];
                     const fetchDefaultPaymentURL = data['fetchDefaultPayment-Url'];
                     const parameter = {'authorizationToken': res['authorization_token']};
