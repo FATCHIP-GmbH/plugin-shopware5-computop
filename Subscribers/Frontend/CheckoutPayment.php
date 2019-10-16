@@ -100,17 +100,21 @@ class CheckoutPayment implements SubscriberInterface
         $session = Shopware()->Session();
 
         $sessionAmount = $session->get('FatchipCTKlarnaPaymentAmount', '');
+        $sessionAddressHash = $session->get('FatchipCTKlarnaPaymentAddressHash', '');
+        $sessionArticleListBase64 = $session->get('FatchipCTKlarnaPaymentArticleListBase64', '');
+
         $currentAmount = $ctOrder->getAmount();
-        if ($currentAmount > $sessionAmount) {
+        $currentAddressHash = $payment->createAddressHash();
+        $currentArticleListBase64 = $payment->createArticleListBase64();
+
+        $amountChanged = $currentAmount !== $sessionAmount;
+        $articleListChanged = $sessionArticleListBase64 !== $currentArticleListBase64;
+        $addressChanged = $sessionAddressHash !== $currentAddressHash;
+
+        if ($amountChanged || $articleListChanged || $addressChanged) {
             $this->redirectToShippingPayment($controller);
 
             return;
-        }
-
-        $sessionArticleList = $session->get('FatchipCTKlarnaPaymentArticleList', '');
-        $currentArticleList = $payment->createArticleList();
-        if ($sessionArticleList !== $currentArticleList) {
-            $this->callUpdateArticleList($ctOrder, $payment);
         }
     }
 
@@ -121,7 +125,7 @@ class CheckoutPayment implements SubscriberInterface
     public function callUpdateArticleList($ctOrder, $payment)
     {
         $session = Shopware()->Session();
-        $articleList = $payment->createArticleList();
+        $articleList = $payment->createArticleListBase64();
         $currentAmount = $ctOrder->getAmount();
 
         $payId = $session->offsetGet('FatchipCTKlarnaPaymentSessionResponsePayID');
@@ -150,10 +154,10 @@ class CheckoutPayment implements SubscriberInterface
         $session = Shopware()->Session();
 
         $ctError = [];
-        $ctError['CTErrorMessage'] = 'Durch die Nachträgliche Änderung des Warenkorbes ist der neue Endbetrag größer
-             als bei der ursprünglichen Zahlartauswahl. Bitte wählen Sie erneut eine Zahlart aus. Durch Klick auf
-              "Weiter" kann auch die aktuell ausgewählte Zahlart genutzt werden.';
-        $ctError['CTErrorCode'] = ''; //$response->getCode();
+        $ctError['CTErrorMessage'] = 'Durch die Nachträgliche Änderung des Warenkorbes, muss die Zahlart neu ausgewählt
+            werden. Bitte wählen Sie erneut eine Zahlart aus. Durch Klick auf "Weiter" kann auch die aktuell ausgewählte
+            Zahlart genutzt werden.';
+        $ctError['CTErrorCode'] = '';
 
         $session->offsetSet('CTError', $ctError);
 

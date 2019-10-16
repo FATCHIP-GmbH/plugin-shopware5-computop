@@ -909,7 +909,7 @@ class Util
             return null;
         }
 
-        $articleList = KlarnaPayments::createArticleList();
+        $articleList = KlarnaPayments::createArticleListBase64();
         $taxAmount = KlarnaPayments::calculateTaxAmount($articleList);
 
         $URLConfirm = Shopware()->Front()->Router()->assemble([
@@ -980,8 +980,9 @@ class Util
             'FatchipCTKlarnaPaymentSessionResponsePayID',
             'FatchipCTKlarnaPaymentSessionResponseTransID',
             'FatchipCTKlarnaPaymentTokenExt',
-            'FatchipCTKlarnaPaymentArticleList',
+            'FatchipCTKlarnaPaymentArticleListBase64',
             'FatchipCTKlarnaPaymentAmount',
+            'FatchipCTKlarnaPaymentAddressHash',
             'CTError',
         ];
         $sessionVarPrefixes = [

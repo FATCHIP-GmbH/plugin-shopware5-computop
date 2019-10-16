@@ -31,6 +31,7 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 use Enlight\Event\SubscriberInterface;
 use Exception;
 use Fatchip\CTPayment\CTPaymentMethodIframe;
+use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
 use Shopware\Components\Logger;
 use Shopware\Components\Theme\LessDefinition;
 use Shopware\Plugins\FatchipCTPayment\Util;
@@ -171,6 +172,7 @@ class Checkout implements SubscriberInterface
                     $session->offsetUnset('CTError');
                     $params['CTError'] = $ctError;
                 }
+                /** @var KlarnaPayments $payment */
                 $payment = $this->utils->createCTKlarnaPayment();
 
                 if (! $payment) {
@@ -185,11 +187,14 @@ class Checkout implements SubscriberInterface
                     // so a new session must be created
                     $CTResponse = $payment->requestSession();
 
-                    $articleList = $payment->getKlarnaSessionRequestParams()['ArticleList'];
+                    $articleListBase64 = $payment->getKlarnaSessionRequestParams()['ArticleList'];
                     $amount = $payment->getKlarnaSessionRequestParams()['amount'];
+                    $addressHash = $payment->createAddressHash();
 
-                    $session->offsetSet('FatchipCTKlarnaPaymentArticleList', $articleList);
+                    $session->offsetSet('FatchipCTKlarnaPaymentArticleListBase64', $articleListBase64);
                     $session->offsetSet('FatchipCTKlarnaPaymentAmount', $amount);
+                    $session->offsetSet('FatchipCTKlarnaPaymentAddressHash', $addressHash);
+
                     $session->offsetSet('FatchipCTKlarnaPaymentSessionResponsePayID', $CTResponse->getPayID());
                     $session->offsetSet('FatchipCTKlarnaPaymentSessionResponseTransID', $CTResponse->getTransID());
 
