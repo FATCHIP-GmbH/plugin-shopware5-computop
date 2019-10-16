@@ -79,12 +79,20 @@ class CheckoutPayment implements SubscriberInterface
     public function onPostDispatchFrontendCheckoutPayment(Enlight_Controller_ActionEventArgs $args)
     {
         $controller = $args->getSubject();
+
         if ($controller->Request()->getActionName() !== 'payment') {
             return;
         }
 
         /** @var Util $utils */
         $utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+
+        $paymentName = $utils->getPaymentNameFromId($userData['additional']['payment']['id']);
+        if (!stristr($paymentName, 'klarna')) {
+            return;
+        }
+
         /** @var CTOrder $ctOrder */
         $ctOrder = $utils->createCTOrder();
         /** @var KlarnaPayments $payment */
