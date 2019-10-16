@@ -111,8 +111,12 @@ class CheckoutPayment implements SubscriberInterface
         $articleListChanged = $sessionArticleListBase64 !== $currentArticleListBase64;
         $addressChanged = $sessionAddressHash !== $currentAddressHash;
 
+        $errMsg = 'Durch die Nachträgliche Änderung, muss die Zahlart neu ausgewählt
+            werden. Bitte wählen Sie erneut eine Zahlart aus. Durch Klick auf "Weiter" kann auch die aktuell ausgewählte
+            Zahlart genutzt werden.';
+
         if ($amountChanged || $articleListChanged || $addressChanged) {
-            $this->redirectToShippingPayment($controller);
+            $this->redirectToShippingPayment($controller, $errMsg);
 
             return;
         }
@@ -147,16 +151,15 @@ class CheckoutPayment implements SubscriberInterface
 
     /**2
      * @param Enlight_Controller_Action $controller
+     * @param string $errMsg
      */
-    public function redirectToShippingPayment($controller)
+    public function redirectToShippingPayment($controller, $errMsg)
     {
         // redirect to shipping payment with error message
         $session = Shopware()->Session();
 
         $ctError = [];
-        $ctError['CTErrorMessage'] = 'Durch die Nachträgliche Änderung des Warenkorbes, muss die Zahlart neu ausgewählt
-            werden. Bitte wählen Sie erneut eine Zahlart aus. Durch Klick auf "Weiter" kann auch die aktuell ausgewählte
-            Zahlart genutzt werden.';
+        $ctError['CTErrorMessage'] = $errMsg;
         $ctError['CTErrorCode'] = '';
 
         $session->offsetSet('CTError', $ctError);
