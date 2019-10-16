@@ -89,7 +89,7 @@ class CheckoutPayment implements SubscriberInterface
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
 
         $paymentName = $utils->getPaymentNameFromId($userData['additional']['payment']['id']);
-        if (!stristr($paymentName, 'klarna')) {
+        if (!stristr($paymentName, 'klarna')) { // no klarna payment method
             return;
         }
 
@@ -111,9 +111,8 @@ class CheckoutPayment implements SubscriberInterface
         $articleListChanged = $sessionArticleListBase64 !== $currentArticleListBase64;
         $addressChanged = $sessionAddressHash !== $currentAddressHash;
 
-        $errMsg = 'Durch die Nachträgliche Änderung, muss die Zahlart neu ausgewählt
-            werden. Bitte wählen Sie erneut eine Zahlart aus. Durch Klick auf "Weiter" kann auch die aktuell ausgewählte
-            Zahlart genutzt werden.';
+        $errMsg = 'Durch die Nachträgliche Änderung, muss die Zahlart neu ausgewählt werden. Bitte wählen Sie erneut
+            eine Zahlart aus. Durch Klick auf "Weiter" kann auch die aktuell ausgewählte Zahlart genutzt werden.';
 
         if ($amountChanged || $articleListChanged || $addressChanged) {
             $this->redirectToShippingPayment($controller, $errMsg);

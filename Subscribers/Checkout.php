@@ -180,11 +180,8 @@ class Checkout implements SubscriberInterface
                     $args->getSubject()->forward('shippingPayment', 'checkout');
                 }
 
-                $hash = $payment->getKlarnaSessionRequestParamsHash();
-
-                if ($session->offsetGet('FatchipCTKlarnaPaymentHash_' . $paymentType) !== $hash) {
-                    // hash does either not exist in session or basket, tax and amount (incl. shipping cost) changed,
-                    // so a new session must be created
+                if ($session->offsetExists('FatchipCTKlarnaAccessToken') || true) {
+                    // accessToken does not exist in session, so a new session must be created
                     $CTResponse = $payment->requestSession();
 
                     $articleListBase64 = $payment->getKlarnaSessionRequestParams()['ArticleList'];
@@ -200,8 +197,7 @@ class Checkout implements SubscriberInterface
 
                     $accessToken = $CTResponse->getAccesstoken();
 
-                    $session->offsetSet('FatchipCTKlarnaPaymentHash_' . $paymentType, $hash);
-                    $session->offsetSet('FatchipCTKlarnaAccessToken_' . $paymentType, $accessToken);
+                    $session->offsetSet('FatchipCTKlarnaAccessToken', $accessToken);
                 }
             }
 

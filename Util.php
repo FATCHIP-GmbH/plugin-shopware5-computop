@@ -973,8 +973,6 @@ class Util
 
     public function cleanSessionVars()
     {
-        $paymentTypes = $this->getActivatedKlarnaPaymentTypes();
-
         $session = Shopware()->Session();
         $sessionVars = [
             'FatchipCTKlarnaPaymentSessionResponsePayID',
@@ -983,18 +981,10 @@ class Util
             'FatchipCTKlarnaPaymentArticleListBase64',
             'FatchipCTKlarnaPaymentAmount',
             'FatchipCTKlarnaPaymentAddressHash',
+            'FatchipCTKlarnaPaymentHash',
+            'FatchipCTKlarnaAccessToken',
             'CTError',
         ];
-        $sessionVarPrefixes = [
-            'FatchipCTKlarnaPaymentHash_',
-            'FatchipCTKlarnaAccessToken_',
-        ];
-
-        foreach ($paymentTypes as $paymentType) {
-            foreach ($sessionVarPrefixes as $sessionVarPrefix) {
-                $sessionVars[] = $sessionVarPrefix . $paymentType;
-            }
-        }
 
         foreach ($sessionVars as $sessionVar) {
             $session->offsetUnset($sessionVar);

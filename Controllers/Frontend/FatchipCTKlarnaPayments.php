@@ -75,9 +75,19 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
         echo json_encode($defaultPayment);
     }
 
+    public function getAccessTokenAction()
+    {
+        $this->container->get('front')->Plugins()->ViewRenderer()->setNoRender();
+
+        $data = $this->session->offsetGet('FatchipCTKlarnaAccessToken');
+        $encoded = json_encode($data);
+
+        echo $encoded;
+    }
+
     protected function getPaymentClassForGatewayAction()
     {
-        $ctOrder = $this->createCTOrder();
+        $ctOrder = $this->utils->createCTOrder();
         $payment = $this->paymentService->getPaymentClass(
             $this->paymentClass,
             $this->config,
@@ -158,18 +168,5 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
 
                 break;
         }
-    }
-
-    /**
-     */
-    public function getAccessTokenAction()
-    {
-        $this->container->get('front')->Plugins()->ViewRenderer()->setNoRender();
-
-        $paymentType = $this->Request()->getParam('paymentType');
-        $data = $this->session->offsetGet('FatchipCTKlarnaAccessToken_' . $paymentType);
-        $encoded = json_encode($data);
-
-        echo $encoded;
     }
 }
