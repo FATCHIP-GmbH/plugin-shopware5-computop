@@ -28,6 +28,7 @@ namespace Shopware\Plugins\FatchipCTPayment;
 
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Enlight_Controller_Action;
 use Exception;
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTOrder\CTOrder;
@@ -997,5 +998,30 @@ class Util
         $shippingCosts = Shopware()->Modules()->Admin()->sGetPremiumShippingcosts();
 
         return $shippingCosts['brutto'];
+    }
+
+    /**
+     * @param Enlight_Controller_Action $controller
+     * @param string $errMsg
+     */
+    public function redirectToShippingPayment($controller, $errMsg)
+    {
+        // redirect to shipping payment with error message
+        $session = Shopware()->Session();
+
+        $ctError = [];
+        $ctError['CTErrorMessage'] = $errMsg;
+        $ctError['CTErrorCode'] = '';
+
+        $session->offsetSet('CTError', $ctError);
+
+        try {
+            $controller->redirect([
+                'action' => 'shippingPayment',
+                'controller' => 'checkout'
+            ]);
+        } catch (Exception $e) {
+            // TODO: log
+        }
     }
 }
