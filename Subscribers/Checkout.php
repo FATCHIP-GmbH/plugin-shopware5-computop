@@ -176,11 +176,10 @@ class Checkout implements SubscriberInterface
                 $payment = $this->utils->createCTKlarnaPayment();
 
                 if (! $payment) {
-                    // TODO: this makes no sense, as we are in checkout/shippingPayment?
                     $args->getSubject()->forward('shippingPayment', 'checkout');
                 }
 
-                if ($session->offsetExists('FatchipCTKlarnaAccessToken') || true) {
+                if ($session->offsetExists('FatchipCTKlarnaAccessToken')) {
                     // accessToken does not exist in session, so a new session must be created
                     $CTResponse = $payment->requestSession();
 
