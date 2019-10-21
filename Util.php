@@ -863,7 +863,7 @@ class Util
         }
 
         $ctOrder = new CTOrder();
-        $ctOrder->setAmount($basket['AmountNumeric'] * 100);
+        $ctOrder->setAmount(($basket['AmountNumeric'] + $this->calculateShippingCosts()) * 100);
         $ctOrder->setCurrency(Shopware()->Container()->get('currency')->getShortName());
         // try catch in case Address Splitter return exceptions
         try {
@@ -989,5 +989,12 @@ class Util
         foreach ($sessionVars as $sessionVar) {
             $session->offsetUnset($sessionVar);
         }
+    }
+
+    public function calculateShippingCosts()
+    {
+        $shippingCosts = Shopware()->Modules()->Admin()->sGetPremiumShippingcosts();
+
+        return $shippingCosts['brutto'];
     }
 }
