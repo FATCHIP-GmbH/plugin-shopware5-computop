@@ -93,29 +93,14 @@ class CheckoutPayment implements SubscriberInterface
             return;
         }
 
-        /** @var CTOrder $ctOrder */
-        $ctOrder = $utils->createCTOrder();
         /** @var KlarnaPayments $payment */
         $payment = $utils->createCTKlarnaPayment();
-        $session = Shopware()->Session();
-
-        $sessionAmount = $session->get('FatchipCTKlarnaPaymentAmount', '');
-        $sessionAddressHash = $session->get('FatchipCTKlarnaPaymentAddressHash', '');
-        $sessionArticleListBase64 = $session->get('FatchipCTKlarnaPaymentArticleListBase64', '');
-
-        $currentAmount = $ctOrder->getAmount();
-        $currentAddressHash = $payment->createAddressHash();
-        $currentArticleListBase64 = $payment->createArticleListBase64();
-
-        $amountChanged = $currentAmount !== $sessionAmount;
-        $articleListChanged = $sessionArticleListBase64 !== $currentArticleListBase64;
-        $addressChanged = $sessionAddressHash !== $currentAddressHash;
 
         $errMsg = 'Durch die Nachträgliche Änderung, muss die Zahlart neu ausgewählt werden. Bitte wählen Sie erneut
             eine Zahlart aus. Durch Klick auf "Weiter" kann auch die aktuell ausgewählte Zahlart genutzt werden.';
 
-        if ($amountChanged || $articleListChanged || $addressChanged) {
-            $this->redirectToShippingPayment($controller, $errMsg);
+        if ($payment->needNewKlarnaSession()) {
+            $utils->redirectToShippingPayment($controller, $errMsg);
 
             return;
         }
@@ -146,30 +131,5 @@ class CheckoutPayment implements SubscriberInterface
         );
 
         $payment->requestKlarnaUpdateArticleList();
-    }
-
-    /**2
-     * @param Enlight_Controller_Action $controller
-     * @param string $errMsg
-     */
-    public function redirectToShippingPayment($controller, $errMsg)
-    {
-        // redirect to shipping payment with error message
-        $session = Shopware()->Session();
-
-        $ctError = [];
-        $ctError['CTErrorMessage'] = $errMsg;
-        $ctError['CTErrorCode'] = '';
-
-        $session->offsetSet('CTError', $ctError);
-
-        try {
-            $controller->redirect([
-                'action' => 'shippingPayment',
-                'controller' => 'checkout'
-            ]);
-        } catch (Exception $e) {
-            // TODO: log
-        }
     }
 }
