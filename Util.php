@@ -26,7 +26,15 @@
 
 namespace Shopware\Plugins\FatchipCTPayment;
 
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use Exception;
 use Fatchip\CTPayment\CTAddress\CTAddress;
+use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
+use Shopware\Components\Logger;
+use Shopware\Models\Customer\Customer;
+use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap as FatchipCTPayment;
 use VIISON\AddressSplitter\AddressSplitter;
 use Shopware;
 
@@ -38,6 +46,24 @@ require_once 'Components/Api/vendor/autoload.php';
  */
 class Util
 {
+    /**
+     * @var Logger
+     */
+    protected $logger;
+    protected $container;
+    /** @var FatchipCTPayment $plugin */
+    protected $plugin;
+    /** @var [] */
+    protected $pluginConfig;
+
+    public function __construct()
+    {
+        $this->logger = new Logger('FatchipCTPayment');
+        $this->container = Shopware()->Container();
+        $this->plugin = $this->container->get('plugins')->Frontend()->FatchipCTPayment();
+        $this->pluginConfig = $this->plugin->Config()->toArray();
+    }
+
     public static function getShopwareVersion() {
         $currentVersion = '';
 
@@ -491,6 +517,35 @@ class Util
     }
 
     /**
+     * Returns an array with all activated Klarna payment names, such as
+     * 'fatchip_computop_klarna_slice_it'
+     *
+     * @return array
+     */
+    public function getActivatedKlarnaPaymentTypes()
+    {
+        $sql = 'SELECT name FROM s_core_paymentmeans WHERE name like "%klarna%"';
+
+        $result = Shopware()->Db()->fetchCol($sql);
+
+        foreach ($result as $key => $name) {
+            $result[$key] = $this->getKlarnaPaymentTypeFromPaymentName($name);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $paymentName
+     * @return string
+     */
+    public function getKlarnaPaymentTypeFromPaymentName($paymentName)
+    {
+        $paymentNamePrefix = 'fatchip_computop_klarna_';
+        return substr($paymentName, strlen($paymentNamePrefix));
+    }
+
+    /**
      * returns payment name
      *
      * @param string $paymentID
@@ -783,4 +838,163 @@ class Util
         return 'Shopware Version: ' . self::getShopwareVersion() . ', Modul Version: ' . Shopware()->Plugins()->Frontend()->FatchipCTPayment()->getVersion();
     }
 
+    /**
+     * Creates a CTOrder. When return value is not instanceof CTOrder, an error occured and the return value is an error
+     * array:
+     *  ['CTError' => [
+     *      'CTErrorMessage',
+     *      'CTErrorCode'
+     *  ]]
+     *
+     * @return array|CTOrder
+     */
+    public function createCTOrder()
+    {
+        // TODO: store ctOrder as singleton?
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+
+        try {
+            $basket = Shopware()->Modules()->Basket()->sGetBasket();
+        } catch (Exception $e) {
+            $ctError = [];
+            $ctError['CTErrorMessage'] = 'Beim auslesen des Warenkorbs ist ein Fehler aufgetreten<BR>';
+            $ctError['CTErrorCode'] = $e->getMessage();
+            return ['CTError' => $ctError];
+        }
+
+        $ctOrder = new CTOrder();
+        $ctOrder->setAmount(($basket['AmountNumeric'] + $this->calculateShippingCosts()) * 100);
+        $ctOrder->setCurrency(Shopware()->Container()->get('currency')->getShortName());
+        // try catch in case Address Splitter return exceptions
+        try {
+            $ctOrder->setBillingAddress($this->getCTAddress($userData['billingaddress']));
+            $ctOrder->setShippingAddress($this->getCTAddress($userData['shippingaddress']));
+        } catch (Exception $e) {
+            $ctError = [];
+            $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
+            $ctError['CTErrorCode'] = $e->getMessage();
+            return ['CTError' => $ctError];
+        }
+        $ctOrder->setEmail($userData['additional']['user']['email']);
+        $ctOrder->setCustomerID($userData['additional']['user']['id']);
+        $ctOrder->setOrderDesc(Shopware()->Config()->shopName);
+        return $ctOrder;
+    }
+
+    /**
+     * @return KlarnaPayments
+     */
+    public function createCTKlarnaPayment()
+    {
+        // TODO: store payment as singleton?
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        $paymentName = $userData['additional']['payment']['name'];
+
+        $payTypes = [
+            'pay_now' => 'pay_now',
+            'pay_later' => 'pay_later',
+            'slice_it' => 'pay_over_time'
+        ];
+
+        // set payType to correct value
+        foreach ($payTypes as $key => $value) {
+            $length = strlen($key);
+            if (substr($paymentName, -$length) === $key) {
+                $payType = $value;
+                break;
+            }
+        }
+
+        if (!isset($payType)) {
+            return null;
+        }
+
+        $articleList = KlarnaPayments::createArticleListBase64();
+        $taxAmount = KlarnaPayments::calculateTaxAmount($articleList);
+
+        $URLConfirm = Shopware()->Front()->Router()->assemble([
+            'controller' => 'checkout',
+            'action' => 'finish',
+            'forceSecure' => true,
+        ]);
+
+        $ctOrder = $this->createCTOrder();
+
+        if (!$ctOrder instanceof CTOrder) {
+            return null;
+        }
+
+        $klarnaAccount = $this->pluginConfig['klarnaaccount'];
+
+        /** @var KlarnaPayments $payment */
+        $payment = $this->container->get('FatchipCTPaymentApiClient')->getPaymentClass('KlarnaPayments', $this->pluginConfig);
+        $payment->storeKlarnaSessionRequestParams(
+            $taxAmount,
+            $articleList,
+            $URLConfirm,
+            $payType,
+            $klarnaAccount,
+            $userData['additional']['country']['countryiso'],
+            $ctOrder->getAmount(),
+            $ctOrder->getCurrency(),
+            KlarnaPayments::generateTransID(),
+            $_SERVER['REMOTE_ADDR']
+        );
+
+        return $payment;
+    }
+
+    /**
+     * Selects the store's default payment as default payment for the user.
+     */
+    public function selectDefaultPayment()
+    {
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        $defaultPayment = Shopware()->Config()->get('defaultpayment');
+        $modelManager = Shopware()->Models();
+        $repo = $modelManager->getRepository(Customer::class);
+
+        /** @var Customer $customer */
+        $customer = $repo->find($userData['additional']['user']['id']);
+        $customer->setPaymentId($defaultPayment);
+
+        try {
+            $modelManager->persist($customer);
+            $modelManager->flush();
+        } catch (OptimisticLockException $e) {
+            $this->logger->error('Unable to select default payment', [
+                'userID' => $userData['additional']['user']['id'],
+                'paymentID' => $userData['additional']['user']['paymentID'],
+                'defaultPayment' => $defaultPayment
+            ]);
+        } catch (ORMException $e) {
+        }
+    }
+
+    public function cleanSessionVars()
+    {
+        $session = Shopware()->Session();
+        $sessionVars = [
+            'FatchipCTKlarnaPaymentSessionResponsePayID',
+            'FatchipCTKlarnaPaymentSessionResponseTransID',
+            'FatchipCTKlarnaPaymentTokenExt',
+            'FatchipCTKlarnaPaymentArticleListBase64',
+            'FatchipCTKlarnaPaymentAmount',
+            'FatchipCTKlarnaPaymentAddressHash',
+            'FatchipCTKlarnaPaymentHash',
+            'FatchipCTKlarnaAccessToken',
+            'CTError',
+        ];
+
+        foreach ($sessionVars as $sessionVar) {
+            $session->offsetUnset($sessionVar);
+        }
+    }
+
+    public function calculateShippingCosts()
+    {
+        $shippingCosts = Shopware()->Modules()->Admin()->sGetPremiumShippingcosts();
+
+        return $shippingCosts['brutto'];
+    }
 }

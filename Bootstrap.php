@@ -30,6 +30,8 @@ require_once __DIR__ . '/Components/CSRFWhitelistAware.php';
 
 use Doctrine\Common\Collections\ArrayCollection;
 
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Forms;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Attributes;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Payments;
@@ -129,6 +131,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     {
         $jsFiles = [
             $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTAmazon.js',
+            $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTKlarnaPaymentsAuthorize.js',
             $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTAmazonSCA.js',
             $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTPaypalExpress.js',
             $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTCreditCard.js',
@@ -186,6 +189,9 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Utils::class, null],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Templates::class, $this],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Checkout::class, null],
+            [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\CheckoutPayment::class, null],
+            [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\CheckoutFinish::class, null],
+//            [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Address::class, null],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\FrontendRiskManagement::class, $container],
             // [Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder::class, $container],
             // [Shopware\Plugins\FatchipCTPayment\Subscribers\Logger::class, null],
@@ -198,6 +204,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             [AfterAccountSavePaymentActionHook::class, null],
             [AfterAccountPaymentActionHook::class, null],
             [AfterBackendOrderGetListHook::class, null],
+            [PostDispatchBackendOrder::class, null],
             [PostDispatchBackendOrder::class, null],
         ];
 
@@ -373,12 +380,11 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      * this wrapper is used for logging Server requests and responses to our shopware model
      *
      * @param $requestParams
-     * @param $payment
+     * @param $payment Fatchip\CTPayment\CTPaymentMethod
      * @param $requestType
      * @param $url
      *
      * @return \Fatchip\CTPayment\CTResponse
-     * @throws Exception
      */
     public function callComputopService($requestParams, $payment, $requestType, $url){
         $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
@@ -392,8 +398,14 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $log->setXId($response->getXID());
         $log->setResponse($response->getStatus());
         $log->setResponseDetails(json_encode($response->toArray()));
-        Shopware()->Models()->persist($log);
-        Shopware()->Models()->flush($log);
+        try {
+            Shopware()->Models()->persist($log);
+            Shopware()->Models()->flush($log);
+        } catch (OptimisticLockException $e) {
+            // TODO: log
+        } catch (ORMException $e) {
+            // TODO: log
+        }
         return $response;
     }
 
