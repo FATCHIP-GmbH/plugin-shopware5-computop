@@ -179,7 +179,11 @@ class Checkout implements SubscriberInterface
                     $args->getSubject()->forward('shippingPayment', 'checkout');
                 }
 
-                if ($session->offsetExists('FatchipCTKlarnaAccessToken')) {
+                $sessionDispatch = $session->get('FatchipCTKlarnaPaymentDispatchID', '');
+                $currentDispatch = $session->offsetGet('sDispatch');
+                $dispatchChanged = $sessionDispatch !== $currentDispatch;
+
+                if (!$session->offsetExists('FatchipCTKlarnaAccessToken') || $dispatchChanged) {
                     // accessToken does not exist in session, so a new session must be created
                     $CTResponse = $payment->requestSession();
 
@@ -190,6 +194,7 @@ class Checkout implements SubscriberInterface
                     $session->offsetSet('FatchipCTKlarnaPaymentArticleListBase64', $articleListBase64);
                     $session->offsetSet('FatchipCTKlarnaPaymentAmount', $amount);
                     $session->offsetSet('FatchipCTKlarnaPaymentAddressHash', $addressHash);
+                    $session->offsetSet('FatchipCTKlarnaPaymentDispatchID', $currentDispatch);
 
                     $session->offsetSet('FatchipCTKlarnaPaymentSessionResponsePayID', $CTResponse->getPayID());
                     $session->offsetSet('FatchipCTKlarnaPaymentSessionResponseTransID', $CTResponse->getTransID());

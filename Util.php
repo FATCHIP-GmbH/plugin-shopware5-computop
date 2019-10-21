@@ -983,6 +983,7 @@ class Util
             'FatchipCTKlarnaPaymentAddressHash',
             'FatchipCTKlarnaPaymentHash',
             'FatchipCTKlarnaAccessToken',
+            'FatchipCTKlarnaPaymentDispatchID',
             'CTError',
         ];
 
