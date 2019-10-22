@@ -24,7 +24,6 @@
          data-billing-address--country="{$billingAddressCountry}"
          data-get-access-token--URL="{url controller="FatchipCTKlarnaPayments" action="getAccessToken" forceSecure}"
          data-store-authorization-token--URL="{url controller="FatchipCTKlarnaPayments" action="storeAuthorizationToken" forceSecure}"
-         data-fetch-default-payment--URL="{url controller="FatchipCTKlarnaPayments" action="getDefaultPayment" forceSecure}"
     ></div>
     <script>
         window.fatchipCTKlarnaPaymentType = null;

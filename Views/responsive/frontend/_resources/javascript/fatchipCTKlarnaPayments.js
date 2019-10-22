@@ -79,19 +79,19 @@
     }
 
     function registerPlugin() {
-        StateManager.addPlugin('#shippingPaymentForm', 'fatchipCTKlarnaPaymentsAuthorize', null, null);
+        StateManager.addPlugin('#shippingPaymentForm', 'fatchipCTKlarnaPayments', null, null);
     }
 
     function updatePlugin() {
-        StateManager.updatePlugin('#shippingPaymentForm', 'fatchipCTKlarnaPaymentsAuthorize');
+        StateManager.updatePlugin('#shippingPaymentForm', 'fatchipCTKlarnaPayments');
     }
 
     function destroyPlugin() {
-        StateManager.destroyPlugin('#shippingPaymentForm', 'fatchipCTKlarnaPaymentsAuthorize');
-        StateManager.removePlugin('#shippingPaymentForm', 'fatchipCTKlarnaPaymentsAuthorize', null);
+        StateManager.destroyPlugin('#shippingPaymentForm', 'fatchipCTKlarnaPayments');
+        StateManager.removePlugin('#shippingPaymentForm', 'fatchipCTKlarnaPayments', null);
     }
 
-    $.plugin('fatchipCTKlarnaPaymentsAuthorize', {
+    $.plugin('fatchipCTKlarnaPayments', {
         defaults: {},
 
         init: function () {
@@ -146,7 +146,6 @@
                 authorizeData,
                 function (res) {
                     const storeAuthorizationTokenUrl = data['storeAuthorizationToken-Url'];
-                    const fetchDefaultPaymentURL = data['fetchDefaultPayment-Url'];
                     const parameter = {'authorizationToken': res['authorization_token']};
 
                     if (res['approved'] && res['authorization_token']) {
@@ -155,9 +154,7 @@
                             event.target.submit();
                         });
                     } else {
-                        $.ajax({method: "POST", url: fetchDefaultPaymentURL}).done(function (defaultPaymentId) {
-                            $('.payment--method-list').find('.auto_submit[value=' + defaultPaymentId + ']').click()
-                        });
+                        event.target[0].disabled = false;
                     }
                 });
         },

@@ -64,17 +64,6 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
         $this->session->offsetSet('FatchipCTKlarnaPaymentTokenExt', $tokenExt);
     }
 
-    public function getDefaultPaymentAction()
-    {
-        /** @var Enlight_Controller_Front $front */
-        $front = $this->container->get('front');
-        $front->Plugins()->ViewRenderer()->setNoRender();
-        $front->Response()->setHeader('Content-Type', 'application/json');
-
-        $defaultPayment = Shopware()->Config()->get('defaultpayment');
-        echo json_encode($defaultPayment);
-    }
-
     public function getAccessTokenAction()
     {
         $this->container->get('front')->Plugins()->ViewRenderer()->setNoRender();
