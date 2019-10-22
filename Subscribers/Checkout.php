@@ -183,6 +183,15 @@ class Checkout implements SubscriberInterface
                     // accessToken does not exist in session, so a new session must be created
                     $CTResponse = $payment->requestSession();
 
+                    if ($CTResponse->getStatus() === 'FAILED') {
+                        $msg = 'Es ist ein Fehler aufgetreten, bitte wählen Sie eine andere Zahlart aus.';
+                        $ctError = [
+                            'CTErrorMessage' => $msg,
+                            'CTErrorCode' => '',
+                        ];
+                        $params['CTError'] = $ctError;
+                    }
+
                     $articleListBase64 = $payment->getKlarnaSessionRequestParams()['ArticleList'];
                     $amount = $payment->getKlarnaSessionRequestParams()['amount'];
                     $addressHash = $payment->createAddressHash();
