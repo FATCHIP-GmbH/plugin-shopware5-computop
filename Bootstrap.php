@@ -75,6 +75,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             throw new \RuntimeException("At least Shopware {$minimumVersion} is required");
         }
 
+        $this->removeOldKlarnaPayments();
+
         // Helper Classes
         $forms = new Forms();
         $attributes = new Attributes();
@@ -346,6 +348,14 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      */
     public function update($oldVersion)
     {
+        switch ($oldVersion) {
+            case '1.0.26':
+                $this->removeOldKlarnaPayments();
+
+                break;
+        }
+        $this->removeOldKlarnaPayments();
+
         $forms = new Forms();
         $forms->createForm();
         $payments = new Payments();
@@ -436,4 +446,40 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         Shopware()->Models()->flush($log);
     }
 
+    public function removeOldKlarnaPayments()
+    {
+        $oldKlarnaPayments = [
+            'fatchip_computop_klarna_installment',
+            'fatchip_computop_klarna_invoice',
+        ];
+
+        foreach ($oldKlarnaPayments as $payment) {
+            $this->removePayment($payment);
+        }
+    }
+
+    /**
+     * Remove payment instance
+     *
+     * @param string $paymentName
+     *
+     */
+    public function removePayment($paymentName)
+    {
+        $payment = $this->Payments()->findOneBy(
+            array(
+                'name' => $paymentName
+            )
+        );
+        if ($payment === null) {
+            // do nothing
+
+        } else {
+            try {
+                Shopware()->Models()->remove($payment);
+                Shopware()->Models()->flush();
+            } catch (ORMException $e) {
+            }
+        }
+    }
 }

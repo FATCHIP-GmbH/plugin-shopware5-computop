@@ -1024,4 +1024,29 @@ class Util
             // TODO: log
         }
     }
+
+    /**
+     * Remove payment instance
+     *
+     * @param string $paymentName
+     *
+     */
+    public function removePayment($paymentName)
+    {
+        $payment = $this->Payments()->findOneBy(
+            array(
+                'name' => $paymentName
+            )
+        );
+        if ($payment === null) {
+            // do nothing
+
+        } else {
+            try {
+                Shopware()->Models()->remove($payment);
+                Shopware()->Models()->flush();
+            } catch (ORMException $e) {
+            }
+        }
+    }
 }
