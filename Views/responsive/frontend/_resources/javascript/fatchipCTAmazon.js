@@ -188,7 +188,9 @@ $.plugin("fatchipCTAmazon", {
         me.opts.phone = data.phonenumber;
         me.opts.email = data.buyermail;
         me.opts.street = data.bdaddrstreet2;
-        if(data.bdaddrstreet) me.opts.add = data.bdaddrstreet;
+
+
+        me.opts.add = (data.bdaddrstreet) ? data.bdaddrstreet : '';
         me.opts.zip = data.bdaddrzip;
         me.opts.city = data.bdaddrcity;
         me.opts.countryCodeBilling = data.bdaddrcountrycode;
@@ -197,7 +199,8 @@ $.plugin("fatchipCTAmazon", {
         me.opts.firstname2 = sname[0];
         me.opts.lastname2 = sname[1];
         me.opts.street2 = data.AddrStreet2;
-        if(data.AddrStreet) me.opts.add2 = data.AddrStreet;
+
+        me.opts.add2 = (data.AddrStreet) ? data.AddrStreet : '';
         me.opts.zip2 = data.AddrZip ? data.AddrZip : data.AddrZIP;
         me.opts.city2 = data.AddrCity;
         me.opts.countryCodeShipping = data.AddrCountryCode;
