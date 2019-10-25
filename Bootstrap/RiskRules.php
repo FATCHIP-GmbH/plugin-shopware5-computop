@@ -71,35 +71,35 @@ class RiskRules
         $this->createComputopRiskRule('fatchip_computop_ideal',
             'BILLINGLANDISNOT', 'NL');
 
-        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
-          'BILLINGLANDIS', 'SE', 'CURRENCIESISOISNOT', 'SEK');
-
-        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
-          'BILLINGLANDIS', 'NO', 'CURRENCIESISOISNOT', 'NOK');
-
-        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
-          'BILLINGLANDIS', 'DK', 'CURRENCIESISOISNOT', 'DKK');
-
-        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
-          'BILLINGLANDIS', 'DE', 'CURRENCIESISOISNOT', 'EUR');
-
-        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
-          'BILLINGLANDIS', 'NL', 'CURRENCIESISOISNOT', 'EUR');
-
-        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
-          'BILLINGLANDIS', 'SE', 'CURRENCIESISOISNOT', 'SEK');
-
-        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
-          'BILLINGLANDIS', 'NO', 'CURRENCIESISOISNOT', 'NOK');
-
-        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
-          'BILLINGLANDIS', 'DK', 'CURRENCIESISOISNOT', 'DKK');
-
-        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
-          'BILLINGLANDIS', 'DE', 'CURRENCIESISOISNOT', 'EUR');
-
-        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
-          'BILLINGLANDIS', 'NL', 'CURRENCIESISOISNOT', 'EUR');
+//        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
+//          'BILLINGLANDIS', 'SE', 'CURRENCIESISOISNOT', 'SEK');
+//
+//        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
+//          'BILLINGLANDIS', 'NO', 'CURRENCIESISOISNOT', 'NOK');
+//
+//        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
+//          'BILLINGLANDIS', 'DK', 'CURRENCIESISOISNOT', 'DKK');
+//
+//        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
+//          'BILLINGLANDIS', 'DE', 'CURRENCIESISOISNOT', 'EUR');
+//
+//        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
+//          'BILLINGLANDIS', 'NL', 'CURRENCIESISOISNOT', 'EUR');
+//
+//        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
+//          'BILLINGLANDIS', 'SE', 'CURRENCIESISOISNOT', 'SEK');
+//
+//        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
+//          'BILLINGLANDIS', 'NO', 'CURRENCIESISOISNOT', 'NOK');
+//
+//        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
+//          'BILLINGLANDIS', 'DK', 'CURRENCIESISOISNOT', 'DKK');
+//
+//        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
+//          'BILLINGLANDIS', 'DE', 'CURRENCIESISOISNOT', 'EUR');
+//
+//        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
+//          'BILLINGLANDIS', 'NL', 'CURRENCIESISOISNOT', 'EUR');
     }
 
 

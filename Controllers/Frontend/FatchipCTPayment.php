@@ -27,6 +27,7 @@
  * @link       https://www.computop.com
  */
 
+use Fatchip\CTPayment\CTEnums\CTEnumPaymentStatus;
 use Shopware\Plugins\FatchipCTPayment\Util;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
@@ -48,10 +49,10 @@ use Shopware\Components\CSRFWhitelistAware;
 abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controllers_Frontend_Payment implements CSRFWhitelistAware
 {
 
-    const PAYMENTSTATUSPARTIALLYPAID = 11;
-    const PAYMENTSTATUSPAID = 12;
-    const PAYMENTSTATUSOPEN = 17;
-    const PAYMENTSTATUSRESERVED = 18;
+    const PAYMENTSTATUSPARTIALLYPAID = CTEnumPaymentStatus::PAYMENTSTATUSPARTIALLYPAID;
+    const PAYMENTSTATUSPAID = CTEnumPaymentStatus::PAYMENTSTATUSPAID;
+    const PAYMENTSTATUSOPEN = CTEnumPaymentStatus::PAYMENTSTATUSOPEN;
+    const PAYMENTSTATUSRESERVED = CTEnumPaymentStatus::PAYMENTSTATUSRESERVED;
 
     const ERRORMSG = 'Es ist ein Fehler aufgetreten. Bitte wählen Sie eine andere Zahlungsart oder versuchen Sie es später noch einmal.<br>';
 
@@ -293,6 +294,10 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     /**
+     * @deprecated
+     * Scope sensitive
+     * Use Util->createCTOrder instead
+     *
      * Helper funciton to create a CTOrder object for the current order
      *
      * @return CTOrder|void
@@ -601,6 +606,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $ctOrder = $this->createCTOrderFromSWorder($order);
             if ($paymentClass !== 'PaypalExpress'
                 && $paymentClass !== 'AmazonPay'
+                && $paymentClass !== 'KlarnaPayments'
             ) {
                 $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->config, $ctOrder);
             } else {
