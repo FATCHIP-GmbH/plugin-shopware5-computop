@@ -8,6 +8,12 @@ Pre-Released [not yet]
 Pre-Released 2019-10-21
 * Added: three new Klarna payment methods: Pay Later, Pay Now, Slice It
 
+## 1.0.26
+Released 2019-09-05
+* Added: SW 5.6 compatibility
+* Added: Amazon SCA confirmationFlow
+* Added: CreditCard Testmode
+
 ## 1.0.24
 Pre-Released 2019-08-08
 * Fixed: Completing invalid AmazonPay Orders using browser reload function
