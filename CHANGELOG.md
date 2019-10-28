@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.28
+Pre-Released [not yet]
+* Rebranding: updated Computop icons and images 
+
 ## 1.0.27
 Pre-Released 2019-10-21
 * Added: three new Klarna payment methods: Pay Later, Pay Now, Slice It
