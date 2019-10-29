@@ -74,7 +74,7 @@ class FrontendRiskManagement implements SubscriberInterface
         $events = ['sAdmin::executeRiskRule::replace' => 'onExecuteRiskRule',];
 
         if (Util::isShopwareVersionGreaterThanOrEqual('5.2')) {
-            $events['Shopware\Models\Customer\Address::postUpdate'] = 'afterAddressUpdate';
+            $events['Shopware\Models\Customer\Address::preUpdate'] = 'beforeAddressUpdate';
         } else {
             $events['Shopware_Modules_Admin_ValidateStep2Shipping_FilterResult'] = 'onValidateStep2ShippingAddress';
             $events['Shopware_Modules_Admin_ValidateStep2_FilterResult'] = 'onValidateStep2BillingAddress';
@@ -90,7 +90,7 @@ class FrontendRiskManagement implements SubscriberInterface
      *
      * @param \Enlight_Event_EventArgs $args
      */
-    public function afterAddressUpdate(\Enlight_Event_EventArgs $args)
+    public function beforeAddressUpdate(\Enlight_Event_EventArgs $args)
     {
         //check in Session if we autoupated the address with the corrected Address from CRIF
         if (!$this->addressWasAutoUpdated()) {
@@ -177,7 +177,6 @@ class FrontendRiskManagement implements SubscriberInterface
             $attribute->setFatchipctCrifresult(null);
             $attribute->setFatchipctCrifstatus(null);
             Shopware()->Models()->persist($attribute);
-            Shopware()->Models()->flush();
         }
     }
 
