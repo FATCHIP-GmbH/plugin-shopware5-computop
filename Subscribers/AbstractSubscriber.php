@@ -24,13 +24,13 @@
  */
 
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscribers;
+namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 
 use Shopware\Plugins\FatchipCTPayment\Util;
 
-abstract class AbstractAccountSubscriber implements SubscriberInterface
+abstract class AbstractSubscriber implements SubscriberInterface
 {
     /** @var Util $utils **/
     protected $utils;

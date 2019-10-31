@@ -26,12 +26,11 @@
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
-use Enlight\Event\SubscriberInterface;
 use Enlight_Controller_ActionEventArgs;
 use Enlight_Exception;
 
 use Monolog\Handler\RotatingFileHandler;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscribers\AbstractLoggerSubscriber;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
 /**
@@ -39,7 +38,7 @@ use Shopware\Plugins\FatchipCTPayment\Util;
  *
  * @package Shopware\Plugins\FatchipCTPayment\Subscribers
  */
-class Logger implements SubscriberInterface
+class Logger extends AbstractSubscriber
 {
     /**
      * @var $logger \Shopware\Components\Logger

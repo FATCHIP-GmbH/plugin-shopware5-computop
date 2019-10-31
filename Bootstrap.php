@@ -42,9 +42,9 @@ use Shopware\Plugins\FatchipCTPayment\Bootstrap\Models;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Logger;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Debit;
 
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendIndex;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\Templates;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendRiskManagement;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\AfterBackendOrderGetListHook;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\OrderList;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendOrder;
 
 /**
@@ -186,16 +186,14 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $subscribers = [
             [Shopware\Plugins\FatchipCTPayment\Subscribers\ControllerPath::class, $this->Path()],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Service::class, null],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\Templates::class, $this],
+            [Shopware\Plugins\FatchipCTPayment\Subscribers\TemplateRegistration::class, $this],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Checkout::class, null],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Klarna::class, null],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\RiskManagement::class, $container],
             [Logger::class, null],
-            [PostDispatchBackendIndex::class, null],
-            [PostDispatchBackendRiskManagement::class, null],
+            [Templates::class, null],
             [Debit::class, null],
-            [AfterBackendOrderGetListHook::class, null],
-            [PostDispatchBackendOrder::class, null],
+            [OrderList::class, null],
         ];
 
         foreach ($subscribers as $subscriberClass) {

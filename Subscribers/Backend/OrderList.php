@@ -44,7 +44,7 @@ use Exception;
  *
  * @package Shopware\Plugins\FatchipCTPayment\Subscribers
  */
-class AfterBackendOrderGetListHook implements SubscriberInterface
+class OrderList implements SubscriberInterface
 {
     /**
      * return array with all subscribed events
@@ -115,11 +115,6 @@ class AfterBackendOrderGetListHook implements SubscriberInterface
             throw new RuntimeException('Unknown attribute base class');
         }
 
-        // roman.wedemeier@fatchip.de: 19.12.2018
-        //
-        // Before, here was an additional check, whether given Detail $detail
-        // has an Attribute_OrderDetail, but i think, that at this point it
-        // should be clear, that no OrderDetailAttribute exists on given Detail
         $attribute = new Attribute_OrderDetail();
 
         $detail->setAttribute($attribute);

@@ -28,7 +28,6 @@
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
-use Enlight\Event\SubscriberInterface;
 use Shopware\Components\Theme\LessDefinition;
 use \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap as Bootstrap;
 
@@ -37,7 +36,7 @@ use \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap as Bootstrap;
  *
  * @package Shopware\Plugins\FatchipCTPayment\Subscribers
  */
-class Templates implements SubscriberInterface
+class TemplateRegistration extends AbstractSubscriber
 {
     /**
      * Path.
@@ -76,23 +75,10 @@ class Templates implements SubscriberInterface
     }
 
     /**
-     * ToDO update Docblock
-     * Selectes the template directory based on the requested module as well as the
-     * template version, when requesting the frontend. Backend and API requests
-     * as well as frontend requests with a template version < 3 use the 'old'
-     * emotion templates, whereas frontend requests with a template version >= 3
-     * use the new responsive theme templates.
-     *
      * @param \Enlight_Event_EventArgs $args
      */
     public function onPostDispatchSecure(\Enlight_Event_EventArgs $args)
     {
-        $subject = $args->getSubject();
-        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
-
-        //TODO: move to debit subscriber
-        $subject->View()->FatchipCTPaymentIbanAnon = $pluginConfig['lastschriftAnon'] == 'Aus' ? 0 : 1;
-
         // Add the template directory for the used template type
         $this->templateManager->addTemplateDir(
             $this->path . 'Views/' . 'responsive' . '/'

@@ -37,7 +37,7 @@ use Enlight_Event_EventArgs;
  *
  * @package Shopware\Plugins\FatchipCTPayment\Subscribers
  */
-class PostDispatchBackendIndex implements SubscriberInterface
+class Templates implements SubscriberInterface
 {
     /**
      * Returns the subscribed events
@@ -46,7 +46,11 @@ class PostDispatchBackendIndex implements SubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return ['Enlight_Controller_Action_PostDispatch_Backend_Index' => 'onPostDispatchBackendIndex'];
+        return [
+            'Enlight_Controller_Action_PostDispatch_Backend_Index' => 'onPostDispatchBackendIndex',
+            'Enlight_Controller_Action_PostDispatch_Backend_RiskManagement' => 'onBackendRiskManagementPostDispatch',
+            'Enlight_Controller_Action_PostDispatch_Backend_Order' => 'fatchipCTExtendController_Backend_Order'
+        ];
     }
 
     /**
@@ -73,5 +77,34 @@ class PostDispatchBackendIndex implements SubscriberInterface
         }
 
         $view->extendsTemplate('responsive/backend/index/computop.tpl');
+    }
+
+    /**
+     * Adds Javascript to risk management backend
+     *
+     * @param Enlight_Controller_ActionEventArgs $args
+     */
+    public function onBackendRiskManagementPostDispatch(Enlight_Controller_ActionEventArgs $args)
+    {
+        $view = $args->getSubject()->View();
+        $view->extendsTemplate('backend/fcct_risk_management/controller/main.js');
+        $view->extendsTemplate('backend/fcct_risk_management/controller/risk_management.js');
+        $view->extendsTemplate('backend/fcct_risk_management/store/risks.js');
+        $view->extendsTemplate('backend/fcct_risk_management/store/trafficLights.js');
+        $view->extendsTemplate('backend/fcct_risk_management/view/risk_management/container.js');
+    }
+
+    /**
+     * Adds Javascript to order backend
+     *
+     * @param Enlight_Controller_ActionEventArgs $args
+     */
+    public function fatchipCTExtendController_Backend_Order(Enlight_Controller_ActionEventArgs $args)
+    {
+        $view = $args->getSubject()->View();
+        $view->extendsTemplate('backend/fcct_order/controller/detail.js');
+        $view->extendsTemplate('backend/fcct_order/model/position.js');
+        $view->extendsTemplate('backend/fcct_order/view/detail/overview.js');
+        $view->extendsTemplate('backend/fcct_order/view/detail/position.js');
     }
 }

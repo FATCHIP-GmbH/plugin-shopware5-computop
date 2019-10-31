@@ -34,9 +34,10 @@ use Enlight_Controller_ActionEventArgs;
 use Exception;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
-class Klarna implements SubscriberInterface
+class Klarna extends AbstractSubscriber
 {
     /**
      * Returns an array of event names this subscriber wants to listen to.

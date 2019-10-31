@@ -28,12 +28,10 @@
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
-use Enlight\Event\SubscriberInterface;
-
 /**
  * provide paths to custom controllers
  */
-class ControllerPath implements SubscriberInterface
+class ControllerPath extends AbstractSubscriber
 {
 
     /**

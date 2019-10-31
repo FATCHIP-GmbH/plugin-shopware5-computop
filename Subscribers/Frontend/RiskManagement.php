@@ -29,11 +29,11 @@
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
-use Enlight\Event\SubscriberInterface;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTCrif\CRIF;
 use Fatchip\CTPayment\CTPaymentService;
 use Shopware\Components\DependencyInjection\Container;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
 /**
@@ -41,7 +41,7 @@ use Shopware\Plugins\FatchipCTPayment\Util;
  *
  * @package Shopware\Plugins\MoptPaymentPayone\Subscribers
  */
-class RiskManagement implements SubscriberInterface
+class RiskManagement extends AbstractSubscriber
 {
 
     const allowedCountries = ['DE', 'AT', 'CH', 'NL'];

@@ -28,12 +28,10 @@
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
-use Enlight\Event\SubscriberInterface;
 use Exception;
 use Fatchip\CTPayment\CTPaymentMethodIframe;
 use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
 use Shopware\Components\Logger;
-use Shopware\Components\Theme\LessDefinition;
 use Shopware\Plugins\FatchipCTPayment\Util;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap;
@@ -43,7 +41,7 @@ use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap;
  *
  * @package Shopware\Plugins\FatchipCTPayment\Subscribers
  */
-class Checkout implements SubscriberInterface
+class Checkout extends AbstractSubscriber
 {
     /**
      * These params should not be send with the computop requests and are filtered out in prepareComputopRequest
@@ -557,13 +555,6 @@ class Checkout implements SubscriberInterface
                 $params['FatchipComputopPaymentData']['fatchip_computop_ideal_issuer']
             );
         }
-
-        /* if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_sofort_issuer']) && $paymentName === 'fatchip_computop_sofort') {
-             $session->offsetSet('FatchipComputopSofortIssuer',
-               $params['FatchipComputopPaymentData']['fatchip_computop_sofort_issuer']
-             );
-         }
-        */
     }
 
     /**
