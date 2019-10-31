@@ -29,6 +29,7 @@
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
+use Shopware\Components\Theme\LessDefinition;
 use \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap as Bootstrap;
 
 /**
@@ -69,7 +70,8 @@ class Templates implements SubscriberInterface
         return array(
             'Enlight_Controller_Action_PostDispatchSecure' => 'onPostDispatchSecure',
             // used for menu logos
-            'Enlight_Controller_Action_PostDispatch_Backend_Index' => 'addTemplateDir'
+            'Enlight_Controller_Action_PostDispatch_Backend_Index' => 'addTemplateDir',
+            'Theme_Compiler_Collect_Plugin_Less' => 'onThemeCompilerCollectPluginLess'
         );
     }
 
@@ -88,6 +90,7 @@ class Templates implements SubscriberInterface
         $subject = $args->getSubject();
         $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
 
+        //TODO: move to debit subscriber
         $subject->View()->FatchipCTPaymentIbanAnon = $pluginConfig['lastschriftAnon'] == 'Aus' ? 0 : 1;
 
         // Add the template directory for the used template type
@@ -105,6 +108,18 @@ class Templates implements SubscriberInterface
         // Add the template directory for the used template type
         $this->templateManager->addTemplateDir(
             $this->path . 'Views/' . 'responsive' . '/'
+        );
+    }
+
+    /**
+     * Adds all.less to less definistion
+     * @return LessDefinition
+     */
+    public function onThemeCompilerCollectPluginLess()
+    {
+        return new LessDefinition(
+            [],
+            [__DIR__ . '/../Views/frontend/_public/src/less/all.less']
         );
     }
 }

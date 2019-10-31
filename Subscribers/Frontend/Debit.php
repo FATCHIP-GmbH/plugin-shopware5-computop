@@ -30,7 +30,7 @@ use Enlight_Hook_HookArgs;
 
 use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscribers\AbstractAccountSubscriber;
 
-class AfterAccountSavePaymentActionHook extends AbstractAccountSubscriber
+class Debit extends AbstractAccountSubscriber
 {
     /**
      * return array with all subscribed events
@@ -41,6 +41,7 @@ class AfterAccountSavePaymentActionHook extends AbstractAccountSubscriber
     {
         return [
             'Shopware_Controllers_Frontend_Account::savePaymentAction::after' => 'account__savePaymentAction__after',
+            'Shopware_Controllers_Frontend_Account::paymentAction::after' => 'account__paymentAction__after'
         ];
     }
 
@@ -86,6 +87,27 @@ class AfterAccountSavePaymentActionHook extends AbstractAccountSubscriber
                     $params['fatchip_computop_lastschrift_iban_anon']
                 );
             }
+        }
+    }
+
+    /**
+     * assign saved payment data to view
+     *
+     * @param Enlight_Hook_HookArgs $arguments
+     */
+    public function account__paymentAction__after(Enlight_Hook_HookArgs $arguments)
+    {
+        $subject = $arguments->getSubject();
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+
+        if ($userData['additional']['payment']['name'] === 'fatchip_computop_lastschrift') {
+            $paymentData['lastschriftbank'] = $this->utils->getUserLastschriftBank($userData);
+            $paymentData['lastschriftiban'] = $this->utils->getUserLastschriftIban($userData);
+            $paymentData['lastschriftkontoinhaber'] = $this->utils->getUserLastschriftKontoinhaber($userData);
+        }
+
+        if ( ! empty($paymentData)) {
+            $subject->View()->FatchipCTPaymentData = $paymentData;
         }
     }
 }

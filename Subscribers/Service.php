@@ -31,6 +31,7 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 use Fatchip\CTPayment\CTPaymentService;
+use Shopware\Plugins\FatchipCTPayment\Util;
 
 /**
  * Class Service
@@ -49,6 +50,8 @@ class Service implements SubscriberInterface
         return [
             'Enlight_Bootstrap_InitResource_FatchipCTPaymentApiClient' =>
                 'onInitApiClient',
+            'Enlight_Bootstrap_InitResource_FatchipCTPaymentUtils' =>
+                'onInitUtils',
         ];
     }
 
@@ -62,5 +65,14 @@ class Service implements SubscriberInterface
         $config = $plugin->Config()->toArray();
         return new CTPaymentService($config);
 
+    }
+
+    /**
+     * initialises util
+     * @return Util
+     */
+    public function onInitUtils()
+    {
+        return new Util();
     }
 }

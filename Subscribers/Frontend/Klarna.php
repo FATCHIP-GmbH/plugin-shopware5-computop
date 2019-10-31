@@ -36,7 +36,7 @@ use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
-class CheckoutPayment implements SubscriberInterface
+class Klarna implements SubscriberInterface
 {
     /**
      * Returns an array of event names this subscriber wants to listen to.
@@ -70,6 +70,7 @@ class CheckoutPayment implements SubscriberInterface
     {
         return [
             'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostDispatchFrontendCheckoutPayment',
+            'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostDispatchFrontendCheckoutFinish',
         ];
     }
 
@@ -107,29 +108,21 @@ class CheckoutPayment implements SubscriberInterface
     }
 
     /**
-     * @param CTOrder $ctOrder
-     * @param KlarnaPayments $payment
+     * Deletes all Klarna relevant session vars and selects the store's default payment as default payment for the user.
+     *
+     * @param Enlight_Controller_ActionEventArgs $args
      */
-    public function callUpdateArticleList($ctOrder, $payment)
+    public function onPostDispatchFrontendCheckoutFinish(Enlight_Controller_ActionEventArgs $args)
     {
-        $session = Shopware()->Session();
-        $articleList = $payment->createArticleListBase64();
-        $currentAmount = $ctOrder->getAmount();
+        if ($args->getSubject()->Request()->getActionName() !== 'finish') {
+            return;
+        }
 
-        $payId = $session->offsetGet('FatchipCTKlarnaPaymentSessionResponsePayID');
-        $transId = $session->offsetGet('FatchipCTKlarnaPaymentSessionResponseTransID');
-        $currency = $ctOrder->getCurrency();
-        $eventToken = 'UEO';
+        /** @var Util $utils */
+        $utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
 
-        $payment->storeKlarnaUpdateArtikelListRequestParams(
-            $payId,
-            $transId,
-            $currentAmount,
-            $currency,
-            $eventToken,
-            $articleList
-        );
+        $utils->cleanSessionVars();
 
-        $payment->requestKlarnaUpdateArticleList();
+        $utils->selectDefaultPayment();
     }
 }

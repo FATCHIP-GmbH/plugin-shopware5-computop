@@ -90,7 +90,6 @@ class Checkout implements SubscriberInterface
         return array(
             'Shopware_Controllers_Frontend_Checkout::saveShippingPaymentAction::after' => 'onAfterPaymentAction',
             'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostdispatchFrontendCheckout',
-            'Theme_Compiler_Collect_Plugin_Less' => 'onThemeCompilerCollectPluginLess',
         );
     }
 
@@ -580,19 +579,6 @@ class Checkout implements SubscriberInterface
                 $params['FatchipComputopPaymentData']['fatchip_computop_afterpay_installment_productnr']
             );
         }
-    }
-
-
-    /**
-     * Adds all.less to less definistion
-     * @return LessDefinition
-     */
-    public function onThemeCompilerCollectPluginLess()
-    {
-        return new LessDefinition(
-            [],
-            [__DIR__ . '/../Views/frontend/_public/src/less/all.less']
-        );
     }
 
     /** Duplicate methods from payment controller

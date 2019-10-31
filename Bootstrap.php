@@ -39,10 +39,8 @@ use Shopware\Plugins\FatchipCTPayment\Bootstrap\Menu;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\RiskRules;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Models;
 
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\PostDispatchFrontendLogger;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\SecurePostDispatchFrontendLogger;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AfterAccountPaymentActionHook;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AfterAccountSavePaymentActionHook;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Logger;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Debit;
 
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendIndex;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendRiskManagement;
@@ -188,25 +186,20 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $subscribers = [
             [Shopware\Plugins\FatchipCTPayment\Subscribers\ControllerPath::class, $this->Path()],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Service::class, null],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\Utils::class, null],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Templates::class, $this],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Checkout::class, null],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\CheckoutPayment::class, null],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\CheckoutFinish::class, null],
+            [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Klarna::class, null],
 //            [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Address::class, null],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\FrontendRiskManagement::class, $container],
+            [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\RiskManagement::class, $container],
             // [Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder::class, $container],
-            // [Shopware\Plugins\FatchipCTPayment\Subscribers\Logger::class, null],
+
 
             // [Shopware\Plugins\FatchipCTPayment\Subscribers\PostDispatchBackendRiskManagement::class, null],
-            [PostDispatchFrontendLogger::class, null],
-            [SecurePostDispatchFrontendLogger::class, null],
+            [Logger::class, null],
             [PostDispatchBackendIndex::class, null],
             [PostDispatchBackendRiskManagement::class, null],
-            [AfterAccountSavePaymentActionHook::class, null],
-            [AfterAccountPaymentActionHook::class, null],
+            [Debit::class, null],
             [AfterBackendOrderGetListHook::class, null],
-            [PostDispatchBackendOrder::class, null],
             [PostDispatchBackendOrder::class, null],
         ];
 
