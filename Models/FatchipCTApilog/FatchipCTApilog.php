@@ -40,7 +40,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Class FatchipCTApilog
 
  *
- * @ORM\Entity(repositoryClass="Repository")
+ * @ORM\Entity()
  * @ORM\Table(name="s_plugin_fatchip_computop_api_log")
  * @ORM\HasLifecycleCallbacks
  */

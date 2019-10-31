@@ -36,7 +36,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Class FatchipCTIdealIssuers
  *
- * @ORM\Entity(repositoryClass="Repository")
+ * @ORM\Entity()
  * @ORM\Table(name="s_plugin_fatchip_computop_ideal_issuers")
  */
 class FatchipCTIdealIssuers extends ModelEntity

@@ -30,13 +30,8 @@
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Backend;
 
 use Enlight\Event\SubscriberInterface;
-use Enlight_Event_EventArgs;
 
-/**
- * Class Logger
- *
- * @package Shopware\Plugins\FatchipCTPayment\Subscribers
- */
+
 class Templates implements SubscriberInterface
 {
     /**
@@ -58,7 +53,7 @@ class Templates implements SubscriberInterface
      *
      * @param Enlight_Event_EventArgs $args
      */
-    public function onPostDispatchBackendIndex(Enlight_Event_EventArgs $args)
+    public function onPostDispatchBackendIndex(\Enlight_Controller_ActionEventArgs $args)
     {
         /** @var \Shopware_Controllers_Backend_Index $subject */
         $subject = $args->get('subject');
@@ -84,7 +79,7 @@ class Templates implements SubscriberInterface
      *
      * @param Enlight_Controller_ActionEventArgs $args
      */
-    public function onBackendRiskManagementPostDispatch(Enlight_Controller_ActionEventArgs $args)
+    public function onBackendRiskManagementPostDispatch(\Enlight_Controller_ActionEventArgs $args)
     {
         $view = $args->getSubject()->View();
         $view->extendsTemplate('backend/fcct_risk_management/controller/main.js');
@@ -99,7 +94,7 @@ class Templates implements SubscriberInterface
      *
      * @param Enlight_Controller_ActionEventArgs $args
      */
-    public function fatchipCTExtendController_Backend_Order(Enlight_Controller_ActionEventArgs $args)
+    public function fatchipCTExtendController_Backend_Order(\Enlight_Controller_ActionEventArgs $args)
     {
         $view = $args->getSubject()->View();
         $view->extendsTemplate('backend/fcct_order/controller/detail.js');

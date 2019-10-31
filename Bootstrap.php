@@ -32,6 +32,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Forms;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Attributes;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Payments;
@@ -43,9 +44,7 @@ use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Logger;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Debit;
 
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\Templates;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendRiskManagement;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\OrderList;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendOrder;
 
 /**
  * Class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
@@ -70,7 +69,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     {
         $minimumVersion = $this->getInfo()['compatibility']['minimumVersion'];
         if (!$this->assertMinimumVersion($minimumVersion)) {
-            throw new \RuntimeException("At least Shopware {$minimumVersion} is required");
+            throw new RuntimeException("At least Shopware {$minimumVersion} is required");
         }
 
         $this->removeOldKlarnaPayments();
@@ -172,7 +171,9 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      * us to register additional events on the fly. This way you won't ever need to reinstall you
      * plugin for new events - any event and hook can simply be registered in the event subscribers
      *
+     *
      * @param Enlight_Event_EventArgs $args
+     *
      */
     public function onStartDispatch(Enlight_Event_EventArgs $args)
     {
@@ -203,23 +204,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     }
 
     /**
-     * Updates the database scheme from an existing doctrine model.
-     */
-    protected function updateSchema()
-    {
-
-        $em = $this->Application()->Models();
-        $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
-        $classes = $this->getModelClasses($em);
-
-        try {
-            // $tool->updateSchema($classes, true);
-        } catch (Exception $e) {
-            // ignore
-        }
-    }
-
-    /**
      * Returns plugin info
      *
      * @return array
@@ -235,7 +219,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         $info['label'] = $info['label']['de'];
         $info['version'] = $info['currentVersion'];
-        $info['description'] = '<p><img src="data:image/png;base64,' . $logo . '" /></p>' .$info['description'];
+        $info['description'] = '<p><img alt="Logo" src="data:image/png;base64,' . $logo . '" /></p>' .$info['description'];
 
         return $info;
     }
@@ -383,7 +367,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      * @return \Fatchip\CTPayment\CTResponse
      */
     public function callComputopService($requestParams, $payment, $requestType, $url){
-        $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
+        $log = new FatchipCTApilog();
         $log->setPaymentName($payment::paymentClass);
         $log->setRequest($requestType);
         $log->setRequestDetails(json_encode($requestParams));
@@ -419,7 +403,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     public function logRedirectParams($requestParams, $paymentName, $requestType, $response){
         // fix wrong amount is logged PHP Version >= 7.1 see https://stackoverflow.com/questions/42981409/php7-1-json-encode-float-issue/43056278
         $requestParams['amount'] = (string) $requestParams['amount'];
-        $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
+        $log = new FatchipCTApilog();
         $log->setPaymentName($paymentName);
         $log->setRequest($requestType);
         $log->setRequestDetails(json_encode($requestParams));
