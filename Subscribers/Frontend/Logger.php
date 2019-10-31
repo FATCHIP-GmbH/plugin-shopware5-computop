@@ -1,7 +1,4 @@
 <?php
-
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
-
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,18 +26,62 @@
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
+use Enlight\Event\SubscriberInterface;
 use Enlight_Controller_ActionEventArgs;
 use Enlight_Exception;
 
+use Monolog\Handler\RotatingFileHandler;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscribers\AbstractLoggerSubscriber;
+use Shopware\Plugins\FatchipCTPayment\Util;
 
 /**
  * Class Logger
  *
  * @package Shopware\Plugins\FatchipCTPayment\Subscribers
  */
-class Logger extends AbstractLoggerSubscriber
+class Logger implements SubscriberInterface
 {
+    /**
+     * @var $logger \Shopware\Components\Logger
+     */
+    protected $logger;
+
+    /**
+     * FatchipCTPayment Plugin Bootstrap Class
+     *
+     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     */
+    protected $plugin;
+
+    /**
+     * FatchipCTPayment Configuration
+     *
+     * @var array
+     */
+    protected $config;
+
+    /**
+     * Logger constructor
+     */
+    public function __construct()
+    {
+        $this->plugin = Shopware()->Container()->get('plugins')->Frontend()->FatchipCTPayment();
+        $this->config = $this->plugin->Config()->toArray();
+
+        // ToDO use ternary operator here
+        // Shopware()->Application() is deprecated
+        $logPath = Shopware()->DocPath();
+
+        if (Util::isShopwareVersionGreaterThanOrEqual('5.1')) {
+            $logFile = $logPath . 'var/log/FatchipCTPayment_production.log';
+        } else {
+            $logFile = $logPath . 'logs/FatchipCTPayment_production.log';
+        }
+        $rfh = new RotatingFileHandler($logFile, 14);
+        $this->logger = new \Shopware\Components\Logger('FatchipCTPayment');
+        $this->logger->pushHandler($rfh);
+    }
+
     /**
      * Returns the subscribed events
      *
@@ -97,5 +138,18 @@ class Logger extends AbstractLoggerSubscriber
                 $this->logger->debug('Template Vars:', $subject->View()->Engine()->smarty->tpl_vars);
             }
         }
+    }
+
+    /**
+     * Checks if it is a controller for a FatchipCT Payment Method
+     *
+     * @param $controllerName
+     *
+     * @return bool
+     */
+    public function isFatchipCTController($controllerName)
+    {
+        // strpos returns false or int for position
+        return is_int(strpos($controllerName, 'FatchipCT'));
     }
 }

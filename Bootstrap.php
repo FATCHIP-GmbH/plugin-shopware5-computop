@@ -189,12 +189,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Templates::class, $this],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Checkout::class, null],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Klarna::class, null],
-//            [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Address::class, null],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\RiskManagement::class, $container],
-            // [Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder::class, $container],
-
-
-            // [Shopware\Plugins\FatchipCTPayment\Subscribers\PostDispatchBackendRiskManagement::class, null],
             [Logger::class, null],
             [PostDispatchBackendIndex::class, null],
             [PostDispatchBackendRiskManagement::class, null],
