@@ -239,18 +239,6 @@ class Checkout extends AbstractSubscriber
             $paymentData['afterpayinstallmentiban'] = $this->utils->getUserAfterpayInstallmentIban($userData);
 
 
-            if ($this->utils->needSocialSecurityNumberForKlarna() || isset($userData['billingaddress']['company'])) {
-                $paymentData['socialsecuritynumber'] = $this->utils->getuserSSN($userData);
-                $paymentData['showsocialsecuritynumber'] = true;
-                $paymentData['SSNLabel'] = $this->utils->getSocialSecurityNumberLabelForKlarna($userData);
-                $paymentData['SSNMaxLen'] = $this->utils->getSSNLength($userData);
-            }
-
-            if ($this->utils->needAnnualSalaryForKlarna($userData)) {
-                $paymentData['showannualsalary'] = true;
-                $paymentData['annualsalary'] = $this->utils->getUserAnnualSalary($userData);
-            }
-
             $payments = $view->getAssign('sPayments');
 
             foreach ($payments as $index => $payment) {

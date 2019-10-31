@@ -621,23 +621,6 @@ class Util
     }
 
     /**
-     * checks social security number should be collected for this order.
-     * SSN is needed in DK, FI, SE and NO and not in other countries
-     * @return bool
-     */
-    public function needSocialSecurityNumberForKlarna()
-    {
-        if ($countryIso = $this->getBillingIsoForCurrentOrder()) {
-            //only if billingcountry in DK, FI, SE, NO we show the social security number field
-            if ($countryIso == 'DK' || $countryIso == 'FI' || $countryIso == 'SE' || $countryIso == 'NO') {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * * Klarna is only available for Private persons in DE, AT and NL. So for companies we block Klarna in these countries
      * @param $userData
      * @return bool

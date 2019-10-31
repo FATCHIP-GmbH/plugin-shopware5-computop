@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnusedParameterInspection */
 
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
@@ -32,6 +33,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Fatchip\CTPayment\CTResponse;
 use Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Forms;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Attributes;
@@ -364,14 +366,14 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      * @param $requestType
      * @param $url
      *
-     * @return \Fatchip\CTPayment\CTResponse
+     * @return CTResponse
      */
     public function callComputopService($requestParams, $payment, $requestType, $url){
         $log = new FatchipCTApilog();
         $log->setPaymentName($payment::paymentClass);
         $log->setRequest($requestType);
         $log->setRequestDetails(json_encode($requestParams));
-        /** @var \Fatchip\CTPayment\CTResponse $response */
+        /** @var CTResponse $response */
         $response =  $payment->callComputop($requestParams, $url);
         $log->setTransId($response->getTransID());
         $log->setPayId($response->getPayID());
@@ -395,7 +397,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      * @param array $requestParams
      * @param string $paymentName
      * @param string $requestType
-     * @param \Fatchip\CTPayment\CTResponse $response
+     * @param CTResponse $response
      *
      * @return void
      * @throws Exception
