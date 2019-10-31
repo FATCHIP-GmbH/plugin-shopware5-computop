@@ -70,24 +70,31 @@ class Klarna extends AbstractSubscriber
     public static function getSubscribedEvents()
     {
         return [
-            'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostDispatchFrontendCheckoutPayment',
-            'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostDispatchFrontendCheckoutFinish',
+            'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostDispatchFrontendCheckout',
         ];
     }
 
     /**
      * @param Enlight_Controller_ActionEventArgs $args
      */
-    public function onPostDispatchFrontendCheckoutPayment(Enlight_Controller_ActionEventArgs $args)
+    public function onPostDispatchFrontendCheckout(Enlight_Controller_ActionEventArgs $args)
     {
         $controller = $args->getSubject();
+        $utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+
+        //clear klarna session variables on finish
+        if ($args->getSubject()->Request()->getActionName() === 'finish') {
+            $utils->cleanSessionVars();
+
+            $utils->selectDefaultPayment();
+        }
 
         if ($controller->Request()->getActionName() !== 'payment') {
             return;
         }
 
         /** @var Util $utils */
-        $utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
 
         $paymentName = $utils->getPaymentNameFromId($userData['additional']['payment']['id']);
@@ -106,24 +113,5 @@ class Klarna extends AbstractSubscriber
 
             return;
         }
-    }
-
-    /**
-     * Deletes all Klarna relevant session vars and selects the store's default payment as default payment for the user.
-     *
-     * @param Enlight_Controller_ActionEventArgs $args
-     */
-    public function onPostDispatchFrontendCheckoutFinish(Enlight_Controller_ActionEventArgs $args)
-    {
-        if ($args->getSubject()->Request()->getActionName() !== 'finish') {
-            return;
-        }
-
-        /** @var Util $utils */
-        $utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
-
-        $utils->cleanSessionVars();
-
-        $utils->selectDefaultPayment();
     }
 }
