@@ -71,17 +71,25 @@ class AmazonPay extends AbstractSubscriber
     public static function getSubscribedEvents()
     {
         return [
-            'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostDispatchFrontendCheckout',
-            'Shopware_Modules_Admin_GetPaymentMeans_DataFilter' => 'hidePaymentInList'
+            'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => array(
+                array('onPostDispatchFrontendCheckout'),
+                array('hidePaymentInList')
+            )
         ];
     }
 
     /**
-     * @param Enlight_Event_EventArgs $args
+     * @param Enlight_Controller_ActionEventArgs $args
      */
-    public function hidePaymentInList(Enlight_Event_EventArgs $args) {
-            $payments = $this->utils->hidePayment('fatchip_computop_amazonpay', $args->getReturn());
-            $args->setReturn($payments);
+    public function hidePaymentInList(Enlight_Controller_ActionEventArgs $args) {
+        $controller = $args->getSubject();
+        $view = $controller->View();
+        $request = $controller->Request();
+
+        if ($request->getActionName() == 'shippingPayment') {
+            $payments = $this->utils->hidePayment('fatchip_computop_amazonpay', $view->getAssign('sPayments'));
+            $view->assign('sPayments', $payments);
+        }
     }
 
     /**
