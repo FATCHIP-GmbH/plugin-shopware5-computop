@@ -31,6 +31,7 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 use Enlight\Event\SubscriberInterface;
 use Enlight_Controller_Action;
 use Enlight_Controller_ActionEventArgs;
+use Enlight_Event_EventArgs;
 use Exception;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
@@ -71,7 +72,30 @@ class AfterPay extends AbstractSubscriber
     {
         return [
             'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostDispatchFrontendCheckout',
+            'Shopware_Modules_Admin_GetPaymentMeans_DataFilter' => 'hidePaymentInList'
         ];
+    }
+
+    /**
+     * @param Enlight_Event_EventArgs $args
+     */
+    public function hidePaymentInList(Enlight_Event_EventArgs $args) {
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+
+        $payments = $args->getReturn();
+
+        if (!$this->utils->afterpayProductExistsforBasketValue($this->config['merchantID'], $userData, false))
+        {
+            $payments = $this->utils->hidePayment('fatchip_computop_afterpay_installment', $payments);
+        }
+
+        if (!empty($userData['billingaddress']['company']))
+        {
+            $payments = $this->utils->hidePayment('fatchip_computop_afterpay_installment', $payments);
+            $payments = $this->utils->hidePayment('fatchip_computop_afterpay_invoice', $payments);
+        }
+
+        $args->setReturn($payments);
     }
 
     /**

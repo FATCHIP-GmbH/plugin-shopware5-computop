@@ -26,14 +26,13 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
+namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
 use Exception;
 use Fatchip\CTPayment\CTPaymentMethodIframe;
-use Shopware\Components\Logger;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 use Shopware\Plugins\FatchipCTPayment\Util;
 use Fatchip\CTPayment\CTOrder\CTOrder;
-use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap;
 
 /**
  * Class Checkout
@@ -43,23 +42,10 @@ use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap;
 class Checkout extends AbstractSubscriber
 {
     /**
-     * These params should not be send with the computop requests and are filtered out in prepareComputopRequest
-     */
-    const paramexcludes = ['MAC' => 'MAC', 'mac' => 'mac', 'blowfishPassword' => 'blowfishPassword', 'merchantID' => 'merchantID'];
-
-    private $paymentClass = 'KlarnaPayments';
-
-    /**
      * PaymentService
      * @var \Fatchip\CTPayment\CTPaymentService $service
      */
     protected $paymentService;
-
-    /**
-     * Array containing the pluginsetting
-     * @var array
-     */
-    protected $config;
 
     protected $plugin;
 
@@ -118,7 +104,6 @@ class Checkout extends AbstractSubscriber
      */
     public function onPostdispatchFrontendCheckout(\Enlight_Controller_ActionEventArgs $args)
     {
-        $this->config = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
         $subject = $args->getSubject();
@@ -151,32 +136,6 @@ class Checkout extends AbstractSubscriber
             $paymentData['lastschriftkontoinhaber'] = $this->utils->getUserLastschriftKontoinhaber($userData);
             $paymentData['afterpayinstallmentiban'] = $this->utils->getUserAfterpayInstallmentIban($userData);
 
-
-            $payments = $view->getAssign('sPayments');
-
-            //removes express payment types and blocked from list
-            foreach ($payments as $index => $payment) {
-                if ($payment['name'] === 'fatchip_computop_afterpay_installment') {
-                    $afterpayInstallmentIndex = $index;
-                }
-                if ($payment['name'] === 'fatchip_computop_afterpay_invoice') {
-                    $afterpayInvoiceIndex = $index;
-                }
-            }
-
-            //TODO: move to afterpay subscriber
-            // remove afterpay_installment if there are no installment conditions available
-            if (!$this->utils->afterpayProductExistsforBasketValue($this->config['merchantID'], $userData, false)
-                || !empty($userData['billingaddress']['company']))
-            {
-                unset($payments[$afterpayInstallmentIndex]);
-            }
-            if (!empty($userData['billingaddress']['company']))
-            {
-                unset($payments[$afterpayInvoiceIndex]);
-            }
-
-            $view->assign('sPayments', $payments);
             $view->assign('FatchipCTPaymentData', $paymentData);
 
             // assign payment errors and error template to view

@@ -43,6 +43,8 @@ abstract class AbstractSubscriber implements SubscriberInterface
 
     protected $logger;
 
+    protected $config;
+
     private $router;
 
     public function __construct()
@@ -50,5 +52,6 @@ abstract class AbstractSubscriber implements SubscriberInterface
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
         $this->router = Shopware()->Front()->Router();
         $this->logger = new Logger('FatchipCTPayment');
+        $this->config = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
     }
 }

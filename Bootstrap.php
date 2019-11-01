@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnused */
 /** @noinspection PhpUnusedParameterInspection */
 
 /**
@@ -42,16 +43,21 @@ use Shopware\Plugins\FatchipCTPayment\Bootstrap\Menu;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\RiskRules;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Models;
 
+use Shopware\Plugins\FatchipCTPayment\Subscribers\ControllerPath;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AfterPay;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AmazonPay;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Checkout;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\CreditCard;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\EasyCredit;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Klarna;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Logger;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Debit;
 
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\Templates;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\OrderList;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\PaypalExpress;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Service;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\TemplateRegistration;
 
 /**
  * Class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
@@ -100,7 +106,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         $this->subscribeEvent('Enlight_Controller_Front_DispatchLoopStartup', 'onStartDispatch');
 
-        //$this->updateSchema();
         return ['success' => true, 'invalidateCache' => ['backend', 'config', 'proxy']];
     }
 
@@ -193,11 +198,11 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         //TODO: deactivate subscribers if payment method is inactive
         $subscribers = [
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\Service::class, null],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\ControllerPath::class, $this->Path()],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\TemplateRegistration::class, $this],
-            [\Shopware\Plugins\FatchipCTPayment\Subscribers\Checkout::class, null],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Klarna::class, null],
+            [Service::class, null],
+            [ControllerPath::class, $this->Path()],
+            [TemplateRegistration::class, $this],
+            [Checkout::class, null],
+            [Klarna::class, null],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\RiskManagement::class, $container],
             [Logger::class, null],
             [Templates::class, null],
