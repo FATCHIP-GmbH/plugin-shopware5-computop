@@ -595,6 +595,7 @@ class Util
     }
 
     /**
+     * TODO: move to helper
      * checks if AmazonPay is enabled
      *
      * @return bool
@@ -609,7 +610,7 @@ class Util
 
     /**
      * checks if Papyal is enabled
-     * ToDO refactor to generic method
+     * ToDO move to helper
      *
      * @return bool
      */
@@ -713,7 +714,9 @@ class Util
         return preg_replace('/\s+/', '', $input);
     }
 
-    /** retrieve json config file from afterbuy
+    /**
+     * TODO: move to afterpay helper
+     * retrieve json config file from afterbuy
      * @param $merchantId String
      * @param $userData array
      * @return bool
@@ -809,69 +812,6 @@ class Util
     }
 
     /**
-     * @return KlarnaPayments
-     */
-    public function createCTKlarnaPayment()
-    {
-        // TODO: store payment as singleton?
-        $userData = Shopware()->Modules()->Admin()->sGetUserData();
-        $paymentName = $userData['additional']['payment']['name'];
-
-        $payTypes = [
-            'pay_now' => 'pay_now',
-            'pay_later' => 'pay_later',
-            'slice_it' => 'pay_over_time'
-        ];
-
-        // set payType to correct value
-        foreach ($payTypes as $key => $value) {
-            $length = strlen($key);
-            if (substr($paymentName, -$length) === $key) {
-                $payType = $value;
-                break;
-            }
-        }
-
-        if (!isset($payType)) {
-            return null;
-        }
-
-        $articleList = KlarnaPayments::createArticleListBase64();
-        $taxAmount = KlarnaPayments::calculateTaxAmount($articleList);
-
-        $URLConfirm = Shopware()->Front()->Router()->assemble([
-            'controller' => 'checkout',
-            'action' => 'finish',
-            'forceSecure' => true,
-        ]);
-
-        $ctOrder = $this->createCTOrder();
-
-        if (!$ctOrder instanceof CTOrder) {
-            return null;
-        }
-
-        $klarnaAccount = $this->pluginConfig['klarnaaccount'];
-
-        /** @var KlarnaPayments $payment */
-        $payment = $this->container->get('FatchipCTPaymentApiClient')->getPaymentClass('KlarnaPayments', $this->pluginConfig);
-        $payment->storeKlarnaSessionRequestParams(
-            $taxAmount,
-            $articleList,
-            $URLConfirm,
-            $payType,
-            $klarnaAccount,
-            $userData['additional']['country']['countryiso'],
-            $ctOrder->getAmount(),
-            $ctOrder->getCurrency(),
-            KlarnaPayments::generateTransID(),
-            $_SERVER['REMOTE_ADDR']
-        );
-
-        return $payment;
-    }
-
-    /**
      * Selects the store's default payment as default payment for the user.
      */
     public function selectDefaultPayment()
@@ -895,27 +835,6 @@ class Util
                 'defaultPayment' => $defaultPayment
             ]);
         } catch (ORMException $e) {
-        }
-    }
-
-    public function cleanSessionVars()
-    {
-        $session = Shopware()->Session();
-        $sessionVars = [
-            'FatchipCTKlarnaPaymentSessionResponsePayID',
-            'FatchipCTKlarnaPaymentSessionResponseTransID',
-            'FatchipCTKlarnaPaymentTokenExt',
-            'FatchipCTKlarnaPaymentArticleListBase64',
-            'FatchipCTKlarnaPaymentAmount',
-            'FatchipCTKlarnaPaymentAddressHash',
-            'FatchipCTKlarnaPaymentHash',
-            'FatchipCTKlarnaAccessToken',
-            'FatchipCTKlarnaPaymentDispatchID',
-            'CTError',
-        ];
-
-        foreach ($sessionVars as $sessionVar) {
-            $session->offsetUnset($sessionVar);
         }
     }
 

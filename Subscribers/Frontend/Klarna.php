@@ -31,35 +31,19 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
 use Enlight_Controller_ActionEventArgs;
 use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
+use Fatchip\CTPayment\CTHelper\KlarnaPayments as Helper;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 
 class Klarna extends AbstractSubscriber
 {
+
+
+    public function __construct() {
+        $this->helper = new Helper();
+        parent::__construct();
+    }
+
     /**
-     * Returns an array of event names this subscriber wants to listen to.
-     *
-     * The array keys are event names and the value can be:
-     *
-     *  * The method name to call (position defaults to 0)
-     *  * An array composed of the method name to call and the priority
-     *  * An array of arrays composed of the method names to call and respective
-     *    priorities, or 0 if unset
-     *
-     * For instance:
-     *
-     * <code>
-     * return array(
-     *     'eventName0' => 'callback0',
-     *     'eventName1' => array('callback1'),
-     *     'eventName2' => array('callback2', 10),
-     *     'eventName3' => array(
-     *         array('callback3_0', 5),
-     *         array('callback3_1'),
-     *         array('callback3_2')
-     *     )
-     * );
-     *
-     * </code>
      *
      * @return array The event names to listen to
      */
@@ -83,7 +67,7 @@ class Klarna extends AbstractSubscriber
 
         //clear klarna session variables on finish
         if ($args->getSubject()->Request()->getActionName() === 'finish') {
-            $this->utils->cleanSessionVars();
+            $this->helper->cleanSessionVars();
 
             $this->utils->selectDefaultPayment();
         }
@@ -97,7 +81,7 @@ class Klarna extends AbstractSubscriber
             }
 
             /** @var KlarnaPayments $payment */
-            $payment = $this->utils->createCTKlarnaPayment();
+            $payment = $this->helper->createCTKlarnaPayment();
 
             $errMsg = 'Durch die Nachträgliche Änderung, muss die Zahlart neu ausgewählt werden. Bitte wählen Sie erneut
             eine Zahlart aus. Durch Klick auf "Weiter" kann auch die aktuell ausgewählte Zahlart genutzt werden.';
@@ -120,7 +104,7 @@ class Klarna extends AbstractSubscriber
                     $params['CTError'] = $ctError;
                 }
                 /** @var KlarnaPayments $payment */
-                $payment = $this->utils->createCTKlarnaPayment();
+                $payment = $this->helper->createCTKlarnaPayment();
 
                 if (!$payment) {
                     $args->getSubject()->forward('shippingPayment', 'checkout');

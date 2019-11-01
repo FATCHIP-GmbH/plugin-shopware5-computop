@@ -47,6 +47,8 @@ abstract class AbstractSubscriber implements SubscriberInterface
 
     private $router;
 
+    public $helper;
+
     public function __construct()
     {
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
