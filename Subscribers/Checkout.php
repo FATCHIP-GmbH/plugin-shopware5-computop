@@ -30,7 +30,6 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Exception;
 use Fatchip\CTPayment\CTPaymentMethodIframe;
-use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
 use Shopware\Components\Logger;
 use Shopware\Plugins\FatchipCTPayment\Util;
 use Fatchip\CTPayment\CTOrder\CTOrder;
@@ -149,70 +148,12 @@ class Checkout extends AbstractSubscriber
 
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
-        $paymentType = $this->utils->getKlarnaPaymentTypeFromPaymentName($paymentName);
+
         if (!$request->isDispatched() || $response->isException()) {
             return;
         }
 
         if ($request->getActionName() == 'shippingPayment') {
-            if (stristr($paymentName, 'klarna')) {
-                if ($ctError = $session->offsetGet('CTError')) {
-                    $session->offsetUnset('CTError');
-                    $params['CTError'] = $ctError;
-                }
-                /** @var KlarnaPayments $payment */
-                $payment = $this->utils->createCTKlarnaPayment();
-
-                if (! $payment) {
-                    $args->getSubject()->forward('shippingPayment', 'checkout');
-                }
-
-                if ($payment->needNewKlarnaSession()) {
-                    // accessToken does not exist in session, so a new session must be created
-                    $CTResponse = $payment->requestSession();
-
-                    if ($CTResponse->getStatus() === 'FAILED') {
-                        $msg = 'Es ist ein Fehler aufgetreten, bitte wählen Sie eine andere Zahlart aus.';
-                        $ctError = [
-                            'CTErrorMessage' => $msg,
-                            'CTErrorCode' => '',
-                        ];
-                        $params['CTError'] = $ctError;
-                    }
-
-                    $articleListBase64 = $payment->getKlarnaSessionRequestParams()['ArticleList'];
-                    $amount = $payment->getKlarnaSessionRequestParams()['amount'];
-                    $addressHash = $payment->createAddressHash();
-                    $dispatch = $session->offsetGet('sDispatch');
-
-                    $session->offsetSet('FatchipCTKlarnaPaymentArticleListBase64', $articleListBase64);
-                    $session->offsetSet('FatchipCTKlarnaPaymentAmount', $amount);
-                    $session->offsetSet('FatchipCTKlarnaPaymentAddressHash', $addressHash);
-                    $session->offsetSet('FatchipCTKlarnaPaymentDispatchID', $dispatch);
-
-                    $session->offsetSet('FatchipCTKlarnaPaymentSessionResponsePayID', $CTResponse->getPayID());
-                    $session->offsetSet('FatchipCTKlarnaPaymentSessionResponseTransID', $CTResponse->getTransID());
-
-                    $accessToken = $CTResponse->getAccesstoken();
-
-                    $session->offsetSet('FatchipCTKlarnaAccessToken', $accessToken);
-                }
-            }
-
-            // prepare klarna authorize call
-            // TODO: only, when klarna payment active
-            // TODO: possibly store data in $paymentData?
-            $view->assign('paymentType', $paymentType);
-            $view->assign('billingAddressStreetAddress', $userData['billingaddress']['street']);
-            $view->assign('billingAddressCity', $userData['billingaddress']['city']);
-            $view->assign('billingAddressGivenName', $userData['billingaddress']['firstname']);
-            $view->assign('billingAddressPostalCode', $userData['billingaddress']['zipcode']);
-            $view->assign('billingAddressFamilyName', $userData['billingaddress']['lastname']);
-            $view->assign('billingAddressEmail', $userData['additional']['user']['email']);
-            $view->assign('purchaseCurrency', Shopware()->Container()->get('currency')->getShortName());
-            $view->assign('locale', str_replace('_', '-', Shopware()->Shop()->getLocale()->getLocale()));
-            $view->assign('billingAddressCountry', $userData['additional']['country']['countryiso']);
-            // END prepare klarna authorize call
 
             $birthday = explode('-', $this->utils->getUserDoB($userData));
             $paymentData['birthday'] = $birthday[2];
@@ -221,8 +162,7 @@ class Checkout extends AbstractSubscriber
             $paymentData['phone'] = $this->utils->getUserPhone($userData);
             $paymentData['idealIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
             $paymentData['idealIssuer'] = $session->offsetGet('FatchipComputopIdealIssuer');
-            //$paymentData['sofortIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
-            //$paymentData['sofortIssuer'] = $session->offsetGet('FatchipComputopSofortIssuer');
+
             $paymentData['isCompany'] = !empty($userData['billingaddress']['company']);
             $paymentData['lastschriftbank'] = $this->utils->getUserLastschriftBank($userData);
             $paymentData['lastschriftiban'] = $this->utils->getUserLastschriftIban($userData);
@@ -285,44 +225,10 @@ class Checkout extends AbstractSubscriber
         }
 
         // ToDo find a better way, it would be nice to move this to the Amazon Controller
-        if ($this->utils->isAmazonPayActive()) {
-
-            $amznLogout = $request->get('amznLogout');
-            $amznError = $request->get('amznError');
-
-            if($amznError) {
-                $view->assign('amznError', $amznError);
-            }
-
-            if($amznLogout) {
-                $view->assign('performAmazonLogout', true);
-            }
-            // assign plugin Config to View
-            $view->assign('fatchipCTPaymentConfig', $pluginConfig);
-            // extend cart and ajax cart with Amazon Button
-            $view->extendsTemplate('frontend/checkout/ajax_cart_amazon.tpl');
-            $view->extendsTemplate('frontend/checkout/cart_amazon.tpl');
-        }
-
-        // ToDo find a better way, it would be nice to move this to the Amazon Controller
         // ToDo refactor both methods to isPaymentactive($paymentName)
-        if ($this->utils->isPaypalExpressActive()) {
-            // assign plugin Config to View
-            $view->assign('fatchipCTPaymentConfig', $pluginConfig);
-            // extend cart and ajax cart with Amazon Button
-            $view->extendsTemplate('frontend/checkout/ajax_cart_paypal.tpl');
-            $view->extendsTemplate('frontend/checkout/cart_paypal.tpl');
-        }
 
-        if ($request->getActionName() == 'confirm' && $paymentName === 'fatchip_computop_easycredit') {
 
-            $view->extendsTemplate('frontend/checkout/easycredit_confirm.tpl');
 
-            // add easyCredit Information to view
-            if ($session->offsetGet('FatchipComputopEasyCreditInformation')) {
-                $view->assign('FatchipComputopEasyCreditInformation', $session->offsetGet('FatchipComputopEasyCreditInformation'));
-            }
-        }
 
         if ($request->getActionName() == 'confirm' && $paymentName == 'fatchip_computop_creditcard' && $pluginConfig['creditCardMode'] == 'SILENT') {
 

@@ -42,12 +42,14 @@ use Shopware\Plugins\FatchipCTPayment\Bootstrap\Menu;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\RiskRules;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Models;
 
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AmazonPay;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\EasyCredit;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Logger;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Debit;
 
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\Templates;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\OrderList;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\PaypalExpress;
 
 /**
  * Class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
@@ -199,6 +201,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             [Debit::class, null],
             [OrderList::class, null],
             [EasyCredit::class, null],
+            [AmazonPay::class, null],
+            [PaypalExpress::class, null],
         ];
 
         foreach ($subscribers as $subscriberClass) {

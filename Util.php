@@ -525,6 +525,7 @@ class Util
      */
     public function getActivatedKlarnaPaymentTypes()
     {
+        /** @noinspection SqlResolve */
         $sql = 'SELECT name FROM s_core_paymentmeans WHERE name like "%klarna%"';
 
         $result = Shopware()->Db()->fetchCol($sql);
@@ -637,64 +638,6 @@ class Util
         }
 
         return false;
-    }
-
-
-    /**
-     * returns the label for the SSN field for klarna
-     * For comapanies the label is Handelsregisternummer, for NO we add last 5 digits
-     * @param $userData
-     * @return string
-     */
-    public function getSocialSecurityNumberLabelForKlarna($userData)
-    {
-        $label = 'Sozialversicherungsnummer (letzte 4 Ziffern)';
-        //For comapnies, the field is called Handelsregisternummer
-        if (isset($userData['billingaddress']['company'])) {
-            $label = '
-            Handelsregisternummer';
-        } else if ($countryIso = $this->getBillingIsoForCurrentOrder()) {
-            //only if billingcountry in DK, FI, SE, NO we show the social security number field
-            if ($countryIso == 'NO') {
-                $label = 'Sozialversicherungsnummer (letzte 5 Ziffern)';
-            }
-        }
-
-        return $label;
-    }
-
-    /**
-     * Annual salary is mandatory for Private Customers in Denmark
-     * @param $userData
-     * @return bool
-     */
-    public function needAnnualSalaryForKlarna($userData)
-    {
-        if (!isset($userData['billingaddress']['company']) && $countryIso = $this->getBillingIsoForCurrentOrder()) {
-            //only if billingcountry in DK, FI, SE, NO we show the social security number field
-            if ($countryIso == 'DK') {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns the length for the SSN field - for NO its 5, for other countries 4. For companies there is no max length
-     * @param $userData
-     * @return int|null
-     */
-    public function getSSNLength($userData)
-    {
-        //for companies, we do not need a max length
-        if (!isset($userData['billingaddress']['company']) && $countryIso = $this->getBillingIsoForCurrentOrder()) {
-            if ($countryIso == 'NO') {
-                return 5;
-            }
-            return 4;
-        }
-        return null;
     }
 
     /**

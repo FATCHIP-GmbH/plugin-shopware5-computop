@@ -46,6 +46,7 @@ class EasyCredit extends AbstractSubscriber
     {
         return array(
             'Shopware_Controllers_Frontend_Checkout::saveShippingPaymentAction::after' => 'onAfterPaymentAction',
+            'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostdispatchFrontendCheckout',
         );
     }
 
@@ -65,6 +66,30 @@ class EasyCredit extends AbstractSubscriber
         if ($request->getActionName() === 'saveShippingPayment') {
             if ($paymentName === 'fatchip_computop_easycredit') {
                 $subject->redirect(['controller' => 'FatchipCTEasyCredit', 'action' => 'gateway', 'forceSecure' => true]);
+            }
+        }
+    }
+
+    /**
+     * @param \Enlight_Controller_ActionEventArgs $args
+     */
+    public function onPostDispatchFrontendCheckout(\Enlight_Controller_ActionEventArgs $args)
+    {
+        $controller = $args->getSubject();
+        $view = $controller->View();
+        $request = $controller->Request();
+        $session = Shopware()->Session();
+
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
+
+        if ($request->getActionName() == 'confirm' && $paymentName === 'fatchip_computop_easycredit') {
+
+            $view->extendsTemplate('frontend/checkout/easycredit_confirm.tpl');
+
+            // add easyCredit Information to view
+            if ($session->offsetGet('FatchipComputopEasyCreditInformation')) {
+                $view->assign('FatchipComputopEasyCreditInformation', $session->offsetGet('FatchipComputopEasyCreditInformation'));
             }
         }
     }
