@@ -42,6 +42,7 @@ use Shopware\Plugins\FatchipCTPayment\Bootstrap\Menu;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\RiskRules;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Models;
 
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\EasyCredit;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Logger;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Debit;
 
@@ -197,6 +198,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             [Templates::class, null],
             [Debit::class, null],
             [OrderList::class, null],
+            [EasyCredit::class, null],
         ];
 
         foreach ($subscribers as $subscriberClass) {

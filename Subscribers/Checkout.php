@@ -56,9 +56,6 @@ class Checkout extends AbstractSubscriber
      */
     protected $paymentService;
 
-    /** @var Util $utils * */
-    protected $utils;
-
     /**
      * Array containing the pluginsetting
      * @var array
@@ -98,7 +95,6 @@ class Checkout extends AbstractSubscriber
      */
     public function onAfterPaymentAction(\Enlight_Hook_HookArgs $args)
     {
-        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
         $subject = $args->getSubject();
         $request = $subject->Request();
         $params = $request->getParams();
@@ -125,10 +121,6 @@ class Checkout extends AbstractSubscriber
             $this->updateUserAfterpayInstallmentIban($paymentName, $session->get('sUserId'), $params);
             $this->setAfterpayProductNrInSession($params);
             $this->setIssuerInSession($paymentName, $params);
-
-            if ($paymentName === 'fatchip_computop_easycredit') {
-                $subject->redirect(['controller' => 'FatchipCTEasyCredit', 'action' => 'gateway', 'forceSecure' => true]);
-            }
         }
     }
 
@@ -143,7 +135,6 @@ class Checkout extends AbstractSubscriber
      */
     public function onPostdispatchFrontendCheckout(\Enlight_Controller_ActionEventArgs $args)
     {
-        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
         // refactor to $this->config
         $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
         $this->config = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
