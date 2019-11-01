@@ -31,14 +31,13 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 use Enlight\Event\SubscriberInterface;
 use Enlight_Controller_Action;
 use Enlight_Controller_ActionEventArgs;
-use Enlight_Event_EventArgs;
 use Exception;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
-class PaypalExpress extends AbstractSubscriber
+class CreditCard extends AbstractSubscriber
 {
     /**
      * Returns an array of event names this subscriber wants to listen to.
@@ -72,16 +71,7 @@ class PaypalExpress extends AbstractSubscriber
     {
         return [
             'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostDispatchFrontendCheckout',
-            'Shopware_Modules_Admin_GetPaymentMeans_DataFilter' => 'hidePaymentInList'
         ];
-    }
-
-    /**
-     * @param Enlight_Event_EventArgs $args
-     */
-    public function hidePaymentInList(Enlight_Event_EventArgs $args) {
-        $payments = $this->utils->hidePayment('fatchip_computop_paypal_express', $args->getReturn());
-        $args->setReturn($payments);
     }
 
     /**
@@ -91,14 +81,32 @@ class PaypalExpress extends AbstractSubscriber
     {
         $controller = $args->getSubject();
         $view = $controller->View();
+        $request = $controller->Request();
         $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
 
-        if ($this->utils->isPaypalExpressActive()) {
-            // assign plugin Config to View
-            $view->assign('fatchipCTPaymentConfig', $pluginConfig);
-            // extend cart and ajax cart with Amazon Button
-            $view->extendsTemplate('frontend/checkout/ajax_cart_paypal.tpl');
-            $view->extendsTemplate('frontend/checkout/cart_paypal.tpl');
+        $session = Shopware()->Session();
+
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
+
+        if ($request->getActionName() == 'confirm' && $paymentName == 'fatchip_computop_creditcard' && $pluginConfig['creditCardMode'] == 'SILENT') {
+
+            $view->assign('fatchipCTCreditCardMode', "1");
+            // the creditcard form send all data directly to payssl.aspx
+            // set the neccessary pre-encrypted fields in view
+            $payment = $this->getPaymentClassForGatewayAction();
+            $payment->setCapture('MANUAL');
+
+            $shopContext = Shopware()->Container()->get('shopware_storefront.context_service')->getShopContext();
+            $shopName = $shopContext->getShop()->getName();
+            $payment->setOrderDesc($shopName);
+
+            $requestParams = $payment->getRedirectUrlParams();
+            unset($requestParams['Template']);
+            $silentParams = $payment->prepareSilentRequest($requestParams);
+            $session->offsetSet('fatchipCTRedirectParams', $requestParams);
+            $view->assign('fatchipCTCreditCardSilentParams', $silentParams);
+            $view->extendsTemplate('frontend/checkout/creditcard_confirm.tpl');
         }
     }
 }

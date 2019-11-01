@@ -28,6 +28,7 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 
+use Shopware\Components\Logger;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
 abstract class AbstractSubscriber implements SubscriberInterface
@@ -35,8 +36,19 @@ abstract class AbstractSubscriber implements SubscriberInterface
     /** @var Util $utils **/
     protected $utils;
 
+    /**
+     * FatchipCTpayment Plugin Bootstrap Class
+     * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     */
+
+    protected $logger;
+
+    private $router;
+
     public function __construct()
     {
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        $this->router = Shopware()->Front()->Router();
+        $this->logger = new Logger('FatchipCTPayment');
     }
 }

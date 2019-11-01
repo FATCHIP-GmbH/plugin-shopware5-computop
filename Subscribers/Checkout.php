@@ -46,7 +46,7 @@ class Checkout extends AbstractSubscriber
      * These params should not be send with the computop requests and are filtered out in prepareComputopRequest
      */
     const paramexcludes = ['MAC' => 'MAC', 'mac' => 'mac', 'blowfishPassword' => 'blowfishPassword', 'merchantID' => 'merchantID'];
-    private $router;
+
     private $paymentClass = 'KlarnaPayments';
 
     /**
@@ -61,18 +61,7 @@ class Checkout extends AbstractSubscriber
      */
     protected $config;
 
-    /**
-     * FatchipCTpayment Plugin Bootstrap Class
-     * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
-     */
     protected $plugin;
-    protected $logger;
-
-    public function __construct()
-    {
-        $this->router = Shopware()->Front()->Router();
-        $this->logger = new Logger('FatchipCTPayment');
-    }
 
     /**
      * return array with all subscribed events
@@ -99,12 +88,7 @@ class Checkout extends AbstractSubscriber
         $params = $request->getParams();
         $session = Shopware()->Session();
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
-        // Todo check in all sw versions
-        // sw 5.0
-        // sw 5.1
-        // sw 5.2
-        // sw 5.3
-        // sw 5.4
+
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
         // ToDo prevent forward to checkout confirm if params are missing
@@ -134,8 +118,6 @@ class Checkout extends AbstractSubscriber
      */
     public function onPostdispatchFrontendCheckout(\Enlight_Controller_ActionEventArgs $args)
     {
-        // refactor to $this->config
-        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
         $this->config = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
@@ -172,20 +154,8 @@ class Checkout extends AbstractSubscriber
 
             $payments = $view->getAssign('sPayments');
 
+            //removes express payment types and blocked from list
             foreach ($payments as $index => $payment) {
-                if ($payment['name'] === 'fatchip_computop_amazonpay') {
-                    $amazonPayIndex = $index;
-                }
-                if ($payment['name'] === 'fatchip_computop_paypal_express') {
-                    $paypalExpressIndex = $index;
-                }
-                if ($payment['name'] === 'fatchip_computop_klarna_invoice') {
-                    $klarnaInvoiceIndex = $index;
-                }
-                if ($payment['name'] === 'fatchip_computop_klarna_installment') {
-                    $klarnaInsatallmentIndex = $index;
-                }
-
                 if ($payment['name'] === 'fatchip_computop_afterpay_installment') {
                     $afterpayInstallmentIndex = $index;
                 }
@@ -194,6 +164,7 @@ class Checkout extends AbstractSubscriber
                 }
             }
 
+            //TODO: move to afterpay subscriber
             // remove afterpay_installment if there are no installment conditions available
             if (!$this->utils->afterpayProductExistsforBasketValue($this->config['merchantID'], $userData, false)
                 || !empty($userData['billingaddress']['company']))
@@ -205,14 +176,6 @@ class Checkout extends AbstractSubscriber
                 unset($payments[$afterpayInvoiceIndex]);
             }
 
-            unset ($payments[$amazonPayIndex]);
-            unset ($payments[$paypalExpressIndex]);
-
-            if ($this->utils->isKlarnaBlocked($userData)) {
-                unset ($payments[$klarnaInvoiceIndex]);
-                unset ($payments[$klarnaInsatallmentIndex]);
-            }
-
             $view->assign('sPayments', $payments);
             $view->assign('FatchipCTPaymentData', $paymentData);
 
@@ -222,32 +185,6 @@ class Checkout extends AbstractSubscriber
             // logic shouldnt be here or in the template ...
             $view->assign('CTError', $params['CTError']);
 
-        }
-
-        // ToDo find a better way, it would be nice to move this to the Amazon Controller
-        // ToDo refactor both methods to isPaymentactive($paymentName)
-
-
-
-
-        if ($request->getActionName() == 'confirm' && $paymentName == 'fatchip_computop_creditcard' && $pluginConfig['creditCardMode'] == 'SILENT') {
-
-            $view->assign('fatchipCTCreditCardMode', "1");
-            // the creditcard form send all data directly to payssl.aspx
-            // set the neccessary pre-encrypted fields in view
-            $payment = $this->getPaymentClassForGatewayAction();
-            $payment->setCapture('MANUAL');
-
-            $shopContext = Shopware()->Container()->get('shopware_storefront.context_service')->getShopContext();
-            $shopName = $shopContext->getShop()->getName();
-            $payment->setOrderDesc($shopName);
-
-            $requestParams = $payment->getRedirectUrlParams();
-            unset($requestParams['Template']);
-            $silentParams = $payment->prepareSilentRequest($requestParams);
-            $session->offsetSet('fatchipCTRedirectParams', $requestParams);
-            $view->assign('fatchipCTCreditCardSilentParams', $silentParams);
-            $view->extendsTemplate('frontend/checkout/creditcard_confirm.tpl');
         }
 
         if ($request->getActionName() == 'confirm' && (strpos($paymentName, fatchip_computop) === 0)) {
@@ -268,25 +205,6 @@ class Checkout extends AbstractSubscriber
 
             }
         }
-
-        if ($request->getActionName() == 'shippingPayment' && $paymentName == 'fatchip_computop_afterpay_installment') {
-            $view->assign('fatchipCTPaymentConfig', $pluginConfig);
-        }
-
-        // prevent skipping of shippingpayment
-        if ($request->getActionName() == 'confirm' && $paymentName == 'fatchip_computop_afterpay_installment') {
-            $session = Shopware()->Session();
-            if (!$session->offsetExists('FatchipComputopAfterpayProductNr')) {
-                $subject->redirect(
-                    array(
-                        'controller' => 'checkout',
-                        'action' => 'shippingPayment',
-                    )
-                );
-            }
-
-        }
-
     }
 
     /**

@@ -42,7 +42,9 @@ use Shopware\Plugins\FatchipCTPayment\Bootstrap\Menu;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\RiskRules;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Models;
 
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AfterPay;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AmazonPay;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\CreditCard;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\EasyCredit;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Logger;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Debit;
@@ -189,11 +191,12 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         // the effects are currently unknown, beware because of backward compatibility
         $container = Shopware()->Container();
 
+        //TODO: deactivate subscribers if payment method is inactive
         $subscribers = [
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\ControllerPath::class, $this->Path()],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Service::class, null],
+            [Shopware\Plugins\FatchipCTPayment\Subscribers\ControllerPath::class, $this->Path()],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\TemplateRegistration::class, $this],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\Checkout::class, null],
+            [\Shopware\Plugins\FatchipCTPayment\Subscribers\Checkout::class, null],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Klarna::class, null],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\RiskManagement::class, $container],
             [Logger::class, null],
@@ -203,6 +206,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             [EasyCredit::class, null],
             [AmazonPay::class, null],
             [PaypalExpress::class, null],
+            [CreditCard::class, null],
+            [AfterPay::class, null],
         ];
 
         foreach ($subscribers as $subscriberClass) {

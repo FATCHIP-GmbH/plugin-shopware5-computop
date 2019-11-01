@@ -31,14 +31,13 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 use Enlight\Event\SubscriberInterface;
 use Enlight_Controller_Action;
 use Enlight_Controller_ActionEventArgs;
-use Enlight_Event_EventArgs;
 use Exception;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
-class PaypalExpress extends AbstractSubscriber
+class AfterPay extends AbstractSubscriber
 {
     /**
      * Returns an array of event names this subscriber wants to listen to.
@@ -72,16 +71,7 @@ class PaypalExpress extends AbstractSubscriber
     {
         return [
             'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostDispatchFrontendCheckout',
-            'Shopware_Modules_Admin_GetPaymentMeans_DataFilter' => 'hidePaymentInList'
         ];
-    }
-
-    /**
-     * @param Enlight_Event_EventArgs $args
-     */
-    public function hidePaymentInList(Enlight_Event_EventArgs $args) {
-        $payments = $this->utils->hidePayment('fatchip_computop_paypal_express', $args->getReturn());
-        $args->setReturn($payments);
     }
 
     /**
@@ -91,14 +81,27 @@ class PaypalExpress extends AbstractSubscriber
     {
         $controller = $args->getSubject();
         $view = $controller->View();
+        $request = $controller->Request();
         $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
 
-        if ($this->utils->isPaypalExpressActive()) {
-            // assign plugin Config to View
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
+
+        if ($request->getActionName() == 'shippingPayment' && $paymentName == 'fatchip_computop_afterpay_installment') {
             $view->assign('fatchipCTPaymentConfig', $pluginConfig);
-            // extend cart and ajax cart with Amazon Button
-            $view->extendsTemplate('frontend/checkout/ajax_cart_paypal.tpl');
-            $view->extendsTemplate('frontend/checkout/cart_paypal.tpl');
+        }
+
+        // prevent skipping of shippingpayment
+        if ($request->getActionName() == 'confirm' && $paymentName == 'fatchip_computop_afterpay_installment') {
+            $session = Shopware()->Session();
+            if (!$session->offsetExists('FatchipComputopAfterpayProductNr')) {
+                $controller->redirect(
+                    array(
+                        'controller' => 'checkout',
+                        'action' => 'shippingPayment',
+                    )
+                );
+            }
         }
     }
 }
