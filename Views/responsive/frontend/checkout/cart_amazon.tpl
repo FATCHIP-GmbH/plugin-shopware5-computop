@@ -10,7 +10,7 @@
                 {s name="AmazonErrorDeclined" namespace="frontend/checkout/CTErrors"}Es ist ein Fehler aufgetreten: Die Zahlung wurde seitens Amazon zurückgewiesen.{/s}
             </div>
         </div>
-    {elseif $amznError = 'SCO'}
+    {elseif $amznError == 'SCO'}
         <div class="alert is--error is--rounded">
             <div class="alert--icon">
                 <i class="icon--element icon--cross"></i>

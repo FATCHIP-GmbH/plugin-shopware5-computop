@@ -57,6 +57,12 @@ class KlarnaPayments extends AbstractSubscriber
         $request = $controller->Request();
         $session = Shopware()->Session();
 
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
+
+        if (!stristr($paymentName, 'klarna')) { // no klarna payment method
+            return;
+        }
 
         //clear klarna session variables on finish
         if ($args->getSubject()->Request()->getActionName() === 'finish') {
@@ -66,13 +72,6 @@ class KlarnaPayments extends AbstractSubscriber
         }
 
         if ($controller->Request()->getActionName() === 'payment') {
-            $userData = Shopware()->Modules()->Admin()->sGetUserData();
-
-            $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
-            if (!stristr($paymentName, 'klarna')) { // no klarna payment method
-                return;
-            }
-
             /** @var PaymentClass $payment */
             $payment = $this->helper->createCTKlarnaPayment();
 
