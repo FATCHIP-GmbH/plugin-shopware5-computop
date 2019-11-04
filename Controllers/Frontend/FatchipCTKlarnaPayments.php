@@ -51,6 +51,8 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
      */
     public $paymentClass = 'KlarnaPayments';
 
+    //TODO: instantiate paymentClass in init
+
     protected function storeAuthorizationTokenAction()
     {
         try {

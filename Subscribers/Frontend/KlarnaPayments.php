@@ -1,5 +1,6 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+/** @noinspection SpellCheckingInspection */
+/** @noinspection PhpUnused */
 
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
@@ -30,19 +31,11 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
 
 use Enlight_Controller_ActionEventArgs;
-use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
-use Fatchip\CTPayment\CTHelper\KlarnaPayments as Helper;
+use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments as PaymentClass;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 
-class Klarna extends AbstractSubscriber
+class KlarnaPayments extends AbstractSubscriber
 {
-
-
-    public function __construct() {
-        $this->helper = new Helper();
-        parent::__construct();
-    }
-
     /**
      *
      * @return array The event names to listen to
@@ -80,7 +73,7 @@ class Klarna extends AbstractSubscriber
                 return;
             }
 
-            /** @var KlarnaPayments $payment */
+            /** @var PaymentClass $payment */
             $payment = $this->helper->createCTKlarnaPayment();
 
             $errMsg = 'Durch die Nachträgliche Änderung, muss die Zahlart neu ausgewählt werden. Bitte wählen Sie erneut
@@ -103,7 +96,7 @@ class Klarna extends AbstractSubscriber
                     $session->offsetUnset('CTError');
                     $params['CTError'] = $ctError;
                 }
-                /** @var KlarnaPayments $payment */
+                /** @var PaymentClass $payment */
                 $payment = $this->helper->createCTKlarnaPayment();
 
                 if (!$payment) {
@@ -152,6 +145,7 @@ class Klarna extends AbstractSubscriber
             $view->assign('purchaseCurrency', Shopware()->Container()->get('currency')->getShortName());
             $view->assign('locale', str_replace('_', '-', Shopware()->Shop()->getLocale()->getLocale()));
             $view->assign('billingAddressCountry', $userData['additional']['country']['countryiso']);
+            $view->assign('CTError', $params['CTError']);
         }
     }
 }

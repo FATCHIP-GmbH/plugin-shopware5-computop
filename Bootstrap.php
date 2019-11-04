@@ -50,6 +50,7 @@ use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Checkout;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\CreditCard;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\EasyCredit;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Klarna;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\KlarnaPayments;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Logger;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Debit;
 
@@ -192,8 +193,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $this->registerComponents();
         $this->registerSnippets();
 
-        //TODO: check if we should / can use the container everywehre
-        // the effects are currently unknown, beware because of backward compatibility
         $container = Shopware()->Container();
 
         //TODO: deactivate subscribers if payment method is inactive
@@ -202,7 +201,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             [ControllerPath::class, $this->Path()],
             [TemplateRegistration::class, $this],
             [Checkout::class, null],
-            [Klarna::class, null],
+            [KlarnaPayments::class, null],
             [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\RiskManagement::class, $container],
             [Logger::class, null],
             [Templates::class, null],

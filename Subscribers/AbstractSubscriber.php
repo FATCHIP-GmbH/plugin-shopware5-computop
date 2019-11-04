@@ -55,5 +55,12 @@ abstract class AbstractSubscriber implements SubscriberInterface
         $this->router = Shopware()->Front()->Router();
         $this->logger = new Logger('FatchipCTPayment');
         $this->config = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
+
+        //get helper class
+        $className = 'Fatchip\\CTPayment\\CTHelper\\' . (new \ReflectionClass($this))->getShortName();
+
+        if(class_exists($className)) {
+            $this->helper = new $className();
+        }
     }
 }

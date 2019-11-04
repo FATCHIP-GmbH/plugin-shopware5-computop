@@ -105,6 +105,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     public $paymentClass = '';
 
+    public $helper;
+
     /**
      * Init payment controller
      *
@@ -119,6 +121,14 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
         $this->session = Shopware()->Session();
         $this->router = $this->Front()->Router();
+
+        if(!empty($this->paymentClass)) {
+            $className = 'Fatchip\\CTPayment\\CTHelper\\' . $this->paymentClass;
+
+            if(class_exists($className)) {
+                $this->helper = new $className();
+            }
+        }
     }
 
     /**
