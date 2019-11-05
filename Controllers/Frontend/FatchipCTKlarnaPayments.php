@@ -55,11 +55,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
 
     protected function storeAuthorizationTokenAction()
     {
-        try {
-            $this->Front()->Plugins()->ViewRenderer()->setNoRender();
-        } catch (Exception $e) {
-            // TODO: log
-        }
+        $this->container->get('front')->Plugins()->ViewRenderer()->setNoRender();
 
         $tokenExt = $this->request->getParam('authorizationToken');
 
@@ -76,6 +72,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
         echo $encoded;
     }
 
+    //TODO: load payment class initially
     protected function getPaymentClassForGatewayAction()
     {
         $ctOrder = $this->utils->createCTOrder();
