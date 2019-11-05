@@ -116,20 +116,10 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
         $amount = $ctOrder->getAmount();
         $currency = $ctOrder->getCurrency();
         $tokenExt = $this->session->offsetGet('FatchipCTKlarnaPaymentTokenExt');
-        $eventToken = 'CNO';
 
         $this->session->offsetUnset('FatchipCTKlarnaPaymentTokenExt');
 
-        $payment->storeKlarnaOrderRequestParams(
-            $payId,
-            $transId,
-            $amount,
-            $currency,
-            $tokenExt,
-            $eventToken
-        );
-
-        $ctRequest = $payment->cleanUrlParams($payment->getKlarnaOrderRequestParams());
+        $ctRequest = $payment->cleanUrlParams($payment->getKlarnaOrderRequestParams($payId, $transId, $amount, $currency, $tokenExt));
         $response = null;
 
         try {

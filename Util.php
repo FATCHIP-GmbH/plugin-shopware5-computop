@@ -32,7 +32,6 @@ use Enlight_Controller_Action;
 use Exception;
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTOrder\CTOrder;
-use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
 use Shopware\Components\Logger;
 use Shopware\Models\Customer\Customer;
 use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap as FatchipCTPayment;

@@ -34,6 +34,9 @@ use Enlight_Controller_ActionEventArgs;
 use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments as PaymentClass;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 
+/**
+ * @property PaymentClass $payment
+ */
 class KlarnaPayments extends AbstractSubscriber
 {
     protected $paymentClass = 'KlarnaPayments';
@@ -45,15 +48,15 @@ class KlarnaPayments extends AbstractSubscriber
     public static function getSubscribedEvents()
     {
         return [
-            'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostDispatchFrontendCheckout',
+            'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => array(
+                array('onShippingPayment'),
+                array('onPayment'),
+                array('onFinish'),
+            )
         ];
     }
 
-    /**
-     * @param Enlight_Controller_ActionEventArgs $args
-     */
-    public function onPostDispatchFrontendCheckout(Enlight_Controller_ActionEventArgs $args)
-    {
+    public function onShippingPayment(Enlight_Controller_ActionEventArgs $args) {
         $controller = $args->getSubject();
         $view = $controller->View();
         $request = $controller->Request();
@@ -62,52 +65,44 @@ class KlarnaPayments extends AbstractSubscriber
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
+        if ($request->getActionName() == 'shippingPayment') {
+            $paymentType = $this->utils->getKlarnaPaymentTypeFromPaymentName($paymentName);
+
+            $view->assign('paymentType', $paymentType);
+            $view->assign('billingAddressStreetAddress', $userData['billingaddress']['street']);
+            $view->assign('billingAddressCity', $userData['billingaddress']['city']);
+            $view->assign('billingAddressGivenName', $userData['billingaddress']['firstname']);
+            $view->assign('billingAddressPostalCode', $userData['billingaddress']['zipcode']);
+            $view->assign('billingAddressFamilyName', $userData['billingaddress']['lastname']);
+            $view->assign('billingAddressEmail', $userData['additional']['user']['email']);
+            $view->assign('purchaseCurrency', Shopware()->Container()->get('currency')->getShortName());
+            $view->assign('locale', str_replace('_', '-', Shopware()->Shop()->getLocale()->getLocale()));
+            $view->assign('billingAddressCountry', $userData['additional']['country']['countryiso']);
+        }
+
         if (!stristr($paymentName, 'klarna')) { // no klarna payment method
             return;
-        }
-
-        //clear klarna session variables on finish
-        if ($args->getSubject()->Request()->getActionName() === 'finish') {
-            $this->payment->cleanSessionVars();
-
-            $this->utils->selectDefaultPayment();
-        }
-
-        if ($controller->Request()->getActionName() === 'payment') {
-            /** @var PaymentClass $payment */
-
-            $payment = $this->payment->createCTKlarnaPayment();
-
-            $errMsg = 'Durch die Nachträgliche Änderung, muss die Zahlart neu ausgewählt werden. Bitte wählen Sie erneut
-            eine Zahlart aus. Durch Klick auf "Weiter" kann auch die aktuell ausgewählte Zahlart genutzt werden.';
-
-            if ($payment->needNewKlarnaSession()) {
-                $this->utils->redirectToShippingPayment($controller, $errMsg);
-
-                return;
-            }
         }
 
         if ($request->getActionName() == 'shippingPayment') {
             $userData = Shopware()->Modules()->Admin()->sGetUserData();
             $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
-            $paymentType = $this->utils->getKlarnaPaymentTypeFromPaymentName($paymentName);
 
             if (stristr($paymentName, 'klarna')) {
                 if ($ctError = $session->offsetGet('CTError')) {
                     $session->offsetUnset('CTError');
                     $params['CTError'] = $ctError;
                 }
-                /** @var PaymentClass $payment */
-                $payment = $this->payment->createCTKlarnaPayment();
 
-                if (!$payment) {
+                $requestParams = $this->payment->createCTKlarnaPayment();
+
+                if (!$requestParams) {
                     $args->getSubject()->forward('shippingPayment', 'checkout');
                 }
 
-                if ($payment->needNewKlarnaSession()) {
+                if ($this->payment->needNewKlarnaSession()) {
                     // accessToken does not exist in session, so a new session must be created
-                    $CTResponse = $payment->requestSession();
+                    $CTResponse = $this->payment->requestSession($requestParams);
 
                     if ($CTResponse->getStatus() === 'FAILED') {
                         $msg = 'Es ist ein Fehler aufgetreten, bitte wählen Sie eine andere Zahlart aus.';
@@ -118,9 +113,9 @@ class KlarnaPayments extends AbstractSubscriber
                         $params['CTError'] = $ctError;
                     }
 
-                    $articleListBase64 = $payment->getKlarnaSessionRequestParams()['ArticleList'];
-                    $amount = $payment->getKlarnaSessionRequestParams()['amount'];
-                    $addressHash = $payment->createAddressHash();
+                    $articleListBase64 = $requestParams['ArticleList'];
+                    $amount = $requestParams['amount'];
+                    $addressHash = $this->payment->createAddressHash();
                     $dispatch = $session->offsetGet('sDispatch');
 
                     $session->offsetSet('FatchipCTKlarnaPaymentArticleListBase64', $articleListBase64);
@@ -137,17 +132,48 @@ class KlarnaPayments extends AbstractSubscriber
                 }
             }
 
-            $view->assign('paymentType', $paymentType);
-            $view->assign('billingAddressStreetAddress', $userData['billingaddress']['street']);
-            $view->assign('billingAddressCity', $userData['billingaddress']['city']);
-            $view->assign('billingAddressGivenName', $userData['billingaddress']['firstname']);
-            $view->assign('billingAddressPostalCode', $userData['billingaddress']['zipcode']);
-            $view->assign('billingAddressFamilyName', $userData['billingaddress']['lastname']);
-            $view->assign('billingAddressEmail', $userData['additional']['user']['email']);
-            $view->assign('purchaseCurrency', Shopware()->Container()->get('currency')->getShortName());
-            $view->assign('locale', str_replace('_', '-', Shopware()->Shop()->getLocale()->getLocale()));
-            $view->assign('billingAddressCountry', $userData['additional']['country']['countryiso']);
             $view->assign('CTError', $params['CTError']);
+        }
+    }
+
+    public function onPayment(Enlight_Controller_ActionEventArgs $args) {
+        $controller = $args->getSubject();
+
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
+
+        if (!stristr($paymentName, 'klarna')) { // no klarna payment method
+            return;
+        }
+
+        if ($controller->Request()->getActionName() === 'payment') {
+            /** @var PaymentClass $payment */
+
+            $errMsg = 'Durch die Nachträgliche Änderung, muss die Zahlart neu ausgewählt werden. Bitte wählen Sie erneut
+            eine Zahlart aus. Durch Klick auf "Weiter" kann auch die aktuell ausgewählte Zahlart genutzt werden.';
+
+            if ($this->payment->needNewKlarnaSession()) {
+                $this->utils->redirectToShippingPayment($controller, $errMsg);
+
+                return;
+            }
+        }
+    }
+
+    public function onFinish(Enlight_Controller_ActionEventArgs $args)
+    {
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
+
+        if (!stristr($paymentName, 'klarna')) { // no klarna payment method
+            return;
+        }
+
+        //clear klarna session variables on finish
+        if ($args->getSubject()->Request()->getActionName() === 'finish') {
+            $this->payment->cleanSessionVars();
+
+            $this->utils->selectDefaultPayment();
         }
     }
 }
