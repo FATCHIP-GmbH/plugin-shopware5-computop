@@ -36,6 +36,8 @@ use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 
 class KlarnaPayments extends AbstractSubscriber
 {
+    protected $paymentClass = 'KlarnaPayments';
+
     /**
      *
      * @return array The event names to listen to
@@ -66,17 +68,15 @@ class KlarnaPayments extends AbstractSubscriber
 
         //clear klarna session variables on finish
         if ($args->getSubject()->Request()->getActionName() === 'finish') {
-            $this->utils->cleanSessionVars();
+            $this->payment->cleanSessionVars();
 
             $this->utils->selectDefaultPayment();
         }
 
         if ($controller->Request()->getActionName() === 'payment') {
             /** @var PaymentClass $payment */
-            //TODO: init on start -> scope error
-            $test = Shopware()->Container()->get('FatchipCTPaymentApiClient')->getPaymentClass('KlarnaPayments', $this->config);
 
-            $payment = $test->createCTKlarnaPayment();
+            $payment = $this->payment->createCTKlarnaPayment();
 
             $errMsg = 'Durch die Nachträgliche Änderung, muss die Zahlart neu ausgewählt werden. Bitte wählen Sie erneut
             eine Zahlart aus. Durch Klick auf "Weiter" kann auch die aktuell ausgewählte Zahlart genutzt werden.';
@@ -99,9 +99,7 @@ class KlarnaPayments extends AbstractSubscriber
                     $params['CTError'] = $ctError;
                 }
                 /** @var PaymentClass $payment */
-                //TODO: init on start
-                $test = Shopware()->Container()->get('FatchipCTPaymentApiClient')->getPaymentClass('KlarnaPayments', $this->config);
-                $payment = $test->createCTKlarnaPayment();
+                $payment = $this->payment->createCTKlarnaPayment();
 
                 if (!$payment) {
                     $args->getSubject()->forward('shippingPayment', 'checkout');

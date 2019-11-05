@@ -41,13 +41,15 @@ abstract class AbstractSubscriber implements SubscriberInterface
      * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
 
+    protected $paymentClass;
+
     protected $logger;
 
     protected $config;
 
     private $router;
 
-    public $helper;
+    protected $payment = null;
 
     public function __construct()
     {
@@ -56,11 +58,8 @@ abstract class AbstractSubscriber implements SubscriberInterface
         $this->logger = new Logger('FatchipCTPayment');
         $this->config = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
 
-        //get helper class
-        $className = 'Fatchip\\CTPayment\\CTHelper\\' . (new \ReflectionClass($this))->getShortName();
-
-        if(class_exists($className)) {
-            $this->helper = new $className();
+        if($this->paymentClass) {
+            $this->payment = Shopware()->Container()->get('FatchipCTPaymentApiClient')->getPaymentClass('KlarnaPayments', $this->config);
         }
     }
 }
