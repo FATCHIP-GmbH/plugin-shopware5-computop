@@ -1,5 +1,4 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
@@ -28,39 +27,28 @@
 
 namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
 
+use Doctrine\ORM\ORMException;
 use Fatchip\CTPayment\CTPaymentService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Shopware\Models\Country\Country;
 use Shopware\Models\Payment\Payment;
+use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap;
 
 /**
  * Class Payments.
  *
  * creates payment methods.
  */
-class Payments
+class Payments extends Bootstrap
 {
-    /**
-     * FatchipCTpayment Plugin Bootstrap Class
-     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
-     */
-    private $plugin;
-
-    /**
-     * Payments constructor.
-     */
-    public function __construct()
-    {
-        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-    }
-
     /**
      * Create payment methods.
      *
+     * @return void
+     * @throws ORMException
      * @see CTPaymentService::getPaymentMethods()
      * @see \Shopware_Components_Plugin_Bootstrap::createPayment()
      *
-     * @return void
      */
     public function createPayments()
     {
@@ -99,6 +87,7 @@ class Payments
      * needed for upgrading form 1.0.12 / 1.0.13 to 1.0.14
      * @param $paymentMethod
      * @return void
+     * @throws ORMException
      */
     protected function updateAfterpay($paymentMethod)
     {

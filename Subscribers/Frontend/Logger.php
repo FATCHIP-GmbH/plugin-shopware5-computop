@@ -28,7 +28,6 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
 use Enlight_Controller_ActionEventArgs;
 use Enlight_Exception;
-
 use Monolog\Handler\RotatingFileHandler;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 use Shopware\Plugins\FatchipCTPayment\Util;

@@ -378,11 +378,6 @@ class Util
         }
     }
 
-    // SW 5.0 - 5.3 Compatibility
-    // 5.0 - check
-    // 5.1 - check
-    // 5.2 -
-    // 5.3 -
     /**
      * updates users phone number in customer attributes
      * @param $userId
@@ -779,7 +774,6 @@ class Util
      */
     public function createCTOrder()
     {
-        // TODO: store ctOrder as singleton?
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
 
         try {

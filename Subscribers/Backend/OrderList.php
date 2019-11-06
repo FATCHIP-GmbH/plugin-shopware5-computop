@@ -1,7 +1,4 @@
 <?php
-
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
-
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -30,12 +27,9 @@
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Backend;
 
 use Enlight_Hook_HookArgs;
-
 use Enlight\Event\SubscriberInterface;
-
 use Shopware\Models\Order\Detail;
 use Shopware\Models\Attribute\OrderDetail as Attribute_OrderDetail;
-
 use RuntimeException;
 use Exception;
 

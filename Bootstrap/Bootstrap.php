@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,39 +13,33 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
- * PHP version 5.6, 7.0, 7.1
+ * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
  * @package    FatchipCTPayment
- * @subpackage Controllers_Frontend
+ * @subpackage Bootstrap
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.computop.com
  */
 
-require_once 'FatchipCTPayment.php';
+namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
 
-/**
- * Class Shopware_Controllers_Frontend_FatchipCTPostFinance
- *
- * @category   Payment
- * @package    FatchipCTPayment
- * @subpackage Controllers_Frontend
- * @author     FATCHIP GmbH <support@fatchip.de>
- * @copyright  2018 Computop
- * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
- */
-class Shopware_Controllers_Frontend_FatchipCTPostFinance extends Shopware_Controllers_Frontend_FatchipCTPayment
+abstract class Bootstrap
 {
     /**
-     * {@inheritdoc}
-     *
-     * @var string
+     * FatchipCTpayment Plugin Bootstrap Class
+     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
-    public $paymentClass = 'PostFinance';
+    protected $plugin;
+
+    /**
+     * RiskRules constructor.
+     */
+    public function __construct()
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+    }
 }
-
-
-

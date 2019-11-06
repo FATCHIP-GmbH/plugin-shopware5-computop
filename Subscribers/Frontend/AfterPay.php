@@ -1,6 +1,4 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
-
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -28,15 +26,9 @@
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
-use Enlight\Event\SubscriberInterface;
-use Enlight_Controller_Action;
 use Enlight_Controller_ActionEventArgs;
 use Enlight_Event_EventArgs;
-use Exception;
-use Fatchip\CTPayment\CTOrder\CTOrder;
-use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
-use Shopware\Plugins\FatchipCTPayment\Util;
 
 class AfterPay extends AbstractSubscriber
 {

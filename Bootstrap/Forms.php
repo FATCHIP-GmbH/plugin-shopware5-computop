@@ -1,5 +1,4 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
@@ -28,7 +27,10 @@
 
 namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
 
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Fatchip\CTPayment\CTPaymentConfigForms;
+use Shopware\Models\Config\Element;
 use Shopware\Models\Config\Form;
 
 /**
@@ -36,22 +38,8 @@ use Shopware\Models\Config\Form;
  *
  * create the shopware backend config form.
  */
-class Forms
+class Forms extends Bootstrap
 {
-    /**
-     * FatchipCTpayment Plugin Bootstrap Class
-     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
-     */
-    private $plugin;
-
-    /**
-     * Forms constructor.
-     */
-    public function __construct()
-    {
-        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-    }
-
     /**
      * create the shopware backend config form.
      *
@@ -97,15 +85,18 @@ class Forms
         $this->createFormSelectElements(CTPaymentConfigForms::formBonitaetSelectElements);
         $this->createFormTextElements(CTPaymentConfigForms::formBonitaetElements);
 
-        $this->removeFormElements();
+        try {
+            $this->removeFormElements();
+        } catch (OptimisticLockException $e) {
+        } catch (ORMException $e) {
+        }
     }
 
     /**
      * used for removal of older obsolete config elements
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function removeFormElements() {
         $elements = [];
@@ -258,7 +249,7 @@ class Forms
                 'label' => $element['label'],
                 'required' => $element['required'],
                 'description' => $element['description'],
-                'scope' => \Shopware\Models\Config\Element::SCOPE_SHOP,
+                'scope' => Element::SCOPE_SHOP,
             ));
         }
     }
@@ -294,7 +285,7 @@ class Forms
                 'editable' => $element['editable'],
                 'store' => $element['store'],
                 'description' => $element['description'],
-                'scope' => \Shopware\Models\Config\Element::SCOPE_SHOP,
+                'scope' => Element::SCOPE_SHOP,
             ));
         }
     }

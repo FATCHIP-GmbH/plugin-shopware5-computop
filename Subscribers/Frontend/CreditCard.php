@@ -28,15 +28,9 @@
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
-use Enlight\Event\SubscriberInterface;
-use Enlight_Controller_Action;
 use Enlight_Controller_ActionEventArgs;
-use Exception;
-use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethodIframe;
-use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
-use Shopware\Plugins\FatchipCTPayment\Util;
 
 class CreditCard extends AbstractSubscriber
 {

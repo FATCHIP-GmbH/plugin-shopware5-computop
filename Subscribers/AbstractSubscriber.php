@@ -23,11 +23,9 @@
  * @link      https://www.computop.com
  */
 
-
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
-
 use Shopware\Components\Logger;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
