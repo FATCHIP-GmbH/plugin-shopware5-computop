@@ -12,6 +12,29 @@ In order to use Computop Payments via this plugin, you'll need a contract with C
 ## Installation and usage
 Visit our Wiki pages to read the [plugin documentation](https://wiki.fatchip.de/public/shopware-fatchipctpayment).
 
+## Adding a payment method
+### Reference implementations
+* KlarnaPayments
+* AmazonPay (Express)
+* Paypal Express (Express)
+
+### Add payment class
+Payment classes do contain specefic params and additional requests for payment method if needed.
+
+Folder: Components/Api/lib/CTPayment/CTPaymentMethods
+
+### Add payment controller
+Does contain gateway action and specific actions if needed.
+
+Folder: Controllers/Frontend
+Registration in: Subscribers/ControllerPath.php
+
+### Add Event Subscriber
+For extend views or listening to Shopware events
+
+Folder: Subscribers/Frontend
+Registration in: Bootstrap.php
+
 ## Author
 FATCHIP GmbH | https://www.fatchip.de | support@fatchip.de 
 
