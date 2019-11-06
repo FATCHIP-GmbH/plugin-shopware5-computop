@@ -51,8 +51,6 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
      */
     public $paymentClass = 'KlarnaPayments';
 
-    //TODO: instantiate paymentClass in init
-
     protected function storeAuthorizationTokenAction()
     {
         $this->container->get('front')->Plugins()->ViewRenderer()->setNoRender();
@@ -72,23 +70,6 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
         echo $encoded;
     }
 
-    //TODO: load payment class initially
-    protected function getPaymentClassForGatewayAction()
-    {
-        $ctOrder = $this->utils->createCTOrder();
-        $payment = $this->paymentService->getPaymentClass(
-            $this->paymentClass,
-            $this->config,
-            $ctOrder,
-            $this->router->assemble(['action' => 'success', 'forceSecure' => true]),
-            $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
-            $this->getOrderDesc(),
-            $this->getUserDataParam()
-        );
-        return $payment;
-    }
-
     /**
      * GatewayAction is overridden because there is no redirect but a server to server call is made
      *
@@ -104,19 +85,18 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
         $ctOrder = $this->utils->createCTOrder();
 
         /** @var KlarnaPayments $payment */
-        $payment = $this->getPaymentClassForGatewayAction();
+        $payment = $this->paymentService->getPaymentClass(
+            $this->paymentClass
+        );
 
         $CTPaymentURL = $payment->getCTPaymentURL();
 
         $payId = $this->session->offsetGet('FatchipCTKlarnaPaymentSessionResponsePayID');
         $transId = $this->session->offsetGet('FatchipCTKlarnaPaymentSessionResponseTransID');
-        $amount = $ctOrder->getAmount();
-        $currency = $ctOrder->getCurrency();
         $tokenExt = $this->session->offsetGet('FatchipCTKlarnaPaymentTokenExt');
-
         $this->session->offsetUnset('FatchipCTKlarnaPaymentTokenExt');
 
-        $ctRequest = $payment->cleanUrlParams($payment->getKlarnaOrderRequestParams($payId, $transId, $amount, $currency, $tokenExt));
+        $ctRequest = $payment->cleanUrlParams($payment->getKlarnaOrderRequestParams($payId, $transId, $ctOrder->getAmount(), $ctOrder->getCurrency(), $tokenExt));
         $response = null;
 
         try {

@@ -59,7 +59,7 @@ abstract class AbstractSubscriber implements SubscriberInterface
         $this->config = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
 
         if($this->paymentClass) {
-            $this->payment = Shopware()->Container()->get('FatchipCTPaymentApiClient')->getPaymentClass('KlarnaPayments', $this->config);
+            $this->payment = Shopware()->Container()->get('FatchipCTPaymentApiClient')->getPaymentClass('KlarnaPayments');
         }
     }
 }

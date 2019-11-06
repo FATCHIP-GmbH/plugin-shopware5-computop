@@ -33,6 +33,7 @@ use Enlight_Controller_Action;
 use Enlight_Controller_ActionEventArgs;
 use Exception;
 use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\CTPayment\CTPaymentMethodIframe;
 use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 use Shopware\Plugins\FatchipCTPayment\Util;
@@ -108,5 +109,29 @@ class CreditCard extends AbstractSubscriber
             $view->assign('fatchipCTCreditCardSilentParams', $silentParams);
             $view->extendsTemplate('frontend/checkout/creditcard_confirm.tpl');
         }
+    }
+
+    /** Duplicate methods from payment controller
+     * to set pre-encrypted data into shippingpayment view
+     * Helper function that creates a payment object
+     * @return CTPaymentMethodIframe
+     */
+    protected function getPaymentClassForGatewayAction()
+    {
+
+        $ctOrder = $this->utils->createCTOrder();
+        $router = Shopware()->Front()->Router();
+        $payment = $this->paymentService->getIframePaymentClass(
+            'CreditCard',
+            $this->config,
+            $ctOrder,
+            $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'success', 'forceSecure' => true]),
+            $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]),
+            $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'notify', 'forceSecure' => true]),
+            null,
+            $this->getUserDataParam()
+        );
+
+        return $payment;
     }
 }

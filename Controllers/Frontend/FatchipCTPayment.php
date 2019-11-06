@@ -506,7 +506,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         ) {
             $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->config, $ctOrder);
         } else {
-            $payment = $this->paymentService->getPaymentClass($paymentClass, $this->config, $ctOrder);
+            $payment = $this->paymentService->getPaymentClass($paymentClass);
         }
 
         $requestParams = $payment->getCaptureParams(
@@ -620,7 +620,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             ) {
                 $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->config, $ctOrder);
             } else {
-                $payment = $this->paymentService->getPaymentClass($paymentClass, $this->config, $ctOrder);
+                $payment = $this->paymentService->getPaymentClass($paymentClass);
             }
             $payID = $order->getAttribute()->getfatchipctPayid();
             $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getNumber());
@@ -683,7 +683,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             ) {
                 $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->config, $ctOrder);
             } else {
-                $payment = $this->paymentService->getPaymentClass($paymentClass, $this->config, $ctOrder);
+                $payment = $this->paymentService->getPaymentClass($paymentClass);
             }
 
             $inquireParams = $payment->getInquireParams($payID);

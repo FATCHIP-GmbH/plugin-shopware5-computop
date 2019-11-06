@@ -141,7 +141,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
     public function confirmAction()
     {
         $session = Shopware()->Session();
-        $payment = $this->paymentService->getPaymentClass($this->paymentClass, $this->config);
+        $payment = $this->paymentService->getPaymentClass($this->paymentClass);
 
         $requestParams =  $payment->getPaypalExpressCompleteParams(
             $session->offsetGet('FatchipCTPaypalExpressPayID'),

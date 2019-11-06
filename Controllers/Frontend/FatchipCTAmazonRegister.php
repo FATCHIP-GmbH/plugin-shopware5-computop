@@ -158,7 +158,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         $transID = CTPaymentMethodIframe::generateTransID();
         $session->offsetSet('fatchipCTPaymentTransID', $transID);
 
-        $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
+        $payment = $this->paymentService->getPaymentClass('AmazonPay');
         $requestParams = $payment->getAmazonLGNParams(
             $session->fatchipCTPaymentTransID,
             $session->fatchipCTAmazonAccessToken,

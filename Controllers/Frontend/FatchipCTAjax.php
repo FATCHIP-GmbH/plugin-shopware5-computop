@@ -115,7 +115,7 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         $currency = $basket["sBasket"]["sCurrencyName"];
         $orderDesc = "Test";
 
-        $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
+        $payment = $this->paymentService->getPaymentClass('AmazonPay');
 
         $requestParams = $payment->getAmazonSCOParams(
             $this->session->offsetGet('fatchipCTPaymentPayID'),
@@ -152,7 +152,7 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         $this->session->offsetSet('fatchipCTAmazonReferenceID', $referenceId);
         $orderDesc = "Test";
 
-        $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
+        $payment = $this->paymentService->getPaymentClass('AmazonPay');
 
         $requestParams = $payment->getAmazonGODParams(
             $this->session->offsetGet('fatchipCTPaymentPayID'),
@@ -200,7 +200,7 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         $currency = 'EUR';
         $orderDesc = "Test";
 
-        $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
+        $payment = $this->paymentService->getPaymentClass('AmazonPay');
 
         $requestParams = $payment->getAmazonSODParams(
             $this->session->offsetGet('fatchipCTPaymentPayID'),

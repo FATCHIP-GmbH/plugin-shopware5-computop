@@ -1,5 +1,4 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
@@ -28,8 +27,6 @@
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
-use Exception;
-use Fatchip\CTPayment\CTPaymentMethodIframe;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 use Shopware\Plugins\FatchipCTPayment\Util;
 use Fatchip\CTPayment\CTOrder\CTOrder;
@@ -332,63 +329,6 @@ class Checkout extends AbstractSubscriber
                 $params['FatchipComputopPaymentData']['fatchip_computop_afterpay_installment_productnr']
             );
         }
-    }
-
-    /** Duplicate methods from payment controller
-     * to set pre-encrypted data into shippingpayment view
-     * Helper function that creates a payment object
-     * @return CTPaymentMethodIframe
-     */
-    protected function getPaymentClassForGatewayAction()
-    {
-
-        $ctOrder = $this->createCTOrder();
-        $router = Shopware()->Front()->Router();
-        $payment = $this->paymentService->getIframePaymentClass(
-            'CreditCard',
-            $this->config,
-            $ctOrder,
-            $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'success', 'forceSecure' => true]),
-            $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]),
-            $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'notify', 'forceSecure' => true]),
-            null,
-            $this->getUserDataParam()
-        );
-
-        return $payment;
-    }
-
-    /**
-     * @deprecated
-     * Scope sensitive
-     * Use Util->createCTOrder instead
-     *
-     * Helper funciton to create a CTOrder object for the current order
-     * @return CTOrder
-     */
-    protected function createCTOrder()
-    {
-        $basket = Shopware()->Modules()->Basket()->sGetBasket();
-        $userData = $this->getUserData();
-        $shippingCosts = Shopware()->Modules()->Admin()->sGetPremiumShippingcosts();
-
-        $ctOrder = new CTOrder();
-        $ctOrder->setAmount($basket['AmountNumeric'] * 100);
-        $ctOrder->setCurrency(Shopware()->Container()->get('currency')->getShortName());
-        // try catch in case Address Splitter retrun exceptions
-        try {
-            $ctOrder->setBillingAddress($this->utils->getCTAddress($userData['billingaddress']));
-            $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
-        } catch (Exception $e) {
-            $ctError = [];
-            $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
-            $ctError['CTErrorCode'] = $e->getMessage();
-            return $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
-        }
-        $ctOrder->setEmail($userData['additional']['user']['email']);
-        $ctOrder->setCustomerID($userData['additional']['user']['id']);
-        $ctOrder->setOrderDesc(Shopware()->Config()->shopName);
-        return $ctOrder;
     }
 
     /**

@@ -171,7 +171,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         // TODO use default orderDesc
         $orderDesc = "Test";
 
-        $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
+        $payment = $this->paymentService->getPaymentClass('AmazonPay');
         $requestParams = $payment->getAmazonGODParams(
             $session->offsetGet('fatchipCTPaymentPayID'),
             $orderDesc,
