@@ -4,6 +4,7 @@
 Pre-Released 2019-10-28
 * Rebranding: updated Computop icons and images 
 * Refactored: unneccessary code removed
+* Fixed: attribute address flush / by @rdss-zmehmedovic
 
 ## 1.0.27
 Pre-Released 2019-10-21
