@@ -474,7 +474,6 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     protected function handleManualCapture($orderNumber) {
         $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number' => $orderNumber]);
         if ($order) {
-
             $paymentName = $order->getPayment()->getName();
 
             if (($paymentName == 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] != 'MANUAL') ||
