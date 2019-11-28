@@ -1,7 +1,5 @@
 <?php
 
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
-
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -31,6 +29,7 @@ namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 use Fatchip\CTPayment\CTPaymentService;
+use Shopware\Plugins\FatchipCTPayment\Util;
 
 /**
  * Class Service
@@ -49,6 +48,8 @@ class Service implements SubscriberInterface
         return [
             'Enlight_Bootstrap_InitResource_FatchipCTPaymentApiClient' =>
                 'onInitApiClient',
+            'Enlight_Bootstrap_InitResource_FatchipCTPaymentUtils' =>
+                'onInitUtils',
         ];
     }
 
@@ -62,5 +63,14 @@ class Service implements SubscriberInterface
         $config = $plugin->Config()->toArray();
         return new CTPaymentService($config);
 
+    }
+
+    /**
+     * initialises util
+     * @return Util
+     */
+    public function onInitUtils()
+    {
+        return new Util();
     }
 }

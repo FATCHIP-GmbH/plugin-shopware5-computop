@@ -1,7 +1,4 @@
 <?php
-
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
-
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -27,13 +24,13 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
+namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
-use Enlight\Event\SubscriberInterface;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTCrif\CRIF;
 use Fatchip\CTPayment\CTPaymentService;
 use Shopware\Components\DependencyInjection\Container;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
 /**
@@ -41,7 +38,7 @@ use Shopware\Plugins\FatchipCTPayment\Util;
  *
  * @package Shopware\Plugins\MoptPaymentPayone\Subscribers
  */
-class FrontendRiskManagement implements SubscriberInterface
+class RiskManagement extends AbstractSubscriber
 {
 
     const allowedCountries = ['DE', 'AT', 'CH', 'NL'];
@@ -152,6 +149,8 @@ class FrontendRiskManagement implements SubscriberInterface
     }
 
     /**
+     * TODO: move to general helper
+     *
      * Checks if relevant parts of an address have changed that make a new CRIF-Rikscheck necessary.
      * @param $oldAddress
      * @param $newAddress
@@ -165,6 +164,8 @@ class FrontendRiskManagement implements SubscriberInterface
     }
 
     /**
+     * TODO: move to general helper
+     *
      * removes CRIF results from Address.
      * @param \Shopware\Models\Customer\Address $address
      */
@@ -181,6 +182,8 @@ class FrontendRiskManagement implements SubscriberInterface
     }
 
     /**
+     * TODO: move to general helper
+     *
      * Removes CRIF results from address with addresID.
      * @param $addressID
      * @param $type
@@ -309,6 +312,8 @@ class FrontendRiskManagement implements SubscriberInterface
     }
 
     /**
+     * TODO: move to general helper
+     *
      * Returns CRIF results in an array.
      * @param $crifResponseObject
      * @return array
@@ -325,6 +330,8 @@ class FrontendRiskManagement implements SubscriberInterface
     }
 
     /**
+     * TODO: move to general helper
+     *
      * Checks if a CRIF risk check is necessary:
      * 1. Only if billing country in allowed countries array because for other countries crif has no data available
      * 2. If a call failed we wait one hour to try again, to prevent making hundreds of calls within minutes
@@ -400,6 +407,8 @@ class FrontendRiskManagement implements SubscriberInterface
     }
 
     /**
+     * TODO: move to general helper
+     *
      * Returns crifstatus from an addressarray, depending on SW version.
      * @param $aAddress
      * @return null
@@ -450,6 +459,8 @@ class FrontendRiskManagement implements SubscriberInterface
     }
 
     /**
+     * TODO: move to general helper
+     *
      * Returns CRIF date from an addressarray, depending on SW version.
      * @param $aAddress
      * @return \DateTime|null
@@ -483,6 +494,8 @@ class FrontendRiskManagement implements SubscriberInterface
 
 
     /**
+     * TODO: move to general helper
+     *
      * check if user score equals configured score to block payment method
      *
      * @param $scoring
@@ -496,6 +509,8 @@ class FrontendRiskManagement implements SubscriberInterface
 
 
     /**
+     * TODO: move to general helper
+     *
      * check if user score equals not configured score to block payment method
      *
      * @param $scoring
@@ -508,6 +523,8 @@ class FrontendRiskManagement implements SubscriberInterface
     }
 
     /**
+     * TODO: move to general helper
+     *
      * Updates billingaddress from address in CRIF response, but only if something has changed.
      *
      * @param $addressID
@@ -548,11 +565,14 @@ class FrontendRiskManagement implements SubscriberInterface
         }
     }
 
+    //TODO: move to general helper
     private function crifResponseContainsAdressdata($crifResponse) {
         return strlen($crifResponse->getAddrStreet()) > 0;
     }
 
     /**
+     * TODO: move to general helper
+     *
      * Checks in session if adress was auto updated. This happens if CRIF corrected an adress
      * and it is activated in pluginsettings that corrected addresses should be used.
      * @return bool
@@ -568,6 +588,8 @@ class FrontendRiskManagement implements SubscriberInterface
     }
 
     /**
+     * TODO: move to general helper
+     *
      * Duplicate methods from payment controller
      * Sets the userData paramater for Computop calls to Shopware Version and Module Version
      * @return string

@@ -32,7 +32,6 @@ use Enlight_Controller_Action;
 use Exception;
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTOrder\CTOrder;
-use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
 use Shopware\Components\Logger;
 use Shopware\Models\Customer\Customer;
 use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap as FatchipCTPayment;
@@ -379,11 +378,6 @@ class Util
         }
     }
 
-    // SW 5.0 - 5.3 Compatibility
-    // 5.0 - check
-    // 5.1 - check
-    // 5.2 -
-    // 5.3 -
     /**
      * updates users phone number in customer attributes
      * @param $userId
@@ -525,6 +519,7 @@ class Util
      */
     public function getActivatedKlarnaPaymentTypes()
     {
+        /** @noinspection SqlResolve */
         $sql = 'SELECT name FROM s_core_paymentmeans WHERE name like "%klarna%"';
 
         $result = Shopware()->Db()->fetchCol($sql);
@@ -594,6 +589,7 @@ class Util
     }
 
     /**
+     * TODO: move to helper
      * checks if AmazonPay is enabled
      *
      * @return bool
@@ -608,7 +604,7 @@ class Util
 
     /**
      * checks if Papyal is enabled
-     * ToDO refactor to generic method
+     * ToDO move to helper
      *
      * @return bool
      */
@@ -618,23 +614,6 @@ class Util
             ['name' => 'fatchip_computop_paypal_express']
         );
         return $payment->getActive();
-    }
-
-    /**
-     * checks social security number should be collected for this order.
-     * SSN is needed in DK, FI, SE and NO and not in other countries
-     * @return bool
-     */
-    public function needSocialSecurityNumberForKlarna()
-    {
-        if ($countryIso = $this->getBillingIsoForCurrentOrder()) {
-            //only if billingcountry in DK, FI, SE, NO we show the social security number field
-            if ($countryIso == 'DK' || $countryIso == 'FI' || $countryIso == 'SE' || $countryIso == 'NO') {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -654,64 +633,6 @@ class Util
         }
 
         return false;
-    }
-
-
-    /**
-     * returns the label for the SSN field for klarna
-     * For comapanies the label is Handelsregisternummer, for NO we add last 5 digits
-     * @param $userData
-     * @return string
-     */
-    public function getSocialSecurityNumberLabelForKlarna($userData)
-    {
-        $label = 'Sozialversicherungsnummer (letzte 4 Ziffern)';
-        //For comapnies, the field is called Handelsregisternummer
-        if (isset($userData['billingaddress']['company'])) {
-            $label = '
-            Handelsregisternummer';
-        } else if ($countryIso = $this->getBillingIsoForCurrentOrder()) {
-            //only if billingcountry in DK, FI, SE, NO we show the social security number field
-            if ($countryIso == 'NO') {
-                $label = 'Sozialversicherungsnummer (letzte 5 Ziffern)';
-            }
-        }
-
-        return $label;
-    }
-
-    /**
-     * Annual salary is mandatory for Private Customers in Denmark
-     * @param $userData
-     * @return bool
-     */
-    public function needAnnualSalaryForKlarna($userData)
-    {
-        if (!isset($userData['billingaddress']['company']) && $countryIso = $this->getBillingIsoForCurrentOrder()) {
-            //only if billingcountry in DK, FI, SE, NO we show the social security number field
-            if ($countryIso == 'DK') {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns the length for the SSN field - for NO its 5, for other countries 4. For companies there is no max length
-     * @param $userData
-     * @return int|null
-     */
-    public function getSSNLength($userData)
-    {
-        //for companies, we do not need a max length
-        if (!isset($userData['billingaddress']['company']) && $countryIso = $this->getBillingIsoForCurrentOrder()) {
-            if ($countryIso == 'NO') {
-                return 5;
-            }
-            return 4;
-        }
-        return null;
     }
 
     /**
@@ -787,7 +708,9 @@ class Util
         return preg_replace('/\s+/', '', $input);
     }
 
-    /** retrieve json config file from afterbuy
+    /**
+     * TODO: move to afterpay helper
+     * retrieve json config file from afterbuy
      * @param $merchantId String
      * @param $userData array
      * @return bool
@@ -851,7 +774,6 @@ class Util
      */
     public function createCTOrder()
     {
-        // TODO: store ctOrder as singleton?
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
 
         try {
@@ -883,69 +805,6 @@ class Util
     }
 
     /**
-     * @return KlarnaPayments
-     */
-    public function createCTKlarnaPayment()
-    {
-        // TODO: store payment as singleton?
-        $userData = Shopware()->Modules()->Admin()->sGetUserData();
-        $paymentName = $userData['additional']['payment']['name'];
-
-        $payTypes = [
-            'pay_now' => 'pay_now',
-            'pay_later' => 'pay_later',
-            'slice_it' => 'pay_over_time'
-        ];
-
-        // set payType to correct value
-        foreach ($payTypes as $key => $value) {
-            $length = strlen($key);
-            if (substr($paymentName, -$length) === $key) {
-                $payType = $value;
-                break;
-            }
-        }
-
-        if (!isset($payType)) {
-            return null;
-        }
-
-        $articleList = KlarnaPayments::createArticleListBase64();
-        $taxAmount = KlarnaPayments::calculateTaxAmount($articleList);
-
-        $URLConfirm = Shopware()->Front()->Router()->assemble([
-            'controller' => 'checkout',
-            'action' => 'finish',
-            'forceSecure' => true,
-        ]);
-
-        $ctOrder = $this->createCTOrder();
-
-        if (!$ctOrder instanceof CTOrder) {
-            return null;
-        }
-
-        $klarnaAccount = $this->pluginConfig['klarnaaccount'];
-
-        /** @var KlarnaPayments $payment */
-        $payment = $this->container->get('FatchipCTPaymentApiClient')->getPaymentClass('KlarnaPayments', $this->pluginConfig);
-        $payment->storeKlarnaSessionRequestParams(
-            $taxAmount,
-            $articleList,
-            $URLConfirm,
-            $payType,
-            $klarnaAccount,
-            $userData['additional']['country']['countryiso'],
-            $ctOrder->getAmount(),
-            $ctOrder->getCurrency(),
-            KlarnaPayments::generateTransID(),
-            $_SERVER['REMOTE_ADDR']
-        );
-
-        return $payment;
-    }
-
-    /**
      * Selects the store's default payment as default payment for the user.
      */
     public function selectDefaultPayment()
@@ -969,27 +828,6 @@ class Util
                 'defaultPayment' => $defaultPayment
             ]);
         } catch (ORMException $e) {
-        }
-    }
-
-    public function cleanSessionVars()
-    {
-        $session = Shopware()->Session();
-        $sessionVars = [
-            'FatchipCTKlarnaPaymentSessionResponsePayID',
-            'FatchipCTKlarnaPaymentSessionResponseTransID',
-            'FatchipCTKlarnaPaymentTokenExt',
-            'FatchipCTKlarnaPaymentArticleListBase64',
-            'FatchipCTKlarnaPaymentAmount',
-            'FatchipCTKlarnaPaymentAddressHash',
-            'FatchipCTKlarnaPaymentHash',
-            'FatchipCTKlarnaAccessToken',
-            'FatchipCTKlarnaPaymentDispatchID',
-            'CTError',
-        ];
-
-        foreach ($sessionVars as $sessionVar) {
-            $session->offsetUnset($sessionVar);
         }
     }
 
@@ -1048,5 +886,15 @@ class Util
             } catch (ORMException $e) {
             }
         }
+    }
+
+    public function hidePayment($name, $payments) {
+        $paymentIndexes = array_combine(array_column($payments, 'name'), array_keys($payments));
+
+        if(array_key_exists($name, $paymentIndexes)) {
+            unset($payments[$paymentIndexes[$name]]);
+        }
+
+        return $payments;
     }
 }

@@ -1,4 +1,6 @@
 <?php
+/** @noinspection PhpUnused */
+/** @noinspection PhpUnusedParameterInspection */
 
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
@@ -32,6 +34,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Fatchip\CTPayment\CTResponse;
+use Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Forms;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Attributes;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Payments;
@@ -39,15 +43,22 @@ use Shopware\Plugins\FatchipCTPayment\Bootstrap\Menu;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\RiskRules;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Models;
 
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\PostDispatchFrontendLogger;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\SecurePostDispatchFrontendLogger;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AfterAccountPaymentActionHook;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AfterAccountSavePaymentActionHook;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\ControllerPath;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AfterPay;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AmazonPay;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Checkout;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\CreditCard;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\EasyCredit;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Klarna;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\KlarnaPayments;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Logger;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Debit;
 
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendIndex;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendRiskManagement;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\AfterBackendOrderGetListHook;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\PostDispatchBackendOrder;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\Templates;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\OrderList;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\PaypalExpress;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Service;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\TemplateRegistration;
 
 /**
  * Class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
@@ -72,7 +83,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     {
         $minimumVersion = $this->getInfo()['compatibility']['minimumVersion'];
         if (!$this->assertMinimumVersion($minimumVersion)) {
-            throw new \RuntimeException("At least Shopware {$minimumVersion} is required");
+            throw new RuntimeException("At least Shopware {$minimumVersion} is required");
         }
 
         $this->removeOldKlarnaPayments();
@@ -96,7 +107,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         $this->subscribeEvent('Enlight_Controller_Front_DispatchLoopStartup', 'onStartDispatch');
 
-        //$this->updateSchema();
         return ['success' => true, 'invalidateCache' => ['backend', 'config', 'proxy']];
     }
 
@@ -174,62 +184,39 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      * us to register additional events on the fly. This way you won't ever need to reinstall you
      * plugin for new events - any event and hook can simply be registered in the event subscribers
      *
+     *
      * @param Enlight_Event_EventArgs $args
+     *
      */
     public function onStartDispatch(Enlight_Event_EventArgs $args)
     {
         $this->registerComponents();
         $this->registerSnippets();
 
-        //TODO: check if we should / can use the container everywehre
-        // the effects are currently unknown, beware because of backward compatibility
         $container = Shopware()->Container();
 
+        //TODO: deactivate subscribers if payment method is inactive
         $subscribers = [
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\ControllerPath::class, $this->Path()],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\Service::class, null],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\Utils::class, null],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\Templates::class, $this],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\Checkout::class, null],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\CheckoutPayment::class, null],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\CheckoutFinish::class, null],
-//            [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Address::class, null],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\FrontendRiskManagement::class, $container],
-            // [Shopware\Plugins\FatchipCTPayment\Subscribers\BackendOrder::class, $container],
-            // [Shopware\Plugins\FatchipCTPayment\Subscribers\Logger::class, null],
-
-            // [Shopware\Plugins\FatchipCTPayment\Subscribers\PostDispatchBackendRiskManagement::class, null],
-            [PostDispatchFrontendLogger::class, null],
-            [SecurePostDispatchFrontendLogger::class, null],
-            [PostDispatchBackendIndex::class, null],
-            [PostDispatchBackendRiskManagement::class, null],
-            [AfterAccountSavePaymentActionHook::class, null],
-            [AfterAccountPaymentActionHook::class, null],
-            [AfterBackendOrderGetListHook::class, null],
-            [PostDispatchBackendOrder::class, null],
-            [PostDispatchBackendOrder::class, null],
+            [Service::class, null],
+            [ControllerPath::class, $this->Path()],
+            [TemplateRegistration::class, $this],
+            [Checkout::class, null],
+            [KlarnaPayments::class, null],
+            [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\RiskManagement::class, $container],
+            [Logger::class, null],
+            [Templates::class, null],
+            [Debit::class, null],
+            [OrderList::class, null],
+            [EasyCredit::class, null],
+            [AmazonPay::class, null],
+            [PaypalExpress::class, null],
+            [CreditCard::class, null],
+            [AfterPay::class, null],
         ];
 
         foreach ($subscribers as $subscriberClass) {
             $subscriber = new $subscriberClass[0]($subscriberClass[1]);
             $this->Application()->Events()->addSubscriber($subscriber);
-        }
-    }
-
-    /**
-     * Updates the database scheme from an existing doctrine model.
-     */
-    protected function updateSchema()
-    {
-
-        $em = $this->Application()->Models();
-        $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
-        $classes = $this->getModelClasses($em);
-
-        try {
-            // $tool->updateSchema($classes, true);
-        } catch (Exception $e) {
-            // ignore
         }
     }
 
@@ -249,7 +236,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         $info['label'] = $info['label']['de'];
         $info['version'] = $info['currentVersion'];
-        $info['description'] = '<p><img src="data:image/png;base64,' . $logo . '" /></p>' .$info['description'];
+        $info['description'] = '<p><img alt="Logo" src="data:image/png;base64,' . $logo . '" /></p>' .$info['description'];
 
         return $info;
     }
@@ -394,14 +381,14 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      * @param $requestType
      * @param $url
      *
-     * @return \Fatchip\CTPayment\CTResponse
+     * @return CTResponse
      */
     public function callComputopService($requestParams, $payment, $requestType, $url){
-        $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
+        $log = new FatchipCTApilog();
         $log->setPaymentName($payment::paymentClass);
         $log->setRequest($requestType);
         $log->setRequestDetails(json_encode($requestParams));
-        /** @var \Fatchip\CTPayment\CTResponse $response */
+        /** @var CTResponse $response */
         $response =  $payment->callComputop($requestParams, $url);
         $log->setTransId($response->getTransID());
         $log->setPayId($response->getPayID());
@@ -425,7 +412,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      * @param array $requestParams
      * @param string $paymentName
      * @param string $requestType
-     * @param \Fatchip\CTPayment\CTResponse $response
+     * @param CTResponse $response
      *
      * @return void
      * @throws Exception
@@ -433,7 +420,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     public function logRedirectParams($requestParams, $paymentName, $requestType, $response){
         // fix wrong amount is logged PHP Version >= 7.1 see https://stackoverflow.com/questions/42981409/php7-1-json-encode-float-issue/43056278
         $requestParams['amount'] = (string) $requestParams['amount'];
-        $log = new \Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog();
+        $log = new FatchipCTApilog();
         $log->setPaymentName($paymentName);
         $log->setRequest($requestType);
         $log->setRequestDetails(json_encode($requestParams));

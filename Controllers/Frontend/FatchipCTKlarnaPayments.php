@@ -1,7 +1,5 @@
 <?php
 
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
-
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -53,11 +51,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
 
     protected function storeAuthorizationTokenAction()
     {
-        try {
-            $this->Front()->Plugins()->ViewRenderer()->setNoRender();
-        } catch (Exception $e) {
-            // TODO: log
-        }
+        $this->container->get('front')->Plugins()->ViewRenderer()->setNoRender();
 
         $tokenExt = $this->request->getParam('authorizationToken');
 
@@ -72,22 +66,6 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
         $encoded = json_encode($data);
 
         echo $encoded;
-    }
-
-    protected function getPaymentClassForGatewayAction()
-    {
-        $ctOrder = $this->utils->createCTOrder();
-        $payment = $this->paymentService->getPaymentClass(
-            $this->paymentClass,
-            $this->config,
-            $ctOrder,
-            $this->router->assemble(['action' => 'success', 'forceSecure' => true]),
-            $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
-            $this->getOrderDesc(),
-            $this->getUserDataParam()
-        );
-        return $payment;
     }
 
     /**
@@ -105,29 +83,18 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
         $ctOrder = $this->utils->createCTOrder();
 
         /** @var KlarnaPayments $payment */
-        $payment = $this->getPaymentClassForGatewayAction();
+        $payment = $this->paymentService->getPaymentClass(
+            $this->paymentClass
+        );
 
         $CTPaymentURL = $payment->getCTPaymentURL();
 
         $payId = $this->session->offsetGet('FatchipCTKlarnaPaymentSessionResponsePayID');
         $transId = $this->session->offsetGet('FatchipCTKlarnaPaymentSessionResponseTransID');
-        $amount = $ctOrder->getAmount();
-        $currency = $ctOrder->getCurrency();
         $tokenExt = $this->session->offsetGet('FatchipCTKlarnaPaymentTokenExt');
-        $eventToken = 'CNO';
-
         $this->session->offsetUnset('FatchipCTKlarnaPaymentTokenExt');
 
-        $payment->storeKlarnaOrderRequestParams(
-            $payId,
-            $transId,
-            $amount,
-            $currency,
-            $tokenExt,
-            $eventToken
-        );
-
-        $ctRequest = $payment->cleanUrlParams($payment->getKlarnaOrderRequestParams());
+        $ctRequest = $payment->cleanUrlParams($payment->getKlarnaOrderRequestParams($payId, $transId, $ctOrder->getAmount(), $ctOrder->getCurrency(), $tokenExt));
         $response = null;
 
         try {

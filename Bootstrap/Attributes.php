@@ -29,6 +29,7 @@
 
 namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
 
+use Exception;
 use Fatchip\CTPayment\CTPaymentAttributes;
 use Shopware\Bundle\AttributeBundle\Service\CrudService;
 use Shopware\Plugins\FatchipCTPayment\Util;
@@ -46,26 +47,8 @@ use Shopware\Plugins\FatchipCTPayment\Util;
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.computop.com
  */
-class Attributes
+class Attributes extends Bootstrap
 {
-
-    /**
-     * FatchipCTpayment Plugin Bootstrap Class
-     *
-     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
-     */
-    protected $plugin;
-
-    /**
-     * Attributes constructor.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-    }
-
     /**
      * Extends shopware models with custom attributes.
      *
@@ -125,7 +108,7 @@ class Attributes
                 } else {
                     $this->plugin->get('models')->addAttribute($table, $prefix, $name, $attribute['type']);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // do nothing
             }
         }
@@ -176,7 +159,7 @@ class Attributes
                         'displayInBackend' => $attribute['additionalInfo']['displayInBackend']
                     ]);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // do nothing
             }
         }

@@ -1,6 +1,4 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
-
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -28,11 +26,10 @@
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
-use Enlight\Event\SubscriberInterface;
 use Enlight_Controller_ActionEventArgs;
-use Shopware\Plugins\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 
-class CheckoutFinish implements SubscriberInterface
+class PaypalExpress extends AbstractSubscriber
 {
     /**
      * Returns an array of event names this subscriber wants to listen to.
@@ -65,26 +62,42 @@ class CheckoutFinish implements SubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostDispatchFrontendCheckoutFinish',
+            'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => array(
+                array('onPostDispatchFrontendCheckout'),
+                array('hidePaymentInList')
+            )
         ];
     }
 
     /**
-     * Deletes all Klarna relevant session vars and selects the store's default payment as default payment for the user.
-     *
      * @param Enlight_Controller_ActionEventArgs $args
      */
-    public function onPostDispatchFrontendCheckoutFinish(Enlight_Controller_ActionEventArgs $args)
-    {
-        if ($args->getSubject()->Request()->getActionName() !== 'finish') {
-            return;
+    public function hidePaymentInList(Enlight_Controller_ActionEventArgs $args) {
+        $controller = $args->getSubject();
+        $view = $controller->View();
+        $request = $controller->Request();
+
+        if ($request->getActionName() == 'shippingPayment') {
+            $payments = $this->utils->hidePayment('fatchip_computop_paypal_express', $view->getAssign('sPayments'));
+            $view->assign('sPayments', $payments);
         }
+    }
 
-        /** @var Util $utils */
-        $utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+    /**
+     * @param Enlight_Controller_ActionEventArgs $args
+     */
+    public function onPostDispatchFrontendCheckout(Enlight_Controller_ActionEventArgs $args)
+    {
+        $controller = $args->getSubject();
+        $view = $controller->View();
+        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
 
-        $utils->cleanSessionVars();
-
-        $utils->selectDefaultPayment();
+        if ($this->utils->isPaypalExpressActive()) {
+            // assign plugin Config to View
+            $view->assign('fatchipCTPaymentConfig', $pluginConfig);
+            // extend cart and ajax cart with Amazon Button
+            $view->extendsTemplate('frontend/checkout/ajax_cart_paypal.tpl');
+            $view->extendsTemplate('frontend/checkout/cart_paypal.tpl');
+        }
     }
 }

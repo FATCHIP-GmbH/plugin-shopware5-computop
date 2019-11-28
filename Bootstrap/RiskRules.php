@@ -1,6 +1,4 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
-
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -36,22 +34,8 @@ use Shopware\Models\Payment\Payment;
  *
  * creates risk rules for payment methods.
  */
-class RiskRules
+class RiskRules extends Bootstrap
 {
-    /**
-     * FatchipCTpayment Plugin Bootstrap Class
-     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
-     */
-    private $plugin;
-
-    /**
-     * RiskRules constructor.
-     */
-    public function __construct()
-    {
-        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-    }
-
     /**
      * Create risk rules.
      *
@@ -70,36 +54,6 @@ class RiskRules
 
         $this->createComputopRiskRule('fatchip_computop_ideal',
             'BILLINGLANDISNOT', 'NL');
-
-//        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
-//          'BILLINGLANDIS', 'SE', 'CURRENCIESISOISNOT', 'SEK');
-//
-//        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
-//          'BILLINGLANDIS', 'NO', 'CURRENCIESISOISNOT', 'NOK');
-//
-//        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
-//          'BILLINGLANDIS', 'DK', 'CURRENCIESISOISNOT', 'DKK');
-//
-//        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
-//          'BILLINGLANDIS', 'DE', 'CURRENCIESISOISNOT', 'EUR');
-//
-//        $this->createComputopRiskRule('fatchip_computop_klarna_invoice',
-//          'BILLINGLANDIS', 'NL', 'CURRENCIESISOISNOT', 'EUR');
-//
-//        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
-//          'BILLINGLANDIS', 'SE', 'CURRENCIESISOISNOT', 'SEK');
-//
-//        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
-//          'BILLINGLANDIS', 'NO', 'CURRENCIESISOISNOT', 'NOK');
-//
-//        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
-//          'BILLINGLANDIS', 'DK', 'CURRENCIESISOISNOT', 'DKK');
-//
-//        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
-//          'BILLINGLANDIS', 'DE', 'CURRENCIESISOISNOT', 'EUR');
-//
-//        $this->createComputopRiskRule('fatchip_computop_klarna_installment',
-//          'BILLINGLANDIS', 'NL', 'CURRENCIESISOISNOT', 'EUR');
     }
 
 

@@ -1,7 +1,4 @@
 <?php
-
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
-
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -27,22 +24,20 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscribers;
+namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
+use Enlight_Controller_ActionEventArgs;
+use Enlight_Exception;
 use Monolog\Handler\RotatingFileHandler;
-
-use Enlight\Event\SubscriberInterface;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 use Shopware\Plugins\FatchipCTPayment\Util;
-
-use Shopware;
-use Shopware\Components\Logger;
 
 /**
  * Class Logger
  *
  * @package Shopware\Plugins\FatchipCTPayment\Subscribers
  */
-abstract class AbstractLoggerSubscriber implements SubscriberInterface
+class Logger extends AbstractSubscriber
 {
     /**
      * @var $logger \Shopware\Components\Logger
@@ -81,8 +76,66 @@ abstract class AbstractLoggerSubscriber implements SubscriberInterface
             $logFile = $logPath . 'logs/FatchipCTPayment_production.log';
         }
         $rfh = new RotatingFileHandler($logFile, 14);
-        $this->logger = new Logger('FatchipCTPayment');
+        $this->logger = new \Shopware\Components\Logger('FatchipCTPayment');
         $this->logger->pushHandler($rfh);
+    }
+
+    /**
+     * Returns the subscribed events
+     *
+     * @return array<string,string>
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            'Enlight_Controller_Action_PostDispatch_Frontend' => 'onPostDispatch',
+            'Enlight_Controller_Action_PostDispatchSecure_Frontend' => 'onPostDispatchSecure'
+        ];
+    }
+
+    // Todo check here for any exceptions and log them with stack trace??
+    // in addition log json response of our Ajax Controllers
+    /**
+     * Logs request parameters for FatchipCT controllers if debug logging is activated in plugin settings
+     *
+     * @param Enlight_Controller_ActionEventArgs $args
+     */
+    public function onPostDispatch(Enlight_Controller_ActionEventArgs $args)
+    {
+        $request = $args->getRequest();
+
+        if ($this->config['debuglog'] === 'active' && $this->isFatchipCTController($request->getControllerName())) {
+            $this->logger->debug(
+                'postDispatch: ' . $request->getControllerName() . ' ' . $request->getActionName() . ':'
+            );
+            $this->logger->debug('RequestParams: ', $request->getParams());
+        }
+    }
+
+    /**
+     * Logs request parameters and Template information for FatchipCT controllers if debug logging is activated in
+     * plugin settings
+     *
+     * @param Enlight_Controller_ActionEventArgs $args
+     *
+     * @throws Enlight_Exception
+     */
+    public function onPostDispatchSecure(Enlight_Controller_ActionEventArgs $args)
+    {
+        $subject = $args->getSubject();
+        $request = $args->getRequest();
+
+        if ($this->config['debuglog'] === 'active' && $this->isFatchipCTController($request->getControllerName())) {
+            $this->logger->debug(
+                'postDispatchSecure: ' . $request->getControllerName() . ' ' . $request->getActionName() . ':'
+            );
+            $this->logger->debug('RequestParams: ', $request->getParams());
+
+            if ($subject->View()->hasTemplate()) {
+                $this->logger->debug('Template Name:', [$subject->View()->Template()->template_resource]);
+                $this->logger->debug('Template Vars:', $subject->View()->Engine()->smarty->tpl_vars);
+            }
+        }
     }
 
     /**

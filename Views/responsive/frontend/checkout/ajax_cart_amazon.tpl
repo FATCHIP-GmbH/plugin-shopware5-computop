@@ -8,8 +8,6 @@
         </div>
         <div class="clear"></div>
         <script>
-            // Todo clear old credentials find  a better handling
-
             window.onAmazonLoginReady = function () {
                 amazon.Login.setClientId("{$fatchipCTPaymentConfig.amazonClientId}");
             };

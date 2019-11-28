@@ -1,5 +1,4 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
@@ -28,7 +27,7 @@
 
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
-use Enlight\Event\SubscriberInterface;
+use Shopware\Components\Theme\LessDefinition;
 use \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap as Bootstrap;
 
 /**
@@ -36,7 +35,7 @@ use \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap as Bootstrap;
  *
  * @package Shopware\Plugins\FatchipCTPayment\Subscribers
  */
-class Templates implements SubscriberInterface
+class TemplateRegistration extends AbstractSubscriber
 {
     /**
      * Path.
@@ -69,27 +68,16 @@ class Templates implements SubscriberInterface
         return array(
             'Enlight_Controller_Action_PostDispatchSecure' => 'onPostDispatchSecure',
             // used for menu logos
-            'Enlight_Controller_Action_PostDispatch_Backend_Index' => 'addTemplateDir'
+            'Enlight_Controller_Action_PostDispatch_Backend_Index' => 'addTemplateDir',
+            'Theme_Compiler_Collect_Plugin_Less' => 'onThemeCompilerCollectPluginLess'
         );
     }
 
     /**
-     * ToDO update Docblock
-     * Selectes the template directory based on the requested module as well as the
-     * template version, when requesting the frontend. Backend and API requests
-     * as well as frontend requests with a template version < 3 use the 'old'
-     * emotion templates, whereas frontend requests with a template version >= 3
-     * use the new responsive theme templates.
-     *
      * @param \Enlight_Event_EventArgs $args
      */
     public function onPostDispatchSecure(\Enlight_Event_EventArgs $args)
     {
-        $subject = $args->getSubject();
-        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
-
-        $subject->View()->FatchipCTPaymentIbanAnon = $pluginConfig['lastschriftAnon'] == 'Aus' ? 0 : 1;
-
         // Add the template directory for the used template type
         $this->templateManager->addTemplateDir(
             $this->path . 'Views/' . 'responsive' . '/'
@@ -105,6 +93,18 @@ class Templates implements SubscriberInterface
         // Add the template directory for the used template type
         $this->templateManager->addTemplateDir(
             $this->path . 'Views/' . 'responsive' . '/'
+        );
+    }
+
+    /**
+     * Adds all.less to less definistion
+     * @return LessDefinition
+     */
+    public function onThemeCompilerCollectPluginLess()
+    {
+        return new LessDefinition(
+            [],
+            [__DIR__ . '/../Views/frontend/_public/src/less/all.less']
         );
     }
 }
