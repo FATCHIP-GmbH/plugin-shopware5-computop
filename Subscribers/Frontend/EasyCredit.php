@@ -81,7 +81,11 @@ class EasyCredit extends AbstractSubscriber
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
-        if ($request->getActionName() == 'confirm' && $paymentName === 'fatchip_computop_easycredit') {
+        if (!$request->isDispatched() or !stristr($paymentName, 'easycredit')) { // no easycredit payment method
+            return;
+        }
+
+        if ($request->getActionName() == 'confirm') {
 
             $view->extendsTemplate('frontend/checkout/easycredit_confirm.tpl');
 

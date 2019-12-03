@@ -65,6 +65,10 @@ class KlarnaPayments extends AbstractSubscriber
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
+        if (!$request->isDispatched() or !stristr($paymentName, 'klarna')) { // no klarna payment method
+            return;
+        }
+
         if ($request->getActionName() == 'shippingPayment') {
             $paymentType = $this->utils->getKlarnaPaymentTypeFromPaymentName($paymentName);
 
@@ -78,58 +82,47 @@ class KlarnaPayments extends AbstractSubscriber
             $view->assign('purchaseCurrency', Shopware()->Container()->get('currency')->getShortName());
             $view->assign('locale', str_replace('_', '-', Shopware()->Shop()->getLocale()->getLocale()));
             $view->assign('billingAddressCountry', $userData['additional']['country']['countryiso']);
-        }
 
-        if (!stristr($paymentName, 'klarna')) { // no klarna payment method
-            return;
-        }
+            if ($ctError = $session->offsetGet('CTError')) {
+                $session->offsetUnset('CTError');
+                $params['CTError'] = $ctError;
+            }
 
-        if ($request->getActionName() == 'shippingPayment') {
-            $userData = Shopware()->Modules()->Admin()->sGetUserData();
-            $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
+            $requestParams = $this->payment->createCTKlarnaPayment();
 
-            if (stristr($paymentName, 'klarna')) {
-                if ($ctError = $session->offsetGet('CTError')) {
-                    $session->offsetUnset('CTError');
+            if (!$requestParams) {
+                $args->getSubject()->forward('shippingPayment', 'checkout');
+            }
+
+            if ($this->payment->needNewKlarnaSession()) {
+                // accessToken does not exist in session, so a new session must be created
+                $CTResponse = $this->payment->requestSession($requestParams);
+
+                if ($CTResponse->getStatus() === 'FAILED') {
+                    $msg = 'Es ist ein Fehler aufgetreten, bitte wählen Sie eine andere Zahlart aus.';
+                    $ctError = [
+                        'CTErrorMessage' => $msg,
+                        'CTErrorCode' => '',
+                    ];
                     $params['CTError'] = $ctError;
                 }
 
-                $requestParams = $this->payment->createCTKlarnaPayment();
+                $articleListBase64 = $requestParams['ArticleList'];
+                $amount = $requestParams['amount'];
+                $addressHash = $this->payment->createAddressHash();
+                $dispatch = $session->offsetGet('sDispatch');
 
-                if (!$requestParams) {
-                    $args->getSubject()->forward('shippingPayment', 'checkout');
-                }
+                $session->offsetSet('FatchipCTKlarnaPaymentArticleListBase64', $articleListBase64);
+                $session->offsetSet('FatchipCTKlarnaPaymentAmount', $amount);
+                $session->offsetSet('FatchipCTKlarnaPaymentAddressHash', $addressHash);
+                $session->offsetSet('FatchipCTKlarnaPaymentDispatchID', $dispatch);
 
-                if ($this->payment->needNewKlarnaSession()) {
-                    // accessToken does not exist in session, so a new session must be created
-                    $CTResponse = $this->payment->requestSession($requestParams);
+                $session->offsetSet('FatchipCTKlarnaPaymentSessionResponsePayID', $CTResponse->getPayID());
+                $session->offsetSet('FatchipCTKlarnaPaymentSessionResponseTransID', $CTResponse->getTransID());
 
-                    if ($CTResponse->getStatus() === 'FAILED') {
-                        $msg = 'Es ist ein Fehler aufgetreten, bitte wählen Sie eine andere Zahlart aus.';
-                        $ctError = [
-                            'CTErrorMessage' => $msg,
-                            'CTErrorCode' => '',
-                        ];
-                        $params['CTError'] = $ctError;
-                    }
+                $accessToken = $CTResponse->getAccesstoken();
 
-                    $articleListBase64 = $requestParams['ArticleList'];
-                    $amount = $requestParams['amount'];
-                    $addressHash = $this->payment->createAddressHash();
-                    $dispatch = $session->offsetGet('sDispatch');
-
-                    $session->offsetSet('FatchipCTKlarnaPaymentArticleListBase64', $articleListBase64);
-                    $session->offsetSet('FatchipCTKlarnaPaymentAmount', $amount);
-                    $session->offsetSet('FatchipCTKlarnaPaymentAddressHash', $addressHash);
-                    $session->offsetSet('FatchipCTKlarnaPaymentDispatchID', $dispatch);
-
-                    $session->offsetSet('FatchipCTKlarnaPaymentSessionResponsePayID', $CTResponse->getPayID());
-                    $session->offsetSet('FatchipCTKlarnaPaymentSessionResponseTransID', $CTResponse->getTransID());
-
-                    $accessToken = $CTResponse->getAccesstoken();
-
-                    $session->offsetSet('FatchipCTKlarnaAccessToken', $accessToken);
-                }
+                $session->offsetSet('FatchipCTKlarnaAccessToken', $accessToken);
             }
 
             $view->assign('CTError', $params['CTError']);

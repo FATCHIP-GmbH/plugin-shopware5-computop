@@ -112,6 +112,7 @@ class Checkout extends AbstractSubscriber
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
+        // TODO: could be removed, when listening to Enlight_Controller_Action_PostDispatchSecure_Frontend_Checkout
         if (!$request->isDispatched() || $response->isException()) {
             return;
         }
