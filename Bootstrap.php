@@ -335,12 +335,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      */
     public function update($oldVersion)
     {
-        switch ($oldVersion) {
-            case '1.0.26':
-                $this->removeOldKlarnaPayments();
-
-                break;
-        }
         $this->removeOldKlarnaPayments();
 
         $forms = new Forms();
