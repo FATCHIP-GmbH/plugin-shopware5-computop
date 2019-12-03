@@ -50,24 +50,21 @@ class KlarnaPayments extends AbstractSubscriber
         return [
             'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => array(
                 array('onShippingPayment'),
+                array('onShippingPaymentDispatched'),
                 array('onPayment'),
                 array('onFinish'),
             )
         ];
     }
 
-    public function onShippingPayment(Enlight_Controller_ActionEventArgs $args) {
+    public function onShippingPayment(Enlight_Controller_ActionEventArgs $args)
+    {
         $controller = $args->getSubject();
         $view = $controller->View();
         $request = $controller->Request();
-        $session = Shopware()->Session();
 
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
-
-        if (!$request->isDispatched() or !stristr($paymentName, 'klarna')) { // no klarna payment method
-            return;
-        }
 
         if ($request->getActionName() == 'shippingPayment') {
             $paymentType = $this->utils->getKlarnaPaymentTypeFromPaymentName($paymentName);
@@ -82,7 +79,24 @@ class KlarnaPayments extends AbstractSubscriber
             $view->assign('purchaseCurrency', Shopware()->Container()->get('currency')->getShortName());
             $view->assign('locale', str_replace('_', '-', Shopware()->Shop()->getLocale()->getLocale()));
             $view->assign('billingAddressCountry', $userData['additional']['country']['countryiso']);
+        }
+    }
 
+    public function onShippingPaymentDispatched(Enlight_Controller_ActionEventArgs $args)
+    {
+        $controller = $args->getSubject();
+        $view = $controller->View();
+        $request = $controller->Request();
+        $session = Shopware()->Session();
+
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
+
+        if (!$request->isDispatched() or !stristr($paymentName, 'klarna')) { // no klarna payment method
+            return;
+        }
+
+        if ($request->getActionName() == 'shippingPayment') {
             if ($ctError = $session->offsetGet('CTError')) {
                 $session->offsetUnset('CTError');
                 $params['CTError'] = $ctError;
