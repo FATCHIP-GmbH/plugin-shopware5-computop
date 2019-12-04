@@ -90,7 +90,12 @@ class PaypalExpress extends AbstractSubscriber
     {
         $controller = $args->getSubject();
         $view = $controller->View();
+        $request = $controller->Request();
         $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
+
+        if (!$request->isDispatched() or !$request->getActionName() == 'ajaxCart') {
+            return;
+        }
 
         if ($this->utils->isPaypalExpressActive()) {
             // assign plugin Config to View

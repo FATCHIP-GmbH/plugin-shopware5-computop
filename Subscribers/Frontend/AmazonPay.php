@@ -93,6 +93,10 @@ class AmazonPay extends AbstractSubscriber
         $request = $controller->Request();
         $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
 
+        if (!$request->isDispatched() or $request->getActionName() !== 'ajaxCart') {
+            return;
+        }
+
         if ($this->utils->isAmazonPayActive()) {
             $amznLogout = $request->get('amznLogout');
             $amznError = $request->get('amznError');

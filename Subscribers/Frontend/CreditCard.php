@@ -84,7 +84,11 @@ class CreditCard extends AbstractSubscriber
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
-        if ($request->getActionName() == 'confirm' && $paymentName == 'fatchip_computop_creditcard' && $pluginConfig['creditCardMode'] == 'SILENT') {
+        if (!$request->isDispatched() or !stristr($paymentName, 'creditcard')) { // no creditcard payment method
+            return;
+        }
+
+        if ($request->getActionName() == 'confirm' and $pluginConfig['creditCardMode'] == 'SILENT') {
 
             $view->assign('fatchipCTCreditCardMode', "1");
             // the creditcard form send all data directly to payssl.aspx

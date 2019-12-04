@@ -103,6 +103,10 @@ class AfterPay extends AbstractSubscriber
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
+        if (!$request->isDispatched() or !stristr($paymentName, 'afterpay')) { // no afterpay payment method
+            return;
+        }
+
         if ($request->getActionName() == 'shippingPayment' && $paymentName == 'fatchip_computop_afterpay_installment') {
             $view->assign('fatchipCTPaymentConfig', $pluginConfig);
         }
