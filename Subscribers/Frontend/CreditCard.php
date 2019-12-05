@@ -118,10 +118,11 @@ class CreditCard extends AbstractSubscriber
      */
     protected function getPaymentClassForGatewayAction()
     {
+        $paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
 
         $ctOrder = $this->utils->createCTOrder();
         $router = Shopware()->Front()->Router();
-        $payment = $this->paymentService->getIframePaymentClass(
+        $payment = $paymentService->getIframePaymentClass(
             'CreditCard',
             $this->config,
             $ctOrder,
@@ -129,7 +130,7 @@ class CreditCard extends AbstractSubscriber
             $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]),
             $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'notify', 'forceSecure' => true]),
             null,
-            $this->getUserDataParam()
+            $this->utils->getUserDataParam()
         );
 
         return $payment;
