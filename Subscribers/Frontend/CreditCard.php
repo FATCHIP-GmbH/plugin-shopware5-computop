@@ -100,6 +100,12 @@ class CreditCard extends AbstractSubscriber
             unset($requestParams['Template']);
             $silentParams = $payment->prepareSilentRequest($requestParams);
             $session->offsetSet('fatchipCTRedirectParams', $requestParams);
+
+
+            $view->assign('creditCardSilentModeBrandsVisa', (int)$pluginConfig['creditCardSilentModeBrandsVisa']);
+            $view->assign('creditCardSilentModeBrandsMaster', (int)$pluginConfig['creditCardSilentModeBrandsMaster']);
+            $view->assign('creditCardSilentModeBrandsAmex', (int)$pluginConfig['creditCardSilentModeBrandsAmex']);
+
             $view->assign('fatchipCTCreditCardSilentParams', $silentParams);
             $view->extendsTemplate('frontend/checkout/creditcard_confirm.tpl');
         }
