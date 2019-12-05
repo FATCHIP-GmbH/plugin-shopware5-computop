@@ -20,7 +20,7 @@
                                     >
                                 {if $creditCardSilentModeBrandsVisa == 1}<option value="VISA">Visa</option>{/if}
                                 {if $creditCardSilentModeBrandsMaster == 1}<option value="MasterCard">MasterCard</option>{/if}
-                                {if $creditCardSilentModeBrandsMaster == 1}<option value="AMEX">American Express</option>{/if}
+                                {if $creditCardSilentModeBrandsAmex == 1}<option value="AMEX">American Express</option>{/if}
                             </select>
                         {/block}
                     </div>
