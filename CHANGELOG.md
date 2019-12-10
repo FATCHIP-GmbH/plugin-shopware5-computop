@@ -5,7 +5,7 @@ Pre-Released 2019-12-10
 * Rebranding: updated Computop icons and images 
 * Refactored: unneccessary code removed
 * Fixed: attribute address flush / by @rdss-zmehmedovic
-* Add two new Klarna payment methods: Klarna SOFORT, Klarna Lastschrift 
+* Added two new Klarna payment methods: Klarna SOFORT, Klarna Lastschrift 
 
 ## 1.0.27
 Pre-Released 2019-10-21
