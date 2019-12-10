@@ -53,7 +53,11 @@
             pay_later:
                 'pay_later',
             slice_it:
-                'pay_over_time'
+                'pay_over_time',
+            direct_bank_transfer:
+                'direct_bank_transfer',
+            direct_debit:
+                'direct_debit'
         };
 
         window.fatchipCTKlarnaPaymentType = payTypeTranslations[paymentType];
