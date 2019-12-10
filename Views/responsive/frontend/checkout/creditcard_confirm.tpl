@@ -18,9 +18,9 @@
                                     {if $payment_mean.id == $form_data.payment}required="required"
                                     aria-required="true"{/if}
                                     >
-                                <option value="VISA">Visa</option>
-                                <option value="MasterCard">MasterCard</option>
-                                <option value="AMEX">American Express</option>
+                                {if $creditCardSilentModeBrandsVisa == 1}<option value="VISA">Visa</option>{/if}
+                                {if $creditCardSilentModeBrandsMaster == 1}<option value="MasterCard">MasterCard</option>{/if}
+                                {if $creditCardSilentModeBrandsAmex == 1}<option value="AMEX">American Express</option>{/if}
                             </select>
                         {/block}
                     </div>
