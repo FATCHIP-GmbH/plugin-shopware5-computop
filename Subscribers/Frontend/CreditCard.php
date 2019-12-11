@@ -104,6 +104,12 @@ class CreditCard extends AbstractSubscriber
             unset($requestParams['Template']);
             $silentParams = $payment->prepareSilentRequest($requestParams);
             $session->offsetSet('fatchipCTRedirectParams', $requestParams);
+
+
+            $view->assign('creditCardSilentModeBrandsVisa', (int)$pluginConfig['creditCardSilentModeBrandsVisa']);
+            $view->assign('creditCardSilentModeBrandsMaster', (int)$pluginConfig['creditCardSilentModeBrandsMaster']);
+            $view->assign('creditCardSilentModeBrandsAmex', (int)$pluginConfig['creditCardSilentModeBrandsAmex']);
+
             $view->assign('fatchipCTCreditCardSilentParams', $silentParams);
             $view->extendsTemplate('frontend/checkout/creditcard_confirm.tpl');
         }
@@ -116,10 +122,11 @@ class CreditCard extends AbstractSubscriber
      */
     protected function getPaymentClassForGatewayAction()
     {
+        $paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
 
         $ctOrder = $this->utils->createCTOrder();
         $router = Shopware()->Front()->Router();
-        $payment = $this->paymentService->getIframePaymentClass(
+        $payment = $paymentService->getIframePaymentClass(
             'CreditCard',
             $this->config,
             $ctOrder,
@@ -127,7 +134,7 @@ class CreditCard extends AbstractSubscriber
             $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]),
             $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'notify', 'forceSecure' => true]),
             null,
-            $this->getUserDataParam()
+            $this->utils->getUserDataParam()
         );
 
         return $payment;

@@ -5,6 +5,9 @@ Pre-Released 2019-12-10
 * Rebranding: updated Computop icons and images 
 * Refactored: unneccessary code removed
 * Fixed: attribute address flush / by @rdss-zmehmedovic
+* Added two new Klarna payment methods: Klarna SOFORT, Klarna Lastschrift 
+* Fixed: Amazon Pay address selection
+* Added: Configuration options for active credit card brands in silent mode
 
 ## 1.0.27
 Pre-Released 2019-10-21
