@@ -1,5 +1,8 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.29
+* Refactoring
+
 ## 1.0.28
 Pre-Released 2019-12-10
 * Rebranding: updated Computop icons and images 
