@@ -1,5 +1,6 @@
 ;(function ($, window) {
     'use strict';
+    console.log('dbg');
 
     const data = $('#fatchipCTKlarnaInformation').data();
 
@@ -53,7 +54,11 @@
             pay_later:
                 'pay_later',
             slice_it:
-                'pay_over_time'
+                'pay_over_time',
+            direct_bank_transfer:
+                'direct_bank_transfer',
+            direct_debit:
+                'direct_debit'
         };
 
         window.fatchipCTKlarnaPaymentType = payTypeTranslations[paymentType];
@@ -66,6 +71,8 @@
             container: '#fatchip-computop-payment-klarna-form-' + paymentType,
             payment_method_category: payTypeTranslations[paymentType]
         }, function (res) {
+            console.log('Klarna.Payments.load');
+            console.log(res);
         });
     }
 

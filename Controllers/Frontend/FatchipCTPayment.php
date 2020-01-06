@@ -1,7 +1,5 @@
 <?php
 
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
-
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -105,6 +103,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     public $paymentClass = '';
 
+    public $helper;
+
     /**
      * Init payment controller
      *
@@ -119,6 +119,14 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
         $this->session = Shopware()->Session();
         $this->router = $this->Front()->Router();
+
+        if(!empty($this->paymentClass)) {
+            $className = 'Fatchip\\CTPayment\\CTHelper\\' . $this->paymentClass;
+
+            if(class_exists($className)) {
+                $this->helper = new $className();
+            }
+        }
     }
 
     /**
@@ -466,7 +474,6 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     protected function handleManualCapture($orderNumber) {
         $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number' => $orderNumber]);
         if ($order) {
-
             $paymentName = $order->getPayment()->getName();
 
             if (($paymentName == 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] != 'MANUAL') ||
@@ -496,7 +503,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         ) {
             $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->config, $ctOrder);
         } else {
-            $payment = $this->paymentService->getPaymentClass($paymentClass, $this->config, $ctOrder);
+            $payment = $this->paymentService->getPaymentClass($paymentClass);
         }
 
         $requestParams = $payment->getCaptureParams(
@@ -610,7 +617,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             ) {
                 $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->config, $ctOrder);
             } else {
-                $payment = $this->paymentService->getPaymentClass($paymentClass, $this->config, $ctOrder);
+                $payment = $this->paymentService->getPaymentClass($paymentClass);
             }
             $payID = $order->getAttribute()->getfatchipctPayid();
             $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getNumber());
@@ -673,7 +680,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             ) {
                 $payment = $this->paymentService->getIframePaymentClass($paymentClass, $this->config, $ctOrder);
             } else {
-                $payment = $this->paymentService->getPaymentClass($paymentClass, $this->config, $ctOrder);
+                $payment = $this->paymentService->getPaymentClass($paymentClass);
             }
 
             $inquireParams = $payment->getInquireParams($payID);

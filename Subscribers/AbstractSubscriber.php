@@ -23,20 +23,41 @@
  * @link      https://www.computop.com
  */
 
-
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscribers;
+namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
-
+use Shopware\Components\Logger;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
-abstract class AbstractAccountSubscriber implements SubscriberInterface
+abstract class AbstractSubscriber implements SubscriberInterface
 {
     /** @var Util $utils **/
     protected $utils;
 
+    /**
+     * FatchipCTpayment Plugin Bootstrap Class
+     * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     */
+
+    protected $paymentClass;
+
+    protected $logger;
+
+    protected $config;
+
+    private $router;
+
+    protected $payment = null;
+
     public function __construct()
     {
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        $this->router = Shopware()->Front()->Router();
+        $this->logger = new Logger('FatchipCTPayment');
+        $this->config = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
+
+        if($this->paymentClass) {
+            $this->payment = Shopware()->Container()->get('FatchipCTPaymentApiClient')->getPaymentClass('KlarnaPayments');
+        }
     }
 }

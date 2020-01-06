@@ -1,7 +1,5 @@
 <?php
 
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
-
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -171,7 +169,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         // TODO use default orderDesc
         $orderDesc = "Test";
 
-        $payment = $this->paymentService->getPaymentClass('AmazonPay', $this->config);
+        $payment = $this->paymentService->getPaymentClass('AmazonPay');
         $requestParams = $payment->getAmazonGODParams(
             $session->offsetGet('fatchipCTPaymentPayID'),
             $orderDesc,

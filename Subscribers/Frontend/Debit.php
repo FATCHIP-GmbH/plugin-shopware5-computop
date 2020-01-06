@@ -27,10 +27,9 @@
 namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
 
 use Enlight_Hook_HookArgs;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 
-use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscribers\AbstractAccountSubscriber;
-
-class AfterAccountSavePaymentActionHook extends AbstractAccountSubscriber
+class Debit extends AbstractSubscriber
 {
     /**
      * return array with all subscribed events
@@ -41,6 +40,8 @@ class AfterAccountSavePaymentActionHook extends AbstractAccountSubscriber
     {
         return [
             'Shopware_Controllers_Frontend_Account::savePaymentAction::after' => 'account__savePaymentAction__after',
+            'Shopware_Controllers_Frontend_Account::paymentAction::after' => 'account__paymentAction__after',
+            'Enlight_Controller_Action_PostDispatchSecure' => 'onPostDispatchSecure'
         ];
     }
 
@@ -87,5 +88,34 @@ class AfterAccountSavePaymentActionHook extends AbstractAccountSubscriber
                 );
             }
         }
+    }
+
+    /**
+     * assign saved payment data to view
+     *
+     * @param Enlight_Hook_HookArgs $arguments
+     */
+    public function account__paymentAction__after(Enlight_Hook_HookArgs $arguments)
+    {
+        $subject = $arguments->getSubject();
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+
+        if ($userData['additional']['payment']['name'] === 'fatchip_computop_lastschrift') {
+            $paymentData['lastschriftbank'] = $this->utils->getUserLastschriftBank($userData);
+            $paymentData['lastschriftiban'] = $this->utils->getUserLastschriftIban($userData);
+            $paymentData['lastschriftkontoinhaber'] = $this->utils->getUserLastschriftKontoinhaber($userData);
+        }
+
+        if ( ! empty($paymentData)) {
+            $subject->View()->FatchipCTPaymentData = $paymentData;
+        }
+    }
+
+    public function onPostDispatchSecure(\Enlight_Event_EventArgs $args)
+    {
+        $subject = $args->getSubject();
+        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
+
+        $subject->View()->FatchipCTPaymentIbanAnon = $pluginConfig['lastschriftAnon'] == 'Aus' ? 0 : 1;
     }
 }

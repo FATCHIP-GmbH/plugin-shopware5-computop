@@ -1,7 +1,4 @@
 <?php
-
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
-
 /**
  * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -27,20 +24,16 @@
  * @link       https://www.computop.com
  */
 
-
-
 namespace Shopware\CustomModels\FatchipCTApilog;
 
 use Shopware\Components\Model\ModelEntity;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
-
 
 /**
  * Class FatchipCTApilog
 
  *
- * @ORM\Entity(repositoryClass="Repository")
+ * @ORM\Entity()
  * @ORM\Table(name="s_plugin_fatchip_computop_api_log")
  * @ORM\HasLifecycleCallbacks
  */
