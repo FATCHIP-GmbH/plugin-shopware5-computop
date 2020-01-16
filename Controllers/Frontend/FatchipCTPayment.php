@@ -51,6 +51,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     const PAYMENTSTATUSPAID = CTEnumPaymentStatus::PAYMENTSTATUSPAID;
     const PAYMENTSTATUSOPEN = CTEnumPaymentStatus::PAYMENTSTATUSOPEN;
     const PAYMENTSTATUSRESERVED = CTEnumPaymentStatus::PAYMENTSTATUSRESERVED;
+    const PAYMENTSTATUSREVIEWNECESSARY = CTEnumPaymentStatus::PAYMENTSTATUSREVIEWNECESSARY;
 
     const ERRORMSG = 'Es ist ein Fehler aufgetreten. Bitte wählen Sie eine andere Zahlungsart oder versuchen Sie es später noch einmal.<br>';
 
@@ -481,11 +482,16 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 ($paymentName == 'fatchip_computop_paypal_standard' && $this->config['paypalCaption'] != 'MANUAL') ||
                 ($paymentName == 'fatchip_computop_paypal_express' && $this->config['paypalCaption'] != 'MANUAL') ||
                 ($paymentName == 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] != 'MANUAL')) {
-                $this->captureOrder($order);
+                $captureResponse = $this->captureOrder($order);
 
-                //TODO: CAPTURE - wait for response
-                $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSPAID);
-                $this->markOrderDetailsAsFullyCaptured($order);
+                $captureResponse->setStatus('DECLINED');
+
+                if ($captureResponse->getStatus() === 'OK') {
+                    $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSPAID);
+                    $this->markOrderDetailsAsFullyCaptured($order);
+                } else {
+                    $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSREVIEWNECESSARY);
+                }
             }
         }
     }
@@ -515,8 +521,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             //TODO: klarna needs description
             'none'
         );
-
-        $captureResponse = $this->plugin->callComputopService($requestParams, $payment, 'CAPTURE', $payment->getCTCaptureURL());
+        return $this->plugin->callComputopService($requestParams, $payment, 'CAPTURE', $payment->getCTCaptureURL());
     }
 
     /**

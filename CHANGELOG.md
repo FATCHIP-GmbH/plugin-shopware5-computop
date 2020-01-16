@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.30
+Released 2020-01-16
+* Handle capture response
+
 ## 1.0.29
 Released 2020-01-06
 * Refactoring
