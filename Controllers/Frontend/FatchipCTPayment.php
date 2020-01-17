@@ -484,8 +484,6 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 ($paymentName == 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] != 'MANUAL')) {
                 $captureResponse = $this->captureOrder($order);
 
-                $captureResponse->setStatus('DECLINED');
-
                 if ($captureResponse->getStatus() === 'OK') {
                     $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSPAID);
                     $this->markOrderDetailsAsFullyCaptured($order);
