@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.32
+Pre-Released 2020-01-22
+* Fixed: RefNrChanges will be only called once
+
 ## 1.0.31
 Released 2020-01-16
 * Fixed: Removed test code 
