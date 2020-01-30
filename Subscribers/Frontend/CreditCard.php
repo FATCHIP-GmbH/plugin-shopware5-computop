@@ -84,13 +84,21 @@ class CreditCard extends AbstractSubscriber
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
+
         if (!$request->isDispatched() or !stristr($paymentName, 'creditcard')) { // no creditcard payment method
             return;
         }
 
-        if ($request->getActionName() == 'confirm' and $pluginConfig['creditCardMode'] == 'SILENT') {
-
+        if ($request->getActionName() == 'confirm' and $pluginConfig['creditCardMode'] == 'SILENT' and !isset($session->FatchipCTBrowserInfoParams['javaScriptEnabled'])) {
+            // inject javascript template responsible for Browser Detection
+            // this will sent all vars via POST Request to this controller
+            $router = Shopware()->Front()->Router();
+            // $view->assign('url', $router->assemble(['controller' => 'checkout', 'action' => 'confirm', 'forceSecure' => true]));
+            $view->assign('url', $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'browserinfo', 'forceSecure' => true]));
+            $view->loadTemplate('frontend/checkout/creditcard_confirm_browserdetect.tpl');
+        } else if ($request->getActionName() == 'confirm' and $pluginConfig['creditCardMode'] == 'SILENT') {
             $view->assign('fatchipCTCreditCardMode', "1");
+
             // the creditcard form send all data directly to payssl.aspx
             // set the neccessary pre-encrypted fields in view
             $payment = $this->getPaymentClassForGatewayAction();
@@ -101,10 +109,10 @@ class CreditCard extends AbstractSubscriber
             $payment->setOrderDesc($shopName);
 
             $requestParams = $payment->getRedirectUrlParams();
+            $requestParams['browserInfo'] = $this->getParamBrowserInfo($session->FatchipCTBrowserInfoParams,$request);
             unset($requestParams['Template']);
             $silentParams = $payment->prepareSilentRequest($requestParams);
             $session->offsetSet('fatchipCTRedirectParams', $requestParams);
-
 
             $view->assign('creditCardSilentModeBrandsVisa', (int)$pluginConfig['creditCardSilentModeBrandsVisa']);
             $view->assign('creditCardSilentModeBrandsMaster', (int)$pluginConfig['creditCardSilentModeBrandsMaster']);
@@ -138,5 +146,45 @@ class CreditCard extends AbstractSubscriber
         );
 
         return $payment;
+    }
+
+    protected function getParamBrowserInfo( $browserData, $request)
+    {
+        // @see
+        $acceptHeaders = $request->getHeader('accept');
+        $ipAddress = $request->getClientIp();
+        $javaEnabled = $browserData['javaEnabled'];
+        $javaScriptEnabled = $browserData['javaScriptEnabled']; // see above
+        $acceptLang = $request->getHeader('accept-language');
+        $language = array_shift(explode(',', $acceptLang));
+        $colorDepth = $browserData['colorDepth'];
+        $screenHeight = $browserData['screenHeight'];
+        $screenWidth = $browserData['screenWidth'];
+        $timeZoneOffset = $browserData['timeZoneOffset'];
+        $userAgent = $request->getHeader('user-agent');
+
+        if ($browserData['javaScriptEnabled'] === "false") {
+            $browserInfoParams = array(
+                'acceptHeaders' => $acceptHeaders,
+                'ipAddress' => $ipAddress,
+                'javaScriptEnabled' => ($javaScriptEnabled === "true") ? true : false,
+                'language' => $language,
+                'userAgent' => $userAgent,
+            );
+        } else {
+            $browserInfoParams = array(
+                'acceptHeaders' => $acceptHeaders,
+                'ipAddress' => $ipAddress,
+                'javaEnabled' => ($javaEnabled === "true") ? true : false,
+                'javaScriptEnabled' => ($javaScriptEnabled === "true") ? true : false,
+                'language' => $language,
+                'colorDepth' => (int)$colorDepth,
+                'screenHeight' => (int)$screenHeight,
+                'screenWidth' => (int)$screenWidth,
+                'timeZoneOffset' => $timeZoneOffset,
+                'userAgent' => $userAgent,
+            );
+        }
+        return base64_encode(json_encode($browserInfoParams));
     }
 }
