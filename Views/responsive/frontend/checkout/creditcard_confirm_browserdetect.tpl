@@ -17,7 +17,7 @@
     var date = new Date();
     var timeZoneOffset = date.getTimezoneOffset();
 
-    console.log('JavaScriptEnabled:');
+/*    console.log('JavaScriptEnabled:');
     console.log(javaScriptEnabled);
     console.log('JavaEnabled:');
     console.log(javaEnabled);
@@ -28,7 +28,7 @@
     console.log('ColorDepth:');
     console.log(colorDepth);
     console.log('timeZoneOffset:');
-    console.log(timeZoneOffset);
+    console.log(timeZoneOffset);*/
 
     var myForm = document.createElement('form');
     myForm.setAttribute('action', '{$url}');
