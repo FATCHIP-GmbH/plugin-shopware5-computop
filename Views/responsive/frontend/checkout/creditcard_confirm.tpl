@@ -26,6 +26,22 @@
                     </div>
                 {/block}
 
+                {block name="frontend_checkout_payment_fatchip_computop_creditcard_cardholder_label"}
+                    <p class="none">
+                        <label for="CreditCardHolder">{s name='CreditcardCardHolderLabel'}Karteninhaber{/s}</label>
+                    </p>
+                {/block}
+
+                {block name="frontend_checkout_payment_fatchip_computop_creditcard_cardholder_input"}
+                    <input name="CreditCardHolder" type="text"
+                           id="CreditCardHolder"
+                           class="payment--field is--required{if $error_flags.fatchip_computop__creditcard_cardholder} has--error{/if}"
+                           placeholder="{s name='CreditCardHolder'}Karteninhaber{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
+                           {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
+                           value="{$FatchipCTPaymentData.CreditCardHolder}"
+                    />
+                {/block}
+
                 {block name="frontend_checkout_payment_fatchip_computop_creditcard_cardnumber_label"}
                     <p class="none">
                         <label for="CCNr">{s name='CreditcardCardnumberLabel'}Kartennummer{/s}</label>
@@ -101,6 +117,7 @@
                         <input type="hidden" name="MerchantID" id="MerchantID"
                                value="{$fatchipCTCreditCardSilentParams.MerchantID}">
                         <input type="hidden" name="CCExpiry" id="CCExpiry" value=" ">
+                        <input type="hidden" name="CreditCardHolder" id="CreditCardHolder" value=" ">
                         <input type="hidden" name="Len" id="Len" value="{$fatchipCTCreditCardSilentParams.Len}">
                         <input type="hidden" name="Data" id="Data" value="{$fatchipCTCreditCardSilentParams.Data}">
                     {/block}
