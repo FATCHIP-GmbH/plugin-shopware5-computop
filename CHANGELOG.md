@@ -1,5 +1,11 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.32
+2020-02-11
+* Fixed: RefNrChanges will be only called once
+* added: new params browserInfo and CreditCardholder for creditcard payments in silent mode
+* added: PPRO provider for iDEAL payments
+
 ## 1.0.31
 Released 2020-01-16
 * Fixed: Removed test code 

@@ -54,7 +54,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
      */
     public function getWhitelistedCSRFActions()
     {
-        $csrfActions = ['success', 'failure', 'notify', 'iframe'];
+        $csrfActions = ['success', 'failure', 'notify', 'iframe', 'browserinfo'];
 
         return $csrfActions;
     }
@@ -74,6 +74,22 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
 
         $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params, $this->config['creditCardTemplate'])));
+    }
+
+    /**
+     *  GatewaAction is overridden for Creditcard because:
+     *  1. extra param URLBack
+     *  2. forward to iframe controller instead of Computop Gateway, so the Computop IFrame is shown within Shop layout
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function browserinfoAction()
+    {
+        $requestParams = $this->Request()->getParams();
+        $this->session->offsetSet('FatchipCTBrowserInfoParams', $requestParams);
+
+        $this->redirect(['controller' => 'checkout', 'action' => 'confirm']);
     }
 
     /**
@@ -168,7 +184,13 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         if ($ccMode === 'iframe') {
             $this->forward('iframe', 'FatchipCTCreditCard', null, ['fatchipCTURL' => $url, 'CTError' => $ctError]);
         } else {
-            $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
+            //$this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
+
+            // set CTError in Session to prevent csfrs errors
+            $this->session->offsetSet('CTError', $ctError);
+            $this->redirect(['controller' => 'checkout', 'action' => 'shippingPayment']);
+
+
         }
     }
 

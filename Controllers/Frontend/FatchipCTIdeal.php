@@ -57,7 +57,12 @@ class Shopware_Controllers_Frontend_FatchipCTIdeal extends Shopware_Controllers_
     {
         $payment = $this->getPaymentClassForGatewayAction();
 
-        $payment->setIssuerID($this->session->offsetGet('FatchipComputopIdealIssuer'));
+        if ($this->config["idealDirektOderUeberSofort"] === 'PPRO') {
+            // issuerID is not required for PPRO
+        } else {
+            $payment->setIssuerID($this->session->offsetGet('FatchipComputopIdealIssuer'));
+        }
+
         $params = $payment->getRedirectUrlParams();
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
 

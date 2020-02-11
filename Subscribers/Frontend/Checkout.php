@@ -139,8 +139,13 @@ class Checkout extends AbstractSubscriber
             $view->extendsTemplate('frontend/checkout/shipping_payment.tpl');
             // ToDo DO not Display User canceled:22730703 at least for paydirekt
             // logic shouldnt be here or in the template ...
-            $view->assign('CTError', $params['CTError']);
 
+            // use CTError from Session, this was done to prevent csrf Errors from forwarding
+            if ($ctError = $session->offsetGet('CTError')) {
+                $session->offsetUnset('CTError');
+                $params['CTError'] = $ctError;
+            }
+            $view->assign('CTError', $params['CTError']);
         }
 
         if ($request->getActionName() == 'confirm' && (strpos($paymentName, fatchip_computop) === 0)) {
