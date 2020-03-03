@@ -92,7 +92,7 @@ class KlarnaPayments extends AbstractSubscriber
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
-        if (!$request->isDispatched() or !stristr($paymentName, 'klarna')) { // no klarna payment method
+        if (!$request->isDispatched() or !stristr($paymentName, 'fatchip_computop_klarna_')) { // no klarna payment method
             return;
         }
 
@@ -149,7 +149,7 @@ class KlarnaPayments extends AbstractSubscriber
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
-        if (!stristr($paymentName, 'klarna')) { // no klarna payment method
+        if (!stristr($paymentName, 'fatchip_computop_klarna_')) { // no klarna payment method
             return;
         }
 
@@ -172,7 +172,7 @@ class KlarnaPayments extends AbstractSubscriber
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
-        if (!stristr($paymentName, 'klarna')) { // no klarna payment method
+        if (!stristr($paymentName, 'fatchip_computop_klarna_')) { // no klarna payment method
             return;
         }
 
