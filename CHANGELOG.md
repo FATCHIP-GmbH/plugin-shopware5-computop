@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.33
+2020-03-03
+* Fixed: no interference with external Klarna plugin
+
 ## 1.0.32
 2020-02-11
 * Fixed: RefNrChanges will be only called once
