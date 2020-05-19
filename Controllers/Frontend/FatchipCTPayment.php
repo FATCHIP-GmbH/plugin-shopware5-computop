@@ -480,19 +480,22 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
         $paymentName = $order->getPayment()->getName();
 
-        if (($paymentName == 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] != 'MANUAL') ||
-            ($paymentName == 'fatchip_computop_lastschrift' && $this->config['lastschriftCaption'] != 'MANUAL') ||
-            ($paymentName == 'fatchip_computop_paypal_standard' && $this->config['paypalCaption'] != 'MANUAL') ||
-            ($paymentName == 'fatchip_computop_paypal_express' && $this->config['paypalCaption'] != 'MANUAL') ||
-            ($paymentName == 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] != 'MANUAL')) {
-            $captureResponse = $this->captureOrder($order);
+        if ( ! (($paymentName === 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] === 'AUTO')
+            || ($paymentName === 'fatchip_computop_lastschrift' && $this->config['lastschriftCaption'] === 'AUTO')
+            || ($paymentName === 'fatchip_computop_paypal_standard' && $this->config['paypalCaption'] === 'AUTO')
+            || ($paymentName === 'fatchip_computop_paypal_express' && $this->config['paypalCaption'] === 'AUTO')
+            || ($paymentName === 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] === 'AUTO'))
+        ) {
+            return;
+        }
 
-            if ($captureResponse->getStatus() === 'OK') {
-                $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSPAID);
-                $this->markOrderDetailsAsFullyCaptured($order);
-            } else {
-                $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSREVIEWNECESSARY);
-            }
+        $captureResponse = $this->captureOrder($order);
+
+        if ($captureResponse->getStatus() === 'OK') {
+            $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSPAID);
+            $this->markOrderDetailsAsFullyCaptured($order);
+        } else {
+            $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSREVIEWNECESSARY);
         }
     }
 
