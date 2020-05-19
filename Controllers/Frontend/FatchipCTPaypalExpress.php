@@ -29,6 +29,8 @@ require_once 'FatchipCTPayment.php';
 
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
+use Fatchip\CTPayment\CTPaymentMethods\PaypalExpress;
+use Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTPaypalStandard
@@ -79,6 +81,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
         // mandatory for paypalStandard
         $ctOrder->setOrderDesc($this->getOrderDesc());
 
+        /** @var PaypalStandard $payment */
         $payment = $this->paymentService->getIframePaymentClass(
             'PaypalStandard',
             $this->config,
@@ -88,7 +91,6 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
             $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
             'Test',
             $this->getUserDataParam()
-            //$this->getOrderDesc()
         );
 
         $payment->setPayPalMethod('shortcut');
@@ -139,6 +141,8 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
     public function confirmAction()
     {
         $session = Shopware()->Session();
+
+        /** @var PaypalExpress $payment */
         $payment = $this->paymentService->getPaymentClass($this->paymentClass);
 
         $requestParams =  $payment->getPaypalExpressCompleteParams(
@@ -147,26 +151,38 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
             $this->getAmount() * 100,
             $this->getCurrencyShortName()
         );
+
         $requestParams['EtId'] = $this->getUserDataParam();
 
+        // ORDER call
         $response = $this->plugin->callComputopService($requestParams, $payment, 'ORDER', $payment->getCTPaymentURL());
-        switch ($response->getStatus()) {
-            case CTEnumStatus::OK:
-                $orderNumber = $this->saveOrder(
-                    $response->getTransID(),
-                    $response->getPayID(),
-                    self::PAYMENTSTATUSPAID
-                );
-                $this->saveTransactionResult($response);
 
-                $customOrdernumber = $this->customizeOrdernumber($orderNumber);
-                $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
-                $this->forward('finish', 'FatchipCTPaypalExpressCheckout', null, array('sUniqueID' => $response->getPayID()));
-                break;
-            default:
-                $this->forward('failure');
-                break;
+        if ($response->getStatus() !== CTEnumStatus::OK){
+            // TODO: add error log
+            $this->forward('failure');
         }
+
+        $orderNumber = $this->saveOrder(
+            $response->getTransID(),
+            $response->getPayID(),
+            self::PAYMENTSTATUSRESERVED
+        );
+
+        $this->saveTransactionResult($response);
+
+        $customOrdernumber = $this->customizeOrdernumber($orderNumber);
+
+        // REFNRCHANGE call
+        $response = $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
+
+        if ($response->getStatus() !== CTEnumStatus::OK){
+            // TODO: add error log
+            $this->forward('failure');
+        }
+
+        $this->autoCapture($customOrdernumber);
+
+        $this->forward('finish', 'FatchipCTPaypalExpressCheckout', null, array('sUniqueID' => $response->getPayID()));
     }
 
     /**
