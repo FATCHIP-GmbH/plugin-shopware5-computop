@@ -1,5 +1,10 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.34
+2020-05-19
+* Fixed PayPal Express: Only mark order a fully paid, after capture.
+* Fixed PayPal Express: Respect config setting for caption
+
 ## 1.0.33
 2020-03-03
 * Fixed: no interference with external Klarna plugin
