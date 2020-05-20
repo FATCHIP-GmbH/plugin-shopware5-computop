@@ -177,9 +177,15 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
 
         if ($response->getStatus() !== CTEnumStatus::OK){
             // TODO: add error log
+            $this->savePaymentStatus(
+                $response->getTransID(),
+                $response->getPayID(),
+                self::PAYMENTSTATUSREVIEWNECESSARY
+            );
             $this->forward('failure');
         }
 
+        // autoCapture handles errors during capture itself
         $this->autoCapture($customOrdernumber);
 
         $this->forward('finish', 'FatchipCTPaypalExpressCheckout', null, array('sUniqueID' => $response->getPayID()));
