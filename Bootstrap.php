@@ -382,7 +382,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $log->setPaymentName($payment::paymentClass);
         $log->setRequest($requestType);
         $log->setRequestDetails(json_encode($requestParams));
-        /** @var CTResponse $response */
         $response =  $payment->callComputop($requestParams, $url);
         $log->setTransId($response->getTransID());
         $log->setPayId($response->getPayID());
