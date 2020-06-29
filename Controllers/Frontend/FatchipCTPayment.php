@@ -284,13 +284,20 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     {
 
         $urlSuccessParams = ['action' => 'success', 'forceSecure' => true];
+        $urlFailureParams = ['action' => 'failure', 'forceSecure' => true];
+        $urlNotifyParams = ['action' => 'notify', 'forceSecure' => true];
 
         if (Util::isShopwareVersionGreaterThanOrEqual('5.6')) {
             $token = $this->get(PaymentTokenService::class)->generate();
+
             $urlSuccessParams[PaymentTokenService::TYPE_PAYMENT_TOKEN] = $token;
+            $urlFailureParams[PaymentTokenService::TYPE_PAYMENT_TOKEN] = $token;
+            $urlNotifyParams[PaymentTokenService::TYPE_PAYMENT_TOKEN] = $token;
         }
 
         $urlSuccess = $this->router->assemble($urlSuccessParams);
+        $urlFailure = $this->router->assemble($urlFailureParams);
+        $urlNotify = $this->router->assemble($urlNotifyParams);
 
         $ctOrder = $this->createCTOrder();
         $payment = $this->paymentService->getIframePaymentClass(
@@ -298,11 +305,12 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $this->config,
             $ctOrder,
             $urlSuccess,
-            $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
-            $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
+            $urlFailure,
+            $urlNotify,
             $this->getOrderDesc(),
             $this->getUserDataParam()
         );
+
         return $payment;
     }
 
