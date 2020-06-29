@@ -211,6 +211,14 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         }
 
         $response = $this->paymentService->getDecryptedResponse($requestParams);
+
+        $userDataExplode = explode('swPaymentToken', $response->getUserData());
+        if (sizeof($userDataExplode) > 1) {
+            $response->setUserData($userDataExplode[0]);
+            $token = $userDataExplode[1];
+            $sessionResult = $this->get(PaymentTokenService::class)->restore($token);
+        }
+
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
         if (is_null($response) || $response->getStatus() !== CTEnumStatus::OK) {
             $this->forward('failure');
