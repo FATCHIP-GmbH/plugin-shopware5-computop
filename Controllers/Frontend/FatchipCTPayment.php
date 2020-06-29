@@ -206,6 +206,10 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     {
         $requestParams = $this->Request()->getParams();
 
+        if (in_array('swPaymentToken', array_keys($requestParams))) {
+            $result = $this->get(PaymentTokenService::class)->restore($requestParams['swPaymentToken']);
+        }
+
         if(array_key_exists('fatchipCTPaymentClass', $requestParams) && $requestParams['fatchipCTPaymentClass'])  {
             $this->paymentClass = $requestParams['fatchipCTPaymentClass'];
         }
