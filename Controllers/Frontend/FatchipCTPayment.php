@@ -27,6 +27,7 @@
 
 use Fatchip\CTPayment\CTEnums\CTEnumPaymentStatus;
 use Fatchip\CTPayment\CTResponse;
+use Shopware\Components\Cart\PaymentTokenService;
 use Shopware\Models\Order\Order;
 use Shopware\Plugins\FatchipCTPayment\Util;
 use Fatchip\CTPayment\CTOrder\CTOrder;
@@ -281,6 +282,13 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     protected function getPaymentClassForGatewayAction()
     {
+        $tokenString = '';
+
+        if (Util::isShopwareVersionGreaterThanOrEqual('5.6')) {
+            $token = $this->get(PaymentTokenService::class)->generate();
+            $tokenString = PaymentTokenService::TYPE_PAYMENT_TOKEN . $token;
+        }
+
         $ctOrder = $this->createCTOrder();
         $payment = $this->paymentService->getIframePaymentClass(
             $this->paymentClass,
@@ -290,7 +298,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $this->router->assemble(['action' => 'failure', 'forceSecure' => true]),
             $this->router->assemble(['action' => 'notify', 'forceSecure' => true]),
             $this->getOrderDesc(),
-            $this->getUserDataParam()
+            $this->getUserDataParam() . $tokenString
         );
         return $payment;
     }
