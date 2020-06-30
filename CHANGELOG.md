@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.35
+2020-06-30
+* Removed IDEAL via Sofort
+
 ## 1.0.34
 2020-05-19
 * Fixed PayPal Express: Only mark order a fully paid, after capture.
