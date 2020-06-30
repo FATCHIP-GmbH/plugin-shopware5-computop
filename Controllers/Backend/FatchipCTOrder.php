@@ -552,7 +552,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
         $router = $this->Front()->Router();
         $paymentClassName = $this->getCTPaymentClassNameForOrder($order);
 
-        if ($paymentClassName !== 'PaypalExpress' && $paymentClassName !== 'AmazonPay') {
+        if ($paymentClassName !== 'PaypalExpress' && $paymentClassName !== 'AmazonPay' && $paymentClassName !== 'KlarnaPayments') {
             return $this->paymentService->getIframePaymentClass(
                 $paymentClassName,
                 $this->config,
