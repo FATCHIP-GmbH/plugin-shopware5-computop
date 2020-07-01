@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.35
+2020-07-01
+* Removed MobilePay.
+
 ## 1.0.34
 2020-05-19
 * Fixed PayPal Express: Only mark order a fully paid, after capture.
