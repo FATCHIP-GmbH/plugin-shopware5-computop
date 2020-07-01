@@ -4,6 +4,8 @@
 2020-06-30
 * Fixed capture with klarna was not possible
 * Removed IDEAL via Sofort
+2020-07-01
+* Removed MobilePay.
 
 ## 1.0.34
 2020-05-19

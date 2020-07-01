@@ -72,8 +72,6 @@ class ControllerPath extends AbstractSubscriber
             => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTLastschrift'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTMobilepay'
-            => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaydirekt'
             => 'onGetFrontendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaypalStandard'
