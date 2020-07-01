@@ -3,6 +3,7 @@
 ## 1.0.35
 2020-06-30
 * Fixed capture with klarna was not possible
+* Removed IDEAL via Sofort
 
 ## 1.0.34
 2020-05-19
