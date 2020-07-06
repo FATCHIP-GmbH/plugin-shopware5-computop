@@ -163,10 +163,17 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     public function gatewayAction()
     {
-        $payment = $this->getPaymentClassForGatewayAction();
-        $params = $payment->getRedirectUrlParams();
-        $this->session->offsetSet('fatchipCTRedirectParams', $params);
-        $this->redirect($payment->getHTTPGetURL($params));
+        try {
+            $payment = $this->getPaymentClassForGatewayAction();
+            $params = $payment->getRedirectUrlParams();
+            $this->session->offsetSet('fatchipCTRedirectParams', $params);
+            $this->redirect($payment->getHTTPGetURL($params));
+        } catch (Exception $e) {
+            $ctError = [];
+            $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
+            $ctError['CTErrorCode'] = 'Bitte prüfen Sie Straße und Hausnummer';
+            return $this->forward('confirm', 'checkout', null, ['CTError' => $ctError]);
+        }
     }
 
     /**

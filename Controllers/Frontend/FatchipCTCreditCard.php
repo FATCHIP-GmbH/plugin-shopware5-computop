@@ -69,11 +69,18 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
      */
     public function gatewayAction()
     {
-        $payment = $this->getPaymentClassForGatewayAction();
-        $params = $payment->getRedirectUrlParams();
-        $this->session->offsetSet('fatchipCTRedirectParams', $params);
-
-        $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params, $this->config['creditCardTemplate'])));
+        try {
+            $payment = $this->getPaymentClassForGatewayAction();
+            $payment->setUrlBack($this->router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]));
+            $params = $payment->getRedirectUrlParams();
+            $this->session->offsetSet('fatchipCTRedirectParams', $params);
+            $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params)));
+        } catch (Exception $e) {
+            $ctError = [];
+            $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
+            $ctError['CTErrorCode'] = 'Bitte prüfen Sie Straße und Hausnummer';
+            return $this->forward('confirm', 'checkout', null, ['CTError' => $ctError]);
+        }
     }
 
     /**

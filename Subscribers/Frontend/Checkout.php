@@ -148,22 +148,25 @@ class Checkout extends AbstractSubscriber
             $view->assign('CTError', $params['CTError']);
         }
 
-        if ($request->getActionName() == 'confirm' && (strpos($paymentName, fatchip_computop) === 0)) {
+        if ($request->getActionName() == 'confirm' && (strpos($paymentName, 'fatchip_computop') === 0)) {
             // check for address splitting errors and handle them here
             $util = new Util();
             $ctOrder = new CTOrder();
             try {
+                //handle expired session
+                if (!array_key_exists('billingaddress', $userData)
+                    || !array_key_exists('shippingaddress', $userData)
+                ) {
+                    throw new \Exception('Ihre Sitzung ist abgelaufen. Bitte loggen Sie sich erneut ein.');
+                }
                 $ctOrder->setBillingAddress($util->getCTAddress($userData['billingaddress']));
                 $ctOrder->setShippingAddress($util->getCTAddress($userData['shippingaddress']));
             } catch (\Exception $e) {
-
                 $ctError = [];
-                $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten <BR>';
+                $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten. <BR>';
                 $ctError['CTErrorCode'] = 'Bitte prüfen Sie Straße und Hausnummer';
-                //$subject->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
                 $view->assign('CTError', $ctError);
                 return;
-
             }
         }
     }
