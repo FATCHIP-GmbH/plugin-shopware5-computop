@@ -8,5 +8,8 @@
   },
   "extra": {
     "installer-name": "FatchipCTPayment"
+  },
+  "scripts": {
+    "post-root-package-install": "git submodule update --init"
   }
 }
