@@ -1,11 +1,11 @@
 # Changelog - Shopware Computop Payment Connector
 
 ## 1.0.35
-2020-06-30
+2020-08-11
 * Fixed capture with klarna was not possible
-* Removed IDEAL via Sofort
-2020-07-01
-* Removed MobilePay.
+* Fixed issues with Afterpay
+* Removal of payment methods Mobile Pay and ideal via Sofort
+* Fixed iFrames for payments with Klarna
 
 ## 1.0.34
 2020-05-19
