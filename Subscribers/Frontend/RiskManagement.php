@@ -32,6 +32,7 @@ use Fatchip\CTPayment\CTPaymentService;
 use Shopware\Components\DependencyInjection\Container;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
 use Shopware\Plugins\FatchipCTPayment\Util;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
  * Class FrontendRiskManagement
@@ -89,6 +90,14 @@ class RiskManagement extends AbstractSubscriber
      */
     public function beforeAddressUpdate(\Enlight_Event_EventArgs $args)
     {
+        // Shopware\Models\Customer\Address::preUpdate also triggers when saving addresses in the sw backend
+        // but depends on a frontend session.
+        // So we test if Shopware()->Session throws an Exception and return early
+        try {
+            $session = Shopware()->Session();
+        } catch (ServiceNotFoundException $e) {
+            return;
+        }
         //check in Session if we autoupated the address with the corrected Address from CRIF
         if (!$this->addressWasAutoUpdated()) {
             /** @var \Shopware\Models\Customer\Address $model */
