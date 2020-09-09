@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.36
+2020-09-09
+* Fixed subscriber leading to address changes no longer possible in backend
+
 ## 1.0.35
 2020-08-11
 * Fixed capture with klarna was not possible
