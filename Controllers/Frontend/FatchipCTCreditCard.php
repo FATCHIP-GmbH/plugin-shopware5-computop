@@ -120,6 +120,13 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     public function successAction()
     {
         $requestParams = $this->Request()->getParams();
+
+        // Safari 6+ losses the Shopware session after submitting the iframe, so we restore the session by using
+        // the previously sent sessionid returned by CT
+        // @see https://gist.github.com/iansltx/18caf551baaa60b79206
+        $sessionId = $requestParams['session'];
+        $this->restoreSession($sessionId);
+
         // used for paynow silent mode
 
         $response = !empty($requestParams['response']) ? $requestParams['response'] : $this->paymentService->getDecryptedResponse($requestParams);
@@ -156,6 +163,18 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $this->forward('failure');
                 break;
         }
+    }
+
+    /**
+     * restore shopware user session from Id
+     *
+     * @param string $sessionId
+     */
+    protected function restoreSession($sessionId)
+    {
+        \Enlight_Components_Session::writeClose();
+        \Enlight_Components_Session::setId($sessionId);
+        \Enlight_Components_Session::start();
     }
 
     /**
