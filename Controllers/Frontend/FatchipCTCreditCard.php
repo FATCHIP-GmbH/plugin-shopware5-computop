@@ -28,6 +28,8 @@
 require_once 'FatchipCTPayment.php';
 
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
+use Monolog\Handler\RotatingFileHandler;
+use Shopware\Plugins\FatchipCTPayment\Util;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTCreditCard.
@@ -125,10 +127,24 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         // the previously sent sessionid returned by CT
         // @see https://gist.github.com/iansltx/18caf551baaa60b79206
         $sessionId = $requestParams['session'];
-        $this->restoreSession($sessionId);
+        if ($sessionId) {
+            try {
+                $this->restoreSession($sessionId);
+            } catch (Zend_Session_Exception $e) {
+                $logPath = Shopware()->DocPath();
 
+                if (Util::isShopwareVersionGreaterThanOrEqual('5.1')) {
+                    $logFile = $logPath . 'var/log/FatchipCTPayment_production.log';
+                } else {
+                    $logFile = $logPath . 'logs/FatchipCTPayment_production.log';
+                }
+                $rfh = new RotatingFileHandler($logFile, 14);
+                $logger = new \Shopware\Components\Logger('FatchipCTPayment');
+                $logger->pushHandler($rfh);
+                $ret = $logger->error($e->getMessage());
+            }
+        }
         // used for paynow silent mode
-
         $response = !empty($requestParams['response']) ? $requestParams['response'] : $this->paymentService->getDecryptedResponse($requestParams);
 
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'AUTH', $response);
