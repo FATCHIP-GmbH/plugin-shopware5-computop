@@ -897,4 +897,33 @@ class Util
 
         return $payments;
     }
+
+    /**
+     * Returns the Remote IP supporting
+     * load balancer and proxy setups
+     *
+     * @return string
+     */
+    public static function getRemoteAddress()
+    {
+        $remoteAddr = $_SERVER['REMOTE_ADDR'];
+        if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)) {
+            $proxy = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            if (!empty($proxy)) {
+                $proxyIps = explode(',', $proxy);
+                $relevantIp = array_shift($proxyIps);
+                $relevantIp = trim($relevantIp);
+                if (!empty($relevantIp)) {
+                    return $relevantIp;
+                }
+            }
+        }
+        // Cloudflare sends a special Proxy Header, see:
+        // https://support.cloudflare.com/hc/en-us/articles/200170986-How-does-Cloudflare-handle-HTTP-Request-headers-
+        // In theory, CF should respect X-Forwarded-For, but in some instances this failed
+        if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+            return $_SERVER['HTTP_CF_CONNECTING_IP'];
+        }
+        return $remoteAddr;
+    }
 }
