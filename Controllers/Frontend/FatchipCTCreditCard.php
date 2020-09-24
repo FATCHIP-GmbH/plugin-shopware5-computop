@@ -28,6 +28,8 @@
 require_once 'FatchipCTPayment.php';
 
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
+use Monolog\Handler\RotatingFileHandler;
+use Shopware\Plugins\FatchipCTPayment\Util;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTCreditCard.
@@ -120,8 +122,29 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     public function successAction()
     {
         $requestParams = $this->Request()->getParams();
-        // used for paynow silent mode
 
+        // Safari 6+ losses the Shopware session after submitting the iframe, so we restore the session by using
+        // the previously sent sessionid returned by CT
+        // @see https://gist.github.com/iansltx/18caf551baaa60b79206
+        $sessionId = $requestParams['session'];
+        if ($sessionId) {
+            try {
+                $this->restoreSession($sessionId);
+            } catch (Zend_Session_Exception $e) {
+                $logPath = Shopware()->DocPath();
+
+                if (Util::isShopwareVersionGreaterThanOrEqual('5.1')) {
+                    $logFile = $logPath . 'var/log/FatchipCTPayment_production.log';
+                } else {
+                    $logFile = $logPath . 'logs/FatchipCTPayment_production.log';
+                }
+                $rfh = new RotatingFileHandler($logFile, 14);
+                $logger = new \Shopware\Components\Logger('FatchipCTPayment');
+                $logger->pushHandler($rfh);
+                $ret = $logger->error($e->getMessage());
+            }
+        }
+        // used for paynow silent mode
         $response = !empty($requestParams['response']) ? $requestParams['response'] : $this->paymentService->getDecryptedResponse($requestParams);
 
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'AUTH', $response);
@@ -156,6 +179,18 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $this->forward('failure');
                 break;
         }
+    }
+
+    /**
+     * restore shopware user session from Id
+     *
+     * @param string $sessionId
+     */
+    protected function restoreSession($sessionId)
+    {
+        \Enlight_Components_Session::writeClose();
+        \Enlight_Components_Session::setId($sessionId);
+        \Enlight_Components_Session::start();
     }
 
     /**
