@@ -1,5 +1,10 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.0.37
+2020-09-25
+* Fixed transferring of correct IP-Address
+* Added workaround for creditcard iframe payments for safari causing lost usersessions
+
 ## 1.0.36
 2020-09-09
 * Fixed subscriber leading to address changes no longer possible in backend
