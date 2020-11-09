@@ -72,6 +72,12 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     public function gatewayAction()
     {
         $payment = $this->getPaymentClassForGatewayAction();
+
+        // check if user already used cc payment successfully and send
+        // initialPayment true or false accordingly
+        $user = $this->getUser();
+        $initialPayment = ($this->utils->getUserCreditcardInitialPaymentSuccess($user) === "1") ? false : true;
+        $payment->setCredentialsOnFile($initialPayment);
         $params = $payment->getRedirectUrlParams();
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
 
@@ -163,6 +169,10 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $ccMode = strtolower($this->config['creditCardMode']);
                 $result = $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
 
+                // flag user for successfull initial payment
+                $session = Shopware()->Session();
+                $this->utils->updateUserCreditcardInitialPaymentSuccess($session->get('sUserId'), true);
+
                 if(!is_null($result) && $result->getStatus() == 'OK') {
                     $this->autoCapture($customOrdernumber);
                 }
@@ -215,6 +225,9 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $ctError = $this->hideError($response->getCode()) ? null : $ctError;
         $url = $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'shippingPayment']);
         $ccMode = strtolower($this->config['creditCardMode']);
+
+        // remove user flag for successfull initial payment
+        $this->utils->updateUserCreditcardInitialPaymentSuccess($this->session->get('sUserId'), 0);
 
         if ($ccMode === 'iframe') {
             $this->forward('iframe', 'FatchipCTCreditCard', null, ['fatchipCTURL' => $url, 'CTError' => $ctError]);
