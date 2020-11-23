@@ -218,6 +218,18 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     public function failureAction()
     {
         $requestParams = $this->Request()->getParams();
+
+        // Safari 6+ losses the Shopware session after submitting the iframe, so we restore the session by using
+        // the previously sent sessionid returned by CT
+        // @see https://gist.github.com/iansltx/18caf551baaa60b79206
+        $sessionId = $requestParams['session'];
+        if ($sessionId) {
+            try {
+                $this->restoreSession($sessionId);
+            } catch (Zend_Session_Exception $e) {
+            }
+        }
+
         $ctError = [];
 
         $response = $this->paymentService->getDecryptedResponse($requestParams);
@@ -239,7 +251,6 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
             $this->forward('iframe', 'FatchipCTCreditCard', null, ['fatchipCTURL' => $url, 'CTError' => $ctError]);
         } else {
             //$this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
-
             // set CTError in Session to prevent csfrs errors
             $this->session->offsetSet('CTError', $ctError);
             $this->redirect(['controller' => 'checkout', 'action' => 'shippingPayment']);
