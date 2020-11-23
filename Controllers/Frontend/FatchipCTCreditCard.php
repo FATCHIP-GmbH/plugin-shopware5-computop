@@ -182,7 +182,11 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 if ($ccMode === 'iframe') {
                     $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTURL' => $url, 'fatchipCTUniqueID' => $response->getPayID()));
                 } else {
-                    $this->forward('finish', 'Checkout', null, array('sUniqueID' => $response->getPayID()));
+                    $this->redirect(array(
+                        'controller' => 'checkout',
+                        'action' => 'finish',
+                        'sUniqueID' => $response->getPayID()
+                    ));
                 }
                 break;
             default:
@@ -227,7 +231,9 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $ccMode = strtolower($this->config['creditCardMode']);
 
         // remove user flag for successfull initial payment
-        $this->utils->updateUserCreditcardInitialPaymentSuccess($this->session->get('sUserId'), 0);
+        if (! is_null($this->session->get('sUserId'))) {
+            $this->utils->updateUserCreditcardInitialPaymentSuccess($this->session->get('sUserId'), 0);
+        }
 
         if ($ccMode === 'iframe') {
             $this->forward('iframe', 'FatchipCTCreditCard', null, ['fatchipCTURL' => $url, 'CTError' => $ctError]);
