@@ -327,6 +327,23 @@ class Util
         return $attribute->getFatchipctLastschriftaccowner();
     }
 
+    /**
+     * gets customer attribute
+     * @param $user
+     * @return mixed
+     */
+    public function getUserCreditcardInitialPaymentSuccess($user)
+    {
+        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
+            ->find($user['additional']['user']['id']);
+        $attribute = $user->getAttribute();
+
+        if ($attribute === null) {
+            return null;
+        }
+        return $attribute->getFatchipctCreditcardinitialpaymentsuccess();
+    }
+
     // SW 5.0 - 5.3 Compatibility
     // 5.0 - check
     // 5.1 - check
@@ -479,16 +496,32 @@ class Util
     }
 
     /**
-     * updates user account owner in customer attributes
-     * @param $userId
-     * @param $kontoinhaber
-     */
+ * updates user account owner in customer attributes
+ * @param $userId
+ * @param $kontoinhaber
+ */
     public function updateUserLastschriftKontoinhaber($userId, $kontoinhaber)
     {
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
 
         $attributes = $user->getAttribute();
         $attributes->setFatchipctLastschriftaccowner($kontoinhaber);
+        Shopware()->Models()->persist($attributes);
+        Shopware()->Models()->flush($attributes);
+
+    }
+
+    /**
+     * updates user attributes
+     * @param $userId
+     * @param $success
+     */
+    public function updateUserCreditcardInitialPaymentSuccess($userId, $success)
+    {
+        $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
+
+        $attributes = $user->getAttribute();
+        $attributes->setFatchipctCreditcardinitialpaymentsuccess($success);
         Shopware()->Models()->persist($attributes);
         Shopware()->Models()->flush($attributes);
 
