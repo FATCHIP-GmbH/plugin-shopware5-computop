@@ -108,6 +108,11 @@ class CreditCard extends AbstractSubscriber
             $shopName = $shopContext->getShop()->getName();
             $payment->setOrderDesc($shopName);
 
+            // check if user already used cc payment successfully and send
+            // initialPayment true or false accordingly
+            $initialPayment = ($this->utils->getUserCreditcardInitialPaymentSuccess($userData) === "1") ? false : true;
+            $payment->setCredentialsOnFile($initialPayment);
+
             $requestParams = $payment->getRedirectUrlParams();
             $requestParams['browserInfo'] = $this->getParamBrowserInfo($session->FatchipCTBrowserInfoParams,$request);
             unset($requestParams['Template']);

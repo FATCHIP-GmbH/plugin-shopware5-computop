@@ -72,6 +72,12 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     public function gatewayAction()
     {
         $payment = $this->getPaymentClassForGatewayAction();
+
+        // check if user already used cc payment successfully and send
+        // initialPayment true or false accordingly
+        $user = $this->getUser();
+        $initialPayment = ($this->utils->getUserCreditcardInitialPaymentSuccess($user) === "1") ? false : true;
+        $payment->setCredentialsOnFile($initialPayment);
         $params = $payment->getRedirectUrlParams();
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
 
@@ -163,6 +169,10 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $ccMode = strtolower($this->config['creditCardMode']);
                 $result = $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
 
+                // flag user for successfull initial payment
+                $session = Shopware()->Session();
+                $this->utils->updateUserCreditcardInitialPaymentSuccess($session->get('sUserId'), true);
+
                 if(!is_null($result) && $result->getStatus() == 'OK') {
                     $this->autoCapture($customOrdernumber);
                 }
@@ -172,7 +182,11 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 if ($ccMode === 'iframe') {
                     $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTURL' => $url, 'fatchipCTUniqueID' => $response->getPayID()));
                 } else {
-                    $this->forward('finish', 'Checkout', null, array('sUniqueID' => $response->getPayID()));
+                    $this->redirect(array(
+                        'controller' => 'checkout',
+                        'action' => 'finish',
+                        'sUniqueID' => $response->getPayID()
+                    ));
                 }
                 break;
             default:
@@ -204,6 +218,18 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     public function failureAction()
     {
         $requestParams = $this->Request()->getParams();
+
+        // Safari 6+ losses the Shopware session after submitting the iframe, so we restore the session by using
+        // the previously sent sessionid returned by CT
+        // @see https://gist.github.com/iansltx/18caf551baaa60b79206
+        $sessionId = $requestParams['session'];
+        if ($sessionId) {
+            try {
+                $this->restoreSession($sessionId);
+            } catch (Zend_Session_Exception $e) {
+            }
+        }
+
         $ctError = [];
 
         $response = $this->paymentService->getDecryptedResponse($requestParams);
@@ -216,11 +242,15 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $url = $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'shippingPayment']);
         $ccMode = strtolower($this->config['creditCardMode']);
 
+        // remove user flag for successfull initial payment
+        if (! is_null($this->session->get('sUserId'))) {
+            $this->utils->updateUserCreditcardInitialPaymentSuccess($this->session->get('sUserId'), 0);
+        }
+
         if ($ccMode === 'iframe') {
             $this->forward('iframe', 'FatchipCTCreditCard', null, ['fatchipCTURL' => $url, 'CTError' => $ctError]);
         } else {
             //$this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
-
             // set CTError in Session to prevent csfrs errors
             $this->session->offsetSet('CTError', $ctError);
             $this->redirect(['controller' => 'checkout', 'action' => 'shippingPayment']);
