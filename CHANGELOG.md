@@ -1,5 +1,15 @@
 # Changelog - Shopware Computop Payment Connector
 
+# 1.0.39
+2020-11-24
+* fixed a bug in silentmode preventing error display when session was lost after returning to shop
+* fixed CSRF Token error in silent mode when using 3dSecure 2.0
+* added support for credentialOnFile Parameter for creditcard payments
+
+# 1.0.38
+2020-09-30
+Fixed wrong submodule reference in main module
+
 ## 1.0.37
 2020-09-25
 * Fixed transferring of correct IP-Address
