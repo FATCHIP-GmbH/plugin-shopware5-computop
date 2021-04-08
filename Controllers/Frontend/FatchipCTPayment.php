@@ -263,9 +263,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $response->getTransID()])) {
 //                    $this->updateRefNrWithComputop($order, $this->paymentClass);
                     $this->inquireAndupdatePaymentStatus($order, $this->paymentClass);
-                } else {
-                    throw new \RuntimeException('No order available within Notify');
                 }
+
                 // else do nothing notify got here before success
                 break;
             default:
