@@ -1,5 +1,10 @@
 # Changelog - Shopware Computop Payment Connector
 
+# 1.0.40
+2021-05-28
+* removed "No order available within Notify" log spam
+* fixed string conversion exception with paypal express and php 7.4
+
 # 1.0.39
 2020-11-24
 * fixed a bug in silentmode preventing error display when session was lost after returning to shop
