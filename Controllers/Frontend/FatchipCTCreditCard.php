@@ -202,9 +202,15 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
      */
     protected function restoreSession($sessionId)
     {
-        \Enlight_Components_Session::writeClose();
-        \Enlight_Components_Session::setId($sessionId);
-        \Enlight_Components_Session::start();
+        if (version_compare(Shopware()->Config()->get('version'), '5.7.0', '>=')) {
+            Shopware()->Session()->save();
+            Shopware()->Session()->setId($sessionId);
+            Shopware()->Session()->start();
+        } else {
+            \Enlight_Components_Session::writeClose();
+            \Enlight_Components_Session::setId($sessionId);
+            \Enlight_Components_Session::start();
+        }
     }
 
     /**
