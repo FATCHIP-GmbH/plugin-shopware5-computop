@@ -79,6 +79,9 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $initialPayment = ($this->utils->getUserCreditcardInitialPaymentSuccess($user) === "1") ? false : true;
         $payment->setCredentialsOnFile($initialPayment);
         $params = $payment->getRedirectUrlParams();
+        if ($params['AccVerify'] !== 'Yes') {
+            unset($params['AccVerify']);
+        }
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
 
         $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params, $this->config['creditCardTemplate'])));

@@ -114,6 +114,9 @@ class CreditCard extends AbstractSubscriber
             $payment->setCredentialsOnFile($initialPayment);
 
             $requestParams = $payment->getRedirectUrlParams();
+            if ($requestParams['AccVerify'] !== 'Yes') {
+                unset($requestParams['AccVerify']);
+            }
             $requestParams['browserInfo'] = $this->getParamBrowserInfo($session->FatchipCTBrowserInfoParams,$request);
             unset($requestParams['Template']);
             $silentParams = $payment->prepareSilentRequest($requestParams);

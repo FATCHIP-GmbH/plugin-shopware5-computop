@@ -165,6 +165,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     {
         $payment = $this->getPaymentClassForGatewayAction();
         $params = $payment->getRedirectUrlParams();
+
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
         $this->redirect($payment->getHTTPGetURL($params));
     }
