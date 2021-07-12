@@ -1,6 +1,10 @@
 # Changelog - Shopware Computop Payment Connector
 
 # 1.0.41
+2021-07-12
+* Added option for credit card verification
+
+# 1.0.41
 2021-06-16
 * fixed session restore for SW 5.7.0 and higher
 
