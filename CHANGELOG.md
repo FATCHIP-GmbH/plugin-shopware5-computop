@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+# 1.0.43
+2021-09-17
+* Added option for capture mode for Amazon Pay
+
 # 1.0.42
 2021-07-12
 * Added option for credit card verification
