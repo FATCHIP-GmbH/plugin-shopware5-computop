@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+# 1.0.44
+2021-09-23
+* Fixed "call to a member function getAmount() on array" exception
+
 # 1.0.43
 2021-09-17
 * Added option for capture mode for Amazon Pay
