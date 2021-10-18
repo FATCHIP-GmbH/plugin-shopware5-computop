@@ -97,6 +97,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
         $ctRequest = $payment->cleanUrlParams($payment->getKlarnaOrderRequestParams($payId, $transId, $ctOrder->getAmount(), $ctOrder->getCurrency(), $tokenExt));
         $response = null;
 
+        $ctRequest['EtiId'] = $this->utils->getUserDataParam();
         try {
             $response = $this->plugin->callComputopService($ctRequest, $payment, 'KLARNA', $CTPaymentURL);
         } catch (Exception $e) {

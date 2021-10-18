@@ -166,7 +166,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
             $countryIso,
             $router->assemble(['controller' => 'FatchipCTAmazon', 'action' => 'notify', 'forceSecure' => true])
         );
-        $requestParams['EtId'] = $this->utils->getUserDataParam();
+        $requestParams['EtiId'] = $this->utils->getUserDataParam();
         return $this->plugin->callComputopService($requestParams, $payment, 'LGN', $payment->getCTPaymentURL());
     }
 

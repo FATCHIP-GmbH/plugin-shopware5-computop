@@ -123,7 +123,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
             $this->getOrderDesc(),
             $session->offsetGet('fatchipCTAmazonReferenceID')
         );
-        $requestParams['EtId'] = $this->getUserDataParam();
+        $requestParams['EtiId'] = $this->utils->getUserDataParam();
         $response = $this->plugin->callComputopService($requestParams, $payment, 'SCO', $payment->getCTPaymentURL());
         return $response;
     }
@@ -141,7 +141,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
             $session->offsetGet('fatchipCTAmazonReferenceID'),
             $this->getOrderDesc()
         );
-        $requestParams['EtId'] = $this->getUserDataParam();
+        $requestParams['EtiId'] = $this->utils->getUserDataParam();
         $response = $this->plugin->callComputopService($requestParams, $payment, 'ATH', $payment->getCTPaymentURL());
 
         return $response;

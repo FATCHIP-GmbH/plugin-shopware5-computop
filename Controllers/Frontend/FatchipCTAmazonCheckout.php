@@ -175,7 +175,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
             $orderDesc,
             $session->offsetGet('fatchipCTAmazonReferenceID')
         );
-        $requestParams['EtId'] = $this->utils->getUserDataParam();
+        $requestParams['EtiId'] = $this->utils->getUserDataParam();
         $response = $this->plugin->callComputopService($requestParams, $payment, 'GOD', $payment->getCTPaymentURL());
         return $response;
     }
