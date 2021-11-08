@@ -54,6 +54,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     const PAYMENTSTATUSOPEN = CTEnumPaymentStatus::PAYMENTSTATUSOPEN;
     const PAYMENTSTATUSRESERVED = CTEnumPaymentStatus::PAYMENTSTATUSRESERVED;
     const PAYMENTSTATUSREVIEWNECESSARY = CTEnumPaymentStatus::PAYMENTSTATUSREVIEWNECESSARY;
+    const ORDERSTATUSREVIEWNECESSARY  = Shopware\Models\Order\Status::ORDER_STATE_CLARIFICATION_REQUIRED;
+
 
     const ERRORMSG = 'Es ist ein Fehler aufgetreten. Bitte wählen Sie eine andere Zahlungsart oder versuchen Sie es später noch einmal.<br>';
 
@@ -466,6 +468,21 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     }
 
     /**
+     * Updates ORderstatus for an order
+     *
+     * @param Shopware\Models\Order\Order $order    shopware order object
+     * @param integer                     $statusID shopware  paymentStatus id
+     *
+     * @return void
+     */
+    private function setOrderStatus($order, $statusID)
+    {
+        $orderStatus = $this->get('models')->find('Shopware\Models\Order\Status', $statusID);
+        $order->setOrderStatus($orderStatus);
+        $this->get('models')->flush($order);
+    }
+
+    /**
      * @param $orderNumber
      *
      * @throws Exception
@@ -490,12 +507,16 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         }
 
         $captureResponse = $this->captureOrder($order);
-
-        if ($captureResponse->getStatus() === 'OK') {
+        $captureResponseStatus = $captureResponse->getStatus();
+        if ( $captureResponseStatus === 'OK') {
             $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSPAID);
             $this->markOrderDetailsAsFullyCaptured($order);
         } else {
             $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSREVIEWNECESSARY);
+            /** @see https://tickets.fatchip.de/view.php?id=80218 */
+            if ($paymentName === 'fatchip_computop_paypal_standard' && $this->config['paypalSetOrderStatus'] === "An") {
+                $this->setOrderStatus($order, self::ORDERSTATUSREVIEWNECESSARY);
+            }
         }
     }
 
