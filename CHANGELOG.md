@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+# 1.0.45
+2021-10-18
+* Fixed parameter EtiID
+
 # 1.0.44
 2021-09-23
 * Fixed "call to a member function getAmount() on array" exception
