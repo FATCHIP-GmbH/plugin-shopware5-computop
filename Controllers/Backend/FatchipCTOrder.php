@@ -122,7 +122,8 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
                 $order->getAttribute()->getfatchipctTransid(),
                 $order->getAttribute()->getfatchipctXid(),
                 $orderDesc,
-                $order->getAttribute()->getfatchipctKlarnainvno()
+                $order->getAttribute()->getfatchipctKlarnainvno(),
+                $order->getAttribute()->getfatchipctkreditkarteschemereferenceid()
             );
 
 
@@ -214,7 +215,8 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
                 $order->getCurrency(),
                 $order->getAttribute()->getfatchipctTransid(),
                 $order->getAttribute()->getfatchipctXid(),
-                $orderDesc
+                $orderDesc,
+                $order->getAttribute()->getfatchipctkreditkarteschemereferenceid()
             );
 
             $captureResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'CAPTURE', $paymentClass->getCTCaptureURL());

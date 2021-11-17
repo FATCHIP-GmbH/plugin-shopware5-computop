@@ -423,6 +423,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 $attribute->setfatchipctPaypalbillingagreementid($response->getBillingAgreementiD());
                 $attribute->setfatchipctlastschriftmandateid($response->getMandateid());
                 $attribute->setfatchipctlastschriftdos($response->getDtofsgntr());
+                $attribute->setfatchipctkreditkarteschemereferenceid($response->getSchemeReferenceID());
                 Shopware()->Models()->persist($attribute);
                 Shopware()->Models()->flush();
             }
@@ -546,7 +547,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $orderAttribute->getfatchipctTransid(),
             $orderAttribute->getfatchipctXid(),
             //TODO: klarna needs description
-            'none'
+            'none',
+            $orderAttribute->getfatchipctkreditkarteschemereferenceid()
         );
 
         return $this->plugin->callComputopService($requestParams, $payment, 'CAPTURE', $payment->getCTCaptureURL());
