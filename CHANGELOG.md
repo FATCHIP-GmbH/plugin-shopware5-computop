@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+# 1.0.46
+2021-11-08
+* Added option for PayPal Standard order status
+
 # 1.0.45
 2021-10-18
 * Fixed parameter EtiID
