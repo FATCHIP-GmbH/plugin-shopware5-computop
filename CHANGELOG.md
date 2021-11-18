@@ -1,5 +1,10 @@
 # Changelog - Shopware Computop Payment Connector
 
+# 1.0.47
+2021-11-18
+* display schemeReferenceID in backend API log
+* transmit schemeReferenceID in capture and refund requests when available
+
 # 1.0.46
 2021-11-08
 * Added option for PayPal Standard order status
