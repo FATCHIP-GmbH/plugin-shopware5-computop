@@ -338,8 +338,11 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $this->removeOldKlarnaPayments();
 
         $forms = new Forms();
-        $forms->createForm();
+        $attributes = new Attributes();
         $payments = new Payments();
+
+        $forms->createForm();
+        $attributes->createAttributes();
         $payments->createPayments();
 
         return $this->invalidateCaches(true);
