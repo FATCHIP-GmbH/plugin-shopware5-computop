@@ -117,7 +117,7 @@ class CreditCard extends AbstractSubscriber
             if ($requestParams['AccVerify'] !== 'Yes') {
                 unset($requestParams['AccVerify']);
             }
-            $requestParams['browserInfo'] = $this->getParamBrowserInfo($session->FatchipCTBrowserInfoParams,$request);
+            $requestParams['browserInfo'] = $this->getParamBrowserInfo($session->FatchipCTBrowserInfoParams, $request);
             unset($requestParams['Template']);
             $silentParams = $payment->prepareSilentRequest($requestParams);
             $session->offsetSet('fatchipCTRedirectParams', $requestParams);
@@ -156,7 +156,7 @@ class CreditCard extends AbstractSubscriber
         return $payment;
     }
 
-    protected function getParamBrowserInfo( $browserData, $request)
+    protected function getParamBrowserInfo($browserData, $request)
     {
         // @see
         $acceptHeaders = $request->getHeader('accept');
@@ -165,7 +165,7 @@ class CreditCard extends AbstractSubscriber
         $javaScriptEnabled = $browserData['javaScriptEnabled']; // see above
         $acceptLang = $request->getHeader('accept-language');
         $language = array_shift(explode(',', $acceptLang));
-        $colorDepth = $browserData['colorDepth'];
+        $colorDepth = $this->getParamColorDepth((int)$browserData['colorDepth']);
         $screenHeight = $browserData['screenHeight'];
         $screenWidth = $browserData['screenWidth'];
         $timeZoneOffset = $browserData['timeZoneOffset'];
@@ -194,5 +194,38 @@ class CreditCard extends AbstractSubscriber
             );
         }
         return base64_encode(json_encode($browserInfoParams));
+    }
+
+    /**
+     * The computop API only accepts the values
+     * 1,4,8,15,16,24,32 and 48
+     * This method returns the next higher fitting value
+     * when there is no exect match
+     *
+     * @param int $colorDepth
+     * @return int $apiColorDepth
+     */
+    private function getParamColorDepth($colorDepth)
+    {
+        $acceptedValues = [1, 4, 8, 15, 16, 24, 32, 48];
+
+        if (in_array($colorDepth, $acceptedValues, true)) {
+            $apiColorDepth = $colorDepth;
+        } elseif ($colorDepth <=1 ) {
+            $apiColorDepth = 1;
+        } elseif ($colorDepth <= 4) {
+            $apiColorDepth = 4;
+        } elseif ($colorDepth <= 8) {
+            $apiColorDepth = 8;
+        } elseif ($colorDepth <= 15) {
+            $apiColorDepth = 15;
+        } elseif ($colorDepth <= 24){
+            $apiColorDepth = 24;
+        } elseif ($colorDepth <= 32){
+            $apiColorDepth = 32;
+        } else {
+            $apiColorDepth = 48;
+        }
+        return $apiColorDepth;
     }
 }
