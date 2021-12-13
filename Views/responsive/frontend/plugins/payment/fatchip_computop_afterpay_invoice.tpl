@@ -2,7 +2,7 @@
     {block name="frontend_checkout_payment_fatchip_computop_afterpay_invoice_birthday_label"}
         <div>
             <p class="none">
-                <label for="fatchip_computop_afterpay_invoice_birthday">{s name='birthdate'}Bitte geben Sie Ihr Geburtsdatum an:{/s}</label>
+                <label for="fatchip_computop_afterpay_invoice_birthday">{s name='birthdate' namespace='frontend/FatchipCTPayment/translations'}Bitte geben Sie Ihr Geburtsdatum an{/s}:</label>
             </p>
         </div>
     {/block}

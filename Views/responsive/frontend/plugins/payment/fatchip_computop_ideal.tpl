@@ -1,7 +1,7 @@
     <div class="fatchip-computop-payment-ideal-form payment--form-group">
             {block name="frontend_checkout_payment_fatchip_computop_ideal_issuer_label"}
                 <p class="none">
-                    <label for="fatchip_computop_ideal_issuer">{s name='idealIssuerLabel'}Wählen Sie Ihre Bank{/s}</label>
+                    <label for="fatchip_computop_ideal_issuer">{s name='bankchoose' namespace='frontend/FatchipCTPayment/translations'}Wählen Sie Ihre Bank{/s}:</label>
                 </p>
             {/block}
 

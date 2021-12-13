@@ -24,7 +24,7 @@
 {block name='frontend_register_steps_basket'}
     <li class="steps--entry step--basket{if $sStepActive=='address'} is--active{/if}">
         <span class="icon">1</span>
-        <span class="text"><span class="text--inner">Adresse und Zahlart</span></span>
+        <span class="text"><span class="text--inner">{s name='AmazonPaymentDispatch' namespace='frontend/FatchipCTPayment/translations'}Adresse und Zahlart{/s}</span></span>
     </li>
 {/block}
 
@@ -32,7 +32,7 @@
 {block name='frontend_register_steps_register'}
     <li class="steps--entry step--register{if $sStepActive=='paymentShipping'} is--active{/if}">
         <span class="icon">2</span>
-        <span class="text"><span class="text--inner">Versandart</span></span>
+        <span class="text"><span class="text--inner">{s name='AmazonDispatch' namespace='frontend/FatchipCTPayment/translations'}Versandart{/s}</span></span>
     </li>
 {/block}
 
@@ -40,7 +40,7 @@
 {block name='frontend_register_steps_confirm'}
     <li class="steps--entry step--confirm{if $sStepActive=='finished'} is--active{/if}">
         <span class="icon">3</span>
-        <span class="text"><span class="text--inner">Prüfen und Bestellen</span></span>
+        <span class="text"><span class="text--inner">{s name='AmazonCheckConfirm' namespace='frontend/FatchipCTPayment/translations'}Prüfen und Bestellen{/s}</span></span>
     </li>
 {/block}
 

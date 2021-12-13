@@ -7,7 +7,7 @@
                 <i class="icon--element icon--cross"></i>
             </div>
             <div id="AmazonErrorContent" class="alert--content">
-                {s name="AmazonErrorDeclined" namespace="frontend/checkout/CTErrors"}Es ist ein Fehler aufgetreten: Die Zahlung wurde seitens Amazon zurückgewiesen.{/s}
+                {s name="AmazonErrorDeclined" namespace="frontend/FatchipCTPayment/translations"}Es ist ein Fehler aufgetreten: Die Zahlung wurde seitens Amazon zurückgewiesen.{/s}
             </div>
         </div>
     {elseif $amznError == 'SCO'}
@@ -16,7 +16,7 @@
                 <i class="icon--element icon--cross"></i>
             </div>
             <div id="AmazonErrorContent" class="alert--content">
-                {s name="AmazonErrorSCO" namespace="frontend/checkout/CTErrors"}Es ist ein Fehler aufgetreten: Authentifizierung nicht erfolgreich.{/s}
+                {s name="AmazonErrorSCO" namespace="frontend/FatchipCTPayment/translations"}Es ist ein Fehler aufgetreten: Authentifizierung nicht erfolgreich.{/s}
             </div>
         </div>
     {elseif $amznError}
@@ -25,7 +25,7 @@
                 <i class="icon--element icon--cross"></i>
             </div>
             <div id="AmazonErrorContent" class="alert--content">
-                {s name="AmazonErrorGeneric" namespace="frontend/checkout/CTErrors"}Es ist ein Fehler aufgetreten: Die Zahlung konnte nicht verarbeitet werden.{/s}
+                {s name="AmazonErrorGeneric" namespace="frontend/FatchipCTPayment/translations"}Es ist ein Fehler aufgetreten: Die Zahlung konnte nicht verarbeitet werden.{/s}
             </div>
         </div>
     {/if}
