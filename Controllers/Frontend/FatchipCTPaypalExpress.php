@@ -204,7 +204,9 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
         $requestParams = $this->Request()->getParams();
         $response = $this->paymentService->getDecryptedResponse($requestParams);
         $ctError = [];
-        $ctError['CTErrorMessage'] = self::ERRORMSG; // . $response->getDescription();
+        $ctError['CTErrorMessage'] = Shopware()->Snippets()
+            ->getNamespace('frontend/FatchipCTPayment/translations')
+            ->get('errorGeneral'); // . $response->getDescription();
         $ctError['CTErrorCode'] = ''; //$response->getCode();
         $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
     }

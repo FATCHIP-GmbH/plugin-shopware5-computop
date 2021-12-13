@@ -119,7 +119,9 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
                 break;
             default:
                 $ctError = [];
-                $ctError['CTErrorMessage'] = self::ERRORMSG; // . $response->getDescription();
+                $ctError['CTErrorMessage'] = Shopware()->Snippets()
+                    ->getNamespace('frontend/FatchipCTPayment/translations')
+                    ->get('errorGeneral'); // . $response->getDescription();
                 $ctError['CTErrorCode'] = ''; //$response->getCode();
                 return $this->forward('shippingPayment', 'checkout', null, array('CTError' => $ctError));
 

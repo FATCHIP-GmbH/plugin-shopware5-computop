@@ -237,8 +237,9 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
             $data['status'] = 'success';
         } else {
             $data['status'] = 'error';
-            $data['errormessage'] = 'Dieses Lieferland wird vom Shop nicht unterstützt.
-            Bitte wählen Sie eine andere Addresse';
+            $data['errormessage'] = Shopware()->Snippets()
+                ->getNamespace('frontend/FatchipCTPayment/translations')
+                ->get('errorShippingCountry');
         }
 
         $encoded = json_encode($data);

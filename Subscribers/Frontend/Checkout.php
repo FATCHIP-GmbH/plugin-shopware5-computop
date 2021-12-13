@@ -158,7 +158,9 @@ class Checkout extends AbstractSubscriber
             } catch (\Exception $e) {
 
                 $ctError = [];
-                $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten <BR>';
+                $ctError['CTErrorMessage'] = Shopware()->Snippets()
+                    ->getNamespace('frontend/FatchipCTPayment/translations')
+                    ->get('errorAddress');
                 $ctError['CTErrorCode'] = 'Bitte prüfen Sie Straße und Hausnummer';
                 //$subject->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
                 $view->assign('CTError', $ctError);
