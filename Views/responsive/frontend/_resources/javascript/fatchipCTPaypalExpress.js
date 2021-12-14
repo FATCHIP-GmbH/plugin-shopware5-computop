@@ -20,7 +20,7 @@ $.plugin("fatchipCTPaypalExpress", {
     init: function () {
         "use strict";
         var me = this;
-        me.applyDataAttributes();
+        me.applyDataAttributes(false);
         var frm = $("<form>", {
             "action": me.opts.fatchipCTPaypalExpressRegisterUrl,
             "method": "post"

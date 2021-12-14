@@ -65,7 +65,7 @@ $.plugin("fatchipCTAmazon", {
 
         me._on(me.$el, "onAmazonAddressSelect", function (event) {
             event.preventDefault();
-            me.applyDataAttributes();
+            me.applyDataAttributes(false);
             $("#AmazonErrors").hide();
             //$.loadingIndicator.open();
             // had to delay the SOD call a bit
