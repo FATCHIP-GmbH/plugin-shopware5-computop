@@ -124,7 +124,9 @@ class Shopware_Controllers_Frontend_FatchipCTAfterpay extends Shopware_Controlle
                 break;
             default:
                 $ctError = [];
-                $ctError['CTErrorMessage'] = self::ERRORMSG; // . $response->getDescription();
+                $ctError['CTErrorMessage'] = Shopware()->Snippets()
+                    ->getNamespace('frontend/FatchipCTPayment/translations')
+                    ->get('errorGeneral'); // . $response->getDescription();
                 $ctError['CTErrorCode'] = ''; //$response->getCode();
                 $this->session->offsetUnSet('FatchipComputopAfterpayProductNr');
                 $this->forward('shippingPayment', 'checkout', null, array('CTError' => $ctError));

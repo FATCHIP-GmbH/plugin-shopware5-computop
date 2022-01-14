@@ -113,7 +113,9 @@ class KlarnaPayments extends AbstractSubscriber
                 $CTResponse = $this->payment->requestSession($requestParams);
 
                 if ($CTResponse->getStatus() === 'FAILED') {
-                    $msg = 'Es ist ein Fehler aufgetreten, bitte wählen Sie eine andere Zahlart aus.';
+                    $msg = Shopware()->Snippets()
+                        ->getNamespace('frontend/FatchipCTPayment/translations')
+                        ->get('errorGeneral');
                     $ctError = [
                         'CTErrorMessage' => $msg,
                         'CTErrorCode' => '',

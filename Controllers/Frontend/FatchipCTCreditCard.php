@@ -245,7 +245,9 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
 
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
 
-        $ctError['CTErrorMessage'] = self::ERRORMSG; // . $response->getDescription();
+        $ctError['CTErrorMessage'] = Shopware()->Snippets()
+            ->getNamespace('frontend/FatchipCTPayment/translations')
+            ->get('errorGeneral'); // . $response->getDescription();
         $ctError['CTErrorCode'] = $response->getCode();
         $ctError = $this->hideError($response->getCode()) ? null : $ctError;
         $url = $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'shippingPayment']);

@@ -97,6 +97,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $models = new Models();
 
         $forms->createForm();
+        $this->addFormTranslations(\Fatchip\CTPayment\CTPaymentConfigForms::formTranslations);
         $attributes->createAttributes();
         $payments->createPayments();
         $menu->createMenu();
@@ -342,6 +343,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $payments = new Payments();
 
         $forms->createForm();
+        $this->addFormTranslations(\Fatchip\CTPayment\CTPaymentConfigForms::formTranslations);
         $attributes->createAttributes();
         $payments->createPayments();
 

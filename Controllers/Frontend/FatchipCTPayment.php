@@ -187,7 +187,9 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
 
         $ctError = [];
-        $ctError['CTErrorMessage'] = self::ERRORMSG; // . $response->getDescription();
+        $ctError['CTErrorMessage'] = Shopware()->Snippets()
+            ->getNamespace('frontend/FatchipCTPayment/translations')
+            ->get('errorGeneral'); // . $response->getDescription();
         $ctError['CTErrorCode'] = $response->getCode();
         $this->session->offsetUnset('fatchipComputopEasyCreditPayId');
 
@@ -320,7 +322,9 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $ctOrder->setShippingAddress($this->utils->getCTAddress($userData['shippingaddress']));
         } catch (Exception $e) {
             $ctError = [];
-            $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
+            $ctError['CTErrorMessage'] = Shopware()->Snippets()
+                ->getNamespace('frontend/FatchipCTPayment/translations')
+                ->get('errorAddress');
             $ctError['CTErrorCode'] = $e->getMessage();
             return $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
         }

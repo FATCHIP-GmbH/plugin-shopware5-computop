@@ -813,7 +813,9 @@ class Util
             $basket = Shopware()->Modules()->Basket()->sGetBasket();
         } catch (Exception $e) {
             $ctError = [];
-            $ctError['CTErrorMessage'] = 'Beim auslesen des Warenkorbs ist ein Fehler aufgetreten<BR>';
+            $ctError['CTErrorMessage'] = Shopware()->Snippets()
+                ->getNamespace('frontend/FatchipCTPayment/translations')
+                ->get('errorBasket');
             $ctError['CTErrorCode'] = $e->getMessage();
             return ['CTError' => $ctError];
         }
@@ -827,7 +829,9 @@ class Util
             $ctOrder->setShippingAddress($this->getCTAddress($userData['shippingaddress']));
         } catch (Exception $e) {
             $ctError = [];
-            $ctError['CTErrorMessage'] = 'Bei der Verarbeitung Ihrer Adresse ist ein Fehler aufgetreten<BR>';
+            $ctError['CTErrorMessage'] = Shopware()->Snippets()
+                ->getNamespace('frontend/FatchipCTPayment/translations')
+                ->get('errorAddress');
             $ctError['CTErrorCode'] = $e->getMessage();
             return ['CTError' => $ctError];
         }

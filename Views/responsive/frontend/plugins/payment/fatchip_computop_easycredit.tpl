@@ -5,7 +5,7 @@
         {* The main form field table *}
         {block name="frontend_checkout_payment_fatchip_computop_easycredit_birthday_label"}
             <p class="none">
-                <label for="fatchip_computop_easycredit_birthday">{s name='birthdate'}Bitte geben Sie Ihr Geburtsdatum an:{/s}</label>
+                <label for="fatchip_computop_easycredit_birthday">{s name='birthdate' namespace='frontend/FatchipCTPayment/translations'}Bitte geben Sie Ihr Geburtsdatum an{/s}:</label>
             </p>
         {/block}
 

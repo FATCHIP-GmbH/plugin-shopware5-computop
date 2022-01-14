@@ -130,8 +130,9 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
             $errors = $merged_errors['error_flags'];
         }
         if (!empty($errors)) {
-            $errorMessage = 'Fehler bei der Shop Registrierung:<BR>' .
-                'Bitte korrigieren Sie in Ihrem Amazon Konto folgende Angaben:<BR>';
+            $errorMessage = Shopware()->Snippets()
+                ->getNamespace('frontend/FatchipCTPayment/translations')
+                ->get('errorRegister');
             $this->view->assign('errorMessage', $errorMessage);
             $this->view->assign('errorFields', array_keys($errors));
         }

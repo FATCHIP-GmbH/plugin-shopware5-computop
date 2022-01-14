@@ -5,7 +5,7 @@
     {block name="frontend_checkout_payment_fatchip_computop_afterpay_installment_iban_label"}
         <div>
             <p style="margin-top: 1.25rem !important">
-                <label for="fatchip_computop_afterpay_installment_iban">{s name='LastschriftIbanLabel'}IBAN{/s}</label>
+                <label for="fatchip_computop_afterpay_installment_iban">IBAN</label>
             </p>
         </div>
     {/block}
@@ -14,7 +14,7 @@
         <input name="FatchipComputopPaymentData[fatchip_computop_afterpay_installment_iban]" type="text"
                id="fatchip_computop_afterpay_installment_iban"
                class="payment--field is--required{if $error_flags.fatchip_computop__afterpay_installment_iban} has--error{/if}"
-               placeholder="{s name='lastschriftIban'}IBAN{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
+               placeholder="IBAN{s name="RequiredField" namespace="frontend/register/index"}{/s}"
                {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
                value="{$FatchipCTPaymentData.afterpayinstallmentiban}"
         />
@@ -48,7 +48,7 @@
     {block name="frontend_checkout_payment_fatchip_computop_afterpay_installment_birthday_label"}
         <div>
             <p class="none">
-                <label for="fatchip_computop_afterpay_installment_birthday">{s name='birthdate'}Bitte geben Sie Ihr Geburtsdatum an:{/s}</label>
+                <label for="fatchip_computop_afterpay_installment_birthday">{s name='birthdate' namespace='frontend/FatchipCTPayment/translations'}Bitte geben Sie Ihr Geburtsdatum an{/s}:</label>
             </p>
         </div>
     {/block}
