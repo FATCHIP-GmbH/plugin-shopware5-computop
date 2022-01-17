@@ -1,5 +1,14 @@
 # Changelog - Shopware Computop Payment Connector
 
+# 1.0.48
+2022-01-17
+* added mulitlanguage support
+* Fixed removal of leading zeroes in Paypal Express and AmazonPay zip codes and phone numbers
+* Fixed creditcard payments failing in some cases depending onbrowser colorDepth
+* Fixed backend exception on capture / refund
+* Added support for schemeReferenceID parameter
+* Added update of attribute model on plugin update
+
 # 1.0.47
 2021-11-18
 * display schemeReferenceID in backend API log
