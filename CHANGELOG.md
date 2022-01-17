@@ -2,10 +2,11 @@
 
 # 1.0.48
 2022-01-17
-* added mulitlanguage support
+* Added mulitlanguage support
 * Fixed removal of leading zeroes in Paypal Express and AmazonPay zip codes and phone numbers
 * Fixed creditcard payments failing in some cases depending onbrowser colorDepth
 * Fixed backend exception on capture / refund
+* Fixed help text for credit card silent mode
 * Added support for schemeReferenceID parameter
 * Added update of attribute model on plugin update
 
