@@ -7,10 +7,11 @@ $.plugin("fatchipCTPaypalExpress", {
         firstname: false,
         lastname: false,
         email: false,
-        phone: "0",
-        //birthdayDay: false,
-        //birthdayMonth: false,
-        //birthdayYear: false,
+        phone: "0800 123456789",
+        birthdayDay: '1',
+        birthdayMonth: '1',
+        birthdayYear: '1910',
+        birthday: '1910-01-01',
         street: false,
         zip: false,
         city: false,
@@ -20,7 +21,19 @@ $.plugin("fatchipCTPaypalExpress", {
     init: function () {
         "use strict";
         var me = this;
+        console.log('Before Apply');
+        console.log(me.defaults.phone);
+        console.log(me.defaults.birthdayDay);
+        console.log(me.defaults.birthdayMonth);
+        console.log(me.defaults.birthdayYear);
         me.applyDataAttributes(false);
+        console.log('After Apply');
+        console.log(me.opts.phone);
+        console.log(me.opts.birthdayDay);
+        console.log(me.opts.birthdayMonth);
+        console.log(me.opts.birthdayYear);
+        console.log('URl:');
+        console.log(me.opts.fatchipCTPaypalExpressRegisterUrl);
         var frm = $("<form>", {
             "action": me.opts.fatchipCTPaypalExpressRegisterUrl,
             "method": "post"
@@ -32,6 +45,13 @@ $.plugin("fatchipCTPaypalExpress", {
             "<input type=\"hidden\" name=\"register[personal][salutation]\" value=\"" + me.opts.salutation + "\"/>" +
             "<input type=\"hidden\" name=\"register[personal][firstname]\" value=\"" + me.opts.firstname + "\"/>" +
             "<input type=\"hidden\" name=\"register[personal][lastname]\" value=\"" + me.opts.lastname + "\"/>" +
+
+            //checked for 5.0
+            "<input type=\"hidden\" name=\"register[personal][birthday][day]\" value=\"" + me.opts.birthdayDay + "\"/>" +
+            "<input type=\"hidden\" name=\"register[personal][birthday][month]\" value=\"" + me.opts.birthdayMonth + "\"/>" +
+            "<input type=\"hidden\" name=\"register[personal][birthday][year]\" value=\"" + me.opts.birthdayYear + "\"/>" +
+            "<input type=\"hidden\" name=\"register[personal][birthday]\" value=\"" + me.opts.birthday + "\"/>" +
+
             // SW > 5.2
             "<input type=\"hidden\" name=\"register[personal][accountmode]\" value=\"1\"/>" +
 
