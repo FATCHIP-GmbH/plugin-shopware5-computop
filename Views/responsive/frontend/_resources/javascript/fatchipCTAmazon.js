@@ -11,10 +11,10 @@ $.plugin("fatchipCTAmazon", {
         firstname: false,
         lastname: false,
         email: false,
-        phone: false,
-        birthdayDay: "28",
-        birthdayMonth: "2",
-        birthdayYear: "1901",
+        phone: "0800 123456789",
+        birthdayDay: "01",
+        birthdayMonth: "01",
+        birthdayYear: "1910",
         street: false,
         add: "",
         zip: false,
@@ -65,7 +65,19 @@ $.plugin("fatchipCTAmazon", {
 
         me._on(me.$el, "onAmazonAddressSelect", function (event) {
             event.preventDefault();
+            console.log('Before Apply');
+            console.log(me.default.phone);
+            console.log(me.default.birthdayDay);
+            console.log(me.default.birthdayMonth);
+            console.log(me.default.birthdayYear);
             me.applyDataAttributes(false);
+            console.log('After Apply');
+            console.log(me.opts.phone);
+            console.log(me.opts.birthdayDay);
+            console.log(me.opts.birthdayMonth);
+            console.log(me.opts.birthdayYear);
+            console.log('URl:');
+            console.log(me.opts.fatchipCTPaypalExpressRegisterUrl);
             $("#AmazonErrors").hide();
             //$.loadingIndicator.open();
             // had to delay the SOD call a bit
