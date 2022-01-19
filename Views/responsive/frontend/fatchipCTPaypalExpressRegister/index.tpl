@@ -43,12 +43,12 @@
          data-city='{$fatchipCTResponse->getAddrCity()}'
          data-countryCodeBillingID='{$fatchipAddrCountryCodeID}'
          // never set in computop response, but may be required for shop registration
-         data-phone='{$fatchipCTResponse->getPhonenumber()}'
-         // implement seprate getters in CTResponse Object
-         data-birthdayDay='{$fatchipCTResponse->getBirthdayDay()}'
-         data-birthdayMonth='{$fatchipCTResponse->getBirthdayMonth()}'
-         data-birthdayYear='{$fatchipCTResponse->getBirthdayYear()}'
-         data-birthday='{$fatchipCTResponse->getBirthday()}'
+         data-phone='{$fatchipAddrPhone}'
+         data-birthday='{$fatchipAddrBirthday}'
+         data-birthdayDay='{$fatchipAddrBirthdayDay}'
+         data-birthdayMonth='{$fatchipAddrBirthdayMonth}'
+         data-birthdayYear='{$fatchipAddrBirthdayYear}'
+         data-birthdaySingleField = {config name="birthdaySingleField"}
     >
     </div>
 {/block}
