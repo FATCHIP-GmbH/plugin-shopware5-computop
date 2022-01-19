@@ -5,6 +5,9 @@ $.plugin("fatchipCTAmazon", {
         fatchipCTAmazonGODUrl: false,
         fatchipCTAmazonRegisterUrl: false,
         fatchipCTAmazonShippingCheckUrl: false,
+        fatchipCTAmazonisPhoneMandatory: false,
+        fatchipCTAmazonisBirthdayMandatory: false,
+        fatchipCTAmazonBirthdaySingleField: false,
 
         customerType: "private",
         salutation: "mr", // there is no way to know the gender
@@ -12,9 +15,10 @@ $.plugin("fatchipCTAmazon", {
         lastname: false,
         email: false,
         phone: "0800 123456789",
-        birthdayDay: "01",
-        birthdayMonth: "01",
-        birthdayYear: "1910",
+        birthdayDay: '1',
+        birthdayMonth: '1',
+        birthdayYear: '1910',
+        birthday: '1910-01-01',
         street: false,
         add: "",
         zip: false,
@@ -65,19 +69,7 @@ $.plugin("fatchipCTAmazon", {
 
         me._on(me.$el, "onAmazonAddressSelect", function (event) {
             event.preventDefault();
-            console.log('Before Apply');
-            console.log(me.default.phone);
-            console.log(me.default.birthdayDay);
-            console.log(me.default.birthdayMonth);
-            console.log(me.default.birthdayYear);
             me.applyDataAttributes(false);
-            console.log('After Apply');
-            console.log(me.opts.phone);
-            console.log(me.opts.birthdayDay);
-            console.log(me.opts.birthdayMonth);
-            console.log(me.opts.birthdayYear);
-            console.log('URl:');
-            console.log(me.opts.fatchipCTPaypalExpressRegisterUrl);
             $("#AmazonErrors").hide();
             //$.loadingIndicator.open();
             // had to delay the SOD call a bit
@@ -135,6 +127,15 @@ $.plugin("fatchipCTAmazon", {
                 "method": "POST"
             });
 
+            var bdayForm = '';
+            if (me.opts.fatchipCTAmazonBirthdaySingleField) {
+                bdayForm = "<input type=\"hidden\" name=\"register[personal][birthday]\" value=\"" + me.opts.birthday + "\"/>";
+            } else {
+                bdayForm = "<input type=\"hidden\" name=\"register[personal][birthday][day]\" value=\"" + me.opts.birthdayDay + "\"/>" +
+                    "<input type=\"hidden\" name=\"register[personal][birthday][month]\" value=\"" + me.opts.birthdayMonth + "\"/>" +
+                    "<input type=\"hidden\" name=\"register[personal][birthday][year]\" value=\"" + me.opts.birthdayYear + "\"/>";
+            }
+
             // SW 5.0 - 5.1
             frm.append(
                 "<input type=\"hidden\" name=\"register[personal][customer_type]\" value=\"" + me.opts.customerType + "\"/>" +
@@ -143,9 +144,8 @@ $.plugin("fatchipCTAmazon", {
                 "<input type=\"hidden\" name=\"register[personal][lastname]\" value=\"" + me.opts.lastname + "\"/>" +
 
                 //checked for 5.0
-                "<input type=\"hidden\" name=\"register[personal][birthday][day]\" value=\"" + me.opts.birthdayDay + "\"/>" +
-                "<input type=\"hidden\" name=\"register[personal][birthday][month]\" value=\"" + me.opts.birthdayMonth + "\"/>" +
-                "<input type=\"hidden\" name=\"register[personal][birthday][year]\" value=\"" + me.opts.birthdayYear + "\"/>" +
+                bdayForm +
+
 
                 // SW > 5.2
                 "<input type=\"hidden\" name=\"register[personal][accountmode]\" value=\"1\"/>" +
@@ -194,6 +194,20 @@ $.plugin("fatchipCTAmazon", {
 
         var sname = data.addrname.split(" ");
         var bname = data.bdaddrname.split(" ");
+
+        me.opts.birthday = data.birthday;
+        if (me.opts.fatchipCTAmazonisBirthdayMandatory){
+            me.opts.birthday = (data.birthday) ? data.birthday : '1910-01-01';
+        }
+        var aBirthday = me.opts.birthday.split("-");
+        me.opts.birthdayDay = parseInt(aBirthday[2]);
+        me.opts.birthdayMonthy = parseInt(aBirthday[1]);
+        me.opts.birthdayYear = aBirthday[0];
+
+        me.opts.phone = data.phonenumber;
+        if (me.opts.fatchipCTAmazonisPhoneMandatory){
+            me.opts.phone = (data.phonenumber) ? data.phonenumber : '0800 123456789';
+        }
 
         me.opts.firstname = bname[0];
         me.opts.lastname = bname[1];

@@ -1,6 +1,7 @@
 $.plugin("fatchipCTPaypalExpress", {
     defaults: {
         fatchipCTPaypalExpressRegisterUrl: false,
+        birthdaySingleField: false,
 
         customerType: "private",
         salutation: "mr", // there is no way to know the gender
@@ -28,7 +29,7 @@ $.plugin("fatchipCTPaypalExpress", {
         });
 
         var bdayForm = '';
-        if (me.optsbirthdaySingleField) {
+        if (me.opts.birthdaySingleField) {
             bdayForm = "<input type=\"hidden\" name=\"register[personal][birthday]\" value=\"" + me.opts.birthday + "\"/>";
         } else {
             bdayForm = "<input type=\"hidden\" name=\"register[personal][birthday][day]\" value=\"" + me.opts.birthdayDay + "\"/>" +

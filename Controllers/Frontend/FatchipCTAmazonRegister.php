@@ -138,6 +138,8 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
         }
         // TODO  add a config->toView method which removed sensitive data from view
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
+        $this->view->assign('fatchipCTAmazonisBirthdayMandatory',Shopware()->Config()->get('requireBirthdayField'));
+        $this->view->assign('fatchipCTAmazonisPhoneMandatory', Shopware()->Config()->get('requirePhoneField'));
         $this->view->loadTemplate('frontend/fatchipCTAmazonRegister/index.tpl');
     }
 

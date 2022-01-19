@@ -107,12 +107,9 @@
          data-fatchipCTAmazonGODUrl='{url controller="FatchipCTAjax" action="ctGetOrderDetails" forceSecure}'
          data-fatchipCTAmazonShippingCheckUrl='{url controller="FatchipCTAjax" action="ctIsShippingCountrySupported" forceSecure}'
          data-fatchipCTAmazonRegisterUrl='{url controller="FatchipCTAmazonRegister" action="saveRegister" forceSecure}?sTarget=FatchipCTAmazonCheckout&sTargetAction=shippingPayment'
-    // never set in computop response, but may be required for shop registration
-    data-phone='{$fatchipCTResponse->getPhonenumber()}'
-    // implement seprate getters in CTResponse Object
-    data-birthdayDay='{$fatchipCTResponse->getBirthdayDay()}'
-    data-birthdayMonth='{$fatchipCTResponse->getBirthdayMonth()}'
-    data-birthdayYear='{$fatchipCTResponse->getBirthdayYear()}'
+         data-fatchipCTAmazonisPhoneMandatory = '{$fatchipCTAmazonisPhoneMandatory}'
+         data-fatchipCTAmazonisBirthdayMandatory = '{fatchipCTAmazonisBirthdayMandatory}'
+         data-fatchipCTAmazonBirthdaySingleField = {config name="birthdaySingleField"}
     ></div>
 
     {* Submit button *}
