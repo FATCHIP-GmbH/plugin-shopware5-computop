@@ -98,9 +98,20 @@ class PaypalExpress extends AbstractSubscriber
         }
 
         if ($this->utils->isPaypalExpressActive()) {
+            $locale =  Shopware()->Shop()->getLocale()->getLocale();
+            // use de_DE for de_AT locale to get a fitting button
+            if ($locale === 'de_AT') {
+                $locale = 'de_DE';
+            }
+            $url = "https://www.paypal.com/$locale/i/btn/btn_xpressCheckout.gif";
+            // check if picture exists for the shop locale
+            $handle = @fopen($url, 'r');
+            if(!$handle){
+                $url ="/engine/Shopware/Plugins/Community/Frontend/FatchipCTPayment/Views/responsive/frontend/_resources/images/paypal_express_btn_default.gif";
+            }
             // assign plugin Config to View
             $view->assign('fatchipCTPaymentConfig', $pluginConfig);
-            // extend cart and ajax cart with Amazon Button
+            $view->assign('fatchipCTPaymentPaypalButtonUrl', $url);
             $view->extendsTemplate('frontend/checkout/ajax_cart_paypal.tpl');
             $view->extendsTemplate('frontend/checkout/cart_paypal.tpl');
         }
