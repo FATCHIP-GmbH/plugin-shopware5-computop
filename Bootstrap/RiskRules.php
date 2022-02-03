@@ -21,7 +21,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 namespace Shopware\Plugins\FatchipFCSPayment\Bootstrap;
@@ -46,13 +46,13 @@ class RiskRules extends Bootstrap
      */
     public function createRiskRules()
     {
-        $this->createComputopRiskRule('fatchip_computop_easycredit',
+        $this->createComputopRiskRule('fatchip_firstcash_easycredit',
             'ORDERVALUELESS', '200');
 
-        $this->createComputopRiskRule('fatchip_computop_przelewy24',
+        $this->createComputopRiskRule('fatchip_firstcash_przelewy24',
             'CURRENCIESISOISNOT', 'PLN');
 
-        $this->createComputopRiskRule('fatchip_computop_ideal',
+        $this->createComputopRiskRule('fatchip_firstcash_ideal',
             'BILLINGLANDISNOT', 'NL');
     }
 
@@ -109,7 +109,7 @@ class RiskRules extends Bootstrap
      */
     private function getNumberOfRiskrules($paymentName)
     {
-        if ($paymentName == 'fatchip_computop_klarna_installment' || $paymentName == 'fatchip_computop_klarna_invoice') {
+        if ($paymentName == 'fatchip_firstcash_klarna_installment' || $paymentName == 'fatchip_firstcash_klarna_invoice') {
             return 5;
         }
         return 1;

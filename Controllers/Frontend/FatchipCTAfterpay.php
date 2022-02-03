@@ -22,7 +22,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 require_once 'FatchipCTPayment.php';
@@ -40,7 +40,7 @@ use Fatchip\CTPayment\CTEnums\CTEnumStatus;
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 class Shopware_Controllers_Frontend_FatchipFCSAfterpay extends Shopware_Controllers_Frontend_FatchipFCSPayment
 {
@@ -82,23 +82,23 @@ class Shopware_Controllers_Frontend_FatchipFCSAfterpay extends Shopware_Controll
 
 
         switch ($paymentName) {
-            case 'fatchip_computop_afterpay_invoice':
+            case 'fatchip_firstcash_afterpay_invoice':
                 $requestParams['PayType'] = 'Invoice';
                 break;
 
             /* TODO
-            case 'fatchip_computop_afterpay_account':
+            case 'fatchip_firstcash_afterpay_account':
                 $requestParams['PayType'] = 'Account';
                 break;
             */
-            case 'fatchip_computop_afterpay_installment':
+            case 'fatchip_firstcash_afterpay_installment':
                 $requestParams['PayType'] = 'Installment';
                 $requestParams['ProductNr'] = $this->session->get('FatchipComputopAfterpayProductNr');
                 $requestParams['IBAN'] = $this->utils->removeWhitespaces($this->utils->getUserAfterpayInstallmentIban($user));
                 break;
 
             /* TODO
-            case 'fatchip_computop_afterpay_consolidatedinvoice':
+            case 'fatchip_firstcash_afterpay_consolidatedinvoice':
                 $requestParams['PayType'] = 'ConsolidatedInvoice';
                 $requestParams['InvoiceDate'] = '2018-08-16';
                 break;

@@ -22,7 +22,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 require_once 'FatchipCTPayment.php';
@@ -38,7 +38,7 @@ require_once 'FatchipCTPayment.php';
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 class Shopware_Controllers_Frontend_FatchipCTIdeal extends Shopware_Controllers_Frontend_FatchipFCSPayment
 {

@@ -22,7 +22,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 require_once 'FatchipCTPayment.php';
@@ -39,7 +39,7 @@ use Shopware\Components\CSRFWhitelistAware;
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 class Shopware_Controllers_Frontend_FatchipFCSPaypalExpressRegister extends Shopware_Controllers_Frontend_Register implements CSRFWhitelistAware
 {
@@ -97,7 +97,7 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalExpressRegister extends Shop
         $params = $request->getParams();
         $session= Shopware()->Session();
 
-        $session->offsetSet('sPaymentID', $this->utils->getPaymentIdFromName('fatchip_computop_paypal_express'));
+        $session->offsetSet('sPaymentID', $this->utils->getPaymentIdFromName('fatchip_firstcash_paypal_express'));
 
         $AddrCountryCodeID = $this->utils->getCountryIdFromIso($params['CTResponse']->getAddrCountryCode());
 

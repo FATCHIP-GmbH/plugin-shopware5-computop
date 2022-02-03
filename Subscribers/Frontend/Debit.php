@@ -20,7 +20,7 @@
  * @author    FATCHIP GmbH <support@fatchip.de>
  * @copyright 2018 Computop
  * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @link      https://www.firstcash.com
  */
 
 
@@ -60,31 +60,31 @@ class Debit extends AbstractSubscriber
         if ( ! empty($params)) {
             $this->utils->updateUserLastschriftBank(
                 $userData['additional']['user']['userID'],
-                $params['fatchip_computop_lastschrift_bank']
+                $params['fatchip_firstcash_lastschrift_bank']
             );
 
             $this->utils->updateUserLastschriftKontoinhaber(
                 $userData['additional']['user']['userID'],
-                $params['fatchip_computop_lastschrift_kontoinhaber']
+                $params['fatchip_firstcash_lastschrift_kontoinhaber']
             );
 
-            $XXXX_iban = false !== strpos($params['fatchip_computop_lastschrift_iban_anon'], '#XXXX#');
+            $XXXX_iban = false !== strpos($params['fatchip_firstcash_lastschrift_iban_anon'], '#XXXX#');
 
             $isIbanAnon = $pluginConfig['lastschriftAnon'] !== 'Aus';
             if ( ! $isIbanAnon) {
                 $this->utils->updateUserLastschriftIban(
                     $userData['additional']['user']['userID'],
-                    $params['fatchip_computop_lastschrift_iban']
+                    $params['fatchip_firstcash_lastschrift_iban']
                 );
             } elseif ($XXXX_iban) {
                 $this->utils->updateUserLastschriftIban(
                     $userData['additional']['user']['userID'],
-                    $params['fatchip_computop_lastschrift_iban']
+                    $params['fatchip_firstcash_lastschrift_iban']
                 );
             } else {
                 $this->utils->updateUserLastschriftIban(
                     $userData['additional']['user']['userID'],
-                    $params['fatchip_computop_lastschrift_iban_anon']
+                    $params['fatchip_firstcash_lastschrift_iban_anon']
                 );
             }
         }
@@ -100,7 +100,7 @@ class Debit extends AbstractSubscriber
         $subject = $arguments->getSubject();
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
 
-        if ($userData['additional']['payment']['name'] === 'fatchip_computop_lastschrift') {
+        if ($userData['additional']['payment']['name'] === 'fatchip_firstcash_lastschrift') {
             $paymentData['lastschriftbank'] = $this->utils->getUserLastschriftBank($userData);
             $paymentData['lastschriftiban'] = $this->utils->getUserLastschriftIban($userData);
             $paymentData['lastschriftkontoinhaber'] = $this->utils->getUserLastschriftKontoinhaber($userData);

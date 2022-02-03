@@ -22,7 +22,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 use Shopware\Plugins\FatchipFCSPayment\Util;
@@ -36,7 +36,7 @@ use Shopware\Components\CSRFWhitelistAware;
  * @author    FATCHIP GmbH <support@fatchip.de>
  * @copyright 2018 Computop
  * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @link      https://www.firstcash.com
  */
 class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Controllers_Frontend_Checkout implements CSRFWhitelistAware
 {
@@ -96,7 +96,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
     {
         parent::shippingPaymentAction();
         $params = $this->Request()->getParams();
-        $fatchipCTAmazonpayID = $this->utils->getPaymentIdFromName('fatchip_computop_amazonpay');
+        $fatchipCTAmazonpayID = $this->utils->getPaymentIdFromName('fatchip_firstcash_amazonpay');
 
         $this->view->assign('fatchipCTAmazonpayID', $fatchipCTAmazonpayID);
         $this->view->assign('fatchipCTResponse', $params['fatchipCTResponse']);

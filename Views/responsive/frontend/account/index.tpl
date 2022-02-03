@@ -1,7 +1,7 @@
 {extends file="parent:frontend/account/index.tpl"}
 
 {block name="frontend_account_index_payment_method_content"}
-    {if $sUserData.additional.payment.name === 'fatchip_computop_lastschrift'}
+    {if $sUserData.additional.payment.name === 'fatchip_firstcash_lastschrift'}
         <div class="panel--body is--wide">
             <p>
                 <strong>{$sUserData.additional.payment.description}</strong><br/>

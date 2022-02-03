@@ -1,18 +1,18 @@
 
     {* The main container for filling in the birthday field *}
-    <div class="fatchip-computop-payment-easycredit-form payment--form-group">
+    <div class="fatchip-firstcash-payment-easycredit-form payment--form-group">
 
         {* The main form field table *}
-        {block name="frontend_checkout_payment_fatchip_computop_easycredit_birthday_label"}
+        {block name="frontend_checkout_payment_fatchip_firstcash_easycredit_birthday_label"}
             <p class="none">
-                <label for="fatchip_computop_easycredit_birthday">{s name='birthdate' namespace='frontend/FatchipCTPayment/translations'}Bitte geben Sie Ihr Geburtsdatum an{/s}:</label>
+                <label for="fatchip_firstcash_easycredit_birthday">{s name='birthdate' namespace='frontend/FatchipCTPayment/translations'}Bitte geben Sie Ihr Geburtsdatum an{/s}:</label>
             </p>
         {/block}
 
         <div class="select-field">
-        {block name="frontend_checkout_payment_fatchip_computop_easycredit_birthday_day_input"}
-                <select name="FatchipComputopPaymentData[fatchip_computop_easycredit_birthday]"
-                        id="fatchip_computop_easycredit_birthday"
+        {block name="frontend_checkout_payment_fatchip_firstcash_easycredit_birthday_day_input"}
+                <select name="FatchipComputopPaymentData[fatchip_firstcash_easycredit_birthday]"
+                        id="fatchip_firstcash_easycredit_birthday"
                         class="is--required"
                         {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
                 >
@@ -28,9 +28,9 @@
         </div>
 
         <div class="select-field">
-        {block name="frontend_checkout_payment_fatchip_computop_easycredit_birthday_month_input"}
-                <select name="FatchipComputopPaymentData[fatchip_computop_easycredit_birthmonth]"
-                        id="fatchip_computop_easycredit_birthmonth"
+        {block name="frontend_checkout_payment_fatchip_firstcash_easycredit_birthday_month_input"}
+                <select name="FatchipComputopPaymentData[fatchip_firstcash_easycredit_birthmonth]"
+                        id="fatchip_firstcash_easycredit_birthmonth"
                         class="is--required"
                         {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
                 >
@@ -46,9 +46,9 @@
         </div>
 
         <div class="select-field">
-        {block name="frontend_checkout_payment_fatchip_computop_easycredit_birthday_year_input"}
-                <select name="FatchipComputopPaymentData[fatchip_computop_easycredit_birthyear]"
-                        id="fatchip_computop_easycredit_birthyear"
+        {block name="frontend_checkout_payment_fatchip_firstcash_easycredit_birthday_year_input"}
+                <select name="FatchipComputopPaymentData[fatchip_firstcash_easycredit_birthyear]"
+                        id="fatchip_firstcash_easycredit_birthyear"
                         class="is--required"
                         {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
                 >

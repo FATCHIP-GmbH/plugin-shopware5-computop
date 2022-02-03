@@ -21,7 +21,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
@@ -62,7 +62,7 @@ class EasyCredit extends AbstractSubscriber
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
         if ($request->getActionName() === 'saveShippingPayment') {
-            if ($paymentName === 'fatchip_computop_easycredit') {
+            if ($paymentName === 'fatchip_firstcash_easycredit') {
                 $subject->redirect(['controller' => 'FatchipCTEasyCredit', 'action' => 'gateway', 'forceSecure' => true]);
             }
         }

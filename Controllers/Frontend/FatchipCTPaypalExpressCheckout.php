@@ -22,7 +22,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 require_once 'FatchipCTPayment.php';
@@ -39,7 +39,7 @@ use Shopware\Components\CSRFWhitelistAware;
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 class Shopware_Controllers_Frontend_FatchipCTPaypalExpressCheckout extends Shopware_Controllers_Frontend_Checkout implements CSRFWhitelistAware
 {
@@ -100,7 +100,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpressCheckout extends Shopw
         $request = $this->Request();
         $params = $request->getParams();
         $session = Shopware()->Session();
-        $fatchipCTPaypalExpressID = $this->utils->getPaymentIdFromName('fatchip_computop_paypal_express');
+        $fatchipCTPaypalExpressID = $this->utils->getPaymentIdFromName('fatchip_firstcash_paypal_express');
         $session->offsetSet('sPaymentID', $fatchipCTPaypalExpressID);
 
         $this->view->assign('fatchipCTPaypalExpressID', $fatchipCTPaypalExpressID);

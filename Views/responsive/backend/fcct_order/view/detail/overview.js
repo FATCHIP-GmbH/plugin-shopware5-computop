@@ -11,7 +11,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcctOverview',
       me.callParent(arguments);
 
       if (swVersion < 201607011315){
-        if(/fatchip_computop_/.test(me.record.raw.payment.name))
+        if(/fatchip_firstcash_/.test(me.record.raw.payment.name))
         {
           me.items.insert(2, me.createFcctShippingCostContainer());
         }

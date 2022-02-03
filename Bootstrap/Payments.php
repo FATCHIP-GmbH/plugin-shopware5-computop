@@ -22,7 +22,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 namespace Shopware\Plugins\FatchipFCSPayment\Bootstrap;
@@ -58,8 +58,8 @@ class Payments extends Bootstrap
 
         foreach ($paymentMethods as $paymentMethod) {
             if ($this->plugin->Payments()->findOneBy(array('name' => $paymentMethod['name']))) {
-                if ($paymentMethod['name'] === 'fatchip_computop_afterpay_invoice' ||
-                    $paymentMethod['name'] === 'fatchip_computop_afterpay_installment'
+                if ($paymentMethod['name'] === 'fatchip_firstcash_afterpay_invoice' ||
+                    $paymentMethod['name'] === 'fatchip_firstcash_afterpay_installment'
                 ) {
                     $this->updateAfterpay($paymentMethod);
                 }
@@ -93,11 +93,11 @@ class Payments extends Bootstrap
     {
         $payment = $this->plugin->Payments()->findOneBy(array('name' => $paymentMethod['name']));
         // update payment template
-        if ($paymentMethod['name'] === 'fatchip_computop_afterpay_installment') {
-            $payment->setTemplate('fatchip_computop_afterpay_installment.tpl');
+        if ($paymentMethod['name'] === 'fatchip_firstcash_afterpay_installment') {
+            $payment->setTemplate('fatchip_firstcash_afterpay_installment.tpl');
         }
-        if ($paymentMethod['name'] === 'fatchip_computop_afterpay_invoice') {
-            $payment->setTemplate('fatchip_computop_afterpay_invoice.tpl');
+        if ($paymentMethod['name'] === 'fatchip_firstcash_afterpay_invoice') {
+            $payment->setTemplate('fatchip_firstcash_afterpay_invoice.tpl');
         }
         Shopware()->Models()->persist($payment);
         Shopware()->Models()->flush($payment);

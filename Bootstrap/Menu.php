@@ -21,7 +21,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 namespace Shopware\Plugins\FatchipFCSPayment\Bootstrap;
@@ -31,7 +31,7 @@ use Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap;
 /**
  * Class Menu.
  *
- * creates the computop menu entry in the shopware backend.
+ * creates the firstcash menu entry in the shopware backend.
  */
 class Menu extends Bootstrap
 {
@@ -53,7 +53,7 @@ class Menu extends Bootstrap
             $item = $this->plugin->createMenuItem(
                 [
                     'label' => self::LABELCOMPUTOPMENU,
-                    'class' => 'computop-icon',
+                    'class' => 'firstcash-icon',
                     'active' => 1,
                     'parent' => $this->plugin->Menu()->findOneBy(['label' => self::LABELPARENTFIND]),
                 ]
@@ -61,7 +61,7 @@ class Menu extends Bootstrap
             $this->plugin->createMenuItem(
                 [
                     'label' => self::LABELCOMPUTOPAPILOG,
-                    'class' => 'computop-icon',
+                    'class' => 'firstcash-icon',
                     'active' => 1,
                     'action' => 'index',
                     'controller' => 'FatchipCTApilog',

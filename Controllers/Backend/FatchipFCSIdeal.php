@@ -22,7 +22,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 use Fatchip\CTPayment\CTPaymentService;
@@ -65,7 +65,7 @@ class Shopware_Controllers_Backend_FatchipCTIdeal extends Shopware_Controllers_B
     }
 
     /**
-     * updates ideal bank data from computop.
+     * updates ideal bank data from firstcash.
      *
      * assigns error and count of updated items to view
      *

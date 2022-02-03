@@ -21,10 +21,10 @@
  * @author    FATCHIP GmbH <support@fatchip.de>
  * @copyright 2018 Computop
  * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @link      https://www.firstcash.com
  */
 
-namespace Shopware\Plugins\FatchipFCSPayment\;
+namespace Shopware\Plugins\FatchipFCSPayment;
 
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -546,7 +546,7 @@ class Util
 
     /**
      * Returns an array with all activated Klarna payment names, such as
-     * 'fatchip_computop_klarna_slice_it'
+     * 'fatchip_firstcash_klarna_slice_it'
      *
      * @return array
      */
@@ -570,7 +570,7 @@ class Util
      */
     public function getKlarnaPaymentTypeFromPaymentName($paymentName)
     {
-        $paymentNamePrefix = 'fatchip_computop_klarna_';
+        $paymentNamePrefix = 'fatchip_firstcash_klarna_';
         return substr($paymentName, strlen($paymentNamePrefix));
     }
 
@@ -630,7 +630,7 @@ class Util
     public function isAmazonPayActive()
     {
         $payment = Shopware()->Models()->getRepository('Shopware\Models\Payment\Payment')->findOneBy(
-            ['name' => 'fatchip_computop_amazonpay']
+            ['name' => 'fatchip_firstcash_amazonpay']
         );
         return $payment->getActive();
     }
@@ -644,7 +644,7 @@ class Util
     public function isPaypalExpressActive()
     {
         $payment = Shopware()->Models()->getRepository('Shopware\Models\Payment\Payment')->findOneBy(
-            ['name' => 'fatchip_computop_paypal_express']
+            ['name' => 'fatchip_firstcash_paypal_express']
         );
         return $payment->getActive();
     }

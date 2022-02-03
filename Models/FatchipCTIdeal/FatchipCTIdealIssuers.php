@@ -21,7 +21,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 namespace Shopware\CustomModels\FatchipCTIdeal;
@@ -33,7 +33,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Class FatchipCTIdealIssuers
  *
  * @ORM\Entity()
- * @ORM\Table(name="s_plugin_fatchip_computop_ideal_issuers")
+ * @ORM\Table(name="s_plugin_fatchip_firstcash_ideal_issuers")
  */
 class FatchipCTIdealIssuers extends ModelEntity
 {

@@ -22,7 +22,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 namespace Shopware\Plugins\FatchipFCSPayment\Bootstrap;
@@ -60,7 +60,7 @@ class Forms extends Bootstrap
         $this->createFormSelectElements(CTPaymentConfigForms::formIdealSelectElements);
 
         // ideal and sofort
-        $this->plugin->Form()->setElement('button', 'fatchip_computop_ideal_button', [
+        $this->plugin->Form()->setElement('button', 'fatchip_firstcash_ideal_button', [
             'label' => '<strong>iDeal Banken aktualisieren <strong>',
             'handler' => "function(btn) {" . file_get_contents(__DIR__ . '/../Views/common/backend/ideal/ideal_button_handler.js') . "}"
         ]);

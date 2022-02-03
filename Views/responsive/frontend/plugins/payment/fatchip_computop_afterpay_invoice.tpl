@@ -1,16 +1,16 @@
 <div class="payment--form-group">
-    {block name="frontend_checkout_payment_fatchip_computop_afterpay_invoice_birthday_label"}
+    {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_invoice_birthday_label"}
         <div>
             <p class="none">
-                <label for="fatchip_computop_afterpay_invoice_birthday">{s name='birthdate' namespace='frontend/FatchipCTPayment/translations'}Bitte geben Sie Ihr Geburtsdatum an{/s}:</label>
+                <label for="fatchip_firstcash_afterpay_invoice_birthday">{s name='birthdate' namespace='frontend/FatchipCTPayment/translations'}Bitte geben Sie Ihr Geburtsdatum an{/s}:</label>
             </p>
         </div>
     {/block}
 
-    {block name="frontend_checkout_payment_fatchip_computop_afterpay_invoice_birthday_day_input"}
+    {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_invoice_birthday_day_input"}
         <div class="select-field">
-            <select name="FatchipComputopPaymentData[fatchip_computop_afterpay_invoice_birthday]"
-                    id="fatchip_computop_afterpay_invoice_birthday"
+            <select name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_invoice_birthday]"
+                    id="fatchip_firstcash_afterpay_invoice_birthday"
                     class="is--required"
                     {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
             >
@@ -25,10 +25,10 @@
         </div>
     {/block}
 
-    {block name="frontend_checkout_payment_fatchip_computop_afterpay_invoice_birthday_month_input"}
+    {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_invoice_birthday_month_input"}
         <div class="select-field">
-            <select name="FatchipComputopPaymentData[fatchip_computop_afterpay_invoice_birthmonth]"
-                    id="fatchip_computop_afterpay_invoice_birthmonth"
+            <select name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_invoice_birthmonth]"
+                    id="fatchip_firstcash_afterpay_invoice_birthmonth"
                     class="is--required"
                     {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
             >
@@ -43,10 +43,10 @@
         </div>
     {/block}
 
-    {block name="frontend_checkout_payment_fatchip_computop_afterpay_invoice_birthday_year_input"}
+    {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_invoice_birthday_year_input"}
         <div class="select-field">
-            <select name="FatchipComputopPaymentData[fatchip_computop_afterpay_invoice_birthyear]"
-                    id="fatchip_computop_afterpay_invoice_birthyear"
+            <select name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_invoice_birthyear]"
+                    id="fatchip_firstcash_afterpay_invoice_birthyear"
                     class="is--required"
                     {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
             >
@@ -62,21 +62,21 @@
     {/block}
 
     {if $FatchipCTPaymentData.showsocialsecuritynumber}
-        {block name="frontend_checkout_payment_fatchip_computop_klarna_invoice_socialsecuritynumber_label"}
+        {block name="frontend_checkout_payment_fatchip_firstcash_klarna_invoice_socialsecuritynumber_label"}
             <div>
                 <p class="none">
-                    <label for="fatchip_computop_afterpay_invoice_socialsecuritynumber">{$FatchipCTPaymentData.SSNLabel}</label>
+                    <label for="fatchip_firstcash_afterpay_invoice_socialsecuritynumber">{$FatchipCTPaymentData.SSNLabel}</label>
                 </p>
             </div>
         {/block}
-        {block name="frontend_checkout_payment_fatchip_computop_afterpay_socialsecuritynumber_input"}
+        {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_socialsecuritynumber_input"}
             <div>
-                <input name="FatchipComputopPaymentData[fatchip_computop_afterpay_invoice_socialsecuritynumber]"
+                <input name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_invoice_socialsecuritynumber]"
                        type="text"
-                       id="fatchip_computop_afterpay_invoice_socialsecuritynumber"
+                       id="fatchip_firstcash_afterpay_invoice_socialsecuritynumber"
                        {if $FatchipCTPaymentData.SSNMaxLen}maxlength={$FatchipCTPaymentData.SSNMaxLen}{/if}
                        class="payment--field
-                       is--required{if $error_flags.fatchip_computop__afterpay_socialsecuritynumber} has--error{/if}"
+                       is--required{if $error_flags.fatchip_firstcash__afterpay_socialsecuritynumber} has--error{/if}"
                 placeholder="{$FatchipCTPaymentData.SSNLabel}{s name="RequiredField" namespace="frontend/register/index"}{/s}
                 "
                 {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}

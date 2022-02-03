@@ -24,7 +24,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
@@ -92,7 +92,7 @@ class KlarnaPayments extends AbstractSubscriber
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
-        if (!$request->isDispatched() or !stristr($paymentName, 'fatchip_computop_klarna_')) { // no klarna payment method
+        if (!$request->isDispatched() or !stristr($paymentName, 'fatchip_firstcash_klarna_')) { // no klarna payment method
             return;
         }
 
@@ -151,7 +151,7 @@ class KlarnaPayments extends AbstractSubscriber
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
-        if (!stristr($paymentName, 'fatchip_computop_klarna_')) { // no klarna payment method
+        if (!stristr($paymentName, 'fatchip_firstcash_klarna_')) { // no klarna payment method
             return;
         }
 
@@ -174,7 +174,7 @@ class KlarnaPayments extends AbstractSubscriber
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
-        if (!stristr($paymentName, 'fatchip_computop_klarna_')) { // no klarna payment method
+        if (!stristr($paymentName, 'fatchip_firstcash_klarna_')) { // no klarna payment method
             return;
         }
 

@@ -11,7 +11,7 @@
 
 {block name='frontend_checkout_confirm_left_payment_method'}
     {$smarty.block.parent}
-    {if $sUserData.additional.payment.name === 'fatchip_computop_lastschrift'}
+    {if $sUserData.additional.payment.name === 'fatchip_firstcash_lastschrift'}
         <p class="payment--method-info">
             <strong class="payment--title">Bank:</strong>
             <span class="payment--description">{$sUserData.additional.user.fatchipct_lastschriftbank}</span>

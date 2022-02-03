@@ -21,7 +21,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
@@ -59,7 +59,7 @@ class Checkout extends AbstractSubscriber
     }
 
     /**
-     * Checks the request for computop parameters and validates them.
+     * Checks the request for firstcash parameters and validates them.
      *
      * @param \Enlight_Hook_HookArgs $args
      */
@@ -148,7 +148,7 @@ class Checkout extends AbstractSubscriber
             $view->assign('CTError', $params['CTError']);
         }
 
-        if ($request->getActionName() == 'confirm' && (strpos($paymentName, fatchip_computop) === 0)) {
+        if ($request->getActionName() == 'confirm' && (strpos($paymentName, fatchip_firstcash) === 0)) {
             // check for address splitting errors and handle them here
             $util = new Util();
             $ctOrder = new CTOrder();
@@ -265,7 +265,7 @@ class Checkout extends AbstractSubscriber
                 $this->utils->updateUserLastschriftIban($userId,
                     $params['FatchipComputopPaymentData'][$paymentName . '_iban']
                 );
-            } elseif (preg_match('#XXXX#', $params['FatchipComputopPaymentData']['fatchip_computop_lastschrift_iban_anon'])) {
+            } elseif (preg_match('#XXXX#', $params['FatchipComputopPaymentData']['fatchip_firstcash_lastschrift_iban_anon'])) {
                 $this->utils->updateUserLastschriftIban($userId,
                     $params['FatchipComputopPaymentData'][$paymentName . '_iban']
                 );
@@ -316,9 +316,9 @@ class Checkout extends AbstractSubscriber
     private function setIssuerInSession($paymentName, $params)
     {
         $session = Shopware()->Session();
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_ideal_issuer']) && $paymentName === 'fatchip_computop_ideal') {
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_firstcash_ideal_issuer']) && $paymentName === 'fatchip_firstcash_ideal') {
             $session->offsetSet('FatchipComputopIdealIssuer',
-                $params['FatchipComputopPaymentData']['fatchip_computop_ideal_issuer']
+                $params['FatchipComputopPaymentData']['fatchip_firstcash_ideal_issuer']
             );
         }
     }
@@ -331,9 +331,9 @@ class Checkout extends AbstractSubscriber
     private function setAfterpayProductNrInSession($params)
     {
         $session = Shopware()->Session();
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_afterpay_installment_productnr'])) {
+        if (!empty($params['FatchipComputopPaymentData']['fatchip_firstcash_afterpay_installment_productnr'])) {
             $session->offsetSet('FatchipComputopAfterpayProductNr',
-                $params['FatchipComputopPaymentData']['fatchip_computop_afterpay_installment_productnr']
+                $params['FatchipComputopPaymentData']['fatchip_firstcash_afterpay_installment_productnr']
             );
         }
     }

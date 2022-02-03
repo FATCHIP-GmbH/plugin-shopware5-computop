@@ -23,7 +23,7 @@
  * @author    FATCHIP GmbH <support@fatchip.de>
  * @copyright 2018 Computop
  * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.computop.com
+ * @link      https://www.firstcash.com
  */
 
 // needed for CSRF Protection compatibility SW versions < 5.2 lba
@@ -434,8 +434,8 @@ class Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap extends Shopware_Com
     public function removeOldKlarnaPayments()
     {
         $oldKlarnaPayments = [
-            'fatchip_computop_klarna_installment',
-            'fatchip_computop_klarna_invoice',
+            'fatchip_firstcash_klarna_installment',
+            'fatchip_firstcash_klarna_invoice',
         ];
 
         foreach ($oldKlarnaPayments as $payment) {

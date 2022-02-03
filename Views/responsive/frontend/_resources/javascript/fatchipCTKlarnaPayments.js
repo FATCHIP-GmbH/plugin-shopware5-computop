@@ -68,7 +68,7 @@
         }
 
         Klarna.Payments.load({
-            container: '#fatchip-computop-payment-klarna-form-' + paymentType,
+            container: '#fatchip-firstcash-payment-klarna-form-' + paymentType,
             payment_method_category: payTypeTranslations[paymentType]
         }, function (res) {
             console.log('Klarna.Payments.load');

@@ -22,7 +22,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 use Fatchip\CTPayment\CTPaymentService;
@@ -111,7 +111,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             $amount = $this->getRefundAmount($order, $positionIds, $includeShipment);
 
             $orderDesc ='none';
-            if (strpos($order->getPayment()->getName(), 'fatchip_computop_klarna_') === 0) {
+            if (strpos($order->getPayment()->getName(), 'fatchip_firstcash_klarna_') === 0) {
                 $orderDesc = $this->getKlarnaOrderDesc($order, $positionIds);
             }
 
@@ -205,7 +205,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
             $amount = $this->getCaptureAmount($order, $positionIds, $includeShipment);
 
             $orderDesc ='none';
-            if (strpos($order->getPayment()->getName(), 'fatchip_computop_klarna_') === 0) {
+            if (strpos($order->getPayment()->getName(), 'fatchip_firstcash_klarna_') === 0) {
                 $orderDesc = $this->getKlarnaOrderDesc($order, $positionIds);
             }
 
@@ -508,14 +508,14 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
     }
 
     /**
-     * cheks if an order was paid with a computop payment method
+     * cheks if an order was paid with a firstcash payment method
      *
      * @param $order
      * @return bool
      */
     private function orderHasComputopPayment($order)
     {
-        if (strpos($order->getPayment()->getName(), 'fatchip_computop') !== 0) {
+        if (strpos($order->getPayment()->getName(), 'fatchip_firstcash') !== 0) {
             return false;
         }
 

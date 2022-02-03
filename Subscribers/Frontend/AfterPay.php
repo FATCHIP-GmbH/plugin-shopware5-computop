@@ -21,7 +21,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
@@ -78,13 +78,13 @@ class AfterPay extends AbstractSubscriber
 
         if (!$this->utils->afterpayProductExistsforBasketValue($this->config['merchantID'], $userData, false))
         {
-            $payments = $this->utils->hidePayment('fatchip_computop_afterpay_installment', $payments);
+            $payments = $this->utils->hidePayment('fatchip_firstcash_afterpay_installment', $payments);
         }
 
         if (!empty($userData['billingaddress']['company']))
         {
-            $payments = $this->utils->hidePayment('fatchip_computop_afterpay_installment', $payments);
-            $payments = $this->utils->hidePayment('fatchip_computop_afterpay_invoice', $payments);
+            $payments = $this->utils->hidePayment('fatchip_firstcash_afterpay_installment', $payments);
+            $payments = $this->utils->hidePayment('fatchip_firstcash_afterpay_invoice', $payments);
         }
 
         $args->setReturn($payments);
@@ -107,12 +107,12 @@ class AfterPay extends AbstractSubscriber
             return;
         }
 
-        if ($request->getActionName() == 'shippingPayment' && $paymentName == 'fatchip_computop_afterpay_installment') {
+        if ($request->getActionName() == 'shippingPayment' && $paymentName == 'fatchip_firstcash_afterpay_installment') {
             $view->assign('fatchipCTPaymentConfig', $pluginConfig);
         }
 
         // prevent skipping of shippingpayment
-        if ($request->getActionName() == 'confirm' && $paymentName == 'fatchip_computop_afterpay_installment') {
+        if ($request->getActionName() == 'confirm' && $paymentName == 'fatchip_firstcash_afterpay_installment') {
             $session = Shopware()->Session();
             if (!$session->offsetExists('FatchipComputopAfterpayProductNr')) {
                 $controller->redirect(

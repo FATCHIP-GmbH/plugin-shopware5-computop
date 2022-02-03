@@ -22,7 +22,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 
 use Fatchip\CTPayment\CTEnums\CTEnumPaymentStatus;
@@ -44,7 +44,7 @@ use Shopware\Components\CSRFWhitelistAware;
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.computop.com
+ * @link       https://www.firstcash.com
  */
 abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_Controllers_Frontend_Payment implements CSRFWhitelistAware
 {
@@ -502,11 +502,11 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
 
         $paymentName = $order->getPayment()->getName();
 
-        if ( ! (($paymentName === 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] === 'AUTO')
-            || ($paymentName === 'fatchip_computop_lastschrift' && $this->config['lastschriftCaption'] === 'AUTO')
-            || ($paymentName === 'fatchip_computop_paypal_standard' && $this->config['paypalCaption'] === 'AUTO')
-            || ($paymentName === 'fatchip_computop_paypal_express' && $this->config['paypalCaption'] === 'AUTO')
-            || ($paymentName === 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] === 'AUTO'))
+        if ( ! (($paymentName === 'fatchip_firstcash_creditcard' && $this->config['creditCardCaption'] === 'AUTO')
+            || ($paymentName === 'fatchip_firstcash_lastschrift' && $this->config['lastschriftCaption'] === 'AUTO')
+            || ($paymentName === 'fatchip_firstcash_paypal_standard' && $this->config['paypalCaption'] === 'AUTO')
+            || ($paymentName === 'fatchip_firstcash_paypal_express' && $this->config['paypalCaption'] === 'AUTO')
+            || ($paymentName === 'fatchip_firstcash_paydirekt' && $this->config['payDirektCaption'] === 'AUTO'))
         ) {
             return;
         }
@@ -519,7 +519,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
         } else {
             $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSREVIEWNECESSARY);
             /** @see https://tickets.fatchip.de/view.php?id=80218 */
-            if ($paymentName === 'fatchip_computop_paypal_standard' && $this->config['paypalSetOrderStatus'] === "An") {
+            if ($paymentName === 'fatchip_firstcash_paypal_standard' && $this->config['paypalSetOrderStatus'] === "An") {
                 $this->setOrderStatus($order, self::ORDERSTATUSREVIEWNECESSARY);
             }
         }
@@ -559,7 +559,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     }
 
     /**
-     * For computop credit card and paydirekt it is possible
+     * For firstcash credit card and paydirekt it is possible
      * to set capture to delayed in the plugin settings.
      * With delayed captures no notify is sent to the shop!
      * Computop guarantess the capture so
@@ -576,9 +576,9 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
         if ($order) {
 
             $paymentName = $order->getPayment()->getName();
-            if (($paymentName == 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] == 'DELAYED')
-                || ($paymentName == 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] == 'DELAYED')
-                || ($paymentName == 'fatchip_computop_lastschrift' && $this->config['lastschriftCaption'] == 'DELAYED')
+            if (($paymentName == 'fatchip_firstcash_creditcard' && $this->config['creditCardCaption'] == 'DELAYED')
+                || ($paymentName == 'fatchip_firstcash_paydirekt' && $this->config['payDirektCaption'] == 'DELAYED')
+                || ($paymentName == 'fatchip_firstcash_lastschrift' && $this->config['lastschriftCaption'] == 'DELAYED')
             ) {
                 $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSPAID);
                 $this->markOrderDetailsAsFullyCaptured($order);
