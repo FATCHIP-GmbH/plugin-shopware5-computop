@@ -24,10 +24,10 @@
  */
 
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
+namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
 
 use Enlight_Hook_HookArgs;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\AbstractSubscriber;
 
 class Debit extends AbstractSubscriber
 {
@@ -55,7 +55,7 @@ class Debit extends AbstractSubscriber
         $subject = $arguments->getSubject();
         $params = $subject->Request()->getParams()['FatchipComputopPaymentData'];
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
-        $pluginConfig = Shopware()->Container()->get('plugins')->Frontend()->FatchipCTPayment()->Config()->toArray();
+        $pluginConfig = Shopware()->Container()->get('plugins')->Frontend()->FatchipFCSPayment()->Config()->toArray();
 
         if ( ! empty($params)) {
             $this->utils->updateUserLastschriftBank(
@@ -114,7 +114,7 @@ class Debit extends AbstractSubscriber
     public function onPostDispatchSecure(\Enlight_Event_EventArgs $args)
     {
         $subject = $args->getSubject();
-        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
+        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipFCSPayment()->Config()->toArray();
 
         $subject->View()->FatchipCTPaymentIbanAnon = $pluginConfig['lastschriftAnon'] == 'Aus' ? 0 : 1;
     }

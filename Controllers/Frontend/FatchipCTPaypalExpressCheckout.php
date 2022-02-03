@@ -27,7 +27,7 @@
 
 require_once 'FatchipCTPayment.php';
 
-use Shopware\Plugins\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipFCSPayment\Util;
 use Shopware\Components\CSRFWhitelistAware;
 
 /**
@@ -84,9 +84,9 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpressCheckout extends Shopw
         }
         // ToDo handle possible Exception
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
-        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
         $this->config = $this->plugin->Config()->toArray();
-        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        $this->utils = Shopware()->Container()->get('FatchipFCSPaymentUtils');
     }
 
     /**

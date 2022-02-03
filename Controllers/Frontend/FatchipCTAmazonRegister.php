@@ -26,7 +26,7 @@
  */
 
 use Fatchip\CTPayment\CTPaymentMethodIframe;
-use Shopware\Plugins\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipFCSPayment\Util;
 use Shopware\Components\CSRFWhitelistAware;
 
 /**
@@ -81,7 +81,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
             parent::init();
         }
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
-        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
         $this->config = $this->plugin->Config()->toArray();
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
     }

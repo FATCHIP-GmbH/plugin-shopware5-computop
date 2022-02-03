@@ -24,7 +24,7 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
+namespace Shopware\Plugins\FatchipFCSPayment\Bootstrap;
 
 abstract class Bootstrap
 {
@@ -40,6 +40,6 @@ abstract class Bootstrap
     public function __construct()
     {
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
     }
 }

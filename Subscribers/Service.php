@@ -25,16 +25,16 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
+namespace Shopware\Plugins\FatchipFCSPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 use Fatchip\CTPayment\CTPaymentService;
-use Shopware\Plugins\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipFCSPayment\Util;
 
 /**
  * Class Service
  *
- * @package Shopware\Plugins\FatchipCTPayment\Subscribers
+ * @package Shopware\Plugins\FatchipFCSPayment\Subscribers
  */
 class Service implements SubscriberInterface
 {
@@ -59,7 +59,7 @@ class Service implements SubscriberInterface
      */
     public function onInitApiClient()
     {
-        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
         $config = $plugin->Config()->toArray();
         return new CTPaymentService($config);
 

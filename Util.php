@@ -24,7 +24,7 @@
  * @link      https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment;
+namespace Shopware\Plugins\FatchipFCSPayment\;
 
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -34,7 +34,7 @@ use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Shopware\Components\Logger;
 use Shopware\Models\Customer\Customer;
-use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap as FatchipCTPayment;
+use Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap as FatchipFCSPayment;
 use VIISON\AddressSplitter\AddressSplitter;
 use Shopware;
 
@@ -42,7 +42,7 @@ require_once 'Components/Api/vendor/autoload.php';
 
 /**
  * Class Util
- * @package Shopware\Plugins\FatchipCTPayment
+ * @package Shopware\Plugins\FatchipFCSPayment\
  */
 class Util
 {
@@ -51,16 +51,16 @@ class Util
      */
     protected $logger;
     protected $container;
-    /** @var FatchipCTPayment $plugin */
+    /** @var FatchipFCSPayment $plugin */
     protected $plugin;
     /** @var [] */
     protected $pluginConfig;
 
     public function __construct()
     {
-        $this->logger = new Logger('FatchipCTPayment');
+        $this->logger = new Logger('FatchipFCSPayment');
         $this->container = Shopware()->Container();
-        $this->plugin = $this->container->get('plugins')->Frontend()->FatchipCTPayment();
+        $this->plugin = $this->container->get('plugins')->Frontend()->FatchipFCSPayment();
         $this->pluginConfig = $this->plugin->Config()->toArray();
     }
 
@@ -792,7 +792,7 @@ class Util
      */
     public function getUserDataParam()
     {
-        return 'Shopware Version: ' . self::getShopwareVersion() . ', Modul Version: ' . Shopware()->Plugins()->Frontend()->FatchipCTPayment()->getVersion();
+        return 'Shopware Version: ' . self::getShopwareVersion() . ', Modul Version: ' . Shopware()->Plugins()->Frontend()->FatchipFCSPayment()->getVersion();
     }
 
     /**

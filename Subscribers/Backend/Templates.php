@@ -25,7 +25,7 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Backend;
+namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Backend;
 
 use Enlight\Event\SubscriberInterface;
 

@@ -24,7 +24,7 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
+namespace Shopware\Plugins\FatchipFCSPayment\Subscribers;
 
 /**
  * provide paths to custom controllers

@@ -9,7 +9,7 @@
   "support": "support@fatchip.de",
   "author": "FATCHIP GmbH",
   "currentVersion": "%%VERSION%%",
-  "solution_name": "FatchipCTPayment",
+  "solution_name": "FatchipFCSPayment",
   "changelog": {
     "de": {
       "1.0.0": "Erstveröffentlichung - Weitere Updates in der Datei CHANGELOG.md"

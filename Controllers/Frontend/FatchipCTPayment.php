@@ -28,7 +28,7 @@
 use Fatchip\CTPayment\CTEnums\CTEnumPaymentStatus;
 use Fatchip\CTPayment\CTResponse;
 use Shopware\Models\Order\Order;
-use Shopware\Plugins\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipFCSPayment\Util;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Shopware\Components\CSRFWhitelistAware;
@@ -46,7 +46,7 @@ use Shopware\Components\CSRFWhitelistAware;
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.computop.com
  */
-abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_Controllers_Frontend_Payment implements CSRFWhitelistAware
+abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_Controllers_Frontend_Payment implements CSRFWhitelistAware
 {
 
     const PAYMENTSTATUSPARTIALLYPAID = CTEnumPaymentStatus::PAYMENTSTATUSPARTIALLYPAID;
@@ -119,9 +119,9 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     public function init()
     {
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
-        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
         $this->config = $this->plugin->Config()->toArray();
-        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        $this->utils = Shopware()->Container()->get('FatchipFCSPaymentUtils');
         $this->session = Shopware()->Session();
         $this->router = $this->Front()->Router();
 

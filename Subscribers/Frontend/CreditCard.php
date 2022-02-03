@@ -26,11 +26,11 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
+namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
 
 use Enlight_Controller_ActionEventArgs;
 use Fatchip\CTPayment\CTPaymentMethodIframe;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\AbstractSubscriber;
 
 class CreditCard extends AbstractSubscriber
 {
@@ -77,7 +77,7 @@ class CreditCard extends AbstractSubscriber
         $controller = $args->getSubject();
         $view = $controller->View();
         $request = $controller->Request();
-        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
+        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipFCSPayment()->Config()->toArray();
 
         $session = Shopware()->Session();
 

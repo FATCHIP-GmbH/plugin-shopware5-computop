@@ -24,11 +24,11 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
+namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
 
 use Enlight_Controller_ActionEventArgs;
 use Enlight_Event_EventArgs;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\AbstractSubscriber;
 
 class AfterPay extends AbstractSubscriber
 {
@@ -98,7 +98,7 @@ class AfterPay extends AbstractSubscriber
         $controller = $args->getSubject();
         $view = $controller->View();
         $request = $controller->Request();
-        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
+        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipFCSPayment()->Config()->toArray();
 
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);

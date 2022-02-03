@@ -41,7 +41,7 @@ use Fatchip\CTPayment\CTEnums\CTEnumEasyCredit;
  * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link      https://www.computop.com
  */
-class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Controllers_Frontend_FatchipCTPayment
+class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Controllers_Frontend_FatchipFCSPayment
 {
     /**
      * {@inheritdoc}

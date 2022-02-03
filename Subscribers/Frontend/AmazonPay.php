@@ -24,10 +24,10 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
+namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
 
 use Enlight_Controller_ActionEventArgs;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\AbstractSubscriber;
 
 class AmazonPay extends AbstractSubscriber
 {
@@ -91,7 +91,7 @@ class AmazonPay extends AbstractSubscriber
         $controller = $args->getSubject();
         $view = $controller->View();
         $request = $controller->Request();
-        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
+        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipFCSPayment()->Config()->toArray();
 
         if (!$request->isDispatched() or $request->getActionName() !== 'ajaxCart') {
             return;

@@ -24,18 +24,18 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
+namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
 
 use Enlight_Controller_ActionEventArgs;
 use Enlight_Exception;
 use Monolog\Handler\RotatingFileHandler;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
-use Shopware\Plugins\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\AbstractSubscriber;
+use Shopware\Plugins\FatchipFCSPayment\Util;
 
 /**
  * Class Logger
  *
- * @package Shopware\Plugins\FatchipCTPayment\Subscribers
+ * @package Shopware\Plugins\FatchipFCSPayment\Subscribers
  */
 class Logger extends AbstractSubscriber
 {
@@ -63,7 +63,7 @@ class Logger extends AbstractSubscriber
      */
     public function __construct()
     {
-        $this->plugin = Shopware()->Container()->get('plugins')->Frontend()->FatchipCTPayment();
+        $this->plugin = Shopware()->Container()->get('plugins')->Frontend()->FatchipFCSPayment();
         $this->config = $this->plugin->Config()->toArray();
 
         // ToDO use ternary operator here

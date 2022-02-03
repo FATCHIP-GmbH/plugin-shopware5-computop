@@ -24,10 +24,10 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
+namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
 
 use Enlight_Controller_ActionEventArgs;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\AbstractSubscriber;
 
 class PaypalExpress extends AbstractSubscriber
 {
@@ -91,7 +91,7 @@ class PaypalExpress extends AbstractSubscriber
         $controller = $args->getSubject();
         $view = $controller->View();
         $request = $controller->Request();
-        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
+        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipFCSPayment()->Config()->toArray();
 
         if (!$request->isDispatched() or !$request->getActionName() == 'ajaxCart') {
             return;
@@ -107,11 +107,11 @@ class PaypalExpress extends AbstractSubscriber
             // check if picture exists for the shop locale
             $handle = @fopen($url, 'r');
             if(!$handle){
-                $url ="/engine/Shopware/Plugins/Community/Frontend/FatchipCTPayment/Views/responsive/frontend/_resources/images/paypal_express_btn_default.gif";
+                $url ="/engine/Shopware/Plugins/Community/Frontend/FatchipFCSPayment/Views/responsive/frontend/_resources/images/paypal_express_btn_default.gif";
             }
             // assign plugin Config to View
-            $view->assign('fatchipCTPaymentConfig', $pluginConfig);
-            $view->assign('fatchipCTPaymentPaypalButtonUrl', $url);
+            $view->assign('fatchipFCSPaymentConfig', $pluginConfig);
+            $view->assign('fatchipFCSPaymentPaypalButtonUrl', $url);
             $view->extendsTemplate('frontend/checkout/ajax_cart_paypal.tpl');
             $view->extendsTemplate('frontend/checkout/cart_paypal.tpl');
         }

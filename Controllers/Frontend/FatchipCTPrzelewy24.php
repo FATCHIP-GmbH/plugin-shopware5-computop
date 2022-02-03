@@ -38,7 +38,7 @@ require_once 'FatchipCTPayment.php';
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.computop.com
  */
-class Shopware_Controllers_Frontend_FatchipCTPrzelewy24 extends Shopware_Controllers_Frontend_FatchipCTPayment
+class Shopware_Controllers_Frontend_FatchipFCSPrzelewy24 extends Shopware_Controllers_Frontend_FatchipFCSPayment
 {
     /**
      * {@inheritdoc}

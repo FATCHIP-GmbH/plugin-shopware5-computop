@@ -25,15 +25,15 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers;
+namespace Shopware\Plugins\FatchipFCSPayment\Subscribers;
 
 use Shopware\Components\Theme\LessDefinition;
-use \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap as Bootstrap;
+use \Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap as Bootstrap;
 
 /**
  * Class Templates
  *
- * @package Shopware\Plugins\FatchipCTPayment\Subscribers
+ * @package Shopware\Plugins\FatchipFCSPayment\Subscribers
  */
 class TemplateRegistration extends AbstractSubscriber
 {

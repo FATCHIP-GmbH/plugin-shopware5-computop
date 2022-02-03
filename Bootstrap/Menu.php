@@ -24,9 +24,9 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
+namespace Shopware\Plugins\FatchipFCSPayment\Bootstrap;
 
-use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap;
+use Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap;
 
 /**
  * Class Menu.

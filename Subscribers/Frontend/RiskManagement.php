@@ -24,14 +24,14 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
+namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
 
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTCrif\CRIF;
 use Fatchip\CTPayment\CTPaymentService;
 use Shopware\Components\DependencyInjection\Container;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
-use Shopware\Plugins\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\AbstractSubscriber;
+use Shopware\Plugins\FatchipFCSPayment\Util;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
@@ -235,8 +235,8 @@ class RiskManagement extends AbstractSubscriber
         } else {
 
             /** @var CTPaymentService $service */
-            $service = Shopware()->Container()->get('FatchipCTPaymentApiClient');
-            $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+            $service = Shopware()->Container()->get('FatchipFCSPaymentApiClient');
+            $plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
             $config = $plugin->Config()->toArray();
             //only execute riskcheck if a CRIF method is set in config.
             if (!isset($config['crifmethod']) || $config['crifmethod'] == 'inactive') {
@@ -302,7 +302,7 @@ class RiskManagement extends AbstractSubscriber
                 //$util->saveCRIFResultInAddress($shippingAddressData['id'], 'shipping', $crifResponse);
 
                 //if set in Plugin settings, we have to update the address with the corrected Addressdate
-                $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+                $plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
                 $config = $plugin->Config()->toArray();
                 if ($config['bonitaetusereturnaddress']) {
                     $this->updateBillingAddressFromCrifResponse($billingAddressData['id'], $crifResponse);
@@ -398,7 +398,7 @@ class RiskManagement extends AbstractSubscriber
 
         //if CRIF data IS saved in both addresses, check if the are expired,
         //that means, they are older then the number of days set in Pluginsettings
-        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
         $config = $plugin->Config()->toArray();
         $invalidateAfterDays = $config['bonitaetinvalidateafterdays'];
         if (is_numeric($invalidateAfterDays) && $invalidateAfterDays > 0) {
@@ -605,7 +605,7 @@ class RiskManagement extends AbstractSubscriber
      */
     private function getUserDataParam()
     {
-        $plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
         return  'Shopware Version: ' .  Util::getShopwareVersion() . ', Modul Version: ' . $plugin->getVersion() ;;
     }
 }

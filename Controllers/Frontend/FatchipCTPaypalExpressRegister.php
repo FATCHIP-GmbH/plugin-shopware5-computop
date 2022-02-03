@@ -27,7 +27,7 @@
 
 require_once 'FatchipCTPayment.php';
 
-use Shopware\Plugins\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipFCSPayment\Util;
 use Shopware\Components\CSRFWhitelistAware;
 
 /**
@@ -41,12 +41,12 @@ use Shopware\Components\CSRFWhitelistAware;
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.computop.com
  */
-class Shopware_Controllers_Frontend_FatchipCTPaypalExpressRegister extends Shopware_Controllers_Frontend_Register implements CSRFWhitelistAware
+class Shopware_Controllers_Frontend_FatchipFCSPaypalExpressRegister extends Shopware_Controllers_Frontend_Register implements CSRFWhitelistAware
 {
     /**
      * FatchipCTpayment Plugin Bootstrap Class
      *
-     * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     * @var Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap
      */
     protected $plugin;
 
@@ -78,7 +78,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpressRegister extends Shopw
         if (method_exists('Shopware_Controllers_Frontend_Register', 'init')) {
             parent::init();
         }
-        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
         $this->config = $this->plugin->Config()->toArray();
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
     }

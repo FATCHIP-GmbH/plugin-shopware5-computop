@@ -24,7 +24,7 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Backend;
+namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Backend;
 
 use Enlight_Hook_HookArgs;
 use Enlight\Event\SubscriberInterface;
@@ -36,7 +36,7 @@ use Exception;
 /**
  * Class BackendOrder
  *
- * @package Shopware\Plugins\FatchipCTPayment\Subscribers
+ * @package Shopware\Plugins\FatchipFCSPayment\Subscribers
  */
 class OrderList implements SubscriberInterface
 {

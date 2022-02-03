@@ -24,14 +24,14 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
+namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
 
-use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\AbstractSubscriber;
 
 /**
  * Class Checkout
  *
- * @package Shopware\Plugins\FatchipCTPayment\Subscribers
+ * @package Shopware\Plugins\FatchipFCSPayment\Subscribers
  */
 class EasyCredit extends AbstractSubscriber
 {

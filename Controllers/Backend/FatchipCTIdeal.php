@@ -58,7 +58,7 @@ class Shopware_Controllers_Backend_FatchipCTIdeal extends Shopware_Controllers_B
      */
     public function init()
     {
-        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
         $this->config = $this->plugin->Config()->toArray();
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
         parent::init();

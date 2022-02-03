@@ -25,14 +25,14 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
+namespace Shopware\Plugins\FatchipFCSPayment\Bootstrap;
 
 use Doctrine\ORM\ORMException;
 use Fatchip\CTPayment\CTPaymentService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Shopware\Models\Country\Country;
 use Shopware\Models\Payment\Payment;
-use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap;
+use Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap;
 
 /**
  * Class Payments.

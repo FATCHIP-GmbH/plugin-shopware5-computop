@@ -24,16 +24,16 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
+namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
 
-use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
-use Shopware\Plugins\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\AbstractSubscriber;
+use Shopware\Plugins\FatchipFCSPayment\Util;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 
 /**
  * Class Checkout
  *
- * @package Shopware\Plugins\FatchipCTPayment\Subscribers
+ * @package Shopware\Plugins\FatchipFCSPayment\Subscribers
  */
 class Checkout extends AbstractSubscriber
 {
@@ -100,8 +100,8 @@ class Checkout extends AbstractSubscriber
      */
     public function onPostdispatchFrontendCheckout(\Enlight_Controller_ActionEventArgs $args)
     {
-        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
-        $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
+        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
+        $this->paymentService = Shopware()->Container()->get('FatchipFCSPaymentApiClient');
         $subject = $args->getSubject();
         $view = $subject->View();
         $request = $subject->Request();
@@ -257,7 +257,7 @@ class Checkout extends AbstractSubscriber
      */
     private function updateUserLastschriftIban($paymentName, $userId, $params)
     {
-        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
+        $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipFCSPayment()->Config()->toArray();
         $isIbanAnon = $pluginConfig['lastschriftAnon'] == 'Aus' ? false : true;
 
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_iban'])) {

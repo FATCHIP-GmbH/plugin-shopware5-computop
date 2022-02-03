@@ -27,12 +27,12 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend;
+namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
 
 
 use Enlight_Controller_ActionEventArgs;
 use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments as PaymentClass;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\AbstractSubscriber;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\AbstractSubscriber;
 
 /**
  * @property PaymentClass $payment

@@ -36,34 +36,34 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Fatchip\CTPayment\CTResponse;
 use Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog;
-use Shopware\Plugins\FatchipCTPayment\Bootstrap\Forms;
-use Shopware\Plugins\FatchipCTPayment\Bootstrap\Attributes;
-use Shopware\Plugins\FatchipCTPayment\Bootstrap\Payments;
-use Shopware\Plugins\FatchipCTPayment\Bootstrap\Menu;
-use Shopware\Plugins\FatchipCTPayment\Bootstrap\RiskRules;
-use Shopware\Plugins\FatchipCTPayment\Bootstrap\Models;
+use Shopware\Plugins\FatchipFCSPayment\Bootstrap\Forms;
+use Shopware\Plugins\FatchipFCSPayment\Bootstrap\Attributes;
+use Shopware\Plugins\FatchipFCSPayment\Bootstrap\Payments;
+use Shopware\Plugins\FatchipFCSPayment\Bootstrap\Menu;
+use Shopware\Plugins\FatchipFCSPayment\Bootstrap\RiskRules;
+use Shopware\Plugins\FatchipFCSPayment\Bootstrap\Models;
 
-use Shopware\Plugins\FatchipCTPayment\Subscribers\ControllerPath;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AfterPay;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AmazonPay;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Checkout;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\CreditCard;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\EasyCredit;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Klarna;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\KlarnaPayments;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Logger;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Debit;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\ControllerPath;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend\AfterPay;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend\AmazonPay;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend\Checkout;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend\CreditCard;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend\EasyCredit;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend\Klarna;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend\KlarnaPayments;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend\Logger;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend\Debit;
 
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\Templates;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Backend\OrderList;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\PaypalExpress;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Service;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\TemplateRegistration;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\Backend\Templates;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\Backend\OrderList;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend\PaypalExpress;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\Service;
+use Shopware\Plugins\FatchipFCSPayment\Subscribers\TemplateRegistration;
 
 /**
  * Class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
  */
-class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
+class Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
     /**
      * registers the custom models and plugin namespaces
@@ -170,7 +170,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     {
 
         Shopware()->Loader()->registerNamespace(
-            'Shopware\Plugins\FatchipCTPayment',
+            'Shopware\Plugins\FatchipFCSPayment\',
             $this->Path()
         );
 
@@ -203,7 +203,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             [TemplateRegistration::class, $this],
             [Checkout::class, null],
             [KlarnaPayments::class, null],
-            [Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\RiskManagement::class, $container],
+            [Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend\RiskManagement::class, $container],
             [Logger::class, null],
             [Templates::class, null],
             [Debit::class, null],

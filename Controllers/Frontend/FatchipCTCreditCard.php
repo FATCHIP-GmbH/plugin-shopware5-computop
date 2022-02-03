@@ -29,7 +29,7 @@ require_once 'FatchipCTPayment.php';
 
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Monolog\Handler\RotatingFileHandler;
-use Shopware\Plugins\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipFCSPayment\Util;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTCreditCard.
@@ -42,7 +42,7 @@ use Shopware\Plugins\FatchipCTPayment\Util;
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.computop.com
  */
-class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Controllers_Frontend_FatchipCTPayment
+class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Controllers_Frontend_FatchipFCSPayment
 {
 
     /**

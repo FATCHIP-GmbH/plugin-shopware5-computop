@@ -27,12 +27,12 @@
  * @link       https://www.computop.com
  */
 
-namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
+namespace Shopware\Plugins\FatchipFCSPayment\Bootstrap;
 
 use Exception;
 use Fatchip\CTPayment\CTPaymentAttributes;
 use Shopware\Bundle\AttributeBundle\Service\CrudService;
-use Shopware\Plugins\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipFCSPayment\Util;
 
 /**
  * Class Attributes.

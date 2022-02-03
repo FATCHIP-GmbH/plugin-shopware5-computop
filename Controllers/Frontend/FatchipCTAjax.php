@@ -25,7 +25,7 @@
  * @link       https://www.computop.com
  */
 
-use Shopware\Plugins\FatchipCTPayment\Util;
+use Shopware\Plugins\FatchipFCSPayment\Util;
 
 /**
  * Shopware_Controllers_Frontend_FatchipCTAjax
@@ -88,7 +88,7 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
     public function init()
     {
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
-        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
+        $this->plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
         $this->config = $this->plugin->Config()->toArray();
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
         Shopware()->Plugins()->Controller()->ViewRenderer()->setNoRender();
