@@ -1,10 +1,15 @@
 # Changelog - Shopware Computop Payment Connector
 
+# 1.0.49
+2022-02-03
+* Added missing translations
+* Added Paypal Express fallback button
+
 # 1.0.48
 2022-01-17
-* Added mulitlanguage support
+* Added multi language support
 * Fixed removal of leading zeroes in Paypal Express and AmazonPay zip codes and phone numbers
-* Fixed creditcard payments failing in some cases depending onbrowser colorDepth
+* Fixed credit card payments failing in some cases depending on browser colorDepth
 * Fixed backend exception on capture / refund
 * Fixed help text for credit card silent mode
 * Added support for schemeReferenceID parameter
