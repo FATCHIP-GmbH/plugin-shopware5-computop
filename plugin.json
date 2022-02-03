@@ -1,7 +1,7 @@
 {
   "label": {
-    "de": "First Cash Payment Connector",
-    "en": "First Cash payment connector"
+    "de": "Computop Payment Connector",
+    "en": "Computop payment connector"
   },
   "copyright": "(c) by FATCHIP GmbH",
   "license": "GPLv3",
@@ -18,7 +18,7 @@
       "1.0.0": "First release - Further updates in the file CHANGELOG.md"
     }
   },
-  "description":"<h3>Shopware First Cash Payment Connector</h3><h4>About Shopware First Cash Payment Connector</h4><p style=\"font-size:12px; font-weight: 500;\">For further details about the plugin and updates please visit <a href=\"https://github.com/fatchip-stefan/plugin-shopware5-computop-1\">our Github repository</a>.</p><h4>License Details</h4><p style=\"font-size:12px; font-weight: 500;\">Please see the file \"LICENSE.md\" for more information.</p>",
+  "description":"<h3>Shopware Computop Payment Connector</h3><h4>About Shopware Computop Payment Connector</h4><p style=\"font-size:12px; font-weight: 500;\">For further details about the plugin and updates please visit <a href=\"https://github.com/FATCHIP-GmbH/plugin-shopware5-computop\">our Github repository</a>.</p><h4>License Details</h4><p style=\"font-size:12px; font-weight: 500;\">Please see the file \"LICENSE.md\" for more information.</p>",
   "compatibility": {
     "minimumVersion": "5.0.0",
     "maximumVersion": null,

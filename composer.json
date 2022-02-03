@@ -1,6 +1,6 @@
 {
-  "name": "fatchip/plugin-shopware5-firstcash",
-  "description": "FATCHIP First Cash Payment Plugin",
+  "name": "fatchip/plugin-shopware5-computop",
+  "description": "FATCHIP Computop Payment Plugin",
   "license": "GPL-3.0",
   "type": "shopware-plugin",
   "require-dev": {
