@@ -1,8 +1,8 @@
-# Shopware Computop Payment Connector
+# Shopware First Cash Solution Payment Connector
 
 Licence GPLv3
 
-## About Shopware Computop Payment Connector
+## About Shopware First Cash Solution Payment Connector
 For details about the plugin please visit [our website](https://www.fatchip.de/Plugins/Shopware/Shopware-Computop-Payment-Connector.html).
 This plugin is also available at [Shopware Community Store](https://store.shopware.com/fatch19156119985f/shopware-computop-payment-connector.html).
 

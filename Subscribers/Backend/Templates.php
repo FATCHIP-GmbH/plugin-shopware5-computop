@@ -69,7 +69,7 @@ class Templates implements SubscriberInterface
             return;
         }
 
-        $view->extendsTemplate('responsive/backend/index/computop.tpl');
+        $view->extendsTemplate('responsive/backend/index/firstcashsolution.tpl');
     }
 
     /**
