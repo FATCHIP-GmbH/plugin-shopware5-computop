@@ -36,8 +36,8 @@ use Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap;
 class Menu extends Bootstrap
 {
     const LABELPARENTFIND = ['label' => 'Einstellungen'];
-    const LABELCOMPUTOPMENU = 'First Cash';
-    const LABELCOMPUTOPAPILOG = 'API Protokoll';
+    const LABELFIRSTCASHMENU = 'First Cash';
+    const LABELFIRSTCASHAPILOG = 'API Protokoll';
 
     /**
      * Create menu items to access configuration, logs and support page
@@ -48,11 +48,11 @@ class Menu extends Bootstrap
      */
     public function createMenu()
     {
-        $ret = $this->plugin->Menu()->findOneBy(['label' => self::LABELCOMPUTOPAPILOG]);
+        $ret = $this->plugin->Menu()->findOneBy(['label' => self::LABELFIRSTCASHAPILOG]);
         if (!$ret) {
             $item = $this->plugin->createMenuItem(
                 [
-                    'label' => self::LABELCOMPUTOPMENU,
+                    'label' => self::LABELFIRSTCASHMENU,
                     'class' => 'firstcash-icon',
                     'active' => 1,
                     'parent' => $this->plugin->Menu()->findOneBy(['label' => self::LABELPARENTFIND]),
@@ -60,7 +60,7 @@ class Menu extends Bootstrap
             );
             $this->plugin->createMenuItem(
                 [
-                    'label' => self::LABELCOMPUTOPAPILOG,
+                    'label' => self::LABELFIRSTCASHAPILOG,
                     'class' => 'firstcash-icon',
                     'active' => 1,
                     'action' => 'index',

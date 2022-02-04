@@ -12,7 +12,7 @@ Ext.define('Shopware.apps.RiskManagement.view.risk_management.fcct__Container', 
     var items = me.callParent(arguments);
     
     //check if rule == mopt
-    if(items[0].value == 'FATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS' || items[0].value == 'FATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS_NOT')
+    if(items[0].value == 'FATCHIP_FIRSTCASH__TRAFFIC_LIGHT_IS' || items[0].value == 'FATCHIP_FIRSTCASH__TRAFFIC_LIGHT_IS_NOT')
     {
       var field1 = Ext.create('Ext.form.field.ComboBox', {
         store: me.trafficLightStore,
@@ -28,7 +28,7 @@ Ext.define('Shopware.apps.RiskManagement.view.risk_management.fcct__Container', 
       items[1] = field1;
     }
     
-    if(items[3].value == 'FATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS' || items[3].value == 'FATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS_NOT')
+    if(items[3].value == 'FATCHIP_FIRSTCASH__TRAFFIC_LIGHT_IS' || items[3].value == 'FATCHIP_FIRSTCASH__TRAFFIC_LIGHT_IS_NOT')
     {
       var field2 = Ext.create('Ext.form.field.ComboBox', {
         store: me.trafficLightStore,

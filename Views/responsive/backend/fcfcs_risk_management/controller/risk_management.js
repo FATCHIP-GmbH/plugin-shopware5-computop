@@ -7,7 +7,7 @@ Ext.define('Shopware.apps.RiskManagement.controller.fcct__RiskManagement', {
   {
     var me = this;
     
-    if(newValue == 'FATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS' || newValue=='FATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS_NOT')
+    if(newValue == 'FATCHIP_FIRSTCASH__TRAFFIC_LIGHT_IS' || newValue=='FATCHIP_FIRSTCASH__TRAFFIC_LIGHT_IS_NOT')
     {
       var nextItem = comboBox.up('container').items.items[indexOfNextItem];
       var newComboBox = Ext.create('Ext.form.field.ComboBox', {

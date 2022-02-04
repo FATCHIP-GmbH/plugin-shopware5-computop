@@ -25,7 +25,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcctOverview',
     },
 
     /**
-     * Creates the Ext.panel.Panel for the COMPUTOP shipping costs status
+     * Creates the Ext.panel.Panel for the FIRSTCASH shipping costs status
      */
     createFcctShippingCostContainer: function()
     {

@@ -225,7 +225,7 @@ class RiskManagement extends AbstractSubscriber
         $user = $arguments->get('user');
 
         // execute parent call if rule is not First Cash Solution
-        if (strpos($rule, 'sRiskFATCHIP_COMPUTOP__') !== 0) {
+        if (strpos($rule, 'sRiskFATCHIP_FIRSTCASH__') !== 0) {
             $arguments->setReturn(
                 $arguments->getSubject()->executeParent(
                     $arguments->getMethod(),
@@ -511,7 +511,7 @@ class RiskManagement extends AbstractSubscriber
      * @param $value
      * @return bool
      */
-    public function sRiskFATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS($scoring, $value)
+    public function sRiskFATCHIP_FIRSTCASH__TRAFFIC_LIGHT_IS($scoring, $value)
     {
         return $scoring == $value; //return true if payment has to be denied
     }
@@ -526,9 +526,9 @@ class RiskManagement extends AbstractSubscriber
      * @param $value
      * @return bool
      */
-    public function sRiskFATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS_NOT($scoring, $value)
+    public function sRiskFATCHIP_FIRSTCASH__TRAFFIC_LIGHT_IS_NOT($scoring, $value)
     {
-        return !$this->sRiskFATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS($scoring, $value);
+        return !$this->sRiskFATCHIP_FIRSTCASH__TRAFFIC_LIGHT_IS($scoring, $value);
     }
 
     /**
