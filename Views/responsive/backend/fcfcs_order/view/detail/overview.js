@@ -43,7 +43,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcctOverview',
       if(fcctShowShippingCosts)
       {
         return Ext.create('Ext.panel.Panel', {
-          title: '{s name=overview/title}Computop: Versandkosten{/s}',
+          title: '{s name=overview/title}First Cash: Versandkosten{/s}',
           bodyPadding: 10,
           flex: 1,
           paddingRight: 5,
@@ -61,7 +61,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcctOverview',
       else
       {
         return Ext.create('Ext.panel.Panel', {
-          title: '{s name=overview/title}Computop: Versandkosten{/s}',
+          title: '{s name=overview/title}First Cash: Versandkosten{/s}',
           bodyPadding: 10,
           flex: 1,
           paddingRight: 5,
@@ -78,14 +78,14 @@ Ext.define('Shopware.apps.Order.view.detail.fcctOverview',
     },
 
     /**
-     * Creates the Ext.panel.Panel for the Computop shipping costs status
+     * Creates the Ext.panel.Panel for the First Cash shipping costs status
      */
     createFcctNoCTOrderContainer: function()
     {
       var me = this;
 
       return Ext.create('Ext.panel.Panel', {
-        title: '{s name=overview/title}Computop: Versandkosten{/s}',
+        title: '{s name=overview/title}First Cash: Versandkosten{/s}',
         bodyPadding: 10,
         flex: 1,
         paddingRight: 5,
@@ -94,7 +94,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcctOverview',
         items: [
           {
             xtype: 'container',
-            renderTpl: me.createFcctNoComputopOrderTemplate()
+            renderTpl: me.createFcctNoFirstCashOrderTemplate()
           }
         ]
       });
@@ -154,16 +154,16 @@ Ext.define('Shopware.apps.Order.view.detail.fcctOverview',
      *
      * @return [Ext.XTemplate] generated Ext.XTemplate
      */
-    createFcctNoComputopOrderTemplate:function ()
+    createFcctNoFirstCashOrderTemplate:function ()
     {
-      var labelNotComputop = '{s name=overview/notComputop}Diese Bestellung wurde nicht mit einer Computop Zahlart durchgeführt.{/s}';
+      var labelNotFirstCash = '{s name=overview/notFirstCash}Diese Bestellung wurde nicht mit einer First Cash Solution Zahlart durchgeführt.{/s}';
 
       return new Ext.XTemplate(
         '{literal}<tpl for=".">',
         '<div class="customer-info-pnl">',
         '<div class="base-info">',
         '<p>',
-        '<span>' + labelNotComputop + '</span>',
+        '<span>' + labelNotFirstCash + '</span>',
         '</p>',
         '</div>',
         '</div>',

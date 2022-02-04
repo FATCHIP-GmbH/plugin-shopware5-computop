@@ -10,8 +10,8 @@ Ext.define('Shopware.apps.RiskManagement.store.fcct__Risks', {
       
       if(!me.fatchip_firstcash__isExtended())
       {
-        me.data.push({ description: '{s name=risks_store/comboBox/firstcashTrafficLight}Computop Risikoampel IST{/s}', value: 'FATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS' });
-        me.data.push({ description: '{s name=risks_store/comboBox/firstcashTrafficLightNot}Computop Risikoampel IST NICHT{/s}', value: 'FATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS_NOT' });
+        me.data.push({ description: '{s name=risks_store/comboBox/firstcashTrafficLight}FirstCash Risikoampel IST{/s}', value: 'FATCHIP_FIRSTCASH__TRAFFIC_LIGHT_IS' });
+        me.data.push({ description: '{s name=risks_store/comboBox/firstcashTrafficLightNot}FirstCash Risikoampel IST NICHT{/s}', value: 'FATCHIP_FIRSTCASH__TRAFFIC_LIGHT_IS_NOT' });
       }
       
       me.callParent(arguments);
@@ -23,7 +23,7 @@ Ext.define('Shopware.apps.RiskManagement.store.fcct__Risks', {
       
       for (var i = 0; i < me.data.length; i++)
       {
-        if (me.data[i].value.indexOf('FATCHIP_COMPUTOP__') == 0)
+        if (me.data[i].value.indexOf('FATCHIP_FIRSTCASH__') == 0)
         {
           return true;
         }

@@ -1,17 +1,17 @@
 <?php
 /**
- * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
+ * The First Cash Solution Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The Computop Shopware Plugin is distributed in the hope that it will be useful,
+ * The First Cash Solution Shopware Plugin is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
+ * along with First Cash Solution Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
  * PHP version 5.6, 7.0 , 7.1
  *
@@ -19,7 +19,7 @@
  * @package    FatchipFCSPayment
  * @subpackage Subscibers
  * @author     FATCHIP GmbH <support@fatchip.de>
- * @copyright  2018 Computop
+ * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
@@ -224,7 +224,7 @@ class RiskManagement extends AbstractSubscriber
 
         $user = $arguments->get('user');
 
-        // execute parent call if rule is not Computop
+        // execute parent call if rule is not First Cash Solution
         if (strpos($rule, 'sRiskFATCHIP_COMPUTOP__') !== 0) {
             $arguments->setReturn(
                 $arguments->getSubject()->executeParent(
@@ -545,7 +545,7 @@ class RiskManagement extends AbstractSubscriber
         if ($address = $util->getCustomerAddressById($addressID, 'billing')) {
             //only update the address, if something changed. This check is important, because if nothing changed
             //callin persist and flush does not result in calling afterAddressUpdate and the session variable
-            //fatchipComputopCrifAutoAddressUpdate woould not get cleared.
+            //fatchipFirst Cash SolutionCrifAutoAddressUpdate woould not get cleared.
             //also check if crifResponse contains addressdata at all, because an internal server error sometimes returns empty
             //address data, which would result in clearing the billing address.
             if ($this->crifResponseContainsAdressdata($crifResponse) &&
@@ -565,7 +565,7 @@ class RiskManagement extends AbstractSubscriber
 
                 //Write to session that this address is autmatically changed, so we do not fire a second CRIF request
                 $session = Shopware()->Session();
-                $session->offsetSet('fatchipComputopCrifAutoAddressUpdate', $addressID);
+                $session->offsetSet('fatchipFirstCashCrifAutoAddressUpdate', $addressID);
 
                 Shopware()->Models()->persist($address);
                 Shopware()->Models()->flush();
@@ -588,8 +588,8 @@ class RiskManagement extends AbstractSubscriber
      */
     private function addressWasAutoUpdated()
     {
-        if (Shopware()->Session()->offsetExists('fatchipComputopCrifAutoAddressUpdate')) {
-            Shopware()->Session()->offsetUnset('fatchipComputopCrifAutoAddressUpdate');
+        if (Shopware()->Session()->offsetExists('fatchipFirstCashCrifAutoAddressUpdate')) {
+            Shopware()->Session()->offsetUnset('fatchipFirstCashCrifAutoAddressUpdate');
             return true;
         }
 
@@ -600,7 +600,7 @@ class RiskManagement extends AbstractSubscriber
      * TODO: move to general helper
      *
      * Duplicate methods from payment controller
-     * Sets the userData paramater for Computop calls to Shopware Version and Module Version
+     * Sets the userData paramater for First Cash Solution calls to Shopware Version and Module Version
      * @return string
      */
     private function getUserDataParam()

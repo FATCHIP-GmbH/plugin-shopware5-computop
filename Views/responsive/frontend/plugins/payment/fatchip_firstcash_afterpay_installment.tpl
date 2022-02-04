@@ -11,7 +11,7 @@
     {/block}
 
     {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_installment_iban_input"}
-        <input name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_installment_iban]" type="text"
+        <input name="FatchipFirstCashPaymentData[fatchip_firstcash_afterpay_installment_iban]" type="text"
                id="fatchip_firstcash_afterpay_installment_iban"
                class="payment--field is--required{if $error_flags.fatchip_firstcash__afterpay_installment_iban} has--error{/if}"
                placeholder="IBAN{s name="RequiredField" namespace="frontend/register/index"}{/s}"
@@ -29,7 +29,7 @@
         {/block}
     *}
     {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_installment_bic_input"}
-        <input name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_installment_bic]" type="hidden"
+        <input name="FatchipFirstCashPaymentData[fatchip_firstcash_afterpay_installment_bic]" type="hidden"
                id="fatchip_firstcash_afterpay_installment_bic"
         />
     {/block}
@@ -40,7 +40,7 @@
         {/block}
     *}
     {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_installment_productnr_input"}
-        <input name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_installment_productnr]" type="hidden"
+        <input name="FatchipFirstCashPaymentData[fatchip_firstcash_afterpay_installment_productnr]" type="hidden"
                id="fatchip_firstcash_afterpay_installment_productnr"
         />
     {/block}
@@ -55,7 +55,7 @@
 
     {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_installment_birthday_day_input"}
         <div class="select-field">
-            <select name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_installment_birthday]"
+            <select name="FatchipFirstCashPaymentData[fatchip_firstcash_afterpay_installment_birthday]"
                     id="fatchip_firstcash_afterpay_installment_birthday"
                     class="is--required"
                     {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
@@ -73,7 +73,7 @@
 
     {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_installment_birthday_month_input"}
         <div class="select-field">
-            <select name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_installment_birthmonth]"
+            <select name="FatchipFirstCashPaymentData[fatchip_firstcash_afterpay_installment_birthmonth]"
                     id="fatchip_firstcash_afterpay_installment_birthmonth"
                     class="is--required"
                     {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
@@ -91,7 +91,7 @@
 
     {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_installment_birthday_year_input"}
         <div class="select-field">
-            <select name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_installment_birthyear]"
+            <select name="FatchipFirstCashPaymentData[fatchip_firstcash_afterpay_installment_birthyear]"
                     id="fatchip_firstcash_afterpay_installment_birthyear"
                     class="is--required"
                     {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
@@ -118,7 +118,7 @@
 
         {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_socialsecuritynumber_input"}
             <div>
-                <input name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_installment_socialsecuritynumber]"
+                <input name="FatchipFirstCashPaymentData[fatchip_firstcash_afterpay_installment_socialsecuritynumber]"
                        type="text"
                        id="fatchip_firstcash_afterpay_installment_socialsecuritynumber"
                        {if $FatchipFCSPaymentData.SSNMaxLen}maxlength={$FatchipFCSPaymentData.SSNMaxLen}{/if}

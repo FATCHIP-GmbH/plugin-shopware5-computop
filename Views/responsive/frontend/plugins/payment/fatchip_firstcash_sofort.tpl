@@ -7,7 +7,7 @@
 
         <div class="select-field">
         {block name="frontend_checkout_payment_fatchip_firstcash_sofort_issuer_input"}
-                <select name="FatchipComputopPaymentData[fatchip_firstcash_sofort_issuer]"
+                <select name="FatchipFirstCashPaymentData[fatchip_firstcash_sofort_issuer]"
                         id="fatchip_firstcash_sofort_issuer"
                         class="is--required"
                         {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}

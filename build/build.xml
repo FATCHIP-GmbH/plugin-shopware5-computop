@@ -1,4 +1,4 @@
-<project name="FATCHIP Computop Payment plugin for Shopware 5" default="buildTarget" basedir="../">
+<project name="FATCHIP First Cash Solution Payment plugin for Shopware 5" default="buildTarget" basedir="../">
   <description>
     build file for release packages
   </description>

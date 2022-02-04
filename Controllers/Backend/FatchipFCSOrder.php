@@ -1,18 +1,18 @@
 <?php
 
 /**
- * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
+ * The First Cash Solution Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The Computop Shopware Plugin is distributed in the hope that it will be useful,
+ * The First Cash Solution Shopware Plugin is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
+ * along with First Cash Solution Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
  * PHP version 5.6, 7.0 , 7.1
  *
@@ -20,7 +20,7 @@
  * @package    FatchipFCSPayment
  * @subpackage Controllers/Backend
  * @author     FATCHIP GmbH <support@fatchip.de>
- * @copyright  2018 Computop
+ * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
@@ -239,7 +239,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
 
     /**
      * Checks if capture can be made for an order. A capture is possible if:
-     * 1. it is a Computop payment
+     * 1. it is a First Cash Solution payment
      * 2. this payment method offers a capture url in the library
      *
      * @param $order
@@ -248,7 +248,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
     private function fcct_isOrderCapturable($order)
     {
 
-        if (!$this->orderHasComputopPayment($order)) {
+        if (!$this->orderHasFirstCashPayment($order)) {
             return false;
         }
 
@@ -264,7 +264,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
 
     /**
      * Checks if debit can be made for an order. A debit is possible if:
-     * 1. it is a Computop payment
+     * 1. it is a First Cash Solution payment
      * 2. this payment method offers a refund url in the library
      *
      * @param $order
@@ -272,7 +272,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
      */
     private function fcct_isOrderRefundable($order)
     {
-        if (!$this->orderHasComputopPayment($order)) {
+        if (!$this->orderHasFirstCashPayment($order)) {
             return false;
         }
 
@@ -284,7 +284,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
     }
 
     /**
-     * Creates a Computop Order object from a Shopware order object.
+     * Creates a First Cash Solution Order object from a Shopware order object.
      * @param $swOrder
      * @return \Fatchip\CTPayment\CTOrder\CTOrder
      */
@@ -513,7 +513,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
      * @param $order
      * @return bool
      */
-    private function orderHasComputopPayment($order)
+    private function orderHasFirstCashPayment($order)
     {
         if (strpos($order->getPayment()->getName(), 'fatchip_firstcash') !== 0) {
             return false;
@@ -681,7 +681,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
     }
 
     /**
-     * Saves the InvoiceNr from Computop response in order attributes for Klarna payments
+     * Saves the InvoiceNr from First Cash Solution response in order attributes for Klarna payments
      * @param $response
      */
     private function saveInvNo($response)

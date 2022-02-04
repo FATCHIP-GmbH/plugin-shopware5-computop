@@ -1,4 +1,4 @@
-# Changelog - Shopware Computop Payment Connector
+# Changelog - Shopware First Cash Solution Payment Connector
 
 # 1.0.48
 2022-01-17
@@ -99,7 +99,7 @@ Released 2020-01-06
 
 ## 1.0.28
 Pre-Released 2019-12-10
-* Rebranding: updated Computop icons and images 
+* Rebranding: updated First Cash Solution icons and images 
 * Refactored: unneccessary code removed
 * Fixed: attribute address flush / by @rdss-zmehmedovic
 * Added two new Klarna payment methods: Klarna SOFORT, Klarna Lastschrift 

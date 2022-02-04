@@ -1,18 +1,18 @@
 <?php
 
 /**
- * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
+ * The First Cash Solution Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The Computop Shopware Plugin is distributed in the hope that it will be useful,
+ * The First Cash Solution Shopware Plugin is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
+ * along with First Cash Solution Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
  * PHP version 5.6, 7.0, 7.1
  *
@@ -20,7 +20,7 @@
  * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
- * @copyright  2018 Computop
+ * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
@@ -38,7 +38,7 @@ use Shopware\Plugins\FatchipFCSPayment\Util;
  * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
- * @copyright  2018 Computop
+ * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
@@ -64,7 +64,7 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
     /**
      *  GatewaAction is overridden for Creditcard because:
      *  1. extra param URLBack
-     *  2. forward to iframe controller instead of Computop Gateway, so the Computop IFrame is shown within Shop layout
+     *  2. forward to iframe controller instead of First Cash Solution Gateway, so the First Cash Solution IFrame is shown within Shop layout
      *
      * @return void
      * @throws Exception
@@ -90,7 +90,7 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
     /**
      *  GatewaAction is overridden for Creditcard because:
      *  1. extra param URLBack
-     *  2. forward to iframe controller instead of Computop Gateway, so the Computop IFrame is shown within Shop layout
+     *  2. forward to iframe controller instead of First Cash Solution Gateway, so the First Cash Solution IFrame is shown within Shop layout
      *
      * @return void
      * @throws Exception
@@ -104,7 +104,7 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
     }
 
     /**
-     * Shows Computop Creditcard Iframe within shop layout
+     * Shows First Cash Solution Creditcard Iframe within shop layout
      *
      * @return void
      */

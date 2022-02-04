@@ -1,18 +1,18 @@
 <?php
 
 /**
- * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
+ * The First Cash Solution Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The Computop Shopware Plugin is distributed in the hope that it will be useful,
+ * The First Cash Solution Shopware Plugin is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
+ * along with First Cash Solution Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
  * PHP version 5.6, 7.0, 7.1
  *
@@ -20,7 +20,7 @@
  * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
- * @copyright  2018 Computop
+ * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
@@ -42,7 +42,7 @@ use Shopware\Components\CSRFWhitelistAware;
  * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
- * @copyright  2018 Computop
+ * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
@@ -157,7 +157,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     /**
      * Gateway action method
      *
-     * Creates paymentclass and redirects to Computop URL
+     * Creates paymentclass and redirects to First Cash Solution URL
      * Should be overridden in subclasses that need different behaviour
      *
      * @return void
@@ -175,7 +175,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     /**
      * Cancel action method
      *
-     * If an error occurs in the Computop call, and FailureURL is set, user is redirected to this
+     * If an error occurs in the First Cash Solution call, and FailureURL is set, user is redirected to this
      * Reads error message from Response and redirects to shippingPayment page
      *
      * @return void
@@ -191,7 +191,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
             ->getNamespace('frontend/FatchipFCSPayment/translations')
             ->get('errorGeneral'); // . $response->getDescription();
         $ctError['CTErrorCode'] = $response->getCode();
-        $this->session->offsetUnset('fatchipComputopEasyCreditPayId');
+        $this->session->offsetUnset('fatchipFirstCashEasyCreditPayId');
 
         $this->forward('shippingPayment', 'checkout', null, $this->hideError($response->getCode()) ? null : ['CTError' => $ctError]);
     }
@@ -199,7 +199,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     /**
      * Success action method.
      *
-     * Called after Computop redirects to SuccessURL
+     * Called after First Cash Solution redirects to SuccessURL
      * If everything is OK, order is created with status Reserved, TransactionIDs are saved,
      * RefNr is updated and user is redirected to finish page
      *
@@ -248,7 +248,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     /**
      * Notify action method
      *
-     * Called if Computop sends notifications to NotifyURL,
+     * Called if First Cash Solution sends notifications to NotifyURL,
      * used to update payment status info
      *
      * @return void
@@ -266,7 +266,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
             case CTEnumStatus::AUTHORIZED:
             case CTEnumStatus::AUTHORIZE_REQUEST:
                 if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $response->getTransID()])) {
-//                    $this->updateRefNrWithComputop($order, $this->paymentClass);
+//                    $this->updateRefNrWithFirst Cash Solution($order, $this->paymentClass);
                     $this->inquireAndupdatePaymentStatus($order, $this->paymentClass);
                 }
 
@@ -369,7 +369,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     }
 
     /**
-     * Order description sent to Computop.
+     * Order description sent to First Cash Solution.
      *
      * Returns shopname.
      * If a paymentmethod needs a different Orderdescription, override this method.
@@ -384,7 +384,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     }
 
     /**
-     * Sets the userData paramater for Computop calls to Shopware Version and Module Version
+     * Sets the userData paramater for First Cash Solution calls to Shopware Version and Module Version
      *
      * @return string
      * @throws Exception
@@ -562,7 +562,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
      * For firstcash credit card and paydirekt it is possible
      * to set capture to delayed in the plugin settings.
      * With delayed captures no notify is sent to the shop!
-     * Computop guarantess the capture so
+     * First Cash Solution guarantess the capture so
      * we mark the order as fully paid
      *
      * @param string $orderNumber shopware order-number
@@ -623,7 +623,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     }
 
     /**
-     * Update RefNr for Computop analytics
+     * Update RefNr for First Cash Solution analytics
      *
      * @param string $orderNumber shopware orderNumber
      *
@@ -642,7 +642,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     }
 
     /**
-     * The RefNr for Computop has to be equal to the ordernumber.
+     * The RefNr for First Cash Solution has to be equal to the ordernumber.
      * Because the ordernumber is only known after successful payments
      * and successful saveOrder() call update the RefNr AFTER order creation
      *
@@ -708,10 +708,10 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     }
 
     /**
-     * Calls Inquire.aspx at Computop, but only if Order has status 'Reserved'
+     * Calls Inquire.aspx at First Cash Solution, but only if Order has status 'Reserved'
      *
      * If the order is Fully or Partly captured, the Order PaymentStatus is updated accordingly
-     * If nothing has been captured, an error is thrown, so Computop will try again
+     * If nothing has been captured, an error is thrown, so First Cash Solution will try again
      *
      * @param Order $order        shopware order
      * @param string                       $paymentClass paymentclass name
@@ -750,7 +750,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
                     $order->setPaymentStatus($paymentStatus);
                     $this->get('models')->flush($order);
                 } else {
-                    //if nothing has been captured, we throw an error, so Computop will send another Notification
+                    //if nothing has been captured, we throw an error, so First Cash Solution will send another Notification
                     //if the capture has been made either manually or delayed within 24 hours, we will get a notification and be able
                     //to mark the order as captured
                     throw new \RuntimeException('No Capture in InquireResponse within first hour');

@@ -1,18 +1,18 @@
 <?php
 
 /**
- * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
+ * The First Cash Solution Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The Computop Shopware Plugin is distributed in the hope that it will be useful,
+ * The First Cash Solution Shopware Plugin is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
+ * along with First Cash Solution Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
  * PHP version 5.6, 7.0, 7.1
  *
@@ -20,7 +20,7 @@
  * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
- * @copyright  2018 Computop
+ * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
@@ -33,9 +33,9 @@ use Fatchip\CTPayment\CTEnums\CTEnumStatus;
  * Class Shopware_Controllers_Frontend_FatchipFCSAmazon
  *
  * @category  Payment_Controller
- * @package   Computop_Shopware5_Plugin
+ * @package   First Cash Solution_Shopware5_Plugin
  * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
+ * @copyright 2018 First Cash Solution
  * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link      https://www.firstcash.com
  */
@@ -49,7 +49,7 @@ class Shopware_Controllers_Frontend_FatchipFCSAmazon extends Shopware_Controller
     /**
      * Success action method.
      *
-     * Called after Computop redirects to SuccessURL
+     * Called after First Cash Solution redirects to SuccessURL
      * If everything is OK, order is created with status Paid, TransactionIDs are saved,
      * RefNr is updated and user is redirected to finish page
      *
@@ -87,7 +87,7 @@ class Shopware_Controllers_Frontend_FatchipFCSAmazon extends Shopware_Controller
     /**
      * Cancel action method.
      *
-     * If an error occurs in the Computop call, and FailureURL is set, user is redirected to this
+     * If an error occurs in the First Cash Solution call, and FailureURL is set, user is redirected to this
      * Reads error message from Response and redirects to Amazon Register Page
      *
      * @return void
@@ -150,7 +150,7 @@ class Shopware_Controllers_Frontend_FatchipFCSAmazon extends Shopware_Controller
     }
 
     /**
-     * Order description sent to Computop.
+     * Order description sent to First Cash Solution.
      *
      * Returns shopname.
      * If a paymentmethod needs a different Orderdescription, override this method.

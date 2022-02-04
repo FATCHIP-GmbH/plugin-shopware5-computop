@@ -1,17 +1,17 @@
 <?php
 /**
- * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
+ * The First Cash Solution Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The Computop Shopware Plugin is distributed in the hope that it will be useful,
+ * The First Cash Solution Shopware Plugin is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
+ * along with First Cash Solution Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
  * PHP version 5.6, 7.0 , 7.1
  *
@@ -19,7 +19,7 @@
  * @package    FatchipFCSPayment
  * @subpackage Subscibers
  * @author     FATCHIP GmbH <support@fatchip.de>
- * @copyright  2018 Computop
+ * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
@@ -125,7 +125,7 @@ class Checkout extends AbstractSubscriber
             $paymentData['birthyear'] = $birthday[0];
             $paymentData['phone'] = $this->utils->getUserPhone($userData);
             $paymentData['idealIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipFCSIdeal\FatchipFCSIdealIssuers')->findAll();
-            $paymentData['idealIssuer'] = $session->offsetGet('FatchipComputopIdealIssuer');
+            $paymentData['idealIssuer'] = $session->offsetGet('FatchipFirstCashIdealIssuer');
 
             $paymentData['isCompany'] = !empty($userData['billingaddress']['company']);
             $paymentData['lastschriftbank'] = $this->utils->getUserLastschriftBank($userData);
@@ -179,11 +179,11 @@ class Checkout extends AbstractSubscriber
      */
     private function updateUserDoB($paymentName, $userId, $params)
     {
-        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_birthyear'])) {
+        if (!empty($params['FatchipFirstCashPaymentData'][$paymentName . '_birthyear'])) {
             $this->utils->updateUserDoB($userId,
-                $params['FatchipComputopPaymentData'][$paymentName . '_birthyear'] . '-' .
-                $params['FatchipComputopPaymentData'][$paymentName . '_birthmonth'] . '-' .
-                $params['FatchipComputopPaymentData'][$paymentName . '_birthday']
+                $params['FatchipFirstCashPaymentData'][$paymentName . '_birthyear'] . '-' .
+                $params['FatchipFirstCashPaymentData'][$paymentName . '_birthmonth'] . '-' .
+                $params['FatchipFirstCashPaymentData'][$paymentName . '_birthday']
             );
         }
     }
@@ -197,9 +197,9 @@ class Checkout extends AbstractSubscriber
      */
     private function updateUserPhone($paymentName, $userId, $params)
     {
-        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_phone'])) {
+        if (!empty($params['FatchipFirstCashPaymentData'][$paymentName . '_phone'])) {
             $this->utils->updateUserPhone($userId,
-                $params['FatchipComputopPaymentData'][$paymentName . '_phone']
+                $params['FatchipFirstCashPaymentData'][$paymentName . '_phone']
             );
         }
     }
@@ -212,9 +212,9 @@ class Checkout extends AbstractSubscriber
      */
     private function updateUserSSN($paymentName, $userId, $params)
     {
-        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_socialsecuritynumber'])) {
+        if (!empty($params['FatchipFirstCashPaymentData'][$paymentName . '_socialsecuritynumber'])) {
             $this->utils->updateUserSSN($userId,
-                $params['FatchipComputopPaymentData'][$paymentName . '_socialsecuritynumber']
+                $params['FatchipFirstCashPaymentData'][$paymentName . '_socialsecuritynumber']
             );
         }
     }
@@ -227,9 +227,9 @@ class Checkout extends AbstractSubscriber
      */
     private function updateUserAnnualSalary($paymentName, $userId, $params)
     {
-        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_annualsalary'])) {
+        if (!empty($params['FatchipFirstCashPaymentData'][$paymentName . '_annualsalary'])) {
             $this->utils->updateUserAnnualSalary($userId,
-                $params['FatchipComputopPaymentData'][$paymentName . '_annualsalary']
+                $params['FatchipFirstCashPaymentData'][$paymentName . '_annualsalary']
             );
         }
     }
@@ -242,9 +242,9 @@ class Checkout extends AbstractSubscriber
      */
     private function updateUserLastschriftBank($paymentName, $userId, $params)
     {
-        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_bank'])) {
+        if (!empty($params['FatchipFirstCashPaymentData'][$paymentName . '_bank'])) {
             $this->utils->updateUserLastschriftBank($userId,
-                $params['FatchipComputopPaymentData'][$paymentName . '_bank']
+                $params['FatchipFirstCashPaymentData'][$paymentName . '_bank']
             );
         }
     }
@@ -260,18 +260,18 @@ class Checkout extends AbstractSubscriber
         $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipFCSPayment()->Config()->toArray();
         $isIbanAnon = $pluginConfig['lastschriftAnon'] == 'Aus' ? false : true;
 
-        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_iban'])) {
+        if (!empty($params['FatchipFirstCashPaymentData'][$paymentName . '_iban'])) {
             if (!$isIbanAnon) {
                 $this->utils->updateUserLastschriftIban($userId,
-                    $params['FatchipComputopPaymentData'][$paymentName . '_iban']
+                    $params['FatchipFirstCashPaymentData'][$paymentName . '_iban']
                 );
-            } elseif (preg_match('#XXXX#', $params['FatchipComputopPaymentData']['fatchip_firstcash_lastschrift_iban_anon'])) {
+            } elseif (preg_match('#XXXX#', $params['FatchipFirstCashPaymentData']['fatchip_firstcash_lastschrift_iban_anon'])) {
                 $this->utils->updateUserLastschriftIban($userId,
-                    $params['FatchipComputopPaymentData'][$paymentName . '_iban']
+                    $params['FatchipFirstCashPaymentData'][$paymentName . '_iban']
                 );
             } else {
                 $this->utils->updateUserLastschriftIban($userId,
-                    $params['FatchipComputopPaymentData'][$paymentName . '_iban_anon']
+                    $params['FatchipFirstCashPaymentData'][$paymentName . '_iban_anon']
                 );
             }
         }
@@ -285,9 +285,9 @@ class Checkout extends AbstractSubscriber
      */
     private function updateUserAfterpayInstallmentIban($paymentName, $userId, $params)
     {
-        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_iban'])) {
+        if (!empty($params['FatchipFirstCashPaymentData'][$paymentName . '_iban'])) {
             $this->utils->updateUserAfterpayInstallmentIban($userId,
-                $params['FatchipComputopPaymentData'][$paymentName . '_iban']
+                $params['FatchipFirstCashPaymentData'][$paymentName . '_iban']
             );
         }
     }
@@ -300,9 +300,9 @@ class Checkout extends AbstractSubscriber
      */
     private function updateUserLastschriftKontoinhaber($paymentName, $userId, $params)
     {
-        if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_kontoinhaber'])) {
+        if (!empty($params['FatchipFirstCashPaymentData'][$paymentName . '_kontoinhaber'])) {
             $this->utils->updateUserLastschriftKontoinhaber($userId,
-                $params['FatchipComputopPaymentData'][$paymentName . '_kontoinhaber']
+                $params['FatchipFirstCashPaymentData'][$paymentName . '_kontoinhaber']
             );
         }
     }
@@ -316,9 +316,9 @@ class Checkout extends AbstractSubscriber
     private function setIssuerInSession($paymentName, $params)
     {
         $session = Shopware()->Session();
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_firstcash_ideal_issuer']) && $paymentName === 'fatchip_firstcash_ideal') {
-            $session->offsetSet('FatchipComputopIdealIssuer',
-                $params['FatchipComputopPaymentData']['fatchip_firstcash_ideal_issuer']
+        if (!empty($params['FatchipFirstCashPaymentData']['fatchip_firstcash_ideal_issuer']) && $paymentName === 'fatchip_firstcash_ideal') {
+            $session->offsetSet('FatchipFirstCashIdealIssuer',
+                $params['FatchipFirstCashPaymentData']['fatchip_firstcash_ideal_issuer']
             );
         }
     }
@@ -331,9 +331,9 @@ class Checkout extends AbstractSubscriber
     private function setAfterpayProductNrInSession($params)
     {
         $session = Shopware()->Session();
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_firstcash_afterpay_installment_productnr'])) {
-            $session->offsetSet('FatchipComputopAfterpayProductNr',
-                $params['FatchipComputopPaymentData']['fatchip_firstcash_afterpay_installment_productnr']
+        if (!empty($params['FatchipFirstCashPaymentData']['fatchip_firstcash_afterpay_installment_productnr'])) {
+            $session->offsetSet('FatchipFirstCashAfterpayProductNr',
+                $params['FatchipFirstCashPaymentData']['fatchip_firstcash_afterpay_installment_productnr']
             );
         }
     }
@@ -350,7 +350,7 @@ class Checkout extends AbstractSubscriber
 
     /**
      * Duplicate methods from payment controller
-     * Sets the userData paramater for Computop calls to Shopware Version and Module Version
+     * Sets the userData paramater for First Cash Solution calls to Shopware Version and Module Version
      * @return string
      */
     public function getUserDataParam()

@@ -1,17 +1,17 @@
 <?php
 /**
- * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
+ * The First Cash Solution Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The Computop Shopware Plugin is distributed in the hope that it will be useful,
+ * The First Cash Solution Shopware Plugin is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
+ * along with First Cash Solution Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
  * PHP version 5.6, 7.0 , 7.1
  *
@@ -19,7 +19,7 @@
  * @package    FatchipFCSPayment
  * @subpackage Bootstrap
  * @author     FATCHIP GmbH <support@fatchip.de>
- * @copyright  2018 Computop
+ * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
@@ -39,20 +39,20 @@ class RiskRules extends Bootstrap
     /**
      * Create risk rules.
      *
-     * @see createComputopRiskRule
+     * @see createFirst Cash SolutionRiskRule
      *
      * @throws \Exception
      * @return void
      */
     public function createRiskRules()
     {
-        $this->createComputopRiskRule('fatchip_firstcash_easycredit',
+        $this->createFirstCashRiskRule('fatchip_firstcash_easycredit',
             'ORDERVALUELESS', '200');
 
-        $this->createComputopRiskRule('fatchip_firstcash_przelewy24',
+        $this->createFirstCashRiskRule('fatchip_firstcash_przelewy24',
             'CURRENCIESISOISNOT', 'PLN');
 
-        $this->createComputopRiskRule('fatchip_firstcash_ideal',
+        $this->createFirstCashRiskRule('fatchip_firstcash_ideal',
             'BILLINGLANDISNOT', 'NL');
     }
 
@@ -71,7 +71,7 @@ class RiskRules extends Bootstrap
      * @throws \Exception
      * @return void
      */
-    private function createComputopRiskRule($paymentName, $rule1, $value1, $rule2 = '', $value2 = '')
+    private function createFirstCashRiskRule($paymentName, $rule1, $value1, $rule2 = '', $value2 = '')
     {
         /** @var \Shopware\Components\Model\ModelManager $manager */
         $manager = $this->plugin->get('models');

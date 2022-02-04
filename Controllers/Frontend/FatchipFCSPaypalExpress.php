@@ -1,18 +1,18 @@
 <?php
 
 /**
- * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
+ * The First Cash Solution Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The Computop Shopware Plugin is distributed in the hope that it will be useful,
+ * The First Cash Solution Shopware Plugin is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
+ * along with First Cash Solution Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
  * PHP version 5.6, 7.0, 7.1
  *
@@ -20,7 +20,7 @@
  * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
- * @copyright  2018 Computop
+ * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
@@ -39,7 +39,7 @@ use Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard;
  * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
- * @copyright  2018 Computop
+ * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
@@ -131,7 +131,7 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalExpress extends Shopware_Con
     /**
      * Success action method.
      *
-     * Called after Computop redirects to SuccessURL
+     * Called after First Cash Solution redirects to SuccessURL
      * Order is created with status paid, transactionIDs are saved,
      * RefNr is updated and user is redirected to finish page
      *
@@ -194,7 +194,7 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalExpress extends Shopware_Con
     /**
      * Cancel action method.
      *
-     * If an error occurs in the Computop call or user cancels on paypal page user is redirected here
+     * If an error occurs in the First Cash Solution call or user cancels on paypal page user is redirected here
      * Reads error message from response and redirects to shippingpayment page
      *
      * @return void

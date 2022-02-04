@@ -9,7 +9,7 @@
 
     {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_invoice_birthday_day_input"}
         <div class="select-field">
-            <select name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_invoice_birthday]"
+            <select name="FatchipFirstCashPaymentData[fatchip_firstcash_afterpay_invoice_birthday]"
                     id="fatchip_firstcash_afterpay_invoice_birthday"
                     class="is--required"
                     {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
@@ -27,7 +27,7 @@
 
     {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_invoice_birthday_month_input"}
         <div class="select-field">
-            <select name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_invoice_birthmonth]"
+            <select name="FatchipFirstCashPaymentData[fatchip_firstcash_afterpay_invoice_birthmonth]"
                     id="fatchip_firstcash_afterpay_invoice_birthmonth"
                     class="is--required"
                     {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
@@ -45,7 +45,7 @@
 
     {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_invoice_birthday_year_input"}
         <div class="select-field">
-            <select name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_invoice_birthyear]"
+            <select name="FatchipFirstCashPaymentData[fatchip_firstcash_afterpay_invoice_birthyear]"
                     id="fatchip_firstcash_afterpay_invoice_birthyear"
                     class="is--required"
                     {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
@@ -71,7 +71,7 @@
         {/block}
         {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_socialsecuritynumber_input"}
             <div>
-                <input name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_invoice_socialsecuritynumber]"
+                <input name="FatchipFirstCashPaymentData[fatchip_firstcash_afterpay_invoice_socialsecuritynumber]"
                        type="text"
                        id="fatchip_firstcash_afterpay_invoice_socialsecuritynumber"
                        {if $FatchipFCSPaymentData.SSNMaxLen}maxlength={$FatchipFCSPaymentData.SSNMaxLen}{/if}

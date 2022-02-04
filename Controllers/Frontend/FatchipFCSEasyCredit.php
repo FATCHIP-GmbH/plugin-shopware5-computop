@@ -1,18 +1,18 @@
 <?php
 
 /**
- * The Computop Shopware Plugin is free software: you can redistribute it and/or modify
+ * The First Cash Solution Shopware Plugin is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * The Computop Shopware Plugin is distributed in the hope that it will be useful,
+ * The First Cash Solution Shopware Plugin is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Computop Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
+ * along with First Cash Solution Shopware Plugin. If not, see <http://www.gnu.org/licenses/>.
  *
  * PHP version 5.6, 7.0, 7.1
  *
@@ -20,7 +20,7 @@
  * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
- * @copyright  2018 Computop
+ * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
@@ -35,9 +35,9 @@ use Fatchip\CTPayment\CTEnums\CTEnumEasyCredit;
  * Class Shopware_Controllers_Frontend_FatchipFCSEasyCredit *
  *
  * @category  Payment_Controller
- * @package   Computop_Shopware5_Plugin
+ * @package   First Cash Solution_Shopware5_Plugin
  * @author    FATCHIP GmbH <support@fatchip.de>
- * @copyright 2018 Computop
+ * @copyright 2018 First Cash Solution
  * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link      https://www.firstcash.com
  */
@@ -161,8 +161,8 @@ class Shopware_Controllers_Frontend_FatchipFCSEasyCredit extends Shopware_Contro
                     $this->forward('failure');
                 } else {
 
-                    $this->session->offsetSet('FatchipComputopEasyCreditInformation', $this->getConfirmPageInformation($responseObject));
-                    $this->session->offsetSet('fatchipComputopEasyCreditPayId', $response->getPayID());
+                    $this->session->offsetSet('FatchipFirstCashEasyCreditInformation', $this->getConfirmPageInformation($responseObject));
+                    $this->session->offsetSet('fatchipFirstCashEasyCreditPayId', $response->getPayID());
                     $this->redirect(['controller' => 'checkout', 'action' => 'confirm']);
                 }
                 break;
@@ -211,7 +211,7 @@ class Shopware_Controllers_Frontend_FatchipFCSEasyCredit extends Shopware_Contro
         );
 
         $payment->setDateOfBirth($this->utils->getUserDoB($userData));
-        $params = $payment->getConfirmParams($this->session->offsetGet('fatchipComputopEasyCreditPayId'));
+        $params = $payment->getConfirmParams($this->session->offsetGet('fatchipFirstCashEasyCreditPayId'));
         $response = $this->plugin->callComputopService($params, $payment, 'CON', $payment->getCTCreditCheckURL());
 
         switch ($response->getStatus()) {
@@ -222,7 +222,7 @@ class Shopware_Controllers_Frontend_FatchipFCSEasyCredit extends Shopware_Contro
                     self::PAYMENTSTATUSRESERVED
                 );
                 $this->saveTransactionResult($response);
-                $this->session->offsetUnSet('FatchipComputopEasyCreditInformation');
+                $this->session->offsetUnSet('FatchipFirstCashEasyCreditInformation');
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
                 $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);

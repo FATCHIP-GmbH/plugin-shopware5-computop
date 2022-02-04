@@ -1,7 +1,7 @@
 {extends file="parent:frontend/checkout/confirm.tpl"}
 
 {block name="frontend_checkout_confirm_product_table"}
-    {if $FatchipComputopEasyCreditInformation}
+    {if $FatchipFirstCashEasyCreditInformation}
         <div class='panel has--border'>
             <div class="panel--title primary is--underline">
                 {s name='easycreditConditions' namespace='frontend/checkout/CTEasycredit'}Easycredit Konditionen{/s}:
@@ -10,37 +10,37 @@
                 <table>
                     <tr>
                         <td width="40%">{s name='easycreditAmount' namespace='frontend/FatchipFCSPayment/translations'}Kaufbetrag{/s}:</td>
-                        <td width="40%">{$FatchipComputopEasyCreditInformation.bestellwert|number_format:2:",":"."}</td>
+                        <td width="40%">{$FatchipFirstCashEasyCreditInformation.bestellwert|number_format:2:",":"."}</td>
                     </tr>
                     <tr>
                         <td width="40%">+ {s name='easycreditInterest' namespace='frontend/FatchipFCSPayment/translations'}Zinsen{/s}:</td>
-                        <td width="40%">{$FatchipComputopEasyCreditInformation.anfallendeZinsen|number_format:2:",":"."}</td>
+                        <td width="40%">{$FatchipFirstCashEasyCreditInformation.anfallendeZinsen|number_format:2:",":"."}</td>
                     </tr>
                     <tr>
                         <td width="40%"><b>= {s name='easycreditTotal' namespace='frontend/FatchipFCSPayment/translations'}Gesamtbetrag{/s}:</b></td>
-                        <td width="40%"><b>{$FatchipComputopEasyCreditInformation.gesamtsumme|number_format:2:",":"."}</b></b></td>
+                        <td width="40%"><b>{$FatchipFirstCashEasyCreditInformation.gesamtsumme|number_format:2:",":"."}</b></b></td>
                     </tr>
                     <tr>
                         <td width="40%">{s name='easycreditMonthlyRate' namespace='frontend/FatchipFCSPayment/translations'}Ihre monatliche Rate{/s}:</td>
-                        <td width="40%">{$FatchipComputopEasyCreditInformation.betragRate|number_format:2:",":"."}</td>
+                        <td width="40%">{$FatchipFirstCashEasyCreditInformation.betragRate|number_format:2:",":"."}</td>
                     </tr>
                     <tr>
                         <td width="40%">{s name='easycreditLastRate' namespace='frontend/FatchipFCSPayment/translations'}letzte Rate{/s}:</td>
-                        <td width="40%">{$FatchipComputopEasyCreditInformation.betragLetzteRate|number_format:2:",":"."}</td>
+                        <td width="40%">{$FatchipFirstCashEasyCreditInformation.betragLetzteRate|number_format:2:",":"."}</td>
                     </tr>
                     <tr>
                         <td width="40%">{s name='easycreditInterestRatePA' namespace='frontend/FatchipFCSPayment/translations'}Sollzinssatz p.a. fest für die gesamte Laufzeit{/s}:</td>
-                        <td width="40%">{$FatchipComputopEasyCreditInformation.nominalzins|number_format:2:",":"."}%</td>
+                        <td width="40%">{$FatchipFirstCashEasyCreditInformation.nominalzins|number_format:2:",":"."}%</td>
                     </tr>
                     <tr>
                         <td width="40%">{s name='easycreditInterestRateEffective' namespace='frontend/FatchipFCSPayment/translations'}effektiver Jahreszins{/s}:</td>
-                        <td width="40%">{$FatchipComputopEasyCreditInformation.effektivzins|number_format:2:",":"."}%</td>
+                        <td width="40%">{$FatchipFirstCashEasyCreditInformation.effektivzins|number_format:2:",":"."}%</td>
                     </tr>
                     <tr>
-                        <td width="40%" colspan="2">{$FatchipComputopEasyCreditInformation.tilgungsplanText}</td>
+                        <td width="40%" colspan="2">{$FatchipFirstCashEasyCreditInformation.tilgungsplanText}</td>
                     </tr>
                     <tr>
-                        <td width="40%"><a href="{$FatchipComputopEasyCreditInformation.urlVorvertraglicheInformationen}">
+                        <td width="40%"><a href="{$FatchipFirstCashEasyCreditInformation.urlVorvertraglicheInformationen}">
                                 {s name='AmazonPaymentDispatch' namespace='frontend/FatchipFCSPayment/translations'}Vorvertragliche Informationen{/s}
                             </a>
                         </td>
