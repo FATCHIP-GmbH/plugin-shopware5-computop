@@ -16,28 +16,28 @@
  * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
- * @subpackage Models_FatchipCTApilog
+ * @package    FatchipFCSPayment
+ * @subpackage Models_FatchipFCSApilog
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
 
-namespace Shopware\CustomModels\FatchipCTApilog;
+namespace Shopware\CustomModels\FatchipFCSApilog;
 
 use Shopware\Components\Model\ModelEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class FatchipCTApilog
+ * Class FatchipFCSApilog
 
  *
  * @ORM\Entity()
  * @ORM\Table(name="s_plugin_fatchip_firstcash_api_log")
  * @ORM\HasLifecycleCallbacks
  */
-class FatchipCTApilog extends ModelEntity
+class FatchipFCSApilog extends ModelEntity
 {
 
   /**

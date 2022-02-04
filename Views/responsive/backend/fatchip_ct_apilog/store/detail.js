@@ -6,14 +6,14 @@
  * apilogs details store
  */
 //{block name="backend/fatchip_ct_apilog/store/detail"}
-Ext.define('Shopware.apps.FatchipCTApilog.store.Detail', {
+Ext.define('Shopware.apps.FatchipFCSApilog.store.Detail', {
   /**
    * Extend for the standard ExtJS 4
    * @string
    */
   extend: 'Ext.data.Store',
   
-  model: 'Shopware.apps.FatchipCTApilog.model.Grid2cols',
+  model: 'Shopware.apps.FatchipFCSApilog.model.Grid2cols',
   /**
    * Auto load the store after the component
    * is initialized
@@ -41,7 +41,7 @@ Ext.define('Shopware.apps.FatchipCTApilog.store.Detail', {
      * den gewünschten Controller-Actions zu
      */
     api: {
-      read: '{url controller="FatchipCTApilog" action="getGridData"}'
+      read: '{url controller="FatchipFCSApilog" action="getGridData"}'
     },
     /**
      * Definiert, dass die Kommunikation mit dem Controller

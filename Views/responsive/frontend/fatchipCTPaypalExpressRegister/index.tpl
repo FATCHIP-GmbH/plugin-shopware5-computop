@@ -33,15 +33,15 @@
 
 {* Replace Register content with Amazon Widget SW 5.0 *}
 {block name='frontend_register_index_registration'}
-    <div id="fatchipCTPaypalExpressInformation" hidden
-         data-fatchipCTPaypalExpressRegisterUrl='{url controller="FatchipCTPaypalExpressRegister" action="saveRegister" forceSecure}?sTarget=FatchipCTPaypalExpressCheckout&sTargetAction=shippingPayment'
+    <div id="fatchipFCSPaypalExpressInformation" hidden
+         data-fatchipFCSPaypalExpressRegisterUrl='{url controller="FatchipFCSPaypalExpressRegister" action="saveRegister" forceSecure}?sTarget=FatchipFCSPaypalExpressCheckout&sTargetAction=shippingPayment'
          data-firstname='{$fatchipAddrFirstName}'
          data-lastname='{$fatchipAddrLastName}'
-         data-email='{$fatchipCTResponse->getEmail()}'
+         data-email='{$fatchipFCSResponse->getEmail()}'
          data-phone='0' // never set, as precaution use 0 to defeat sw field validation
-         data-street='{$fatchipCTResponse->getAddrStreet()}'
-         data-zip='{$fatchipCTResponse->getAddrZip()}'
-         data-city='{$fatchipCTResponse->getAddrCity()}'
+         data-street='{$fatchipFCSResponse->getAddrStreet()}'
+         data-zip='{$fatchipFCSResponse->getAddrZip()}'
+         data-city='{$fatchipFCSResponse->getAddrCity()}'
          data-countryCodeBillingID='{$fatchipAddrCountryCodeID}'
     ></div>
 {/block}

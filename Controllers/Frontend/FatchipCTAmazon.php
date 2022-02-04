@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -25,12 +25,12 @@
  * @link       https://www.firstcash.com
  */
 
-require_once 'FatchipCTPayment.php';
+require_once 'FatchipFCSPayment.php';
 
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTAmazon
+ * Class Shopware_Controllers_Frontend_FatchipFCSAmazon
  *
  * @category  Payment_Controller
  * @package   Computop_Shopware5_Plugin
@@ -39,7 +39,7 @@ use Fatchip\CTPayment\CTEnums\CTEnumStatus;
  * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link      https://www.firstcash.com
  */
-class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers_Frontend_FatchipFCSPayment
+class Shopware_Controllers_Frontend_FatchipFCSAmazon extends Shopware_Controllers_Frontend_FatchipFCSPayment
 {
     /**
      * {@inheritdoc}
@@ -77,7 +77,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
 
             $customOrdernumber = $this->customizeOrdernumber($orderNumber);
             $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
-            $this->forward('finish', 'FatchipCTAmazonCheckout', null, array('sUniqueID' => $response->getOrderid()));
+            $this->forward('finish', 'FatchipFCSAmazonCheckout', null, array('sUniqueID' => $response->getOrderid()));
         }
         else {
             $this->redirect(['controller' => 'checkout', 'action' => 'cart', 'amznLogout' => true, 'amznError' => 'generic']);
@@ -99,10 +99,10 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
 
         $response = $this->paymentService->getDecryptedResponse($requestParams);
         $ctError['CTErrorMessage'] = Shopware()->Snippets()
-            ->getNamespace('frontend/FatchipCTPayment/translations')
+            ->getNamespace('frontend/FatchipFCSPayment/translations')
             ->get('errorGeneral'); // . $response->getDescription();
         $ctError['CTErrorCode'] = ''; //$response->getCode();
-        return $this->forward('index', 'FatchipCTAmazonRegister', null, ['CTError' => $ctError]);
+        return $this->forward('index', 'FatchipFCSAmazonRegister', null, ['CTError' => $ctError]);
     }
 
     /**
@@ -118,12 +118,12 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
 
         $payment = $this->paymentService->getPaymentClass('AmazonPay');
         $requestParams = $payment->getAmazonSCOParams(
-            $session->offsetGet('fatchipCTPaymentPayID'),
-            $session->offsetGet('fatchipCTPaymentTransID'),
+            $session->offsetGet('fatchipFCSPaymentPayID'),
+            $session->offsetGet('fatchipFCSPaymentTransID'),
             $this->getAmount() * 100,
             $this->getCurrencyShortName(),
             $this->getOrderDesc(),
-            $session->offsetGet('fatchipCTAmazonReferenceID')
+            $session->offsetGet('fatchipFCSAmazonReferenceID')
         );
         $requestParams['EtiId'] = $this->utils->getUserDataParam();
         $response = $this->plugin->callComputopService($requestParams, $payment, 'SCO', $payment->getCTPaymentURL());
@@ -136,11 +136,11 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
         $orderDesc = "Test";
         $payment = $this->paymentService->getPaymentClass('AmazonPay');
         $requestParams = $payment->getAmazonATHParams(
-            $session->offsetGet('fatchipCTPaymentPayID'),
-            $session->offsetGet('fatchipCTPaymentTransID'),
+            $session->offsetGet('fatchipFCSPaymentPayID'),
+            $session->offsetGet('fatchipFCSPaymentTransID'),
             $this->getAmount() * 100,
             $this->getCurrencyShortName(),
-            $session->offsetGet('fatchipCTAmazonReferenceID'),
+            $session->offsetGet('fatchipFCSAmazonReferenceID'),
             $this->getOrderDesc()
         );
         $requestParams['EtiId'] = $this->utils->getUserDataParam();

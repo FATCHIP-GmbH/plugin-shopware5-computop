@@ -72,7 +72,7 @@ Ext.define('Shopware.apps.Order.controller.fcctDetail', {
         }
 
         Ext.Ajax.request({
-          url: '{url controller="FatchipCTOrder" action="fatchipCTDebit"}',
+          url: '{url controller="FatchipFCSOrder" action="fatchipFCSDebit"}',
           method: 'POST',
           params: { id: order.get('id'), positionIds: Ext.JSON.encode(positionIds), includeShipment: includeShipment},
           headers: { 'Accept': 'application/json'},
@@ -166,7 +166,7 @@ Ext.define('Shopware.apps.Order.controller.fcctDetail', {
 
   fcctCallCapture: function(order, positionIds, finalize, options, includeShipment) {
     Ext.Ajax.request({
-      url: '{url controller="FatchipCTOrder" action="fatchipCTCaptureOrder"}',
+      url: '{url controller="FatchipFCSOrder" action="fatchipFCSCaptureOrder"}',
       method: 'POST',
       params: { id: order.get('id'),
         positionIds: Ext.JSON.encode(positionIds),

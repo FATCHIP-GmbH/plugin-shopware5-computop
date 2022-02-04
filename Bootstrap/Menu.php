@@ -16,7 +16,7 @@
  * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Bootstrap
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -64,7 +64,7 @@ class Menu extends Bootstrap
                     'class' => 'firstcash-icon',
                     'active' => 1,
                     'action' => 'index',
-                    'controller' => 'FatchipCTApilog',
+                    'controller' => 'FatchipFCSApilog',
                     'parent' => $item,
                 ]
             );

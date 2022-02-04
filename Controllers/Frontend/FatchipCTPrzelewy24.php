@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -25,13 +25,13 @@
  * @link       https://www.firstcash.com
  */
 
-require_once 'FatchipCTPayment.php';
+require_once 'FatchipFCSPayment.php';
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTPrzelewy24
+ * Class Shopware_Controllers_Frontend_FatchipFCSPrzelewy24
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop

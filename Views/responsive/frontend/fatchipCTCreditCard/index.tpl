@@ -24,7 +24,7 @@
 {block name='frontend_register_steps_basket'}
     <li class="steps--entry step--basket">
         <span class="icon">1</span>
-        <span class="text"><span class="text--inner">{s name='AmazonPaymentDispatch' namespace='frontend/FatchipCTPayment/translations'}Adresse und Zahlart{/s}</span></span>
+        <span class="text"><span class="text--inner">{s name='AmazonPaymentDispatch' namespace='frontend/FatchipFCSPayment/translations'}Adresse und Zahlart{/s}</span></span>
     </li>
 {/block}
 
@@ -32,7 +32,7 @@
 {block name='frontend_register_steps_register'}
     <li class="steps--entry step--register">
         <span class="icon">2</span>
-        <span class="text"><span class="text--inner">{s name='AmazonDispatch' namespace='frontend/FatchipCTPayment/translations'}Versandart{/s}</span></span>
+        <span class="text"><span class="text--inner">{s name='AmazonDispatch' namespace='frontend/FatchipFCSPayment/translations'}Versandart{/s}</span></span>
     </li>
 {/block}
 
@@ -40,7 +40,7 @@
 {block name='frontend_register_steps_confirm'}
     <li class="steps--entry step--confirm">
         <span class="icon">3</span>
-        <span class="text"><span class="text--inner">{s name='AmazonCheckConfirm' namespace='frontend/FatchipCTPayment/translations'}Prüfen und Bestellen{/s}</span></span>
+        <span class="text"><span class="text--inner">{s name='AmazonCheckConfirm' namespace='frontend/FatchipFCSPayment/translations'}Prüfen und Bestellen{/s}</span></span>
     </li>
 {/block}
 
@@ -48,15 +48,15 @@
 {* Replace Register content with Amazon Widget SW 5.0 *}
 
 {block name='frontend_register_index_registration'}
-    {if $fatchipCTURL}
-        <div id="fatchipCTCreditCardIFrame" hidden
-             data-fatchipCTUniqueID='{$fatchipCTUniqueID}'
-             data-fatchipCTCreditcardIFrameUrl='{$fatchipCTURL}'
-             data-fatchipCTErrorMessage='{$fatchipCTErrorMessage}'
-             data-fatchipCTErrorCode='{$fatchipCTErrorCode}'
+    {if $fatchipFCSURL}
+        <div id="fatchipFCSCreditCardIFrame" hidden
+             data-fatchipFCSUniqueID='{$fatchipFCSUniqueID}'
+             data-fatchipFCSCreditcardIFrameUrl='{$fatchipFCSURL}'
+             data-fatchipFCSErrorMessage='{$fatchipFCSErrorMessage}'
+             data-fatchipFCSErrorCode='{$fatchipFCSErrorCode}'
         >
         </div>
     {else}
-        <iframe src="{$fatchipCTIframeURL}" style="width:100%; height:750px;" frameBorder="0"></iframe>
+        <iframe src="{$fatchipFCSIframeURL}" style="width:100%; height:750px;" frameBorder="0"></iframe>
     {/if}
 {/block}

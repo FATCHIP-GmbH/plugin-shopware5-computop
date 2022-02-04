@@ -35,7 +35,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Fatchip\CTPayment\CTResponse;
-use Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog;
+use Shopware\CustomModels\FatchipFCSApilog\FatchipFCSApilog;
 use Shopware\Plugins\FatchipFCSPayment\Bootstrap\Forms;
 use Shopware\Plugins\FatchipFCSPayment\Bootstrap\Attributes;
 use Shopware\Plugins\FatchipFCSPayment\Bootstrap\Payments;
@@ -61,7 +61,7 @@ use Shopware\Plugins\FatchipFCSPayment\Subscribers\Service;
 use Shopware\Plugins\FatchipFCSPayment\Subscribers\TemplateRegistration;
 
 /**
- * Class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+ * Class Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap
  */
 class Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
@@ -143,11 +143,11 @@ class Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap extends Shopware_Com
     public function addJsFiles(Enlight_Event_EventArgs $args)
     {
         $jsFiles = [
-            $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTAmazon.js',
-            $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTKlarnaPayments.js',
-            $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTAmazonSCA.js',
-            $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTPaypalExpress.js',
-            $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipCTCreditCard.js',
+            $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipFCSAmazon.js',
+            $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipFCSKlarnaPayments.js',
+            $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipFCSAmazonSCA.js',
+            $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipFCSPaypalExpress.js',
+            $this->Path() . 'Views/responsive/frontend/_resources/javascript/fatchipFCSCreditCard.js',
         ];
         return new ArrayCollection($jsFiles);
     }
@@ -383,7 +383,7 @@ class Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap extends Shopware_Com
      * @return CTResponse
      */
     public function callComputopService($requestParams, $payment, $requestType, $url){
-        $log = new FatchipCTApilog();
+        $log = new FatchipFCSApilog();
         $log->setPaymentName($payment::paymentClass);
         $log->setRequest($requestType);
         $log->setRequestDetails(json_encode($requestParams));
@@ -418,7 +418,7 @@ class Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap extends Shopware_Com
     public function logRedirectParams($requestParams, $paymentName, $requestType, $response){
         // fix wrong amount is logged PHP Version >= 7.1 see https://stackoverflow.com/questions/42981409/php7-1-json-encode-float-issue/43056278
         $requestParams['amount'] = (string) $requestParams['amount'];
-        $log = new FatchipCTApilog();
+        $log = new FatchipFCSApilog();
         $log->setPaymentName($paymentName);
         $log->setRequest($requestType);
         $log->setRequestDetails(json_encode($requestParams));

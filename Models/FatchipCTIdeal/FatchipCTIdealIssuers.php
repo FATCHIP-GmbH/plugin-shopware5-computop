@@ -16,26 +16,26 @@
  * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
- * @subpackage Models_FatchipCTIdeal
+ * @package    FatchipFCSPayment
+ * @subpackage Models_FatchipFCSIdeal
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
 
-namespace Shopware\CustomModels\FatchipCTIdeal;
+namespace Shopware\CustomModels\FatchipFCSIdeal;
 
 use Shopware\Components\Model\ModelEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class FatchipCTIdealIssuers
+ * Class FatchipFCSIdealIssuers
  *
  * @ORM\Entity()
  * @ORM\Table(name="s_plugin_fatchip_firstcash_ideal_issuers")
  */
-class FatchipCTIdealIssuers extends ModelEntity
+class FatchipFCSIdealIssuers extends ModelEntity
 {
 
   /**

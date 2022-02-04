@@ -7,7 +7,7 @@
                 <i class="icon--element icon--cross"></i>
             </div>
             <div id="AmazonErrorContent" class="alert--content">
-                {s name="AmazonErrorDeclined" namespace="frontend/FatchipCTPayment/translations"}Es ist ein Fehler aufgetreten: Die Zahlung wurde seitens Amazon zurückgewiesen.{/s}
+                {s name="AmazonErrorDeclined" namespace="frontend/FatchipFCSPayment/translations"}Es ist ein Fehler aufgetreten: Die Zahlung wurde seitens Amazon zurückgewiesen.{/s}
             </div>
         </div>
     {elseif $amznError == 'SCO'}
@@ -16,7 +16,7 @@
                 <i class="icon--element icon--cross"></i>
             </div>
             <div id="AmazonErrorContent" class="alert--content">
-                {s name="AmazonErrorSCO" namespace="frontend/FatchipCTPayment/translations"}Es ist ein Fehler aufgetreten: Authentifizierung nicht erfolgreich.{/s}
+                {s name="AmazonErrorSCO" namespace="frontend/FatchipFCSPayment/translations"}Es ist ein Fehler aufgetreten: Authentifizierung nicht erfolgreich.{/s}
             </div>
         </div>
     {elseif $amznError}
@@ -25,7 +25,7 @@
                 <i class="icon--element icon--cross"></i>
             </div>
             <div id="AmazonErrorContent" class="alert--content">
-                {s name="AmazonErrorGeneric" namespace="frontend/FatchipCTPayment/translations"}Es ist ein Fehler aufgetreten: Die Zahlung konnte nicht verarbeitet werden.{/s}
+                {s name="AmazonErrorGeneric" namespace="frontend/FatchipFCSPayment/translations"}Es ist ein Fehler aufgetreten: Die Zahlung konnte nicht verarbeitet werden.{/s}
             </div>
         </div>
     {/if}
@@ -53,15 +53,15 @@
                 window.location = '{url controller="checkout" action="cart" amznError="$amznError"}';
                 {/if}
 
-                amazon.Login.setClientId("{$fatchipCTPaymentConfig.amazonClientId}");
+                amazon.Login.setClientId("{$fatchipFCSPaymentConfig.amazonClientId}");
             };
             window.onAmazonPaymentsReady = function () {
                 var authRequest;
-                OffAmazonPayments.Button('LoginWithAmazon', "{$fatchipCTPaymentConfig.amazonSellerId}",
+                OffAmazonPayments.Button('LoginWithAmazon', "{$fatchipFCSPaymentConfig.amazonSellerId}",
                     {
-                        type: "{$fatchipCTPaymentConfig.amazonButtonType}",
-                        color: "{$fatchipCTPaymentConfig.amazonButtonColor}",
-                        size: "{$fatchipCTPaymentConfig.amazonButtonSize}",
+                        type: "{$fatchipFCSPaymentConfig.amazonButtonType}",
+                        color: "{$fatchipFCSPaymentConfig.amazonButtonColor}",
+                        size: "{$fatchipFCSPaymentConfig.amazonButtonSize}",
                         language: "{$Locale|replace:"_":"-"}",
 
                         authorization: function () {
@@ -73,7 +73,7 @@
                                 popup: false
                                 {/if}
                             };
-                            var shopReturnUrl = "{url controller='FatchipCTAmazonRegister' action='login'}";
+                            var shopReturnUrl = "{url controller='FatchipFCSAmazonRegister' action='login'}";
 
                             {if $smarty.server.REQUEST_SCHEME === 'https' && $smarty.server.HTTP_REFERER|strpos:'https://'=== 0}
                             // Do nothing
@@ -93,7 +93,7 @@
             }
         </script>
         <script async="async"
-            {if $fatchipCTPaymentConfig.amazonLiveMode === 'Live'}
+            {if $fatchipFCSPaymentConfig.amazonLiveMode === 'Live'}
                 src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/lpa/js/Widgets.js'>
             {else}
                 src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/sandbox/lpa/js/Widgets.js'>

@@ -4,7 +4,7 @@
 {/block}
 
 <div class="confirm--outer-container">
-    <form id="shippingPaymentForm" name="shippingPaymentForm" method="post" action="{url controller='FatchipCTPaypalExpressCheckout' action='saveShippingPayment' sTarget='FatchipCTPaypalExpressCheckout' sTargetAction='index'}" class="payment">
+    <form id="shippingPaymentForm" name="shippingPaymentForm" method="post" action="{url controller='FatchipFCSPaypalExpressCheckout' action='saveShippingPayment' sTarget='FatchipFCSPaypalExpressCheckout' sTargetAction='index'}" class="payment">
 
         {* Action top *}
         {block name='frontend_checkout_shipping_payment_core_buttons'}
@@ -23,7 +23,7 @@
                 {block name='frontend_checkout_shipping_payment_core_payment_fields'}
 <!--                    <style type="text/css">
 
-                        #fatchipCTWalletWidgetDiv {
+                        #fatchipFCSWalletWidgetDiv {
                             min-width: 300px;
                             width: 100%;
                             max-width: 550px;
@@ -46,20 +46,20 @@
 
                     <div id="amazonContentWrapper" class="content confirm--content content-main--inner" style="margin-top:2%;margin-bottom: 0px; padding-bottom: 1%;">
 -->
-                        <!-- <div id="debug">Amazon LGN:<BR>{$fatchipCTResponse|var_dump}</div> -->
+                        <!-- <div id="debug">Amazon LGN:<BR>{$fatchipFCSResponse|var_dump}</div> -->
                         <!-- Place this code in your HTML where you would like the address widget to appear. -->
-<!--                        <div id="fatchipCTAddressBookWidgetDiv"  style="float:left;margin-right:5%;"></div>
-                        <div id="fatchipCTWalletWidgetDiv" style="float:left;"></div>
+<!--                        <div id="fatchipFCSAddressBookWidgetDiv"  style="float:left;margin-right:5%;"></div>
+                        <div id="fatchipFCSWalletWidgetDiv" style="float:left;"></div>
                     </div>
 -->
 <!--                    <script>
                         window.onAmazonLoginReady = function() {
-                            amazon.Login.setClientId("{$fatchipCTPaymentConfig.amazonClientId}");
+                            amazon.Login.setClientId("{$fatchipFCSPaymentConfig.amazonClientId}");
                         };
 
                         window.onAmazonPaymentsReady = function () {
                             new OffAmazonPayments.Widgets.Wallet({
-                                sellerId: "{$fatchipCTPaymentConfig.amazonSellerId}",
+                                sellerId: "{$fatchipFCSPaymentConfig.amazonSellerId}",
                                 scope: 'profile payments:widget payments:shipping_address payments:billing_address',
                                 onPaymentSelect: function (orderReference) {
 
@@ -71,7 +71,7 @@
                                     console.log(error.getErrorCode() + ': ' + error.getErrorMessage());
                                     // See "Handling Errors" for more information.
                                 }
-                            }).bind("fatchipCTWalletWidgetDiv");
+                            }).bind("fatchipFCSWalletWidgetDiv");
                         };
 
                     </script>
@@ -79,7 +79,7 @@
                             src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/sandbox/lpa/js/Widgets.js'>
                     </script>
 -->
-                    <input type="hidden" name="payment" value="{$fatchipCTPaypalExpressID}" />
+                    <input type="hidden" name="payment" value="{$fatchipFCSPaypalExpressID}" />
 
                 {/block}
             </div>

@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -25,7 +25,7 @@
  * @link       https://www.firstcash.com
  */
 
-require_once 'FatchipCTPayment.php';
+require_once 'FatchipFCSPayment.php';
 
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
@@ -33,10 +33,10 @@ use Fatchip\CTPayment\CTPaymentMethods\PaypalExpress;
 use Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard;
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTPaypalStandard
+ * Class Shopware_Controllers_Frontend_FatchipFCSPaypalStandard
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -116,11 +116,11 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalExpress extends Shopware_Con
 
         switch ($response->getStatus()) {
             case CTEnumStatus::AUTHORIZE_REQUEST;
-                $session->offsetSet('FatchipCTPaypalExpressPayID', $response->getPayID());
-                $session->offsetSet('FatchipCTPaypalExpressXID', $response->getXID());
-                $session->offsetSet('FatchipCTPaypalExpressTransID', $response->getXID());
+                $session->offsetSet('FatchipFCSPaypalExpressPayID', $response->getPayID());
+                $session->offsetSet('FatchipFCSPaypalExpressXID', $response->getXID());
+                $session->offsetSet('FatchipFCSPaypalExpressTransID', $response->getXID());
 
-                $this->forward('register', 'FatchipCTPaypalExpressRegister', null, [ 'CTResponse' => $response]);
+                $this->forward('register', 'FatchipFCSPaypalExpressRegister', null, [ 'CTResponse' => $response]);
                 break;
             default:
                 $this->forward('failure');
@@ -146,8 +146,8 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalExpress extends Shopware_Con
         $payment = $this->paymentService->getPaymentClass($this->paymentClass);
 
         $requestParams =  $payment->getPaypalExpressCompleteParams(
-            $session->offsetGet('FatchipCTPaypalExpressPayID'),
-            $session->offsetGet('FatchipCTPaypalExpressTransID'),
+            $session->offsetGet('FatchipFCSPaypalExpressPayID'),
+            $session->offsetGet('FatchipFCSPaypalExpressTransID'),
             $this->getAmount() * 100,
             $this->getCurrencyShortName()
         );
@@ -188,7 +188,7 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalExpress extends Shopware_Con
         // autoCapture handles errors during capture itself
         $this->autoCapture($customOrdernumber);
 
-        $this->forward('finish', 'FatchipCTPaypalExpressCheckout', null, array('sUniqueID' => $response->getPayID()));
+        $this->forward('finish', 'FatchipFCSPaypalExpressCheckout', null, array('sUniqueID' => $response->getPayID()));
     }
 
     /**
@@ -205,7 +205,7 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalExpress extends Shopware_Con
         $response = $this->paymentService->getDecryptedResponse($requestParams);
         $ctError = [];
         $ctError['CTErrorMessage'] = Shopware()->Snippets()
-            ->getNamespace('frontend/FatchipCTPayment/translations')
+            ->getNamespace('frontend/FatchipFCSPayment/translations')
             ->get('errorGeneral'); // . $response->getDescription();
         $ctError['CTErrorCode'] = ''; //$response->getCode();
         $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);

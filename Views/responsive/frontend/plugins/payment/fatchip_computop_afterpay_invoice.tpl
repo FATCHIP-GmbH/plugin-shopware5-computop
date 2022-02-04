@@ -2,7 +2,7 @@
     {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_invoice_birthday_label"}
         <div>
             <p class="none">
-                <label for="fatchip_firstcash_afterpay_invoice_birthday">{s name='birthdate' namespace='frontend/FatchipCTPayment/translations'}Bitte geben Sie Ihr Geburtsdatum an{/s}:</label>
+                <label for="fatchip_firstcash_afterpay_invoice_birthday">{s name='birthdate' namespace='frontend/FatchipFCSPayment/translations'}Bitte geben Sie Ihr Geburtsdatum an{/s}:</label>
             </p>
         </div>
     {/block}
@@ -16,7 +16,7 @@
             >
                 <option disabled="disabled" value="">--</option>
                 {section name="birthdate" start=1 loop=32 step=1}
-                    {$isSelected = $smarty.section.birthdate.index == $FatchipCTPaymentData.birthday}
+                    {$isSelected = $smarty.section.birthdate.index == $FatchipFCSPaymentData.birthday}
                     <option value="{$smarty.section.birthdate.index}" {if $isSelected}selected{/if}>
                         {$smarty.section.birthdate.index}
                     </option>
@@ -34,7 +34,7 @@
             >
                 <option disabled="disabled" value="">-</option>
                 {section name="birthmonth" start=1 loop=13 step=1}
-                    {$isSelected = $smarty.section.birthmonth.index == $FatchipCTPaymentData.birthmonth}
+                    {$isSelected = $smarty.section.birthmonth.index == $FatchipFCSPaymentData.birthmonth}
                     <option value="{$smarty.section.birthmonth.index}" {if $isSelected}selected{/if}>
                         {$smarty.section.birthmonth.index}
                     </option>
@@ -52,7 +52,7 @@
             >
                 <option disabled="disabled" value="">----</option>
                 {section name="birthyear" loop=2000 max=100 step=-1}
-                    {$isSelected = $smarty.section.birthyear.index == $FatchipCTPaymentData.birthyear}
+                    {$isSelected = $smarty.section.birthyear.index == $FatchipFCSPaymentData.birthyear}
                     <option value="{$smarty.section.birthyear.index}" {if $isSelected}selected{/if}>
                         {$smarty.section.birthyear.index}
                     </option>
@@ -61,11 +61,11 @@
         </div>
     {/block}
 
-    {if $FatchipCTPaymentData.showsocialsecuritynumber}
+    {if $FatchipFCSPaymentData.showsocialsecuritynumber}
         {block name="frontend_checkout_payment_fatchip_firstcash_klarna_invoice_socialsecuritynumber_label"}
             <div>
                 <p class="none">
-                    <label for="fatchip_firstcash_afterpay_invoice_socialsecuritynumber">{$FatchipCTPaymentData.SSNLabel}</label>
+                    <label for="fatchip_firstcash_afterpay_invoice_socialsecuritynumber">{$FatchipFCSPaymentData.SSNLabel}</label>
                 </p>
             </div>
         {/block}
@@ -74,13 +74,13 @@
                 <input name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_invoice_socialsecuritynumber]"
                        type="text"
                        id="fatchip_firstcash_afterpay_invoice_socialsecuritynumber"
-                       {if $FatchipCTPaymentData.SSNMaxLen}maxlength={$FatchipCTPaymentData.SSNMaxLen}{/if}
+                       {if $FatchipFCSPaymentData.SSNMaxLen}maxlength={$FatchipFCSPaymentData.SSNMaxLen}{/if}
                        class="payment--field
                        is--required{if $error_flags.fatchip_firstcash__afterpay_socialsecuritynumber} has--error{/if}"
-                placeholder="{$FatchipCTPaymentData.SSNLabel}{s name="RequiredField" namespace="frontend/register/index"}{/s}
+                placeholder="{$FatchipFCSPaymentData.SSNLabel}{s name="RequiredField" namespace="frontend/register/index"}{/s}
                 "
                 {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
-                value="{$FatchipCTPaymentData.socialsecuritynumber}"
+                value="{$FatchipFCSPaymentData.socialsecuritynumber}"
                 />
             </div>
         {/block}

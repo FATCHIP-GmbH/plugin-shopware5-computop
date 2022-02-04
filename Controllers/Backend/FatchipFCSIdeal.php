@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Backend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -29,20 +29,20 @@ use Fatchip\CTPayment\CTPaymentService;
 use Fatchip\CTPayment\CTIdealIssuerService;
 
 /**
- * Shopware_Controllers_Backend_FatchipCTIdeal
+ * Shopware_Controllers_Backend_FatchipFCSIdeal
  *
  *  gets/updates ideal issuer list.
  */
-class Shopware_Controllers_Backend_FatchipCTIdeal extends Shopware_Controllers_Backend_ExtJs
+class Shopware_Controllers_Backend_FatchipFCSIdeal extends Shopware_Controllers_Backend_ExtJs
 {
     /**
-     * FatchipCTpayment Plugin Bootstrap Class
-     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     * FatchipFCSpayment Plugin Bootstrap Class
+     * @var \Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap
      */
     private $plugin;
 
     /**
-     * FatchipCTPayment Configuration
+     * FatchipFCSPayment Configuration
      * @var array
      */
     private $config;
@@ -60,7 +60,7 @@ class Shopware_Controllers_Backend_FatchipCTIdeal extends Shopware_Controllers_B
     {
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
         $this->config = $this->plugin->Config()->toArray();
-        $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
+        $this->paymentService = Shopware()->Container()->get('FatchipFCSPaymentApiClient');
         parent::init();
     }
 
@@ -79,13 +79,13 @@ class Shopware_Controllers_Backend_FatchipCTIdeal extends Shopware_Controllers_B
         $count = 0;
         // only fill if empty for now
         // ToDo implement update mechanism
-        $test = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
+        $test = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipFCSIdeal\FatchipFCSIdealIssuers')->findAll();
         if (empty($test)) {
 
             try {
 
                 foreach ($issuerList as $issuer) {
-                    $issuerModel = new \Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers();
+                    $issuerModel = new \Shopware\CustomModels\FatchipFCSIdeal\FatchipFCSIdealIssuers();
                     $issuerModel->fromArray($issuer);
                     Shopware()->Models()->persist($issuerModel);
                     $count++;

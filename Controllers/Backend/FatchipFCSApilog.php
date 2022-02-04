@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Backend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -26,11 +26,11 @@
  */
 
 /**
- * Class Shopware_Controllers_Backend_FatchipCTApilog
+ * Class Shopware_Controllers_Backend_FatchipFCSApilog
  *
  *  gets api log entries from the database and assigns them to the view.
  */
-class Shopware_Controllers_Backend_FatchipCTApilog extends Shopware_Controllers_Backend_ExtJs
+class Shopware_Controllers_Backend_FatchipFCSApilog extends Shopware_Controllers_Backend_ExtJs
 {
 
     /**
@@ -93,7 +93,7 @@ class Shopware_Controllers_Backend_FatchipCTApilog extends Shopware_Controllers_
 
         $builder = Shopware()->Models()->createQueryBuilder();
         $builder->select('log.id as id', 'log.requestDetails as requestDetails', 'log.responseDetails as responseDetails')
-            ->from('Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog', 'log')
+            ->from('Shopware\CustomModels\FatchipFCSApilog\FatchipFCSApilog', 'log')
             ->where('log.id = ?1')
             ->setParameter(1, $this->Request()->get('id'));
 
@@ -228,7 +228,7 @@ class Shopware_Controllers_Backend_FatchipCTApilog extends Shopware_Controllers_
             'log.creationDate as creationDate',
             'log.requestDetails as requestDetails',
             'log.responseDetails as responseDetails'
-        )->from('Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog', 'log');
+        )->from('Shopware\CustomModels\FatchipFCSApilog\FatchipFCSApilog', 'log');
 
         return $builder;
     }

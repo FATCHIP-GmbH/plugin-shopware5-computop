@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -25,16 +25,16 @@
  * @link       https://www.firstcash.com
  */
 
-require_once 'FatchipCTPayment.php';
+require_once 'FatchipFCSPayment.php';
 
 use Shopware\Plugins\FatchipFCSPayment\Util;
 use Shopware\Components\CSRFWhitelistAware;
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTPaypalExpressRegisters
+ * Class Shopware_Controllers_Frontend_FatchipFCSPaypalExpressRegisters
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -44,21 +44,21 @@ use Shopware\Components\CSRFWhitelistAware;
 class Shopware_Controllers_Frontend_FatchipFCSPaypalExpressRegister extends Shopware_Controllers_Frontend_Register implements CSRFWhitelistAware
 {
     /**
-     * FatchipCTpayment Plugin Bootstrap Class
+     * FatchipFCSpayment Plugin Bootstrap Class
      *
      * @var Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap
      */
     protected $plugin;
 
     /**
-     * FatchipCTPayment plugin settings
+     * FatchipFCSPayment plugin settings
      *
      * @var array
      */
     protected $config;
 
     /**
-     * FatchipCTPaymentUtils
+     * FatchipFCSPaymentUtils
      *
      * @var Util $utils *
      */
@@ -80,7 +80,7 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalExpressRegister extends Shop
         }
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
         $this->config = $this->plugin->Config()->toArray();
-        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        $this->utils = Shopware()->Container()->get('FatchipFCSPaymentUtils');
     }
 
     /**
@@ -101,12 +101,12 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalExpressRegister extends Shop
 
         $AddrCountryCodeID = $this->utils->getCountryIdFromIso($params['CTResponse']->getAddrCountryCode());
 
-        $this->view->assign('fatchipCTResponse', $params['CTResponse']);
+        $this->view->assign('fatchipFCSResponse', $params['CTResponse']);
         $this->view->assign('fatchipAddrCountryCodeID', $AddrCountryCodeID);
         $this->view->assign('fatchipAddrFirstName', $params['CTResponse']->getFirstName());
         $this->view->assign('fatchipAddrLastName', $params['CTResponse']->getLastName());
-        $this->view->assign('fatchipCTPaymentConfig', $this->config);
-        $this->view->loadTemplate('frontend/fatchipCTPaypalExpressRegister/index.tpl');
+        $this->view->assign('fatchipFCSPaymentConfig', $this->config);
+        $this->view->loadTemplate('frontend/fatchipFCSPaypalExpressRegister/index.tpl');
     }
 
     /**

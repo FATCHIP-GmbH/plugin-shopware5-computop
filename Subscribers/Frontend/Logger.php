@@ -16,7 +16,7 @@
  * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Subscibers
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -45,14 +45,14 @@ class Logger extends AbstractSubscriber
     protected $logger;
 
     /**
-     * FatchipCTPayment Plugin Bootstrap Class
+     * FatchipFCSPayment Plugin Bootstrap Class
      *
-     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     * @var \Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap
      */
     protected $plugin;
 
     /**
-     * FatchipCTPayment Configuration
+     * FatchipFCSPayment Configuration
      *
      * @var array
      */
@@ -71,12 +71,12 @@ class Logger extends AbstractSubscriber
         $logPath = Shopware()->DocPath();
 
         if (Util::isShopwareVersionGreaterThanOrEqual('5.1')) {
-            $logFile = $logPath . 'var/log/FatchipCTPayment_production.log';
+            $logFile = $logPath . 'var/log/FatchipFCSPayment_production.log';
         } else {
-            $logFile = $logPath . 'logs/FatchipCTPayment_production.log';
+            $logFile = $logPath . 'logs/FatchipFCSPayment_production.log';
         }
         $rfh = new RotatingFileHandler($logFile, 14);
-        $this->logger = new \Shopware\Components\Logger('FatchipCTPayment');
+        $this->logger = new \Shopware\Components\Logger('FatchipFCSPayment');
         $this->logger->pushHandler($rfh);
     }
 
@@ -96,7 +96,7 @@ class Logger extends AbstractSubscriber
     // Todo check here for any exceptions and log them with stack trace??
     // in addition log json response of our Ajax Controllers
     /**
-     * Logs request parameters for FatchipCT controllers if debug logging is activated in plugin settings
+     * Logs request parameters for FatchipFCS controllers if debug logging is activated in plugin settings
      *
      * @param Enlight_Controller_ActionEventArgs $args
      */
@@ -104,7 +104,7 @@ class Logger extends AbstractSubscriber
     {
         $request = $args->getRequest();
 
-        if ($this->config['debuglog'] === 'active' && $this->isFatchipCTController($request->getControllerName())) {
+        if ($this->config['debuglog'] === 'active' && $this->isFatchipFCSController($request->getControllerName())) {
             $this->logger->debug(
                 'postDispatch: ' . $request->getControllerName() . ' ' . $request->getActionName() . ':'
             );
@@ -113,7 +113,7 @@ class Logger extends AbstractSubscriber
     }
 
     /**
-     * Logs request parameters and Template information for FatchipCT controllers if debug logging is activated in
+     * Logs request parameters and Template information for FatchipFCS controllers if debug logging is activated in
      * plugin settings
      *
      * @param Enlight_Controller_ActionEventArgs $args
@@ -125,7 +125,7 @@ class Logger extends AbstractSubscriber
         $subject = $args->getSubject();
         $request = $args->getRequest();
 
-        if ($this->config['debuglog'] === 'active' && $this->isFatchipCTController($request->getControllerName())) {
+        if ($this->config['debuglog'] === 'active' && $this->isFatchipFCSController($request->getControllerName())) {
             $this->logger->debug(
                 'postDispatchSecure: ' . $request->getControllerName() . ' ' . $request->getActionName() . ':'
             );
@@ -139,15 +139,15 @@ class Logger extends AbstractSubscriber
     }
 
     /**
-     * Checks if it is a controller for a FatchipCT Payment Method
+     * Checks if it is a controller for a FatchipFCS Payment Method
      *
      * @param $controllerName
      *
      * @return bool
      */
-    public function isFatchipCTController($controllerName)
+    public function isFatchipFCSController($controllerName)
     {
         // strpos returns false or int for position
-        return is_int(strpos($controllerName, 'FatchipCT'));
+        return is_int(strpos($controllerName, 'FatchipFCS'));
     }
 }

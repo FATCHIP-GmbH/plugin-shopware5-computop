@@ -3,14 +3,14 @@
  */
 
 //{block name="backend/fatchip_ct_apilog/controller/log"}
-Ext.define('Shopware.apps.FatchipCTApilog.controller.Main', {
+Ext.define('Shopware.apps.FatchipFCSApilog.controller.Main', {
   /**
     * Extend from the standard ExtJS 4
     * @string
     */
   extend: 'Ext.app.Controller',
 
-  requires: [ 'Shopware.apps.FatchipCTApilog.controller.Log' ],
+  requires: [ 'Shopware.apps.FatchipFCSApilog.controller.Log' ],
  
 
   /**

@@ -3,7 +3,7 @@
 {* Main content *}
 {block name="frontend_index_content"}
     <div class="content content--confirm product--table" data-ajax-shipping-payment="true">
-        {include file="frontend/fatchipCTPaypalExpressCheckout/fatchip_shipping_payment_core.tpl"}
+        {include file="frontend/fatchipFCSPaypalExpressCheckout/fatchip_shipping_payment_core.tpl"}
     </div>
 {/block}
 
@@ -20,7 +20,7 @@
                     {block name='frontend_register_steps_basket'}
                         <li class="steps--entry step--basket{if $sStepActive=='address'} is--active{/if}">
                             <span class="icon">1</span>
-                            <span class="text"><span class="text--inner">{s name='AmazonPaymentDispatch' namespace='frontend/FatchipCTPayment/translations'}Adresse und Zahlart{/s}</span></span>
+                            <span class="text"><span class="text--inner">{s name='AmazonPaymentDispatch' namespace='frontend/FatchipFCSPayment/translations'}Adresse und Zahlart{/s}</span></span>
                         </li>
                     {/block}
 
@@ -35,7 +35,7 @@
                     {block name='frontend_register_steps_register'}
                         <li class="steps--entry step--register{if $sStepActive=='paymentShipping'} is--active{/if}">
                             <span class="icon">2</span>
-                            <span class="text"><span class="text--inner">{s name='AmazonDispatch' namespace='frontend/FatchipCTPayment/translations'}Versandart{/s}</span></span>
+                            <span class="text"><span class="text--inner">{s name='AmazonDispatch' namespace='frontend/FatchipFCSPayment/translations'}Versandart{/s}</span></span>
                         </li>
                     {/block}
 
@@ -50,7 +50,7 @@
                     {block name='frontend_register_steps_confirm'}
                         <li class="steps--entry step--confirm{if $sStepActive=='finished'} is--active{/if}">
                             <span class="icon">3</span>
-                            <span class="text"><span class="text--inner">{s name='AmazonCheckConfirm' namespace='frontend/FatchipCTPayment/translations'}Prüfen und Bestellen{/s}</span></span>
+                            <span class="text"><span class="text--inner">{s name='AmazonCheckConfirm' namespace='frontend/FatchipFCSPayment/translations'}Prüfen und Bestellen{/s}</span></span>
                         </li>
                     {/block}
                 </ul>

@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -25,17 +25,17 @@
  * @link       https://www.firstcash.com
  */
 
-require_once 'FatchipCTPayment.php';
+require_once 'FatchipFCSPayment.php';
 
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTAfterpay
+ * Class Shopware_Controllers_Frontend_FatchipFCSAfterpay
  *
  * Frontend controller for Lastschrift
  *
  * @category   Payment_Controller
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -125,7 +125,7 @@ class Shopware_Controllers_Frontend_FatchipFCSAfterpay extends Shopware_Controll
             default:
                 $ctError = [];
                 $ctError['CTErrorMessage'] = Shopware()->Snippets()
-                    ->getNamespace('frontend/FatchipCTPayment/translations')
+                    ->getNamespace('frontend/FatchipFCSPayment/translations')
                     ->get('errorGeneral'); // . $response->getDescription();
                 $ctError['CTErrorCode'] = ''; //$response->getCode();
                 $this->session->offsetUnSet('FatchipComputopAfterpayProductNr');

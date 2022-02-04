@@ -4,11 +4,11 @@
 
 //{namespace name=backend/fatchip_ct_apilog/main}
 //{block name="backend/fatchip_ct_apilog/view/main/detailwindow"}
-Ext.define('Shopware.apps.FatchipCTApilog.view.main.Detailwindow', {
+Ext.define('Shopware.apps.FatchipFCSApilog.view.main.Detailwindow', {
 	extend: 'Enlight.app.Window',
     title: '{s name=window_detail_title}Apilog Details{/s}',
     cls: Ext.baseCSSPrefix + 'detail-window',
-    alias: 'widget.fatchipCTApilogMainDetailWindow',
+    alias: 'widget.fatchipFCSApilogMainDetailWindow',
     border: false,
     autoShow: true,
     layout: 'border',
@@ -27,7 +27,7 @@ Ext.define('Shopware.apps.FatchipCTApilog.view.main.Detailwindow', {
         var me = this;
         me.title = '{s name=api_log_details_for}Apilog Details zu ID {/s}' + me.itemSelected;
         me.items = [{
-            xtype: 'fatchipCTApilogMainDetail',
+            xtype: 'fatchipFCSApilogMainDetail',
             itemSelected: me.itemSelected
         }];
 

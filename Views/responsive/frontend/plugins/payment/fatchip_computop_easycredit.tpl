@@ -5,7 +5,7 @@
         {* The main form field table *}
         {block name="frontend_checkout_payment_fatchip_firstcash_easycredit_birthday_label"}
             <p class="none">
-                <label for="fatchip_firstcash_easycredit_birthday">{s name='birthdate' namespace='frontend/FatchipCTPayment/translations'}Bitte geben Sie Ihr Geburtsdatum an{/s}:</label>
+                <label for="fatchip_firstcash_easycredit_birthday">{s name='birthdate' namespace='frontend/FatchipFCSPayment/translations'}Bitte geben Sie Ihr Geburtsdatum an{/s}:</label>
             </p>
         {/block}
 
@@ -18,7 +18,7 @@
                 >
                     <option disabled="disabled" value="">--</option>
                     {section name="birthdate" start=1 loop=32 step=1}
-                        {$isSelected = $smarty.section.birthdate.index == $FatchipCTPaymentData.birthday}
+                        {$isSelected = $smarty.section.birthdate.index == $FatchipFCSPaymentData.birthday}
                         <option value="{$smarty.section.birthdate.index}" {if $isSelected}selected{/if}>
                             {$smarty.section.birthdate.index}
                         </option>
@@ -36,7 +36,7 @@
                 >
                     <option disabled="disabled" value="">-</option>
                     {section name="birthmonth" start=1 loop=13 step=1}
-                        {$isSelected = $smarty.section.birthmonth.index == $FatchipCTPaymentData.birthmonth}
+                        {$isSelected = $smarty.section.birthmonth.index == $FatchipFCSPaymentData.birthmonth}
                         <option value="{$smarty.section.birthmonth.index}" {if $isSelected}selected{/if}>
                             {$smarty.section.birthmonth.index}
                         </option>
@@ -54,7 +54,7 @@
                 >
                     <option disabled="disabled" value="">----</option>
                     {section name="birthyear" loop=2000 max=100 step=-1}
-                        {$isSelected = $smarty.section.birthyear.index == $FatchipCTPaymentData.birthyear}
+                        {$isSelected = $smarty.section.birthyear.index == $FatchipFCSPaymentData.birthyear}
                         <option value="{$smarty.section.birthyear.index}" {if $isSelected}selected{/if}>
                             {$smarty.section.birthyear.index}
                         </option>

@@ -35,8 +35,8 @@ abstract class AbstractSubscriber implements SubscriberInterface
     protected $utils;
 
     /**
-     * FatchipCTpayment Plugin Bootstrap Class
-     * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     * FatchipFCSpayment Plugin Bootstrap Class
+     * @var Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap
      */
 
     protected $paymentClass;
@@ -53,7 +53,7 @@ abstract class AbstractSubscriber implements SubscriberInterface
     {
         $this->utils = Shopware()->Container()->get('FatchipFCSPaymentUtils');
         $this->router = Shopware()->Front()->Router();
-        $this->logger = new Logger('FatchipCTPayment');
+        $this->logger = new Logger('FatchipFCSPayment');
         $this->config = Shopware()->Plugins()->Frontend()->FatchipFCSPayment()->Config()->toArray();
 
         if($this->paymentClass) {

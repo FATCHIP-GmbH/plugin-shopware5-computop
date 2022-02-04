@@ -11,7 +11,7 @@
 
 {block name="frontend_index_content"}
     {* TODO: only load if any klarna payment method is active*}
-    <div id="fatchipCTKlarnaInformation" hidden
+    <div id="fatchipFCSKlarnaInformation" hidden
          data-payment-type="{$paymentType}"
          data-billing-address--street-address="{$billingAddressStreetAddress}"
          data-billing-address--city="{$billingAddressCity}"
@@ -22,11 +22,11 @@
          data-purchase-currency="{$purchaseCurrency}"
          data-locale="{$locale}"
          data-billing-address--country="{$billingAddressCountry}"
-         data-get-access-token--URL="{url controller="FatchipCTKlarnaPayments" action="getAccessToken" forceSecure}"
-         data-store-authorization-token--URL="{url controller="FatchipCTKlarnaPayments" action="storeAuthorizationToken" forceSecure}"
+         data-get-access-token--URL="{url controller="FatchipFCSKlarnaPayments" action="getAccessToken" forceSecure}"
+         data-store-authorization-token--URL="{url controller="FatchipFCSKlarnaPayments" action="storeAuthorizationToken" forceSecure}"
     ></div>
     <script>
-        window.fatchipCTKlarnaPaymentType = null;
+        window.fatchipFCSKlarnaPaymentType = null;
 
         window.klarnaAsyncCallback = () => {
             window.Klarna = Klarna;

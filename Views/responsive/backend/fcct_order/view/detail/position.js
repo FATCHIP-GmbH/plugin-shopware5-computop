@@ -41,7 +41,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcctPosition', {
     toolbar.items.add(me.fcctDebitPositionsButton);
 
     Ext.Ajax.request({
-      url: '{url controller="FatchipCTOrder" action="fatchipCTTGetButtonState"}',
+      url: '{url controller="FatchipFCSOrder" action="fatchipFCSTGetButtonState"}',
       params: { id:  me.record.get('id')},
       success: function(response) {
         var response = Ext.JSON.decode(response.responseText);

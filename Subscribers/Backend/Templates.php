@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Subscibers
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -42,7 +42,7 @@ class Templates implements SubscriberInterface
         return [
             'Enlight_Controller_Action_PostDispatch_Backend_Index' => 'onPostDispatchBackendIndex',
             'Enlight_Controller_Action_PostDispatch_Backend_RiskManagement' => 'onBackendRiskManagementPostDispatch',
-            'Enlight_Controller_Action_PostDispatch_Backend_Order' => 'fatchipCTExtendController_Backend_Order'
+            'Enlight_Controller_Action_PostDispatch_Backend_Order' => 'fatchipFCSExtendController_Backend_Order'
         ];
     }
 
@@ -92,7 +92,7 @@ class Templates implements SubscriberInterface
      *
      * @param Enlight_Controller_ActionEventArgs $args
      */
-    public function fatchipCTExtendController_Backend_Order(\Enlight_Controller_ActionEventArgs $args)
+    public function fatchipFCSExtendController_Backend_Order(\Enlight_Controller_ActionEventArgs $args)
     {
         $view = $args->getSubject()->View();
         $view->extendsTemplate('backend/fcct_order/controller/detail.js');

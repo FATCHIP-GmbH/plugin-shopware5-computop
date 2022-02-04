@@ -4,6 +4,6 @@
 
 {if $payment_mean.id == $form_data.payment}
     <script>
-        window.fatchipCTPaymentType = "direct_bank_transfer";
+        window.fatchipFCSPaymentType = "direct_bank_transfer";
     </script>
 {/if}

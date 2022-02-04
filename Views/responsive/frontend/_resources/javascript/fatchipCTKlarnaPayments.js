@@ -2,7 +2,7 @@
     'use strict';
     console.log('dbg');
 
-    const data = $('#fatchipCTKlarnaInformation').data();
+    const data = $('#fatchipFCSKlarnaInformation').data();
 
     let pluginRegistered = false;
 
@@ -19,7 +19,7 @@
     });
 
     function reset() {
-        if (!window.fatchipCTPaymentType) {
+        if (!window.fatchipFCSPaymentType) {
             destroyPlugin();
 
             return;
@@ -32,12 +32,12 @@
             pluginRegistered = true;
         }
 
-        fatchipCTFetchAccessToken(window.fatchipCTPaymentType);
+        fatchipFCSFetchAccessToken(window.fatchipFCSPaymentType);
 
-        delete window.fatchipCTPaymentType;
+        delete window.fatchipFCSPaymentType;
     }
 
-    function fatchipCTLoadKlarna(paymentType, accessToken) {
+    function fatchipFCSLoadKlarna(paymentType, accessToken) {
 
         if (!accessToken || accessToken.length === 0) {
             console.log('no token');
@@ -61,7 +61,7 @@
                 'direct_debit'
         };
 
-        window.fatchipCTKlarnaPaymentType = payTypeTranslations[paymentType];
+        window.fatchipFCSKlarnaPaymentType = payTypeTranslations[paymentType];
 
         if (!window.Klarna) {
             return;
@@ -76,29 +76,29 @@
         });
     }
 
-    function fatchipCTFetchAccessToken(paymentType) {
+    function fatchipFCSFetchAccessToken(paymentType) {
         const url = data['getAccessToken-Url'];
         const parameter = {paymentType: paymentType};
 
         $.ajax({method: "POST", url: url, data: parameter}).done(function (response) {
-            fatchipCTLoadKlarna(paymentType, JSON.parse(response));
+            fatchipFCSLoadKlarna(paymentType, JSON.parse(response));
         });
     }
 
     function registerPlugin() {
-        StateManager.addPlugin('#shippingPaymentForm', 'fatchipCTKlarnaPayments', null, null);
+        StateManager.addPlugin('#shippingPaymentForm', 'fatchipFCSKlarnaPayments', null, null);
     }
 
     function updatePlugin() {
-        StateManager.updatePlugin('#shippingPaymentForm', 'fatchipCTKlarnaPayments');
+        StateManager.updatePlugin('#shippingPaymentForm', 'fatchipFCSKlarnaPayments');
     }
 
     function destroyPlugin() {
-        StateManager.destroyPlugin('#shippingPaymentForm', 'fatchipCTKlarnaPayments');
-        StateManager.removePlugin('#shippingPaymentForm', 'fatchipCTKlarnaPayments', null);
+        StateManager.destroyPlugin('#shippingPaymentForm', 'fatchipFCSKlarnaPayments');
+        StateManager.removePlugin('#shippingPaymentForm', 'fatchipFCSKlarnaPayments', null);
     }
 
-    $.plugin('fatchipCTKlarnaPayments', {
+    $.plugin('fatchipFCSKlarnaPayments', {
         defaults: {},
 
         init: function () {
@@ -148,7 +148,7 @@
 
             event.target[0].disabled = true;
             window.Klarna.Payments.authorize({
-                    payment_method_category: window.fatchipCTKlarnaPaymentType
+                    payment_method_category: window.fatchipFCSKlarnaPaymentType
                 },
                 authorizeData,
                 function (res) {

@@ -16,7 +16,7 @@
  * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Subscibers
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -58,52 +58,52 @@ class ControllerPath extends AbstractSubscriber
     {
         return array(
             //Frontend
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPayment'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSPayment'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTCreditCard'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSCreditCard'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTEasyCredit'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSEasyCredit'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTIdeal'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSIdeal'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTKlarna'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSKlarna'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTKlarnaPayments'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSKlarnaPayments'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTLastschrift'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSLastschrift'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaydirekt'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSPaydirekt'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaypalStandard'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSPaypalStandard'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaypalExpress'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSPaypalExpress'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaypalExpressRegister'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSPaypalExpressRegister'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPaypalExpressCheckout'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSPaypalExpressCheckout'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPostFinance'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSPostFinance'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTPrzelewy24'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSPrzelewy24'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTSofort'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSSofort'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTAmazonRegister'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSAmazonRegister'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTAmazonCheckout'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSAmazonCheckout'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTAjax'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSAjax'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTAmazon'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSAmazon'
             => 'onGetFrontendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTAfterpay'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipFCSAfterpay'
             => 'onGetFrontendControllerPath',
             // Backend
-            'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipCTIdeal'
+            'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipFCSIdeal'
             => 'onGetBackendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipCTOrder'
+            'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipFCSOrder'
             => 'onGetBackendControllerPath',
-            'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipCTApilog'
+            'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipFCSApilog'
             => 'onGetBackendControllerPath',
         );
     }

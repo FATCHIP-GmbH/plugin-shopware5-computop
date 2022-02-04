@@ -16,7 +16,7 @@
  * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Subscibers
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -425,8 +425,8 @@ class RiskManagement extends AbstractSubscriber
     private function getCrifStatusFromAddressArray($aAddress)
     {
         // SW 5.0
-        if (array_key_exists('fatchipCTCrifstatus', $aAddress)) {
-            return $aAddress['fatchipCTCrifstatus'];
+        if (array_key_exists('fatchipFCSCrifstatus', $aAddress)) {
+            return $aAddress['fatchipFCSCrifstatus'];
         } // SW 5.3, SW 5.4
         else if (array_key_exists('fatchipct_crifstatus', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipct_crifstatus'];
@@ -435,8 +435,8 @@ class RiskManagement extends AbstractSubscriber
             return $aAddress['attributes']['fatchipctCrifstatus'];
         }
         // SW 5.
-        else if (array_key_exists('fatchipCT_crifstatus', $aAddress['attributes'])) {
-            return $aAddress['attributes']['fatchipCT_crifstatus'];
+        else if (array_key_exists('fatchipFCS_crifstatus', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fatchipFCS_crifstatus'];
         } // SW 5.1
         else if (array_key_exists('fatchipctCrifstatus', $aAddress)) {
             return $aAddress['fatchipctCrifstatus'];
@@ -452,14 +452,14 @@ class RiskManagement extends AbstractSubscriber
     private function getCrifResultFromAddressArray($aAddress)
     {
         // SW 5.0
-        if (array_key_exists('fatchipCTCrifresult', $aAddress)) {
-            return $aAddress['fatchipCTCrifresult'];
+        if (array_key_exists('fatchipFCSCrifresult', $aAddress)) {
+            return $aAddress['fatchipFCSCrifresult'];
         } // SW 5.3, SW 5.4
         else if (array_key_exists('fatchipct_crifresult', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipct_crifresult'];
         } // SW 5.2
-        else if (array_key_exists('fatchipCT_crifresult', $aAddress['attributes'])) {
-            return $aAddress['attributes']['fatchipCT_crifresult'];
+        else if (array_key_exists('fatchipFCS_crifresult', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fatchipFCS_crifresult'];
         } // SW 5.1fatchipct
         else if (array_key_exists('fatchipctCrifresult', $aAddress)) {
             return $aAddress['fatchipctCrifresult'];
@@ -482,17 +482,17 @@ class RiskManagement extends AbstractSubscriber
               $aAddress['attributes']['fatchipctCrifdate'] : new \DateTime($aAddress['attributes']['fatchipctCrifdate']);
         }
         // SW 5.0
-        else if (array_key_exists('fatchipCTCrifdate', $aAddress)) {
-            return $aAddress['fatchipCTCrifdate'] instanceof \DateTime ?
-                $aAddress['fatchipCTCrifdate'] : new \DateTime($aAddress['fatchipCTCrifdate']);
+        else if (array_key_exists('fatchipFCSCrifdate', $aAddress)) {
+            return $aAddress['fatchipFCSCrifdate'] instanceof \DateTime ?
+                $aAddress['fatchipFCSCrifdate'] : new \DateTime($aAddress['fatchipFCSCrifdate']);
         } // SW 5.3, SW 5.4
         else if (array_key_exists('fatchipct_crifdate', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipct_crifdate'] instanceof \DateTime ?
                 $aAddress['attributes']['fatchipct_crifdate'] : new \DateTime($aAddress['attributes']['fatchipct_crifdate']);
         } // SW 5.2
-        else if (array_key_exists('fatchipCT_crifdate', $aAddress['attributes'])) {
-            return $aAddress['attributes']['fatchipCT_crifdate'] instanceof \DateTime ?
-                $aAddress['attributes']['fatchipCT_crifdate'] : new \DateTime($aAddress['attributes']['fatchipCT_crifdate']);
+        else if (array_key_exists('fatchipFCS_crifdate', $aAddress['attributes'])) {
+            return $aAddress['attributes']['fatchipFCS_crifdate'] instanceof \DateTime ?
+                $aAddress['attributes']['fatchipFCS_crifdate'] : new \DateTime($aAddress['attributes']['fatchipFCS_crifdate']);
         } // SW 5.1
         else if (array_key_exists('fatchipctCrifdate', $aAddress)) {
             return $aAddress['fatchipctCrifdate'] instanceof \DateTime ?

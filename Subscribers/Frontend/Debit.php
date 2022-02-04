@@ -107,7 +107,7 @@ class Debit extends AbstractSubscriber
         }
 
         if ( ! empty($paymentData)) {
-            $subject->View()->FatchipCTPaymentData = $paymentData;
+            $subject->View()->FatchipFCSPaymentData = $paymentData;
         }
     }
 
@@ -116,6 +116,6 @@ class Debit extends AbstractSubscriber
         $subject = $args->getSubject();
         $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipFCSPayment()->Config()->toArray();
 
-        $subject->View()->FatchipCTPaymentIbanAnon = $pluginConfig['lastschriftAnon'] == 'Aus' ? 0 : 1;
+        $subject->View()->FatchipFCSPaymentIbanAnon = $pluginConfig['lastschriftAnon'] == 'Aus' ? 0 : 1;
     }
 }

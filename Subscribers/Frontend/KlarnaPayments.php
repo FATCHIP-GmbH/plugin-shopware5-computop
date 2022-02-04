@@ -19,7 +19,7 @@
  * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Subscibers
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -114,7 +114,7 @@ class KlarnaPayments extends AbstractSubscriber
 
                 if ($CTResponse->getStatus() === 'FAILED') {
                     $msg = Shopware()->Snippets()
-                        ->getNamespace('frontend/FatchipCTPayment/translations')
+                        ->getNamespace('frontend/FatchipFCSPayment/translations')
                         ->get('errorGeneral');
                     $ctError = [
                         'CTErrorMessage' => $msg,
@@ -128,17 +128,17 @@ class KlarnaPayments extends AbstractSubscriber
                 $addressHash = $this->payment->createAddressHash();
                 $dispatch = $session->offsetGet('sDispatch');
 
-                $session->offsetSet('FatchipCTKlarnaPaymentArticleListBase64', $articleListBase64);
-                $session->offsetSet('FatchipCTKlarnaPaymentAmount', $amount);
-                $session->offsetSet('FatchipCTKlarnaPaymentAddressHash', $addressHash);
-                $session->offsetSet('FatchipCTKlarnaPaymentDispatchID', $dispatch);
+                $session->offsetSet('FatchipFCSKlarnaPaymentArticleListBase64', $articleListBase64);
+                $session->offsetSet('FatchipFCSKlarnaPaymentAmount', $amount);
+                $session->offsetSet('FatchipFCSKlarnaPaymentAddressHash', $addressHash);
+                $session->offsetSet('FatchipFCSKlarnaPaymentDispatchID', $dispatch);
 
-                $session->offsetSet('FatchipCTKlarnaPaymentSessionResponsePayID', $CTResponse->getPayID());
-                $session->offsetSet('FatchipCTKlarnaPaymentSessionResponseTransID', $CTResponse->getTransID());
+                $session->offsetSet('FatchipFCSKlarnaPaymentSessionResponsePayID', $CTResponse->getPayID());
+                $session->offsetSet('FatchipFCSKlarnaPaymentSessionResponseTransID', $CTResponse->getTransID());
 
                 $accessToken = $CTResponse->getAccesstoken();
 
-                $session->offsetSet('FatchipCTKlarnaAccessToken', $accessToken);
+                $session->offsetSet('FatchipFCSKlarnaAccessToken', $accessToken);
             }
 
             $view->assign('CTError', $params['CTError']);

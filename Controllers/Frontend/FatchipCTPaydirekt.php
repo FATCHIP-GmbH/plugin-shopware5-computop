@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -25,22 +25,22 @@
  * @link       https://www.firstcash.com
  */
 
-require_once 'FatchipCTPayment.php';
+require_once 'FatchipFCSPayment.php';
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTPaydirekt
+ * Class Shopware_Controllers_Frontend_FatchipFCSPaydirekt
  *
  * Frontend Controller for Paydirekt
  *
  * @category   Payment_Controller
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers_Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
-class Shopware_Controllers_Frontend_FatchipCTPaydirekt extends Shopware_Controllers_Frontend_FatchipFCSPayment
+class Shopware_Controllers_Frontend_FatchipFCSPaydirekt extends Shopware_Controllers_Frontend_FatchipFCSPayment
 {
 
     /**

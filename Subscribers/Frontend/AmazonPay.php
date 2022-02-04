@@ -16,7 +16,7 @@
  * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Subscibers
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -109,7 +109,7 @@ class AmazonPay extends AbstractSubscriber
                 $view->assign('performAmazonLogout', true);
             }
             // assign plugin Config to View
-            $view->assign('fatchipCTPaymentConfig', $pluginConfig);
+            $view->assign('fatchipFCSPaymentConfig', $pluginConfig);
             // extend cart and ajax cart with Amazon Button
             $view->extendsTemplate('frontend/checkout/ajax_cart_amazon.tpl');
             $view->extendsTemplate('frontend/checkout/cart_amazon.tpl');

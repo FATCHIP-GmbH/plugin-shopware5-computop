@@ -1,9 +1,9 @@
-$.plugin("fatchipCTCreditCardIFrame", {
+$.plugin("fatchipFCSCreditCardIFrame", {
     defaults: {
-        fatchipCTUniqueID: false,
-        fatchipCTCreditcardIFrameUrl: false,
-        fatchipCTErrorMessage: false,
-        fatchipCTErrorCode: false
+        fatchipFCSUniqueID: false,
+        fatchipFCSCreditcardIFrameUrl: false,
+        fatchipFCSErrorMessage: false,
+        fatchipFCSErrorCode: false
     },
 
     init: function () {
@@ -11,7 +11,7 @@ $.plugin("fatchipCTCreditCardIFrame", {
         var me = this;
         me.applyDataAttributes();
 
-        window.top.location.href = me.opts.fatchipCTCreditcardIFrameUrl + "?sUniqueID=" + me.opts.fatchipCTUniqueID + "&CTError[CTErrorMessage]=" + me.opts.fatchipCTErrorMessage + "&CTError[CTErrorCode]=" + me.opts.fatchipCTErrorCode;
+        window.top.location.href = me.opts.fatchipFCSCreditcardIFrameUrl + "?sUniqueID=" + me.opts.fatchipFCSUniqueID + "&CTError[CTErrorMessage]=" + me.opts.fatchipFCSErrorMessage + "&CTError[CTErrorCode]=" + me.opts.fatchipFCSErrorCode;
     },
 
     destroy: function () {
@@ -21,7 +21,7 @@ $.plugin("fatchipCTCreditCardIFrame", {
     }
 });
 
-$.plugin("fatchipCTCreditCardPaynow", {
+$.plugin("fatchipFCSCreditCardPaynow", {
 
     init: function () {
         "use strict";
@@ -46,7 +46,7 @@ $.plugin("fatchipCTCreditCardPaynow", {
 
 });
 
-$.plugin("fatchipCTCCNrValidator", {
+$.plugin("fatchipFCSCCNrValidator", {
     defaults: {
         ibanbicReg: /^[0-9 ]+$/,
         errorMessageClass: "register--error-msg",
@@ -80,7 +80,7 @@ $.plugin("fatchipCTCCNrValidator", {
     }
 });
 
-$("#fatchipCTCreditCardPaynow").fatchipCTCreditCardPaynow();
-$("#fatchipCTCreditCardIFrame").fatchipCTCreditCardIFrame();
-$("#CCNr").fatchipCTCCNrValidator();
-$("#CCCVC").fatchipCTCCNrValidator();
+$("#fatchipFCSCreditCardPaynow").fatchipFCSCreditCardPaynow();
+$("#fatchipFCSCreditCardIFrame").fatchipFCSCreditCardIFrame();
+$("#CCNr").fatchipFCSCCNrValidator();
+$("#CCCVC").fatchipFCSCCNrValidator();

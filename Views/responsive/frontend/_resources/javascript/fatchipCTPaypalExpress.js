@@ -1,6 +1,6 @@
-$.plugin("fatchipCTPaypalExpress", {
+$.plugin("fatchipFCSPaypalExpress", {
     defaults: {
-        fatchipCTPaypalExpressRegisterUrl: false,
+        fatchipFCSPaypalExpressRegisterUrl: false,
 
         customerType: "private",
         salutation: "mr", // there is no way to know the gender
@@ -22,7 +22,7 @@ $.plugin("fatchipCTPaypalExpress", {
         var me = this;
         me.applyDataAttributes(false);
         var frm = $("<form>", {
-            "action": me.opts.fatchipCTPaypalExpressRegisterUrl,
+            "action": me.opts.fatchipFCSPaypalExpressRegisterUrl,
             "method": "post"
         });
 
@@ -69,4 +69,4 @@ $.plugin("fatchipCTPaypalExpress", {
     }
 });
 
-$("#fatchipCTPaypalExpressInformation").fatchipCTPaypalExpress();
+$("#fatchipFCSPaypalExpressInformation").fatchipFCSPaypalExpress();

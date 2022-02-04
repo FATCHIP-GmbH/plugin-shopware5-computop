@@ -1,5 +1,5 @@
 <div class="payment--form-group">
-    <!-- <div id="MerchantId" ">MerchantId: CP_{$fatchipCTPaymentConfig.merchantID}</div> -->
+    <!-- <div id="MerchantId" ">MerchantId: CP_{$fatchipFCSPaymentConfig.merchantID}</div> -->
     <div id="installments" data-amount="{$sAmount}"></div>
 
     {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_installment_iban_label"}
@@ -16,7 +16,7 @@
                class="payment--field is--required{if $error_flags.fatchip_firstcash__afterpay_installment_iban} has--error{/if}"
                placeholder="IBAN{s name="RequiredField" namespace="frontend/register/index"}{/s}"
                {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
-               value="{$FatchipCTPaymentData.afterpayinstallmentiban}"
+               value="{$FatchipFCSPaymentData.afterpayinstallmentiban}"
         />
         <div id="feedback_bank"></div>
     {/block}
@@ -48,7 +48,7 @@
     {block name="frontend_checkout_payment_fatchip_firstcash_afterpay_installment_birthday_label"}
         <div>
             <p class="none">
-                <label for="fatchip_firstcash_afterpay_installment_birthday">{s name='birthdate' namespace='frontend/FatchipCTPayment/translations'}Bitte geben Sie Ihr Geburtsdatum an{/s}:</label>
+                <label for="fatchip_firstcash_afterpay_installment_birthday">{s name='birthdate' namespace='frontend/FatchipFCSPayment/translations'}Bitte geben Sie Ihr Geburtsdatum an{/s}:</label>
             </p>
         </div>
     {/block}
@@ -62,7 +62,7 @@
             >
                 <option disabled="disabled" value="">--</option>
                 {section name="birthdate" start=1 loop=32 step=1}
-                    {$isSelected = $smarty.section.birthdate.index == $FatchipCTPaymentData.birthday}
+                    {$isSelected = $smarty.section.birthdate.index == $FatchipFCSPaymentData.birthday}
                     <option value="{$smarty.section.birthdate.index}" {if $isSelected}selected{/if}>
                         {$smarty.section.birthdate.index}
                     </option>
@@ -80,7 +80,7 @@
             >
                 <option disabled="disabled" value="">-</option>
                 {section name="birthmonth" start=1 loop=13 step=1}
-                    {$isSelected = $smarty.section.birthmonth.index == $FatchipCTPaymentData.birthmonth}
+                    {$isSelected = $smarty.section.birthmonth.index == $FatchipFCSPaymentData.birthmonth}
                     <option value="{$smarty.section.birthmonth.index}" {if $isSelected}selected{/if}>
                         {$smarty.section.birthmonth.index}
                     </option>
@@ -98,7 +98,7 @@
             >
                 <option disabled="disabled" value="">----</option>
                 {section name="birthyear" loop=2000 max=100 step=-1}
-                    {$isSelected = $smarty.section.birthyear.index == $FatchipCTPaymentData.birthyear}
+                    {$isSelected = $smarty.section.birthyear.index == $FatchipFCSPaymentData.birthyear}
                     <option value="{$smarty.section.birthyear.index}" {if $isSelected}selected{/if}>
                         {$smarty.section.birthyear.index}
                     </option>
@@ -107,11 +107,11 @@
         </div>
     {/block}
 
-    {if $FatchipCTPaymentData.showsocialsecuritynumber}
+    {if $FatchipFCSPaymentData.showsocialsecuritynumber}
         {block name="frontend_checkout_payment_fatchip_firstcash_klarna_installment_socialsecuritynumber_label"}
             <div>
                 <p class="none">
-                    <label for="fatchip_firstcash_afterpay_installment_socialsecuritynumber">{$FatchipCTPaymentData.SSNLabel}</label>
+                    <label for="fatchip_firstcash_afterpay_installment_socialsecuritynumber">{$FatchipFCSPaymentData.SSNLabel}</label>
                 </p>
             </div>
         {/block}
@@ -121,13 +121,13 @@
                 <input name="FatchipComputopPaymentData[fatchip_firstcash_afterpay_installment_socialsecuritynumber]"
                        type="text"
                        id="fatchip_firstcash_afterpay_installment_socialsecuritynumber"
-                       {if $FatchipCTPaymentData.SSNMaxLen}maxlength={$FatchipCTPaymentData.SSNMaxLen}{/if}
+                       {if $FatchipFCSPaymentData.SSNMaxLen}maxlength={$FatchipFCSPaymentData.SSNMaxLen}{/if}
                        class="payment--field
                        is--required{if $error_flags.fatchip_firstcash__afterpay_socialsecuritynumber} has--error{/if}"
-                placeholder="{$FatchipCTPaymentData.SSNLabel}{s name="RequiredField" namespace="frontend/register/index"}{/s}
+                placeholder="{$FatchipFCSPaymentData.SSNLabel}{s name="RequiredField" namespace="frontend/register/index"}{/s}
                 "
                 {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
-                value="{$FatchipCTPaymentData.socialsecuritynumber}"
+                value="{$FatchipFCSPaymentData.socialsecuritynumber}"
                 />
             </div>
         {/block}
@@ -140,7 +140,7 @@
             IBAN_field: 'fatchip_firstcash_afterpay_installment_iban',
             BIC_field: 'fatchip_firstcash_afterpay_installment_bic',
             feedback_field: 'feedback_bank',
-            merchantID: 'CP_{$fatchipCTPaymentConfig.merchantID}',
+            merchantID: 'CP_{$fatchipFCSPaymentConfig.merchantID}',
             //merchantID : '4564',
             language: 'DE',
         };
@@ -148,7 +148,7 @@
         var AfterPayJS_PartPayment_Config = {
             installment_element: 'installments', //div in which the installment profiles should be shown
             feedback_field: 'fatchip_firstcash_afterpay_installment_productnr', //hidden element in which the installmentProfileNumber should be written
-            merchantID: 'CP_{$fatchipCTPaymentConfig.merchantID}',
+            merchantID: 'CP_{$fatchipFCSPaymentConfig.merchantID}',
             // merchantID : '4564',
             country: 'DE',
             language: 'DE',
@@ -169,7 +169,7 @@
 {/if}
 
 <script type="text/javascript">
-    {if $FatchipCTPaymentData.afterpayinstallmentiban}
+    {if $FatchipFCSPaymentData.afterpayinstallmentiban}
     var el = document.getElementById("fatchip_firstcash_afterpay_installment_iban");
     window.addEventListener('load', function () {
         APJS_BankLookup_checkIBANInput(el.value);

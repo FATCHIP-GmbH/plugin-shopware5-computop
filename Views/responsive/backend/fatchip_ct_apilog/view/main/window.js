@@ -4,7 +4,7 @@
 
 //{namespace name=backend/fatchip_ct_apilog/main}
 //{block name="backend/fatchip_ct_apilog/view/main/window"}
-Ext.define('Shopware.apps.FatchipCTApilog.view.main.Window', {
+Ext.define('Shopware.apps.FatchipFCSApilog.view.main.Window', {
   extend: 'Enlight.app.Window',
   title: '{s name=window_title}Apilog{/s}',
   cls: Ext.baseCSSPrefix + 'log-window',
@@ -25,7 +25,7 @@ Ext.define('Shopware.apps.FatchipCTApilog.view.main.Window', {
     var me = this;
     me.items = [
       {
-        xtype: 'fatchipCTApilogMainList',
+        xtype: 'fatchipFCSApilogMainList',
         logStore: me.logStore
       }
     ];

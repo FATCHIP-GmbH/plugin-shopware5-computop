@@ -13,7 +13,7 @@
                     {block name='frontend_register_steps_basket'}
                         <li class="steps--entry step--basket{if $sStepActive=='address'} is--active{/if}">
                             <span class="icon">1</span>
-                            <span class="text"><span class="text--inner">{s name='AmazonPaymentDispatch' namespace='frontend/FatchipCTPayment/translations'}Adresse und Zahlart{/s}</span></span>
+                            <span class="text"><span class="text--inner">{s name='AmazonPaymentDispatch' namespace='frontend/FatchipFCSPayment/translations'}Adresse und Zahlart{/s}</span></span>
                         </li>
                     {/block}
 
@@ -28,7 +28,7 @@
                     {block name='frontend_register_steps_register'}
                         <li class="steps--entry step--register{if $sStepActive=='paymentShipping'} is--active{/if}">
                             <span class="icon">2</span>
-                            <span class="text"><span class="text--inner">{s name='AmazonDispatch' namespace='frontend/FatchipCTPayment/translations'}Versandart{/s}</span></span>
+                            <span class="text"><span class="text--inner">{s name='AmazonDispatch' namespace='frontend/FatchipFCSPayment/translations'}Versandart{/s}</span></span>
                         </li>
                     {/block}
 
@@ -43,7 +43,7 @@
                     {block name='frontend_register_steps_confirm'}
                         <li class="steps--entry step--confirm is--active">
                             <span class="icon">3</span>
-                            <span class="text"><span class="text--inner">{s name='AmazonCheckConfirm' namespace='frontend/FatchipCTPayment/translations'}Prüfen und Bestellen{/s}</span></span>
+                            <span class="text"><span class="text--inner">{s name='AmazonCheckConfirm' namespace='frontend/FatchipFCSPayment/translations'}Prüfen und Bestellen{/s}</span></span>
                         </li>
                     {/block}
                 </ul>
@@ -56,13 +56,13 @@
 {block name="frontend_checkout_confirm_left_billing_address_actions"}
 {/block}
 
-{* SW 5.2 - 5.3, 5.4? Change PaymentMean Selection Action Button to FatchipCTAmazonCheckout Controller *}
+{* SW 5.2 - 5.3, 5.4? Change PaymentMean Selection Action Button to FatchipFCSAmazonCheckout Controller *}
 {* for shippingAddress != billingAddress *}
 {* Billing: *}
 {block name="frontend_checkout_confirm_information_addresses_billing_panel_actions"}
 {/block}
 
-{* SW 5.2 - 5.3, 5.4? Change PaymentMean Selection Action Button to FatchipCTAmazonCheckout Controller *}
+{* SW 5.2 - 5.3, 5.4? Change PaymentMean Selection Action Button to FatchipFCSAmazonCheckout Controller *}
 {* for shippingAddress = billingAddress *}
 {* Billing and Shipping: *}
 {* both template overrides do not work in 5.3? WTF *}
@@ -82,17 +82,17 @@
 {block name="frontend_checkout_confirm_left_shipping_address_actions"}
 {/block}
 
-{* SW 5.2 - 5.3, 5.4? Change PaymentMean Selection Action Button to FatchipCTAmazonCheckout Controller *}
+{* SW 5.2 - 5.3, 5.4? Change PaymentMean Selection Action Button to FatchipFCSAmazonCheckout Controller *}
 {* for shippingAddress != billingAddress *}
 {block name="frontend_checkout_confirm_information_addresses_shipping_panel_actions"}
 {/block}
 
 
-{* SW 5.0 - 5.4 Change PaymentMean Selection Action Button to FatchipCTAmazonCheckout Controller *}
+{* SW 5.0 - 5.4 Change PaymentMean Selection Action Button to FatchipFCSAmazonCheckout Controller *}
 {block name='frontend_checkout_confirm_left_payment_method_actions'}
     <div class="panel--actions is--wide payment--actions">
         {* Action buttons *}
-        <a href="{url controller=FatchipCTPaypalExpressCheckout action=shippingPayment sTarget=checkout}" class="btn is--small btn--change-payment">
+        <a href="{url controller=FatchipFCSPaypalExpressCheckout action=shippingPayment sTarget=checkout}" class="btn is--small btn--change-payment">
             Ändern
         </a>
     </div>

@@ -9,15 +9,15 @@
         <div class="clear"></div>
         <script>
             window.onAmazonLoginReady = function () {
-                amazon.Login.setClientId("{$fatchipCTPaymentConfig.amazonClientId}");
+                amazon.Login.setClientId("{$fatchipFCSPaymentConfig.amazonClientId}");
             };
             window.onAmazonPaymentsReady = function () {
                 var authRequest;
-                OffAmazonPayments.Button('LoginWithAmazon', "{$fatchipCTPaymentConfig.amazonSellerId}",
+                OffAmazonPayments.Button('LoginWithAmazon', "{$fatchipFCSPaymentConfig.amazonSellerId}",
                     {
-                        type: "{$fatchipCTPaymentConfig.amazonButtonType}",
-                        color: "{$fatchipCTPaymentConfig.amazonButtonColor}",
-                        size: "{$fatchipCTPaymentConfig.amazonButtonSize}",
+                        type: "{$fatchipFCSPaymentConfig.amazonButtonType}",
+                        color: "{$fatchipFCSPaymentConfig.amazonButtonColor}",
+                        size: "{$fatchipFCSPaymentConfig.amazonButtonSize}",
                         language: "{$Locale|replace:"_":"-"}",
 
                         authorization: function () {
@@ -25,7 +25,7 @@
                                 scope: 'profile payments:widget payments:shipping_address payments:billing_address',
                                 popup: true
                             };
-                            var shopReturnUrl = "{url controller='FatchipCTAmazonRegister' action='login'}";
+                            var shopReturnUrl = "{url controller='FatchipFCSAmazonRegister' action='login'}";
                             authRequest = amazon.Login.authorize(loginOptions, shopReturnUrl);
                         },
                         onError: function (error) {
@@ -37,7 +37,7 @@
             }
         </script>
         <script async="async"
-            {if $fatchipCTPaymentConfig.amazonLiveMode === 'Live'}
+            {if $fatchipFCSPaymentConfig.amazonLiveMode === 'Live'}
                 src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/lpa/js/Widgets.js'>
             {else}
                 src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/sandbox/lpa/js/Widgets.js'>

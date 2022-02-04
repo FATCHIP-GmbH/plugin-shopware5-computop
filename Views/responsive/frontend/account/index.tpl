@@ -15,7 +15,7 @@
             {$sUserData.additional.user.fatchipct_lastschriftbank}
             <br/>
             <strong>IBAN:</strong>
-            {if $FatchipCTPaymentIbanAnon == 1}
+            {if $FatchipFCSPaymentIbanAnon == 1}
                 {$sUserData.additional.user.fatchipct_lastschriftiban|truncate:18:"XXXXX":true}
             {else}
                 {$sUserData.additional.user.fatchipct_lastschriftiban}

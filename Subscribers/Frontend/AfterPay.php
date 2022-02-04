@@ -16,7 +16,7 @@
  * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Subscibers
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -108,7 +108,7 @@ class AfterPay extends AbstractSubscriber
         }
 
         if ($request->getActionName() == 'shippingPayment' && $paymentName == 'fatchip_firstcash_afterpay_installment') {
-            $view->assign('fatchipCTPaymentConfig', $pluginConfig);
+            $view->assign('fatchipFCSPaymentConfig', $pluginConfig);
         }
 
         // prevent skipping of shippingpayment

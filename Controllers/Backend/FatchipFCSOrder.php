@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Backend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -30,9 +30,9 @@ use Fatchip\CTPayment\CTPaymentService;
 /**
  * Backend order controller
  *
- * Class Shopware_Controllers_Backend_FatchipCTOrder
+ * Class Shopware_Controllers_Backend_FatchipFCSOrder
  */
-class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_Backend_ExtJs
+class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_Backend_ExtJs
 {
 
     const PAYMENTSTATUSPARTIALLYPAID = 11;
@@ -42,13 +42,13 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
     const PAYMENTSTATUSRECREDITING = 20;
 
     /**
-     * FatchipCTpayment Plugin Bootstrap Class
-     * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     * FatchipFCSpayment Plugin Bootstrap Class
+     * @var \Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap
      */
     private $plugin;
 
     /**
-     * FatchipCTPayment Configuration
+     * FatchipFCSPayment Configuration
      * @var array
      */
     private $config;
@@ -72,8 +72,8 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
     {
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
         $this->config = $this->plugin->Config()->toArray();
-        $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
-        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        $this->paymentService = Shopware()->Container()->get('FatchipFCSPaymentApiClient');
+        $this->utils = Shopware()->Container()->get('FatchipFCSPaymentUtils');
         parent::init();
     }
 
@@ -82,7 +82,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
      * If successful, positions are marked as debited. A call to inquire.aspx is made and paymentstatus updated
      *
      */
-    public function fatchipCTDebitAction()
+    public function fatchipFCSDebitAction()
     {
         try {
             $orderId = $this->Request()->getParam('id');
@@ -150,7 +150,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
     /**
      * Action to enable/disable the capture and debit buttons depending on order status
      */
-    public function fatchipCTTGetButtonStateAction()
+    public function fatchipFCSTGetButtonStateAction()
     {
 
         $request = $this->Request();
@@ -174,7 +174,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
      * If successful, positions are marked as captured. A call to inquire.aspx is made and paymentstatus updated
      *
      */
-    public function fatchipCTCaptureOrderAction()
+    public function fatchipFCSCaptureOrderAction()
     {
         $request = $this->Request();
         try {

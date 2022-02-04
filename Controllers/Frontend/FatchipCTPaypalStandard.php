@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -25,15 +25,15 @@
  * @link       https://www.firstcash.com
  */
 
-require_once 'FatchipCTPayment.php';
+require_once 'FatchipFCSPayment.php';
 
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTPaypalStandard
+ * Class Shopware_Controllers_Frontend_FatchipFCSPaypalStandard
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -66,7 +66,7 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalStandard extends Shopware_Co
             $payment->setTxType('BAID');
         }
         $params = $payment->getRedirectUrlParams();
-        $this->session->offsetSet('fatchipCTRedirectParams', $params);
+        $this->session->offsetSet('fatchipFCSRedirectParams', $params);
         $this->redirect($payment->getHTTPGetURL($params));
     }
 

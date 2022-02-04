@@ -18,7 +18,7 @@
  * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Subscibers
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -89,15 +89,15 @@ class CreditCard extends AbstractSubscriber
             return;
         }
 
-        if ($request->getActionName() == 'confirm' and $pluginConfig['creditCardMode'] == 'SILENT' and !isset($session->FatchipCTBrowserInfoParams['javaScriptEnabled'])) {
+        if ($request->getActionName() == 'confirm' and $pluginConfig['creditCardMode'] == 'SILENT' and !isset($session->FatchipFCSBrowserInfoParams['javaScriptEnabled'])) {
             // inject javascript template responsible for Browser Detection
             // this will sent all vars via POST Request to this controller
             $router = Shopware()->Front()->Router();
             // $view->assign('url', $router->assemble(['controller' => 'checkout', 'action' => 'confirm', 'forceSecure' => true]));
-            $view->assign('url', $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'browserinfo', 'forceSecure' => true]));
+            $view->assign('url', $router->assemble(['controller' => 'FatchipFCSCreditCard', 'action' => 'browserinfo', 'forceSecure' => true]));
             $view->loadTemplate('frontend/checkout/creditcard_confirm_browserdetect.tpl');
         } else if ($request->getActionName() == 'confirm' and $pluginConfig['creditCardMode'] == 'SILENT') {
-            $view->assign('fatchipCTCreditCardMode', "1");
+            $view->assign('fatchipFCSCreditCardMode', "1");
 
             // the creditcard form send all data directly to payssl.aspx
             // set the neccessary pre-encrypted fields in view
@@ -117,16 +117,16 @@ class CreditCard extends AbstractSubscriber
             if ($requestParams['AccVerify'] !== 'Yes') {
                 unset($requestParams['AccVerify']);
             }
-            $requestParams['browserInfo'] = $this->getParamBrowserInfo($session->FatchipCTBrowserInfoParams, $request);
+            $requestParams['browserInfo'] = $this->getParamBrowserInfo($session->FatchipFCSBrowserInfoParams, $request);
             unset($requestParams['Template']);
             $silentParams = $payment->prepareSilentRequest($requestParams);
-            $session->offsetSet('fatchipCTRedirectParams', $requestParams);
+            $session->offsetSet('fatchipFCSRedirectParams', $requestParams);
 
             $view->assign('creditCardSilentModeBrandsVisa', (int)$pluginConfig['creditCardSilentModeBrandsVisa']);
             $view->assign('creditCardSilentModeBrandsMaster', (int)$pluginConfig['creditCardSilentModeBrandsMaster']);
             $view->assign('creditCardSilentModeBrandsAmex', (int)$pluginConfig['creditCardSilentModeBrandsAmex']);
 
-            $view->assign('fatchipCTCreditCardSilentParams', $silentParams);
+            $view->assign('fatchipFCSCreditCardSilentParams', $silentParams);
             $view->extendsTemplate('frontend/checkout/creditcard_confirm.tpl');
         }
     }
@@ -138,7 +138,7 @@ class CreditCard extends AbstractSubscriber
      */
     protected function getPaymentClassForGatewayAction()
     {
-        $paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
+        $paymentService = Shopware()->Container()->get('FatchipFCSPaymentApiClient');
 
         $ctOrder = $this->utils->createCTOrder();
         $router = Shopware()->Front()->Router();
@@ -146,9 +146,9 @@ class CreditCard extends AbstractSubscriber
             'CreditCard',
             $this->config,
             $ctOrder,
-            $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'success', 'forceSecure' => true]),
-            $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'failure', 'forceSecure' => true]),
-            $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'notify', 'forceSecure' => true]),
+            $router->assemble(['controller' => 'FatchipFCSCreditCard', 'action' => 'success', 'forceSecure' => true]),
+            $router->assemble(['controller' => 'FatchipFCSCreditCard', 'action' => 'failure', 'forceSecure' => true]),
+            $router->assemble(['controller' => 'FatchipFCSCreditCard', 'action' => 'notify', 'forceSecure' => true]),
             null,
             $this->utils->getUserDataParam()
         );

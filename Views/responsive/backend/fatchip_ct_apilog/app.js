@@ -3,7 +3,7 @@
  */
 
 //{block name="backend/fatchip_ct_apilog/application"}
-Ext.define('Shopware.apps.FatchipCTApilog', {
+Ext.define('Shopware.apps.FatchipFCSApilog', {
   /**
 	* Extends from our special controller, which handles the
 	* sub-application behavior and the event bus
@@ -14,7 +14,7 @@ Ext.define('Shopware.apps.FatchipCTApilog', {
 	* The name of the module. Used for internal purpose
 	* @string
 	*/
-  name: 'Shopware.apps.FatchipCTApilog',
+  name: 'Shopware.apps.FatchipFCSApilog',
   /**
 	* Sets the loading path for the sub-application.
 	*
@@ -22,7 +22,7 @@ Ext.define('Shopware.apps.FatchipCTApilog', {
 	* controller (server-side)
 	* @string
 	*/
-  loadPath : '{url controller=FatchipCTApilog action=load}',
+  loadPath : '{url controller=FatchipFCSApilog action=load}',
   bulkLoad: true,
 
   /**

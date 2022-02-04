@@ -2,21 +2,21 @@
     'use strict';
 
     function registerPlugin() {
-        StateManager.addPlugin('#confirm--form', 'fatchipCTAmazonSCA');
+        StateManager.addPlugin('#confirm--form', 'fatchipFCSAmazonSCA');
     }
 
     function updatePlugin() {
-        StateManager.updatePlugin('#confirm--form', 'fatchipCTAmazonSCA');
+        StateManager.updatePlugin('#confirm--form', 'fatchipFCSAmazonSCA');
     }
 
-    $.plugin('fatchipCTAmazonSCA', {
+    $.plugin('fatchipFCSAmazonSCA', {
         defaults: {
 
         },
         init: function() {
             var me = this;
 
-            var data = $('#fatchipCTAmazonInformation').data();
+            var data = $('#fatchipFCSAmazonInformation').data();
 
             me.validateData(data);
             me.registerEventListeners();

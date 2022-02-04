@@ -6,7 +6,7 @@
 
 
 //{block name="backend/fatchip_ct_apilog/controller/log"}
-Ext.define('Shopware.apps.FatchipCTApilog.controller.Log', {
+Ext.define('Shopware.apps.FatchipFCSApilog.controller.Log', {
     /**
     * Extend from the standard ExtJS 4
     * @string
@@ -22,7 +22,7 @@ Ext.define('Shopware.apps.FatchipCTApilog.controller.Log', {
 		var me = this;
 
 		me.control({
-			'fatchipCTApilogMainList toolbar combobox': {
+			'fatchipFCSApilogMainList toolbar combobox': {
 				change: me.onSelectFilter
 			}
 		});

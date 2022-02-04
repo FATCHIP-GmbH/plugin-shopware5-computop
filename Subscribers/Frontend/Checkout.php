@@ -16,7 +16,7 @@
  * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Subscibers
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -124,7 +124,7 @@ class Checkout extends AbstractSubscriber
             $paymentData['birthmonth'] = $birthday[1];
             $paymentData['birthyear'] = $birthday[0];
             $paymentData['phone'] = $this->utils->getUserPhone($userData);
-            $paymentData['idealIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
+            $paymentData['idealIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipFCSIdeal\FatchipFCSIdealIssuers')->findAll();
             $paymentData['idealIssuer'] = $session->offsetGet('FatchipComputopIdealIssuer');
 
             $paymentData['isCompany'] = !empty($userData['billingaddress']['company']);
@@ -133,7 +133,7 @@ class Checkout extends AbstractSubscriber
             $paymentData['lastschriftkontoinhaber'] = $this->utils->getUserLastschriftKontoinhaber($userData);
             $paymentData['afterpayinstallmentiban'] = $this->utils->getUserAfterpayInstallmentIban($userData);
 
-            $view->assign('FatchipCTPaymentData', $paymentData);
+            $view->assign('FatchipFCSPaymentData', $paymentData);
 
             // assign payment errors and error template to view
             $view->extendsTemplate('frontend/checkout/shipping_payment.tpl');
@@ -159,7 +159,7 @@ class Checkout extends AbstractSubscriber
 
                 $ctError = [];
                 $ctError['CTErrorMessage'] = Shopware()->Snippets()
-                    ->getNamespace('frontend/FatchipCTPayment/translations')
+                    ->getNamespace('frontend/FatchipFCSPayment/translations')
                     ->get('errorAddress');
                 $ctError['CTErrorCode'] = 'Bitte prüfen Sie Straße und Hausnummer';
                 //$subject->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);

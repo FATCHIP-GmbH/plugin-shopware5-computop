@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -36,10 +36,10 @@ use Shopware\Components\CSRFWhitelistAware;
 /**
  * Abstract base class for Payment Controllers
  *
- * Class Shopware_Controllers_Frontend_FatchipCTPayment
+ * Class Shopware_Controllers_Frontend_FatchipFCSPayment
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -67,21 +67,21 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     protected $paymentService;
 
     /**
-     * FatchipCTpayment Plugin Bootstrap Class
+     * FatchipFCSpayment Plugin Bootstrap Class
      *
-     * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     * @var Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap
      */
     protected $plugin;
 
     /**
-     * FatchipCTPayment plugin settings
+     * FatchipFCSPayment plugin settings
      *
      * @var array
      */
     protected $config;
 
     /**
-     * FatchipCTPaymentUtils
+     * FatchipFCSPaymentUtils
      *
      * @var Util $utils *
      */
@@ -118,7 +118,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
      */
     public function init()
     {
-        $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
+        $this->paymentService = Shopware()->Container()->get('FatchipFCSPaymentApiClient');
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
         $this->config = $this->plugin->Config()->toArray();
         $this->utils = Shopware()->Container()->get('FatchipFCSPaymentUtils');
@@ -168,7 +168,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
         $payment = $this->getPaymentClassForGatewayAction();
         $params = $payment->getRedirectUrlParams();
 
-        $this->session->offsetSet('fatchipCTRedirectParams', $params);
+        $this->session->offsetSet('fatchipFCSRedirectParams', $params);
         $this->redirect($payment->getHTTPGetURL($params));
     }
 
@@ -184,11 +184,11 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     {
         $requestParams = $this->Request()->getParams();
         $response = $this->paymentService->getDecryptedResponse($requestParams);
-        $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
+        $this->plugin->logRedirectParams($this->session->offsetGet('fatchipFCSRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
 
         $ctError = [];
         $ctError['CTErrorMessage'] = Shopware()->Snippets()
-            ->getNamespace('frontend/FatchipCTPayment/translations')
+            ->getNamespace('frontend/FatchipFCSPayment/translations')
             ->get('errorGeneral'); // . $response->getDescription();
         $ctError['CTErrorCode'] = $response->getCode();
         $this->session->offsetUnset('fatchipComputopEasyCreditPayId');
@@ -210,12 +210,12 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     {
         $requestParams = $this->Request()->getParams();
 
-        if(array_key_exists('fatchipCTPaymentClass', $requestParams) && $requestParams['fatchipCTPaymentClass'])  {
-            $this->paymentClass = $requestParams['fatchipCTPaymentClass'];
+        if(array_key_exists('fatchipFCSPaymentClass', $requestParams) && $requestParams['fatchipFCSPaymentClass'])  {
+            $this->paymentClass = $requestParams['fatchipFCSPaymentClass'];
         }
 
         $response = $this->paymentService->getDecryptedResponse($requestParams);
-        $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
+        $this->plugin->logRedirectParams($this->session->offsetGet('fatchipFCSRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
         if (is_null($response) || $response->getStatus() !== CTEnumStatus::OK) {
             $this->forward('failure');
         }
@@ -238,7 +238,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
         $this->autoCapture($customOrdernumber);
 
         if($this->paymentClass == 'AmazonPay') {
-            $this->forward('finish', 'FatchipCTAmazonCheckout', null, ['sUniqueID' => $response->getPayID()]);
+            $this->forward('finish', 'FatchipFCSAmazonCheckout', null, ['sUniqueID' => $response->getPayID()]);
         }
         else {
             $this->forward('finish', 'checkout', null, ['sUniqueID' => $response->getPayID()]);
@@ -323,7 +323,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
         } catch (Exception $e) {
             $ctError = [];
             $ctError['CTErrorMessage'] = Shopware()->Snippets()
-                ->getNamespace('frontend/FatchipCTPayment/translations')
+                ->getNamespace('frontend/FatchipFCSPayment/translations')
                 ->get('errorAddress');
             $ctError['CTErrorCode'] = $e->getMessage();
             return $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);

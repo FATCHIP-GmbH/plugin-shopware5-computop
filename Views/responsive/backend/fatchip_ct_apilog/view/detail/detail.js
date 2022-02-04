@@ -8,7 +8,7 @@
  * Payone apilog detail view
  */
 //{block name="backend/fatchip_ct_apilog/view/detail/detail"}
-Ext.define('Shopware.apps.FatchipCTApilog.view.detail.Detail', {
+Ext.define('Shopware.apps.FatchipFCSApilog.view.detail.Detail', {
   /**
    * Extend from the standard ExtJS 4
    * @string
@@ -28,7 +28,7 @@ Ext.define('Shopware.apps.FatchipCTApilog.view.detail.Detail', {
    * of the view through Ext.widget('moptPayoneApilogMainDetail')
    * @string
    */
-  alias: 'widget.fatchipCTApilogMainDetail',
+  alias: 'widget.fatchipFCSApilogMainDetail',
   /**
    * The window uses a border layout, so we need to set
    * a region for the grid panel
@@ -68,7 +68,7 @@ Ext.define('Shopware.apps.FatchipCTApilog.view.detail.Detail', {
             menuDisabled: true
           }
         ],
-        store: Ext.create('Shopware.apps.FatchipCTApilog.store.Detail').load({
+        store: Ext.create('Shopware.apps.FatchipFCSApilog.store.Detail').load({
           action: 'read',
           params: {
             id: me.itemSelected,
@@ -95,7 +95,7 @@ Ext.define('Shopware.apps.FatchipCTApilog.view.detail.Detail', {
             menuDisabled: true
           }
         ],
-        store: Ext.create('Shopware.apps.FatchipCTApilog.store.Detail').load({
+        store: Ext.create('Shopware.apps.FatchipFCSApilog.store.Detail').load({
           action: 'read',
           params: {
             id: me.itemSelected,

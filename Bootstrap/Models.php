@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0 , 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Bootstrap
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -56,7 +56,7 @@ class Models extends Bootstrap
         try {
             $schemaTool->createSchema(
                 [
-                    $em->getClassMetadata('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers'),
+                    $em->getClassMetadata('Shopware\CustomModels\FatchipFCSIdeal\FatchipFCSIdealIssuers'),
                 ]
             );
         } catch (Exception $e) {
@@ -66,7 +66,7 @@ class Models extends Bootstrap
         try {
             $schemaTool->createSchema(
                 [
-                    $em->getClassMetadata('Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog'),
+                    $em->getClassMetadata('Shopware\CustomModels\FatchipFCSApilog\FatchipFCSApilog'),
                 ]
             );
         } catch (Exception $e) {

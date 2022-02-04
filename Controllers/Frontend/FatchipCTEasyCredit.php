@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -25,14 +25,14 @@
  * @link       https://www.firstcash.com
  */
 
-require_once 'FatchipCTPayment.php';
+require_once 'FatchipFCSPayment.php';
 
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Fatchip\CTPayment\CTEnums\CTEnumEasyCredit;
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTEasyCredit *
+ * Class Shopware_Controllers_Frontend_FatchipFCSEasyCredit *
  *
  * @category  Payment_Controller
  * @package   Computop_Shopware5_Plugin
@@ -41,7 +41,7 @@ use Fatchip\CTPayment\CTEnums\CTEnumEasyCredit;
  * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link      https://www.firstcash.com
  */
-class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Controllers_Frontend_FatchipFCSPayment
+class Shopware_Controllers_Frontend_FatchipFCSEasyCredit extends Shopware_Controllers_Frontend_FatchipFCSPayment
 {
     /**
      * {@inheritdoc}
@@ -103,7 +103,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
 
         $payment->setDateOfBirth($this->utils->getUserDoB($user));
         $params = $payment->getRedirectUrlParams();
-        $this->session->offsetSet('fatchipCTRedirectParams', $params);
+        $this->session->offsetSet('fatchipFCSRedirectParams', $params);
         $this->redirect($payment->getHTTPGetURL($params));
     }
 
@@ -146,7 +146,7 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $payment->setDateOfBirth($this->utils->getUserDoB($userData));
 
         $response = $this->paymentService->getDecryptedResponse($requestParams);
-        $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
+        $this->plugin->logRedirectParams($this->session->offsetGet('fatchipFCSRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
 
         switch ($response->getStatus()) {
             case CTEnumStatus::AUTHORIZE_REQUEST:

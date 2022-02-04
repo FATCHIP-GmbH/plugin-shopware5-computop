@@ -1,4 +1,4 @@
-var url = document.location.pathname + 'FatchipCTIdeal/GetIdealIssuerList';
+var url = document.location.pathname + 'FatchipFCSIdeal/GetIdealIssuerList';
 
 Ext.Ajax.request({
     url: url,

@@ -814,7 +814,7 @@ class Util
         } catch (Exception $e) {
             $ctError = [];
             $ctError['CTErrorMessage'] = Shopware()->Snippets()
-                ->getNamespace('frontend/FatchipCTPayment/translations')
+                ->getNamespace('frontend/FatchipFCSPayment/translations')
                 ->get('errorBasket');
             $ctError['CTErrorCode'] = $e->getMessage();
             return ['CTError' => $ctError];
@@ -830,7 +830,7 @@ class Util
         } catch (Exception $e) {
             $ctError = [];
             $ctError['CTErrorMessage'] = Shopware()->Snippets()
-                ->getNamespace('frontend/FatchipCTPayment/translations')
+                ->getNamespace('frontend/FatchipFCSPayment/translations')
                 ->get('errorAddress');
             $ctError['CTErrorCode'] = $e->getMessage();
             return ['CTError' => $ctError];

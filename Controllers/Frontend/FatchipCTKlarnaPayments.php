@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -25,24 +25,24 @@
  * @link       https://www.firstcash.com
  */
 
-require_once 'FatchipCTPayment.php';
+require_once 'FatchipFCSPayment.php';
 
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTKlarna.
+ * Class Shopware_Controllers_Frontend_FatchipFCSKlarna.
  *
  * @category   Payment_Controller
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
-class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Controllers_Frontend_FatchipFCSPayment
+class Shopware_Controllers_Frontend_FatchipFCSKlarnaPayments extends Shopware_Controllers_Frontend_FatchipFCSPayment
 {
     /**
      * {@inheritdoc}
@@ -55,14 +55,14 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
 
         $tokenExt = $this->request->getParam('authorizationToken');
 
-        $this->session->offsetSet('FatchipCTKlarnaPaymentTokenExt', $tokenExt);
+        $this->session->offsetSet('FatchipFCSKlarnaPaymentTokenExt', $tokenExt);
     }
 
     public function getAccessTokenAction()
     {
         $this->container->get('front')->Plugins()->ViewRenderer()->setNoRender();
 
-        $data = $this->session->offsetGet('FatchipCTKlarnaAccessToken');
+        $data = $this->session->offsetGet('FatchipFCSKlarnaAccessToken');
         $encoded = json_encode($data);
 
         echo $encoded;
@@ -89,10 +89,10 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
 
         $CTPaymentURL = $payment->getCTPaymentURL();
 
-        $payId = $this->session->offsetGet('FatchipCTKlarnaPaymentSessionResponsePayID');
-        $transId = $this->session->offsetGet('FatchipCTKlarnaPaymentSessionResponseTransID');
-        $tokenExt = $this->session->offsetGet('FatchipCTKlarnaPaymentTokenExt');
-        $this->session->offsetUnset('FatchipCTKlarnaPaymentTokenExt');
+        $payId = $this->session->offsetGet('FatchipFCSKlarnaPaymentSessionResponsePayID');
+        $transId = $this->session->offsetGet('FatchipFCSKlarnaPaymentSessionResponseTransID');
+        $tokenExt = $this->session->offsetGet('FatchipFCSKlarnaPaymentTokenExt');
+        $this->session->offsetUnset('FatchipFCSKlarnaPaymentTokenExt');
 
         $ctRequest = $payment->cleanUrlParams($payment->getKlarnaOrderRequestParams($payId, $transId, $ctOrder->getAmount(), $ctOrder->getCurrency(), $tokenExt));
         $response = null;
@@ -120,7 +120,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
             default:
                 $ctError = [];
                 $ctError['CTErrorMessage'] = Shopware()->Snippets()
-                    ->getNamespace('frontend/FatchipCTPayment/translations')
+                    ->getNamespace('frontend/FatchipFCSPayment/translations')
                     ->get('errorGeneral'); // . $response->getDescription();
                 $ctError['CTErrorCode'] = ''; //$response->getCode();
                 return $this->forward('shippingPayment', 'checkout', null, array('CTError' => $ctError));

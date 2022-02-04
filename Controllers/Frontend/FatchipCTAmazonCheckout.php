@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -29,7 +29,7 @@ use Shopware\Plugins\FatchipFCSPayment\Util;
 use Shopware\Components\CSRFWhitelistAware;
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTAmazonRegister
+ * Class Shopware_Controllers_Frontend_FatchipFCSAmazonRegister
  *
  * @category  Payment_Controller
  * @package   Computop_Shopware5_Plugin
@@ -38,7 +38,7 @@ use Shopware\Components\CSRFWhitelistAware;
  * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link      https://www.firstcash.com
  */
-class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Controllers_Frontend_Checkout implements CSRFWhitelistAware
+class Shopware_Controllers_Frontend_FatchipFCSAmazonCheckout extends Shopware_Controllers_Frontend_Checkout implements CSRFWhitelistAware
 {
     /**
      * Fatchip PaymentService
@@ -48,21 +48,21 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
     protected $paymentService;
 
     /**
-     * FatchipCTpayment Plugin Bootstrap Class
+     * FatchipFCSpayment Plugin Bootstrap Class
      *
-     * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     * @var Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap
      */
     protected $plugin;
 
     /**
-     * FatchipCTPayment plugin settings
+     * FatchipFCSPayment plugin settings
      *
      * @var array
      */
     protected $config;
 
     /**
-     * FatchipCTPaymentUtils
+     * FatchipFCSPaymentUtils
      *
      * @var Util $utils *
      */
@@ -81,10 +81,10 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
             parent::init();
         }
         // ToDo handle possible Exception
-        $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
+        $this->paymentService = Shopware()->Container()->get('FatchipFCSPaymentApiClient');
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
         $this->config = $this->plugin->Config()->toArray();
-        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        $this->utils = Shopware()->Container()->get('FatchipFCSPaymentUtils');
     }
 
     /**
@@ -96,20 +96,20 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
     {
         parent::shippingPaymentAction();
         $params = $this->Request()->getParams();
-        $fatchipCTAmazonpayID = $this->utils->getPaymentIdFromName('fatchip_firstcash_amazonpay');
+        $fatchipFCSAmazonpayID = $this->utils->getPaymentIdFromName('fatchip_firstcash_amazonpay');
 
-        $this->view->assign('fatchipCTAmazonpayID', $fatchipCTAmazonpayID);
-        $this->view->assign('fatchipCTResponse', $params['fatchipCTResponse']);
-        $this->view->assign('fatchipCTPaymentConfig', $this->config);
+        $this->view->assign('fatchipFCSAmazonpayID', $fatchipFCSAmazonpayID);
+        $this->view->assign('fatchipFCSResponse', $params['fatchipFCSResponse']);
+        $this->view->assign('fatchipFCSPaymentConfig', $this->config);
         $this->view->assign('sStepActive', 'paymentShipping');
 
         // override template with ours for xhr requests
         if ($this->Request()->getParam('isXHR')) {
-            return $this->view->loadTemplate('frontend/fatchipCTAmazonCheckout/fatchip_shipping_payment_core.tpl');
+            return $this->view->loadTemplate('frontend/fatchipFCSAmazonCheckout/fatchip_shipping_payment_core.tpl');
         }
 
         // load Template to avoid annoying uppercase to _lowercase conversion
-        $this->view->loadTemplate('frontend/fatchipCTAmazonCheckout/shipping_payment.tpl');
+        $this->view->loadTemplate('frontend/fatchipFCSAmazonCheckout/shipping_payment.tpl');
     }
 
     /**
@@ -136,11 +136,11 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
 
         $this->unsetAmazonFakeBirthday($userId);
 
-        $this->view->assign('fatchipCTPaymentConfig', $this->config);
-        $this->view->assign('fatchipCTAmazonReferenceID', Shopware()->Session()->offsetGet('fatchipCTAmazonReferenceID'));
+        $this->view->assign('fatchipFCSPaymentConfig', $this->config);
+        $this->view->assign('fatchipFCSAmazonReferenceID', Shopware()->Session()->offsetGet('fatchipFCSAmazonReferenceID'));
 
         parent::confirmAction();
-        $this->view->loadTemplate('frontend/fatchipCTAmazonCheckout/confirm.tpl');
+        $this->view->loadTemplate('frontend/fatchipFCSAmazonCheckout/confirm.tpl');
     }
 
     /**
@@ -153,7 +153,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
     public function finishAction()
     {
         parent::finishAction();
-        $this->view->loadTemplate('frontend/fatchipCTAmazonCheckout/finish.tpl');
+        $this->view->loadTemplate('frontend/fatchipFCSAmazonCheckout/finish.tpl');
         Shopware()->Session()->unsetAll();
         Shopware()->Modules()->Basket()->sRefreshBasket();
     }
@@ -171,9 +171,9 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
 
         $payment = $this->paymentService->getPaymentClass('AmazonPay');
         $requestParams = $payment->getAmazonGODParams(
-            $session->offsetGet('fatchipCTPaymentPayID'),
+            $session->offsetGet('fatchipFCSPaymentPayID'),
             $orderDesc,
-            $session->offsetGet('fatchipCTAmazonReferenceID')
+            $session->offsetGet('fatchipFCSAmazonReferenceID')
         );
         $requestParams['EtiId'] = $this->utils->getUserDataParam();
         $response = $this->plugin->callComputopService($requestParams, $payment, 'GOD', $payment->getCTPaymentURL());

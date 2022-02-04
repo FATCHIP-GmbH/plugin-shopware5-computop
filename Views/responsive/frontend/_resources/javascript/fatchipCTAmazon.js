@@ -1,10 +1,10 @@
-$.plugin("fatchipCTAmazon", {
+$.plugin("fatchipFCSAmazon", {
     defaults: {
-        fatchipCTAmazonOrderReferenceId: false,
-        fatchipCTAmazonSODUrl: false,
-        fatchipCTAmazonGODUrl: false,
-        fatchipCTAmazonRegisterUrl: false,
-        fatchipCTAmazonShippingCheckUrl: false,
+        fatchipFCSAmazonOrderReferenceId: false,
+        fatchipFCSAmazonSODUrl: false,
+        fatchipFCSAmazonGODUrl: false,
+        fatchipFCSAmazonRegisterUrl: false,
+        fatchipFCSAmazonShippingCheckUrl: false,
 
         customerType: "private",
         salutation: "mr", // there is no way to know the gender
@@ -45,16 +45,16 @@ $.plugin("fatchipCTAmazon", {
             $.ajax({
                 type: "POST",
                 async: false,
-                url: me.opts.fatchipCTAmazonSODUrl,
-                data: {referenceId: me.opts.fatchipCTAmazonOrderReferenceId},
+                url: me.opts.fatchipFCSAmazonSODUrl,
+                data: {referenceId: me.opts.fatchipFCSAmazonOrderReferenceId},
                 dataType: "json"
             }).done(function (msg) {
                 if (msg.status === "success") {
                     $.ajax({
                         type: "POST",
                         async: false,
-                        url: me.opts.fatchipCTAmazonGODUrl,
-                        data: {referenceId: me.opts.fatchipCTAmazonOrderReferenceId},
+                        url: me.opts.fatchipFCSAmazonGODUrl,
+                        data: {referenceId: me.opts.fatchipFCSAmazonOrderReferenceId},
                         dataType: "json"
                     });
                     //.done(function (msg) {
@@ -75,8 +75,8 @@ $.plugin("fatchipCTAmazon", {
                 $.ajax({
                     type: "POST",
                     async: false,
-                    url: me.opts.fatchipCTAmazonGODUrl,
-                    data: {referenceId: me.opts.fatchipCTAmazonOrderReferenceId},
+                    url: me.opts.fatchipFCSAmazonGODUrl,
+                    data: {referenceId: me.opts.fatchipFCSAmazonOrderReferenceId},
                     dataType: "json"
                 }).done(function (msg) {
                     if (msg.status === "success") {
@@ -88,13 +88,13 @@ $.plugin("fatchipCTAmazon", {
                         $.ajax({
                             type: "POST",
                             async: false,
-                            url: me.opts.fatchipCTAmazonShippingCheckUrl,
+                            url: me.opts.fatchipFCSAmazonShippingCheckUrl,
                             data: {shippingCountryID: me.opts.countryCodeShippingID},
                             dataType: "json"
                         }).done(function (msg) {
                             var errorMessage = msg.errormessage;
                             if (msg.status === "success") {
-                                $("#fatchipCTAmazonButton").removeAttr("disabled");
+                                $("#fatchipFCSAmazonButton").removeAttr("disabled");
                             } else {
                                 $("#AmazonErrors").show();
                                 $("#AmazonErrorContent").text(errorMessage);
@@ -104,8 +104,8 @@ $.plugin("fatchipCTAmazon", {
                         $.ajax({
                             type: "POST",
                             async: false,
-                            url: me.opts.fatchipCTAmazonSODUrl,
-                            data: {referenceId: me.opts.fatchipCTAmazonOrderReferenceId},
+                            url: me.opts.fatchipFCSAmazonSODUrl,
+                            data: {referenceId: me.opts.fatchipFCSAmazonOrderReferenceId},
                             dataType: "json"
                         });
                         //.done(function (msg) {
@@ -116,10 +116,10 @@ $.plugin("fatchipCTAmazon", {
             //$.loadingIndicator.close();
         });
 
-        me._on(me.$el, "fatchipCTAmazonButtonClick", function (event) {
+        me._on(me.$el, "fatchipFCSAmazonButtonClick", function (event) {
             event.preventDefault();
             var frm = $("<form>", {
-                "action": me.opts.fatchipCTAmazonRegisterUrl,
+                "action": me.opts.fatchipFCSAmazonRegisterUrl,
                 "method": "POST"
             });
 
@@ -214,4 +214,4 @@ $.plugin("fatchipCTAmazon", {
     }
 });
 
-$("#fatchipCTAmazonInformation").fatchipCTAmazon();
+$("#fatchipFCSAmazonInformation").fatchipFCSAmazon();

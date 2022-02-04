@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -25,23 +25,23 @@
  * @link       https://www.firstcash.com
  */
 
-require_once 'FatchipCTPayment.php';
+require_once 'FatchipFCSPayment.php';
 
 use Shopware\Plugins\FatchipFCSPayment\Util;
 use Shopware\Components\CSRFWhitelistAware;
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTPaypalExpressCheckout.
+ * Class Shopware_Controllers_Frontend_FatchipFCSPaypalExpressCheckout.
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
-class Shopware_Controllers_Frontend_FatchipCTPaypalExpressCheckout extends Shopware_Controllers_Frontend_Checkout implements CSRFWhitelistAware
+class Shopware_Controllers_Frontend_FatchipFCSPaypalExpressCheckout extends Shopware_Controllers_Frontend_Checkout implements CSRFWhitelistAware
 {
     /**
      * Fatchip PaymentService
@@ -51,21 +51,21 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpressCheckout extends Shopw
     protected $paymentService;
 
     /**
-     * FatchipCTpayment Plugin Bootstrap Class
+     * FatchipFCSpayment Plugin Bootstrap Class
      *
-     * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     * @var Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap
      */
     protected $plugin;
 
     /**
-     * FatchipCTPayment plugin settings
+     * FatchipFCSPayment plugin settings
      *
      * @var array
      */
     protected $config;
 
     /**
-     * FatchipCTPaymentUtils
+     * FatchipFCSPaymentUtils
      *
      * @var Util $utils *
      */
@@ -83,7 +83,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpressCheckout extends Shopw
             parent::init();
         }
         // ToDo handle possible Exception
-        $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
+        $this->paymentService = Shopware()->Container()->get('FatchipFCSPaymentApiClient');
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
         $this->config = $this->plugin->Config()->toArray();
         $this->utils = Shopware()->Container()->get('FatchipFCSPaymentUtils');
@@ -100,19 +100,19 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpressCheckout extends Shopw
         $request = $this->Request();
         $params = $request->getParams();
         $session = Shopware()->Session();
-        $fatchipCTPaypalExpressID = $this->utils->getPaymentIdFromName('fatchip_firstcash_paypal_express');
-        $session->offsetSet('sPaymentID', $fatchipCTPaypalExpressID);
+        $fatchipFCSPaypalExpressID = $this->utils->getPaymentIdFromName('fatchip_firstcash_paypal_express');
+        $session->offsetSet('sPaymentID', $fatchipFCSPaypalExpressID);
 
-        $this->view->assign('fatchipCTPaypalExpressID', $fatchipCTPaypalExpressID);
-        $this->view->assign('fatchipCTResponse', $params['fatchipCTResponse']);
-        $this->view->assign('fatchipCTPaymentConfig', $this->config);
+        $this->view->assign('fatchipFCSPaypalExpressID', $fatchipFCSPaypalExpressID);
+        $this->view->assign('fatchipFCSResponse', $params['fatchipFCSResponse']);
+        $this->view->assign('fatchipFCSPaymentConfig', $this->config);
         $this->view->assign('sStepActive', 'paymentShipping');
 
         // override template with ours for xhr requests
         if ($this->Request()->getParam('isXHR')) {
-            return $this->view->loadTemplate('frontend/fatchipCTPaypalExpressCheckout/fatchip_shipping_payment_core.tpl');
+            return $this->view->loadTemplate('frontend/fatchipFCSPaypalExpressCheckout/fatchip_shipping_payment_core.tpl');
         }
-        $this->view->loadTemplate('frontend/fatchipCTPaypalExpressCheckout/shipping_payment.tpl');
+        $this->view->loadTemplate('frontend/fatchipFCSPaypalExpressCheckout/shipping_payment.tpl');
     }
 
     /**
@@ -136,7 +136,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpressCheckout extends Shopw
     public function confirmAction()
     {
         parent::confirmAction();
-        $this->view->loadTemplate('frontend/fatchipCTPaypalExpressCheckout/confirm.tpl');
+        $this->view->loadTemplate('frontend/fatchipFCSPaypalExpressCheckout/confirm.tpl');
     }
 
     /**
@@ -149,7 +149,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpressCheckout extends Shopw
     {
         parent::finishAction();
 
-        $this->view->loadTemplate('frontend/fatchipCTPaypalExpressCheckout/finish.tpl');
+        $this->view->loadTemplate('frontend/fatchipFCSPaypalExpressCheckout/finish.tpl');
         Shopware()->Session()->unsetAll();
         Shopware()->Modules()->Basket()->sRefreshBasket();
     }

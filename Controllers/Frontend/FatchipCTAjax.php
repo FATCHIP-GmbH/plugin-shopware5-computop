@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -28,19 +28,19 @@
 use Shopware\Plugins\FatchipFCSPayment\Util;
 
 /**
- * Shopware_Controllers_Frontend_FatchipCTAjax
+ * Shopware_Controllers_Frontend_FatchipFCSAjax
  *
  * Frontend controller for Ajax communication
  *
  * @category   Payment_Controller
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
-class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Action
+class Shopware_Controllers_Frontend_FatchipFCSAjax extends Enlight_Controller_Action
 {
 
     /**
@@ -51,21 +51,21 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
     protected $paymentService;
 
     /**
-     * FatchipCTpayment Plugin Bootstrap Class
+     * FatchipFCSpayment Plugin Bootstrap Class
      *
-     * @var Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
+     * @var Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap
      */
     protected $plugin;
 
     /**
-     * FatchipCTPayment plugin settings
+     * FatchipFCSPayment plugin settings
      *
      * @var array
      */
     protected $config;
 
     /**
-     * FatchipCTPaymentUtils
+     * FatchipFCSPaymentUtils
      *
      * @var Util $utils *
      */
@@ -87,10 +87,10 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
      */
     public function init()
     {
-        $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
+        $this->paymentService = Shopware()->Container()->get('FatchipFCSPaymentApiClient');
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipFCSPayment();
         $this->config = $this->plugin->Config()->toArray();
-        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        $this->utils = Shopware()->Container()->get('FatchipFCSPaymentUtils');
         Shopware()->Plugins()->Controller()->ViewRenderer()->setNoRender();
         $this->session = Shopware()->Session();
     }
@@ -116,8 +116,8 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         $payment = $this->paymentService->getPaymentClass('AmazonPay');
 
         $requestParams = $payment->getAmazonSCOParams(
-            $this->session->offsetGet('fatchipCTPaymentPayID'),
-            $this->session->offsetGet('fatchipCTPaymentTransID'),
+            $this->session->offsetGet('fatchipFCSPaymentPayID'),
+            $this->session->offsetGet('fatchipFCSPaymentTransID'),
             $amount,
             $currency,
             $orderDesc,
@@ -132,7 +132,7 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
             return;
         }
 
-        $this->session->offsetSet('fatchipCTPaymentSCOValid', true);
+        $this->session->offsetSet('fatchipFCSPaymentSCOValid', true);
 
         echo json_encode('OK');
     }
@@ -147,13 +147,13 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
     {
         $params = $this->Request()->getParams();
         $referenceId = $params['referenceId'];
-        $this->session->offsetSet('fatchipCTAmazonReferenceID', $referenceId);
+        $this->session->offsetSet('fatchipFCSAmazonReferenceID', $referenceId);
         $orderDesc = "Test";
 
         $payment = $this->paymentService->getPaymentClass('AmazonPay');
 
         $requestParams = $payment->getAmazonGODParams(
-            $this->session->offsetGet('fatchipCTPaymentPayID'),
+            $this->session->offsetGet('fatchipFCSPaymentPayID'),
             $orderDesc,
             $referenceId
         );
@@ -201,8 +201,8 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         $payment = $this->paymentService->getPaymentClass('AmazonPay');
 
         $requestParams = $payment->getAmazonSODParams(
-            $this->session->offsetGet('fatchipCTPaymentPayID'),
-            $this->session->offsetGet('fatchipCTPaymentTransID'),
+            $this->session->offsetGet('fatchipFCSPaymentPayID'),
+            $this->session->offsetGet('fatchipFCSPaymentTransID'),
             $amount,
             $currency,
             $orderDesc,
@@ -238,7 +238,7 @@ class Shopware_Controllers_Frontend_FatchipCTAjax extends Enlight_Controller_Act
         } else {
             $data['status'] = 'error';
             $data['errormessage'] = Shopware()->Snippets()
-                ->getNamespace('frontend/FatchipCTPayment/translations')
+                ->getNamespace('frontend/FatchipFCSPayment/translations')
                 ->get('errorShippingCountry');
         }
 

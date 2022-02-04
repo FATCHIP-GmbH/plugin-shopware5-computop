@@ -9,7 +9,7 @@
  * This grid contains all logs and its information.
  */
 //{block name="backend/fatchip_ct_apilog/view/log/list"}
-Ext.define('Shopware.apps.FatchipCTApilog.view.log.List', {
+Ext.define('Shopware.apps.FatchipFCSApilog.view.log.List', {
   /**
    * Extend from the standard ExtJS 4
    * @string
@@ -19,10 +19,10 @@ Ext.define('Shopware.apps.FatchipCTApilog.view.log.List', {
   ui: 'shopware-ui',
   /**
    * Alias name for the view. Could be used to get an instance
-   * of the view through Ext.widget('fatchipCTApilogMainList')
+   * of the view through Ext.widget('fatchipFCSApilogMainList')
    * @string
    */
-  alias: 'widget.fatchipCTApilogMainList',
+  alias: 'widget.fatchipFCSApilogMainList',
   /**
    * The window uses a border layout, so we need to set
    * a region for the grid panel
@@ -145,7 +145,7 @@ Ext.define('Shopware.apps.FatchipCTApilog.view.log.List', {
         selectionchange: function(view, selected) {
           if(selected[0])
           {
-            me.detail = Ext.create('Shopware.apps.FatchipCTApilog.view.main.Detailwindow', {
+            me.detail = Ext.create('Shopware.apps.FatchipFCSApilog.view.main.Detailwindow', {
               itemSelected: selected[0].data.id
             }).show();
           }

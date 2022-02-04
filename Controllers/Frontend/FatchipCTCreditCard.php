@@ -17,7 +17,7 @@
  * PHP version 5.6, 7.0, 7.1
  *
  * @category   Payment
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
@@ -25,24 +25,24 @@
  * @link       https://www.firstcash.com
  */
 
-require_once 'FatchipCTPayment.php';
+require_once 'FatchipFCSPayment.php';
 
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Monolog\Handler\RotatingFileHandler;
 use Shopware\Plugins\FatchipFCSPayment\Util;
 
 /**
- * Class Shopware_Controllers_Frontend_FatchipCTCreditCard.
+ * Class Shopware_Controllers_Frontend_FatchipFCSCreditCard.
  *
  * @category   Payment_Controller
- * @package    FatchipCTPayment
+ * @package    FatchipFCSPayment
  * @subpackage Controllers/Frontend
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 Computop
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
  * @link       https://www.firstcash.com
  */
-class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Controllers_Frontend_FatchipFCSPayment
+class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Controllers_Frontend_FatchipFCSPayment
 {
 
     /**
@@ -82,9 +82,9 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         if ($params['AccVerify'] !== 'Yes') {
             unset($params['AccVerify']);
         }
-        $this->session->offsetSet('fatchipCTRedirectParams', $params);
+        $this->session->offsetSet('fatchipFCSRedirectParams', $params);
 
-        $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params, $this->config['creditCardTemplate'])));
+        $this->forward('iframe', 'FatchipFCSCreditCard', null, array('fatchipFCSRedirectURL' => $payment->getHTTPGetURL($params, $this->config['creditCardTemplate'])));
     }
 
     /**
@@ -98,7 +98,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     public function browserinfoAction()
     {
         $requestParams = $this->Request()->getParams();
-        $this->session->offsetSet('FatchipCTBrowserInfoParams', $requestParams);
+        $this->session->offsetSet('FatchipFCSBrowserInfoParams', $requestParams);
 
         $this->redirect(['controller' => 'checkout', 'action' => 'confirm']);
     }
@@ -110,14 +110,14 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
      */
     public function iframeAction()
     {
-        $this->view->loadTemplate('frontend/fatchipCTCreditCard/index.tpl');
-        $this->view->assign('fatchipCTPaymentConfig', $this->config);
+        $this->view->loadTemplate('frontend/fatchipFCSCreditCard/index.tpl');
+        $this->view->assign('fatchipFCSPaymentConfig', $this->config);
         $requestParams = $this->Request()->getParams();
-        $this->view->assign('fatchipCTIframeURL', $requestParams['fatchipCTRedirectURL']);
-        $this->view->assign('fatchipCTUniqueID', $requestParams['fatchipCTUniqueID']);
-        $this->view->assign('fatchipCTURL', $requestParams['fatchipCTURL']);
-        $this->view->assign('fatchipCTErrorMessage', $requestParams['CTError']['CTErrorMessage']);
-        $this->view->assign('fatchipCTErrorCode', $requestParams['CTError']['CTErrorCode']);
+        $this->view->assign('fatchipFCSIframeURL', $requestParams['fatchipFCSRedirectURL']);
+        $this->view->assign('fatchipFCSUniqueID', $requestParams['fatchipFCSUniqueID']);
+        $this->view->assign('fatchipFCSURL', $requestParams['fatchipFCSURL']);
+        $this->view->assign('fatchipFCSErrorMessage', $requestParams['CTError']['CTErrorMessage']);
+        $this->view->assign('fatchipFCSErrorCode', $requestParams['CTError']['CTErrorCode']);
     }
 
     /**
@@ -143,12 +143,12 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $logPath = Shopware()->DocPath();
 
                 if (Util::isShopwareVersionGreaterThanOrEqual('5.1')) {
-                    $logFile = $logPath . 'var/log/FatchipCTPayment_production.log';
+                    $logFile = $logPath . 'var/log/FatchipFCSPayment_production.log';
                 } else {
-                    $logFile = $logPath . 'logs/FatchipCTPayment_production.log';
+                    $logFile = $logPath . 'logs/FatchipFCSPayment_production.log';
                 }
                 $rfh = new RotatingFileHandler($logFile, 14);
-                $logger = new \Shopware\Components\Logger('FatchipCTPayment');
+                $logger = new \Shopware\Components\Logger('FatchipFCSPayment');
                 $logger->pushHandler($rfh);
                 $ret = $logger->error($e->getMessage());
             }
@@ -156,7 +156,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         // used for paynow silent mode
         $response = !empty($requestParams['response']) ? $requestParams['response'] : $this->paymentService->getDecryptedResponse($requestParams);
 
-        $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'AUTH', $response);
+        $this->plugin->logRedirectParams($this->session->offsetGet('fatchipFCSRedirectParams'), $this->paymentClass, 'AUTH', $response);
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
@@ -183,7 +183,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $url = $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'finish']);
 
                 if ($ccMode === 'iframe') {
-                    $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTURL' => $url, 'fatchipCTUniqueID' => $response->getPayID()));
+                    $this->forward('iframe', 'FatchipFCSCreditCard', null, array('fatchipFCSURL' => $url, 'fatchipFCSUniqueID' => $response->getPayID()));
                 } else {
                     $this->redirect(array(
                         'controller' => 'checkout',
@@ -243,10 +243,10 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
 
         $response = $this->paymentService->getDecryptedResponse($requestParams);
 
-        $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
+        $this->plugin->logRedirectParams($this->session->offsetGet('fatchipFCSRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
 
         $ctError['CTErrorMessage'] = Shopware()->Snippets()
-            ->getNamespace('frontend/FatchipCTPayment/translations')
+            ->getNamespace('frontend/FatchipFCSPayment/translations')
             ->get('errorGeneral'); // . $response->getDescription();
         $ctError['CTErrorCode'] = $response->getCode();
         $ctError = $this->hideError($response->getCode()) ? null : $ctError;
@@ -259,7 +259,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         }
 
         if ($ccMode === 'iframe') {
-            $this->forward('iframe', 'FatchipCTCreditCard', null, ['fatchipCTURL' => $url, 'CTError' => $ctError]);
+            $this->forward('iframe', 'FatchipFCSCreditCard', null, ['fatchipFCSURL' => $url, 'CTError' => $ctError]);
         } else {
             //$this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
             // set CTError in Session to prevent csfrs errors

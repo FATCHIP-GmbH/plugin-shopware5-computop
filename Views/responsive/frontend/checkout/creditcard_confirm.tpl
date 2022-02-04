@@ -3,8 +3,8 @@
 {block name="frontend_checkout_confirm_information_wrapper"}
     {$smarty.block.parent}
 
-    {if $fatchipCTCreditCardMode}
-        <div id="fatchipCTCreditCardPaynow"
+    {if $fatchipFCSCreditCardMode}
+        <div id="fatchipFCSCreditCardPaynow"
              class="fatchip-firstcash-payment-creditcard-form payment--form-group panel has--border">
             <h2 class="panel--title is--underline">{s name='KreditkartePaynow' namespace='frontend/checkout/CTCreditCard'}Kreditkarte{/s}</h2>
 
@@ -28,7 +28,7 @@
 
                 {block name="frontend_checkout_payment_fatchip_firstcash_creditcard_cardholder_label"}
                     <p class="none">
-                        <label for="CreditCardHolder">{s name="CreditcardCardHolderLabel" namespace="frontend/FatchipCTPayment/translations"}Karteninhaber{/s}</label>
+                        <label for="CreditCardHolder">{s name="CreditcardCardHolderLabel" namespace="frontend/FatchipFCSPayment/translations"}Karteninhaber{/s}</label>
                     </p>
                 {/block}
 
@@ -36,15 +36,15 @@
                     <input name="CreditCardHolder" type="text"
                            id="CreditCardHolder"
                            class="payment--field is--required{if $error_flags.fatchip_firstcash__creditcard_cardholder} has--error{/if}"
-                           placeholder="{s name="CreditcardCardHolderPlaceholder" namespace="frontend/FatchipCTPayment/translations"}Karteninhaber{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
+                           placeholder="{s name="CreditcardCardHolderPlaceholder" namespace="frontend/FatchipFCSPayment/translations"}Karteninhaber{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
                            {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
-                           value="{$FatchipCTPaymentData.CreditCardHolder}"
+                           value="{$FatchipFCSPaymentData.CreditCardHolder}"
                     />
                 {/block}
 
                 {block name="frontend_checkout_payment_fatchip_firstcash_creditcard_cardnumber_label"}
                     <p class="none">
-                        <label for="CCNr">{s name="CreditcardCardnumberLabel" namespace="frontend/FatchipCTPayment/translations"}Kartennummer{/s}</label>
+                        <label for="CCNr">{s name="CreditcardCardnumberLabel" namespace="frontend/FatchipFCSPayment/translations"}Kartennummer{/s}</label>
                     </p>
                 {/block}
 
@@ -52,9 +52,9 @@
                     <input name="CCNr" type="text"
                            id="CCNr"
                            class="payment--field is--required{if $error_flags.fatchip_firstcash__creditcard_cardnumber} has--error{/if}"
-                           placeholder="{s name='CreditcardCardnumberPlaceholder' namespace='frontend/FatchipCTPayment/translations'}Kartennummer{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
+                           placeholder="{s name='CreditcardCardnumberPlaceholder' namespace='frontend/FatchipFCSPayment/translations'}Kartennummer{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
                            {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
-                           value="{$FatchipCTPaymentData.creditcardcardnumber}"
+                           value="{$FatchipFCSPaymentData.creditcardcardnumber}"
                             />
                 {/block}
 
@@ -90,7 +90,7 @@
                                 >
                             <option disabled="disabled" value="">----</option>
                             {section name="expirationdateyear" start=$thisyear loop=$thisyear + 15 step=1}
-                                {$isSelected = $smarty.section.expirationdateyear.index == $FatchipCTPaymentData.expirationdateyear}
+                                {$isSelected = $smarty.section.expirationdateyear.index == $FatchipFCSPaymentData.expirationdateyear}
                                 <option value="{$smarty.section.expirationdateyear.index}"
                                         {if $isSelected}selected{/if}>
                                     {$smarty.section.expirationdateyear.index}
@@ -102,7 +102,7 @@
                 <div>
                     {block name="frontend_checkout_payment_fatchip_firstcash_creditcard_cvc_label"}
                         <p class="none">
-                            <label for="CCCVC">{s name='CreditcardCvc' namespace='frontend/FatchipCTPayment/translations'}CVC Code{/s}</label>
+                            <label for="CCCVC">{s name='CreditcardCvc' namespace='frontend/FatchipFCSPayment/translations'}CVC Code{/s}</label>
                         </p>
                     {/block}
 
@@ -110,16 +110,16 @@
                         <input name="CCCVC" type="text"
                                id="CCCVC"
                                class="payment--field is--required{if $error_flags.fatchip_firstcash__creditcard_cvc} has--error{/if}"
-                               placeholder="{s name='CreditcardCvc' namespace='frontend/FatchipCTPayment/translations'}CVC Code{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
+                               placeholder="{s name='CreditcardCvc' namespace='frontend/FatchipFCSPayment/translations'}CVC Code{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
                                {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
-                               value="{$FatchipCTPaymentData.creditcardcvc}"
+                               value="{$FatchipFCSPaymentData.creditcardcvc}"
                                 />
                         <input type="hidden" name="MerchantID" id="MerchantID"
-                               value="{$fatchipCTCreditCardSilentParams.MerchantID}">
+                               value="{$fatchipFCSCreditCardSilentParams.MerchantID}">
                         <input type="hidden" name="CCExpiry" id="CCExpiry" value=" ">
                         <input type="hidden" name="CreditCardHolder" id="CreditCardHolder" value=" ">
-                        <input type="hidden" name="Len" id="Len" value="{$fatchipCTCreditCardSilentParams.Len}">
-                        <input type="hidden" name="Data" id="Data" value="{$fatchipCTCreditCardSilentParams.Data}">
+                        <input type="hidden" name="Len" id="Len" value="{$fatchipFCSCreditCardSilentParams.Len}">
+                        <input type="hidden" name="Data" id="Data" value="{$fatchipFCSCreditCardSilentParams.Data}">
                     {/block}
                 </div>
             </div>

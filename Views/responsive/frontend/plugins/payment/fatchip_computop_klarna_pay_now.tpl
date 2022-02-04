@@ -3,6 +3,6 @@
 
 {if $payment_mean.id == $form_data.payment}
     <script>
-        window.fatchipCTPaymentType = "pay_now";
+        window.fatchipFCSPaymentType = "pay_now";
     </script>
 {/if}

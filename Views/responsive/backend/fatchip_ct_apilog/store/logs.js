@@ -6,7 +6,7 @@
  * apilogs store
  */
 //{block name="backend/fatchip_ct_apilog/store/logs"}
-Ext.define('Shopware.apps.FatchipCTApilog.store.Logs', {
+Ext.define('Shopware.apps.FatchipFCSApilog.store.Logs', {
   /**
    * Extend for the standard ExtJS 4
    * @string
@@ -30,7 +30,7 @@ Ext.define('Shopware.apps.FatchipCTApilog.store.Logs', {
    * Define the used model for this store
    * @string
    */
-  model: 'Shopware.apps.FatchipCTApilog.model.Log',
+  model: 'Shopware.apps.FatchipFCSApilog.model.Log',
   proxy: {
     type: 'ajax',
     /**
@@ -39,10 +39,10 @@ Ext.define('Shopware.apps.FatchipCTApilog.store.Logs', {
      */
     api: {
       //read out all articles
-      read: '{url controller="FatchipCTApilog" action="getApilogs"}',
-      destroy: '{url controller="FatchipCTApilog" action="deleteLogs"}',
-      detail: '{url controller="FatchipCTApilog" action="getDetailLog"}',
-      search: '{url controller="FatchipCTApilog" action="getSearchResult"}'
+      read: '{url controller="FatchipFCSApilog" action="getApilogs"}',
+      destroy: '{url controller="FatchipFCSApilog" action="deleteLogs"}',
+      detail: '{url controller="FatchipFCSApilog" action="getDetailLog"}',
+      search: '{url controller="FatchipFCSApilog" action="getSearchResult"}'
     },
     /**
      * Configure the data reader
