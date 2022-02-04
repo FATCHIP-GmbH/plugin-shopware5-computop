@@ -2,13 +2,13 @@
  * $Id: $
  */
 
-//{namespace name=backend/fatchip_ct_apilog/main}
+//{namespace name=backend/fatchip_fcs_apilog/main}
 /**
  * Shopware UI - Log view list
  *
  * This grid contains all logs and its information.
  */
-//{block name="backend/fatchip_ct_apilog/view/log/list"}
+//{block name="backend/fatchip_fcs_apilog/view/log/list"}
 Ext.define('Shopware.apps.FatchipFCSApilog.view.log.List', {
   /**
    * Extend from the standard ExtJS 4
@@ -69,46 +69,46 @@ Ext.define('Shopware.apps.FatchipFCSApilog.view.log.List', {
   getColumns: function() {
     var me = this;
     var columns = [{
-        header: '{s name=fatchip_ct_apilog/grid/column_id}ID{/s}',
+        header: '{s name=fatchip_fcs_apilog/grid/column_id}ID{/s}',
         dataIndex: 'id',
         flex: 1
       },         {
-        header: '{s name=fatchip_ct_apilog/grid/column_request}Typ{/s}',
+        header: '{s name=fatchip_fcs_apilog/grid/column_request}Typ{/s}',
         dataIndex: 'request',
         flex: 1
       }, {
-        header: '{s name=fatchip_ct_apilog/grid/column_payment_name}Zahlart{/s}',
+        header: '{s name=fatchip_fcs_apilog/grid/column_payment_name}Zahlart{/s}',
         dataIndex: 'paymentName',
         flex: 1
       }, {
-        header: '{s name=fatchip_ct_apilog/grid/column_response}Status{/s}',
+        header: '{s name=fatchip_fcs_apilog/grid/column_response}Status{/s}',
         dataIndex: 'response',
         flex: 1
       }, {
-        header: '{s name=fatchip_ct_apilog/grid/column_date}Datum{/s}',
+        header: '{s name=fatchip_fcs_apilog/grid/column_date}Datum{/s}',
         dataIndex: 'creationDate',
         flex: 1,
         xtype: 'datecolumn',
         renderer: me.renderDate
       }, {
-        header: '{s name=fatchip_ct_apilog/grid/column_mode}TransID{/s}',
+        header: '{s name=fatchip_fcs_apilog/grid/column_mode}TransID{/s}',
         dataIndex: 'transId',
         flex: 1
       }, {
-        header: '{s name=fatchip_ct_apilog/grid/column_merchant}PayID{/s}',
+        header: '{s name=fatchip_fcs_apilog/grid/column_merchant}PayID{/s}',
         dataIndex: 'payId',
         flex: 1
       }, {
-        header: '{s name=fatchip_ct_apilog/grid/column_portal_id}XID{/s}',
+        header: '{s name=fatchip_fcs_apilog/grid/column_portal_id}XID{/s}',
         dataIndex: 'xId',
         flex: 1
       },
       /*{
-        header: '{s name=fatchip_ct_apilog/grid/column_request_details}Request{/s}',
+        header: '{s name=fatchip_fcs_apilog/grid/column_request_details}Request{/s}',
         dataIndex: 'requestDetails',
         flex: 1
       }, {
-        header: '{s name=fatchip_ct_apilog/grid/column_response_details}Response{/s}',
+        header: '{s name=fatchip_fcs_apilog/grid/column_response_details}Response{/s}',
         dataIndex: 'responseDetails',
         flex: 1
       }

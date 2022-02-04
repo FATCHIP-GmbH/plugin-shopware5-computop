@@ -80,11 +80,11 @@ class Templates implements SubscriberInterface
     public function onBackendRiskManagementPostDispatch(\Enlight_Controller_ActionEventArgs $args)
     {
         $view = $args->getSubject()->View();
-        $view->extendsTemplate('backend/fcct_risk_management/controller/main.js');
-        $view->extendsTemplate('backend/fcct_risk_management/controller/risk_management.js');
-        $view->extendsTemplate('backend/fcct_risk_management/store/risks.js');
-        $view->extendsTemplate('backend/fcct_risk_management/store/trafficLights.js');
-        $view->extendsTemplate('backend/fcct_risk_management/view/risk_management/container.js');
+        $view->extendsTemplate('backend/fcfcs_risk_management/controller/main.js');
+        $view->extendsTemplate('backend/fcfcs_risk_management/controller/risk_management.js');
+        $view->extendsTemplate('backend/fcfcs_risk_management/store/risks.js');
+        $view->extendsTemplate('backend/fcfcs_risk_management/store/trafficLights.js');
+        $view->extendsTemplate('backend/fcfcs_risk_management/view/risk_management/container.js');
     }
 
     /**
@@ -95,9 +95,9 @@ class Templates implements SubscriberInterface
     public function fatchipFCSExtendController_Backend_Order(\Enlight_Controller_ActionEventArgs $args)
     {
         $view = $args->getSubject()->View();
-        $view->extendsTemplate('backend/fcct_order/controller/detail.js');
-        $view->extendsTemplate('backend/fcct_order/model/position.js');
-        $view->extendsTemplate('backend/fcct_order/view/detail/overview.js');
-        $view->extendsTemplate('backend/fcct_order/view/detail/position.js');
+        $view->extendsTemplate('backend/fcfcs_order/controller/detail.js');
+        $view->extendsTemplate('backend/fcfcs_order/model/position.js');
+        $view->extendsTemplate('backend/fcfcs_order/view/detail/overview.js');
+        $view->extendsTemplate('backend/fcfcs_order/view/detail/position.js');
     }
 }

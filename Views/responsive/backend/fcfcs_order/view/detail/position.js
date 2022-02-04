@@ -1,4 +1,4 @@
-//{namespace name=backend/fcct_order/main}
+//{namespace name=backend/fcfcs_order/main}
 //{block name="backend/order/view/detail/position" append}
 Ext.define('Shopware.apps.Order.view.detail.fcctPosition', {
   override: 'Shopware.apps.Order.view.detail.Position',

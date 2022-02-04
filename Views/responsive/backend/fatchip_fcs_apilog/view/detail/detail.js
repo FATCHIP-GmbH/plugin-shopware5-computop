@@ -2,12 +2,12 @@
  * $Id: $
  */
 
-//{namespace name=backend/fatchip_ct_apilog/main}
+//{namespace name=backend/fatchip_fcs_apilog/main}
 
 /**
  * Payone apilog detail view
  */
-//{block name="backend/fatchip_ct_apilog/view/detail/detail"}
+//{block name="backend/fatchip_fcs_apilog/view/detail/detail"}
 Ext.define('Shopware.apps.FatchipFCSApilog.view.detail.Detail', {
   /**
    * Extend from the standard ExtJS 4

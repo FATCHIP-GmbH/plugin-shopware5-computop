@@ -170,7 +170,7 @@ class Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap extends Shopware_Com
     {
 
         Shopware()->Loader()->registerNamespace(
-            'Shopware\Plugins\FatchipFCSPayment\',
+            'Shopware\Plugins\FatchipFCSPayment',
             $this->Path()
         );
 

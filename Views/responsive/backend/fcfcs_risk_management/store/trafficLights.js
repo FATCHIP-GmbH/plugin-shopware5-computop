@@ -1,4 +1,4 @@
-//{namespace name=backend/fcct_risk_management/main}
+//{namespace name=backend/fcfcs_risk_management/main}
 //{block name="backend/risk_management/app" append}
 Ext.define('Shopware.apps.RiskManagement.store.TrafficLights', {
   

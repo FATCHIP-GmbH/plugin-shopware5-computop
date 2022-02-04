@@ -5,7 +5,7 @@
 /**
  * apilogs details store
  */
-//{block name="backend/fatchip_ct_apilog/store/detail"}
+//{block name="backend/fatchip_fcs_apilog/store/detail"}
 Ext.define('Shopware.apps.FatchipFCSApilog.store.Detail', {
   /**
    * Extend for the standard ExtJS 4

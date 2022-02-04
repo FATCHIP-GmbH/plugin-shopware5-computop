@@ -2,10 +2,10 @@
  * $Id: $
  */
 
-//{namespace name=backend/fatchip_ct_apilog/main}
+//{namespace name=backend/fatchip_fcs_apilog/main}
 
 
-//{block name="backend/fatchip_ct_apilog/controller/log"}
+//{block name="backend/fatchip_fcs_apilog/controller/log"}
 Ext.define('Shopware.apps.FatchipFCSApilog.controller.Log', {
     /**
     * Extend from the standard ExtJS 4

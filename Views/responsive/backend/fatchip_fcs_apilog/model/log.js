@@ -5,7 +5,7 @@
 /**
  * model for api log entries
  */
-//{block name="backend/fatchip_ct_apilog/model/log"}
+//{block name="backend/fatchip_fcs_apilog/model/log"}
 Ext.define('Shopware.apps.FatchipFCSApilog.model.Log', {
   /**
     * Extends the standard ExtJS 4
@@ -17,7 +17,7 @@ Ext.define('Shopware.apps.FatchipFCSApilog.model.Log', {
     * @array
     */
   fields: [
-  //{block name="backend/fatchip_ct_apilog/model/log/fields"}{/block}
+  //{block name="backend/fatchip_fcs_apilog/model/log/fields"}{/block}
   'id',
   'paymentName',
   'request',

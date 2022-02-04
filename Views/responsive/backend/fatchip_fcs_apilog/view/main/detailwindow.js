@@ -2,8 +2,8 @@
  * $Id: $
  */
 
-//{namespace name=backend/fatchip_ct_apilog/main}
-//{block name="backend/fatchip_ct_apilog/view/main/detailwindow"}
+//{namespace name=backend/fatchip_fcs_apilog/main}
+//{block name="backend/fatchip_fcs_apilog/view/main/detailwindow"}
 Ext.define('Shopware.apps.FatchipFCSApilog.view.main.Detailwindow', {
 	extend: 'Enlight.app.Window',
     title: '{s name=window_detail_title}Apilog Details{/s}',

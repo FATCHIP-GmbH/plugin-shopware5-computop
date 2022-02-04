@@ -2,7 +2,7 @@
  * $Id: $
  */
 
-//{block name="backend/fatchip_ct_apilog/application"}
+//{block name="backend/fatchip_fcs_apilog/application"}
 Ext.define('Shopware.apps.FatchipFCSApilog', {
   /**
 	* Extends from our special controller, which handles the
