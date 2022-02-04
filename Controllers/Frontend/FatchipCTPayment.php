@@ -121,6 +121,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $this->config = $this->plugin->Config()->toArray();
+        //add shop language to config array to avoid more argument bloat in paymentService::getIFramePaymentClass() & CTPaymentMethods::__construct()
+        $this->config['language'] = $this->getLanguageFromCurrentShop();
         $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
         $this->session = Shopware()->Session();
         $this->router = $this->Front()->Router();
@@ -807,6 +809,28 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $ctOrder->setEmail($email);
         }
         return $ctOrder;
+    }
+
+    /**
+     * Try to obtain the ISO-639-1 language code for the current subshop
+     * @return string|null
+     */
+    private function getLanguageFromCurrentShop()
+    {
+        $shop = Shopware()->Shop();
+        if ($shop === null) {
+            return null;
+        }
+        $locale = $shop->getLocale();
+        if ($locale === null) {
+            return null;
+        }
+        $locale = $locale->getLocale();
+        $match = [];
+        if (!preg_match('/^(?<language>[a-z]{2,3})_(?<country>[A-Z]{2,3})$/', $locale, $match)) {
+            return null;
+        }
+        return $match['language'];
     }
 }
 
