@@ -22,7 +22,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.firstcash.com
+ * @link       https://www.firstcashsolution.de/
  */
 
 require_once 'FatchipFCSPayment.php';
@@ -40,7 +40,7 @@ use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.firstcash.com
+ * @link       https://www.firstcashsolution.de/
  */
 class Shopware_Controllers_Frontend_FatchipFCSKlarnaPayments extends Shopware_Controllers_Frontend_FatchipFCSPayment
 {

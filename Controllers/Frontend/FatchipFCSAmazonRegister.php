@@ -22,7 +22,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.firstcash.com
+ * @link       https://www.firstcashsolution.de/
  */
 
 use Fatchip\CTPayment\CTPaymentMethodIframe;
@@ -37,7 +37,7 @@ use Shopware\Components\CSRFWhitelistAware;
  * @author    FATCHIP GmbH <support@fatchip.de>
  * @copyright 2018 First Cash Solution
  * @license   <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link      https://www.firstcash.com
+ * @link      https://www.firstcashsolution.de/
  */
 class Shopware_Controllers_Frontend_FatchipFCSAmazonRegister extends Shopware_Controllers_Frontend_Register implements CSRFWhitelistAware
 {

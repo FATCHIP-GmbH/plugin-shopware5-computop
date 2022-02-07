@@ -22,7 +22,7 @@
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.firstcash.com
+ * @link       https://www.firstcashsolution.de/
  */
 
 use Fatchip\CTPayment\CTEnums\CTEnumPaymentStatus;
@@ -44,7 +44,7 @@ use Shopware\Components\CSRFWhitelistAware;
  * @author     FATCHIP GmbH <support@fatchip.de>
  * @copyright  2018 First Cash Solution
  * @license    <http://www.gnu.org/licenses/> GNU Lesser General Public License
- * @link       https://www.firstcash.com
+ * @link       https://www.firstcashsolution.de/
  */
 abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_Controllers_Frontend_Payment implements CSRFWhitelistAware
 {
