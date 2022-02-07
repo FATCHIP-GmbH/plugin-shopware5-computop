@@ -11,9 +11,9 @@ Ext.define('Shopware.apps.Order.view.detail.fcfcsPosition', {
       id: 'btnCapture',
       iconCls: 'sprite-money-coin',
       text: '{s name=position/capture}Positionen einziehen{/s}',
-      action: 'fcctCapturePositions',
+      action: 'fcfcsCapturePositions',
       handler: function() {
-        me.fireEvent('fcctCapturePositions', me.record, me.orderPositionGrid, {
+        me.fireEvent('fcfcsCapturePositions', me.record, me.orderPositionGrid, {
           callback: function(order) {
             me.fireEvent('updateForms', order, me.up('window'));
           }
@@ -25,9 +25,9 @@ Ext.define('Shopware.apps.Order.view.detail.fcfcsPosition', {
       id: 'btnDebit',
       iconCls: 'sprite-money-coin',
       text: '{s name=position/debit}Positionen gutschreiben{/s}',
-      action: 'fcctDebitPositions',
+      action: 'fcfcsDebitPositions',
       handler: function() {
-        me.fireEvent('fcctDebitPositions', me.record, me.orderPositionGrid, {
+        me.fireEvent('fcfcsDebitPositions', me.record, me.orderPositionGrid, {
           callback: function(order) {
             me.fireEvent('updateForms', order, me.up('window'));
           }
@@ -68,7 +68,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcfcsPosition', {
     var me = this;
     me.callParent(arguments);
 
-    this.addEvents('fcctCapturePositions', 'fcctDebitPositions');
+    this.addEvents('fcfcsCapturePositions', 'fcfcsDebitPositions');
   },
 
   getColumns:function (grid) {
