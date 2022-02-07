@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+# 1.0.50
+2022-02-07
+* Added language parameter for iFrame 
+
 # 1.0.49
 2022-02-03
 * Added missing translations
