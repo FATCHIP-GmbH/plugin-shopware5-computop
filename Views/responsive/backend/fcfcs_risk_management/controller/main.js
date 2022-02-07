@@ -1,5 +1,5 @@
 //{block name="backend/risk_management/app" append}
-Ext.define('Shopware.apps.RiskManagement.controller.fcct__Main', {
+Ext.define('Shopware.apps.RiskManagement.controller.fcfcs__Main', {
   override: 'Shopware.apps.RiskManagement.controller.Main',
   init: function() {
     var me = this;

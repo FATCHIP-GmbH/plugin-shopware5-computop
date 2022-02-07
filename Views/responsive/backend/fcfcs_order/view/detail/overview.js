@@ -1,6 +1,6 @@
 //{namespace name=backend/fcfcs_order/main}
 //{block name="backend/order/view/detail/overview" append}
-Ext.define('Shopware.apps.Order.view.detail.fcctOverview',
+Ext.define('Shopware.apps.Order.view.detail.fcfcsOverview',
   {
     override: 'Shopware.apps.Order.view.detail.Overview',
 

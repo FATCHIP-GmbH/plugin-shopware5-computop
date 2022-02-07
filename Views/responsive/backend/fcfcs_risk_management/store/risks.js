@@ -1,6 +1,6 @@
-//{namespace name=backend/mopt_risk_management/main}
+//{namespace name=backend/fcfcs_risk_management/main}
 //{block name="backend/risk_management/store/risks" append}
-Ext.define('Shopware.apps.RiskManagement.store.fcct__Risks', {
+Ext.define('Shopware.apps.RiskManagement.store.fcfcs__Risks', {
 
     override: 'Shopware.apps.RiskManagement.store.Risks',
     

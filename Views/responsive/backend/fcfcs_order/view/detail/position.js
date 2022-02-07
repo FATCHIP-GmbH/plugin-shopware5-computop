@@ -1,6 +1,6 @@
 //{namespace name=backend/fcfcs_order/main}
 //{block name="backend/order/view/detail/position" append}
-Ext.define('Shopware.apps.Order.view.detail.fcctPosition', {
+Ext.define('Shopware.apps.Order.view.detail.fcfcsPosition', {
   override: 'Shopware.apps.Order.view.detail.Position',
 
   createGridToolbar: function() {
@@ -77,12 +77,12 @@ Ext.define('Shopware.apps.Order.view.detail.fcctPosition', {
 
     columns.push({
         header: '{s name=position/captured}Eingezogen{/s}',
-        dataIndex: 'fcctcaptured',
+        dataIndex: 'fcfcscaptured',
         flex:1
       },
       {
         header: '{s name=position/debited}Gutgeschrieben{/s}',
-        dataIndex: 'fcctdebit',
+        dataIndex: 'fcfcsdebit',
         flex:1
       }
     );

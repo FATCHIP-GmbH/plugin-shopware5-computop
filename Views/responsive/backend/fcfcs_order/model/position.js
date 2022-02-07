@@ -1,5 +1,5 @@
 //{block name="backend/order/model/position/fields" append}
-{ name: 'fcctcaptured', type:'float' },
-{ name: 'fcctdebit', type:'float' },
+{ name: 'fcfcscaptured', type:'float' },
+{ name: 'fcfcsdebit', type:'float' },
 { name: 'price', type:'float' },
 //{/block}

@@ -1,5 +1,5 @@
 //{block name="backend/risk_management/view/risk_management/container" append}
-Ext.define('Shopware.apps.RiskManagement.view.risk_management.fcct__Container', {
+Ext.define('Shopware.apps.RiskManagement.view.risk_management.fcfcs__Container', {
   override: 'Shopware.apps.RiskManagement.view.risk_management.Container',
   
   createItems: function()

@@ -1,5 +1,5 @@
 //{block name="backend/risk_management/app" append}
-Ext.define('Shopware.apps.RiskManagement.controller.fcct__RiskManagement', {
+Ext.define('Shopware.apps.RiskManagement.controller.fcfcs__RiskManagement', {
   override: 'Shopware.apps.RiskManagement.controller.RiskManagement',
   
   //replace text-input with combobox

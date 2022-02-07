@@ -79,8 +79,8 @@ class OrderList implements SubscriberInterface
                 $attribute = $this->getOrderDetailAttribute($detail);
 
                 //TODO: check brutto/netto
-                $orderDetail['fcctcaptured'] = $attribute->getFatchipfcsCaptured();
-                $orderDetail['fcctdebit'] = $attribute->getFatchipfcsDebit();
+                $orderDetail['fcfcscaptured'] = $attribute->getFatchipfcsCaptured();
+                $orderDetail['fcfcsdebit'] = $attribute->getFatchipfcsDebit();
             }
             unset($orderDetail);
         }
