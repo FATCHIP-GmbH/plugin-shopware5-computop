@@ -40,6 +40,7 @@ use Shopware;
 
 require_once 'Components/Api/vendor/autoload.php';
 
+
 /**
  * Class Util
  * @package Shopware\Plugins\FatchipFCSPayment\
