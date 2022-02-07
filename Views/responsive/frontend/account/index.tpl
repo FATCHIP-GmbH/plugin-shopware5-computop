@@ -12,13 +12,13 @@
             </p>
 
             <strong>Bank:</strong>
-            {$sUserData.additional.user.fatchipct_lastschriftbank}
+            {$sUserData.additional.user.fatchipfcs_lastschriftbank}
             <br/>
             <strong>IBAN:</strong>
             {if $FatchipFCSPaymentIbanAnon == 1}
-                {$sUserData.additional.user.fatchipct_lastschriftiban|truncate:18:"XXXXX":true}
+                {$sUserData.additional.user.fatchipfcs_lastschriftiban|truncate:18:"XXXXX":true}
             {else}
-                {$sUserData.additional.user.fatchipct_lastschriftiban}
+                {$sUserData.additional.user.fatchipfcs_lastschriftiban}
             {/if}
             <br/>
         </div>

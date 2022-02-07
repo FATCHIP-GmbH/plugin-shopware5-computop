@@ -127,7 +127,7 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalStandard extends Shopware_Co
         $agreementId = false;
         if ($order) {
             $orderAttribute = $order->getAttribute();
-            $agreementId = $orderAttribute->getfatchipctPaypalbillingagreementid();
+            $agreementId = $orderAttribute->getfatchipfcsPaypalbillingagreementid();
 
         }
         return $agreementId;

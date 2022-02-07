@@ -206,7 +206,7 @@ class Shopware_Controllers_Frontend_FatchipFCSLastschrift extends Shopware_Contr
         $agreementId = false;
         if ($order) {
             $orderAttribute = $order->getAttribute();
-            $agreementId = $orderAttribute->getfatchipctlastschriftmandateid();
+            $agreementId = $orderAttribute->getfatchipfcslastschriftmandateid();
 
         }
         return $agreementId;
@@ -227,7 +227,7 @@ class Shopware_Controllers_Frontend_FatchipFCSLastschrift extends Shopware_Contr
         $DoS = false;
         if ($order) {
             $orderAttribute = $order->getAttribute();
-            $DoS = $orderAttribute->getfatchipctlastschriftdos();
+            $DoS = $orderAttribute->getfatchipfcslastschriftdos();
 
         }
         return $DoS;

@@ -45,8 +45,8 @@
         initConfirmationFlow: function() {
             var me = this;
 
-            var orderReferenceId = me.data.fatchipctamazonorderreferenceid;
-            var sellerId = me.data.fatchipctamazonsellerid;
+            var orderReferenceId = me.data.fatchipfcsamazonorderreferenceid;
+            var sellerId = me.data.fatchipfcsamazonsellerid;
 
             OffAmazonPayments.initConfirmationFlow(sellerId, orderReferenceId, function(confirmationFlow) {
                 me.setConfirmOrder(confirmationFlow);
@@ -55,8 +55,8 @@
         setConfirmOrder: function(confirmationFlow) {
             var me = this;
 
-            var requestUrl = me.data.fatchipctamazonscourl;
-            var cartErrorUrl = me.data.fatchipctcarterrorurl;
+            var requestUrl = me.data.fatchipfcsamazonscourl;
+            var cartErrorUrl = me.data.fatchipfcscarterrorurl;
 
             $.ajax({
                     url: requestUrl,
@@ -75,7 +75,7 @@
     });
 
     $(function() {
-        if($('body').hasClass('is--ctl-fatchipctamazoncheckout') && $('body').hasClass('is--act-confirm')) {
+        if($('body').hasClass('is--ctl-fatchipfcsamazoncheckout') && $('body').hasClass('is--act-confirm')) {
             registerPlugin();
 
             /* update on ajax changes

@@ -338,7 +338,7 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
         $pseudoCardNumber = false;
         if ($order) {
             $orderAttribute = $order->getAttribute();
-            $pseudoCardNumber = $orderAttribute->getfatchipctKreditkartepseudonummer();
+            $pseudoCardNumber = $orderAttribute->getfatchipfcsKreditkartepseudonummer();
 
         }
         return $pseudoCardNumber;
@@ -359,7 +359,7 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
         $cardBrand = false;
         if ($order) {
             $orderAttribute = $order->getAttribute();
-            $cardBrand = $orderAttribute->getfatchipctKreditkartebrand();
+            $cardBrand = $orderAttribute->getfatchipfcsKreditkartebrand();
 
         }
         return $cardBrand;
@@ -380,7 +380,7 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
         $cardexpiry = false;
         if ($order) {
             $orderAttribute = $order->getAttribute();
-            $cardexpiry = $orderAttribute->getfatchipctKreditkarteexpiry();
+            $cardexpiry = $orderAttribute->getfatchipfcsKreditkarteexpiry();
 
         }
         return $cardexpiry;
@@ -406,14 +406,14 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
         $transactionId = $response->getTransID();
         if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $transactionId])) {
             if ($attribute = $order->getAttribute()) {
-                $attribute->setfatchipctStatus($response->getStatus());
-                $attribute->setfatchipctTransid($response->getTransID());
-                $attribute->setfatchipctPayid($response->getPayID());
-                $attribute->setfatchipctXid($response->getXID());
-                $attribute->setfatchipctkreditkartepseudonummer($ccNumber);
-                $attribute->setfatchipctkreditkartebrand($ccBrand);
-                $attribute->setfatchipctkreditkarteexpiry($ccExpiry);
-                $attribute->setfatchipctPaypalbillingagreementid($response->getBillingAgreementiD());
+                $attribute->setfatchipfcsStatus($response->getStatus());
+                $attribute->setfatchipfcsTransid($response->getTransID());
+                $attribute->setfatchipfcsPayid($response->getPayID());
+                $attribute->setfatchipfcsXid($response->getXID());
+                $attribute->setfatchipfcskreditkartepseudonummer($ccNumber);
+                $attribute->setfatchipfcskreditkartebrand($ccBrand);
+                $attribute->setfatchipfcskreditkarteexpiry($ccExpiry);
+                $attribute->setfatchipfcsPaypalbillingagreementid($response->getBillingAgreementiD());
 
                 Shopware()->Models()->persist($attribute);
                 Shopware()->Models()->flush();

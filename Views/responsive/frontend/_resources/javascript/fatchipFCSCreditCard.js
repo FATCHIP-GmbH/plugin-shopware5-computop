@@ -58,18 +58,18 @@ $.plugin("fatchipFCSCCNrValidator", {
         me.applyDataAttributes();
 
         me.$el.bind("keyup change", function () {
-            $("#fatchipctiban--message").remove();
+            $("#fatchipfcsiban--message").remove();
             if (me.$el.val() && !me.opts.ibanbicReg.test(me.$el.val())) {
                 me.$el.addClass("has--error");
                 $("<div>", {
                     "html": "<p>" + me.opts.moptIbanErrorMessage + "</p>",
-                    "id": "fatchipctiban--message",
+                    "id": "fatchipfcsiban--message",
                     "class": me.opts.errorMessageClass
                 }).insertAfter(me.$el);
 
             } else {
                 me.$el.removeClass("has--error");
-                $("#fatchipctiban--message").remove();
+                $("#fatchipfcsiban--message").remove();
             }
         });
     },

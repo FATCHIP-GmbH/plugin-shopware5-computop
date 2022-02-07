@@ -238,7 +238,7 @@ class Util
             return null;
         }
 
-        return $attribute->getFatchipctSocialsecuritynumber();
+        return $attribute->getFatchipfcsSocialsecuritynumber();
     }
 
     /**
@@ -256,7 +256,7 @@ class Util
             return null;
         }
 
-        return $attribute->getFatchipctAnnualSalary();
+        return $attribute->getFatchipfcsAnnualSalary();
     }
 
     /**
@@ -273,7 +273,7 @@ class Util
         if ($attribute === null) {
             return null;
         }
-        return $attribute->getFatchipctLastschriftbank();
+        return $attribute->getFatchipfcsLastschriftbank();
     }
 
     /**
@@ -290,7 +290,7 @@ class Util
         if ($attribute === null) {
             return null;
         }
-        return $attribute->getFatchipctLastschriftiban();
+        return $attribute->getFatchipfcsLastschriftiban();
     }
 
     /**
@@ -307,7 +307,7 @@ class Util
         if ($attribute === null) {
             return null;
         }
-        return $attribute->getFatchipctAfterpayinstallmentiban();
+        return $attribute->getFatchipfcsAfterpayinstallmentiban();
     }
 
     /**
@@ -324,7 +324,7 @@ class Util
         if ($attribute === null) {
             return null;
         }
-        return $attribute->getFatchipctLastschriftaccowner();
+        return $attribute->getFatchipfcsLastschriftaccowner();
     }
 
     /**
@@ -341,7 +341,7 @@ class Util
         if ($attribute === null) {
             return null;
         }
-        return $attribute->getFatchipctCreditcardinitialpaymentsuccess();
+        return $attribute->getFatchipfcsCreditcardinitialpaymentsuccess();
     }
 
     // SW 5.0 - 5.3 Compatibility
@@ -425,7 +425,7 @@ class Util
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
 
         $attributes = $user->getAttribute();
-        $attributes->setFatchipctSocialsecuritynumber($ssn);
+        $attributes->setFatchipfcsSocialsecuritynumber($ssn);
         Shopware()->Models()->persist($attributes);
         Shopware()->Models()->flush($attributes);
 
@@ -441,7 +441,7 @@ class Util
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
 
         $attributes = $user->getAttribute();
-        $attributes->setFatchipctAnnualSalary($ssn);
+        $attributes->setFatchipfcsAnnualSalary($ssn);
         Shopware()->Models()->persist($attributes);
         Shopware()->Models()->flush($attributes);
 
@@ -457,7 +457,7 @@ class Util
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
 
         $attributes = $user->getAttribute();
-        $attributes->setFatchipctLastschriftbank($bank);
+        $attributes->setFatchipfcsLastschriftbank($bank);
         Shopware()->Models()->persist($attributes);
         Shopware()->Models()->flush($attributes);
 
@@ -473,7 +473,7 @@ class Util
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
 
         $attributes = $user->getAttribute();
-        $attributes->setFatchipctLastschriftiban($iban);
+        $attributes->setFatchipfcsLastschriftiban($iban);
         Shopware()->Models()->persist($attributes);
         Shopware()->Models()->flush($attributes);
 
@@ -489,7 +489,7 @@ class Util
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
 
         $attributes = $user->getAttribute();
-        $attributes->setFatchipctAfterpayinstallmentiban($iban);
+        $attributes->setFatchipfcsAfterpayinstallmentiban($iban);
         Shopware()->Models()->persist($attributes);
         Shopware()->Models()->flush($attributes);
 
@@ -505,7 +505,7 @@ class Util
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
 
         $attributes = $user->getAttribute();
-        $attributes->setFatchipctLastschriftaccowner($kontoinhaber);
+        $attributes->setFatchipfcsLastschriftaccowner($kontoinhaber);
         Shopware()->Models()->persist($attributes);
         Shopware()->Models()->flush($attributes);
 
@@ -521,7 +521,7 @@ class Util
         $user = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')->find($userId);
 
         $attributes = $user->getAttribute();
-        $attributes->setFatchipctCreditcardinitialpaymentsuccess($success);
+        $attributes->setFatchipfcsCreditcardinitialpaymentsuccess($success);
         Shopware()->Models()->persist($attributes);
         Shopware()->Models()->flush($attributes);
 
@@ -612,10 +612,10 @@ class Util
 
         $address = $this->getCustomerAddressById($addressID, $type);
         if ($attribute = $address->getAttribute()) {
-            $attribute->setFatchipctCrifdate(date('Y-m-d H:i:s'));
-            $attribute->setFatchipctCrifdescription($response->getDescription());
-            $attribute->setFatchipctCrifresult($response->getResult());
-            $attribute->setFatchipctCrifstatus($response->getStatus());
+            $attribute->setFatchipfcsCrifdate(date('Y-m-d H:i:s'));
+            $attribute->setFatchipfcsCrifdescription($response->getDescription());
+            $attribute->setFatchipfcsCrifresult($response->getResult());
+            $attribute->setFatchipfcsCrifstatus($response->getStatus());
             Shopware()->Models()->persist($attribute);
             Shopware()->Models()->flush();
         }

@@ -14,14 +14,14 @@
     {if $sUserData.additional.payment.name === 'fatchip_firstcash_lastschrift'}
         <p class="payment--method-info">
             <strong class="payment--title">Bank:</strong>
-            <span class="payment--description">{$sUserData.additional.user.fatchipct_lastschriftbank}</span>
+            <span class="payment--description">{$sUserData.additional.user.fatchipfcs_lastschriftbank}</span>
         </p>
         <p class="payment--method-info">
             <strong class="payment--title">IBAN:</strong>
             {if $FatchipFCSPaymentIbanAnon == 1}
-                <span class="payment--description">{$sUserData.additional.user.fatchipct_lastschriftiban|truncate:18:"XXXXX":true}</span>
+                <span class="payment--description">{$sUserData.additional.user.fatchipfcs_lastschriftiban|truncate:18:"XXXXX":true}</span>
             {else}
-                <span class="payment--description">{$sUserData.additional.user.fatchipct_lastschriftiban}</span>
+                <span class="payment--description">{$sUserData.additional.user.fatchipfcs_lastschriftiban}</span>
             {/if}
         </p>
     {/if}

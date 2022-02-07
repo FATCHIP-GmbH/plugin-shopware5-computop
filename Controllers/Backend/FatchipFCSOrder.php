@@ -116,14 +116,14 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
             }
 
             $requestParams = $paymentClass->getRefundParams(
-                $order->getAttribute()->getfatchipctPayid(),
+                $order->getAttribute()->getfatchipfcsPayid(),
                 $amount,
                 $order->getCurrency(),
-                $order->getAttribute()->getfatchipctTransid(),
-                $order->getAttribute()->getfatchipctXid(),
+                $order->getAttribute()->getfatchipfcsTransid(),
+                $order->getAttribute()->getfatchipfcsXid(),
                 $orderDesc,
-                $order->getAttribute()->getfatchipctKlarnainvno(),
-                $order->getAttribute()->getfatchipctkreditkarteschemereferenceid()
+                $order->getAttribute()->getfatchipfcsKlarnainvno(),
+                $order->getAttribute()->getfatchipfcskreditkarteschemereferenceid()
             );
 
 
@@ -210,13 +210,13 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
             }
 
             $requestParams = $paymentClass->getCaptureParams(
-                $order->getAttribute()->getfatchipctPayid(),
+                $order->getAttribute()->getfatchipfcsPayid(),
                 $amount,
                 $order->getCurrency(),
-                $order->getAttribute()->getfatchipctTransid(),
-                $order->getAttribute()->getfatchipctXid(),
+                $order->getAttribute()->getfatchipfcsTransid(),
+                $order->getAttribute()->getfatchipfcsXid(),
                 $orderDesc,
-                $order->getAttribute()->getfatchipctkreditkarteschemereferenceid()
+                $order->getAttribute()->getfatchipfcskreditkarteschemereferenceid()
             );
 
             $captureResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'CAPTURE', $paymentClass->getCTCaptureURL());
@@ -353,7 +353,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
 
             $positionAttribute = $position->getAttribute();
 
-            $alreadyCapturedAmount = $positionAttribute ? $positionAttribute->getfatchipctCaptured() : 0;
+            $alreadyCapturedAmount = $positionAttribute ? $positionAttribute->getfatchipfcsCaptured() : 0;
             //add difference between total price and already captured amount
             $positionPrice = round($position->getPrice(), 2);
             $taxRate = $position->getTaxRate();
@@ -407,7 +407,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
             }
 
             $positionAttribute = $position->getAttribute();
-            $alreadyRefundedAmount = $positionAttribute ? $positionAttribute->getfatchipctDebit() : 0;
+            $alreadyRefundedAmount = $positionAttribute ? $positionAttribute->getfatchipfcsDebit() : 0;
             //add difference between total price and already captured amount
             $positionPrice = round($position->getPrice(), 2);
             $taxRate = $position->getTaxRate();
@@ -454,7 +454,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
             }
 
             $positionAttribute = $position->getAttribute();
-            $positionAttribute->setfatchipctCaptured($position->getPrice() * $position->getQuantity());
+            $positionAttribute->setfatchipfcsCaptured($position->getPrice() * $position->getQuantity());
 
             Shopware()->Models()->persist($positionAttribute);
             Shopware()->Models()->flush();
@@ -467,7 +467,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
 
         if ($includeShipment) {
             $orderAttribute = $order->getAttribute();
-            $orderAttribute->setfatchipctShipcaptured($order->getInvoiceShipping());
+            $orderAttribute->setfatchipfcsShipcaptured($order->getInvoiceShipping());
             Shopware()->Models()->persist($orderAttribute);
             Shopware()->Models()->flush();
         }
@@ -488,7 +488,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
             }
 
             $positionAttribute = $position->getAttribute();
-            $positionAttribute->setfatchipctDebit($position->getPrice() * $position->getQuantity());
+            $positionAttribute->setfatchipfcsDebit($position->getPrice() * $position->getQuantity());
 
             Shopware()->Models()->persist($positionAttribute);
             Shopware()->Models()->flush();
@@ -501,7 +501,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
 
         if ($includeShipment) {
             $orderAttribute = $order->getAttribute();
-            $orderAttribute->setfatchipctShipdebit($order->getInvoiceShipping());
+            $orderAttribute->setfatchipfcsShipdebit($order->getInvoiceShipping());
             Shopware()->Models()->persist($orderAttribute);
             Shopware()->Models()->flush();
         }
@@ -594,7 +594,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
 
         //Only when the current payment status = reserved or partly paid, we update the payment status
         if ($currentPaymentStatus == self::PAYMENTSTATUSRESERVED || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID) {
-            $payID = $order->getAttribute()->getfatchipctPayid();
+            $payID = $order->getAttribute()->getfatchipfcsPayid();
 
             $requestParams = $paymentClass->getInquireParams(
                 $payID
@@ -636,7 +636,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
         if ($currentPaymentStatus == self::PAYMENTSTATUSPAID || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID) {
 
             $requestParams = $paymentClass->getInquireParams(
-                $order->getAttribute()->getfatchipctPayid()
+                $order->getAttribute()->getfatchipfcsPayid()
             );
 
             $inquireResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'INQUIRE', $paymentClass->getCTInquireURL());
@@ -690,7 +690,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
         if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $transactionId])) {
             if ($attribute = $order->getAttribute()) {
                     if (!empty($response->getInvNo())) {
-                        $attribute->setfatchipctKlarnainvno($response->getInvNo());
+                        $attribute->setfatchipfcsKlarnainvno($response->getInvNo());
                         Shopware()->Models()->persist($attribute);
                         Shopware()->Models()->flush();
                 }

@@ -417,17 +417,17 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
         $transactionId = $response->getTransID();
         if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $transactionId])) {
             if ($attribute = $order->getAttribute()) {
-                $attribute->setfatchipctStatus($response->getStatus());
-                $attribute->setfatchipctTransid($response->getTransID());
-                $attribute->setfatchipctPayid($response->getPayID());
-                $attribute->setfatchipctXid($response->getXID());
-                $attribute->setfatchipctkreditkartepseudonummer($response->getPCNr());
-                $attribute->setfatchipctkreditkartebrand($response->getCCBrand());
-                $attribute->setfatchipctkreditkarteexpiry($response->getCCExpiry());
-                $attribute->setfatchipctPaypalbillingagreementid($response->getBillingAgreementiD());
-                $attribute->setfatchipctlastschriftmandateid($response->getMandateid());
-                $attribute->setfatchipctlastschriftdos($response->getDtofsgntr());
-                $attribute->setfatchipctkreditkarteschemereferenceid($response->getSchemeReferenceID());
+                $attribute->setfatchipfcsStatus($response->getStatus());
+                $attribute->setfatchipfcsTransid($response->getTransID());
+                $attribute->setfatchipfcsPayid($response->getPayID());
+                $attribute->setfatchipfcsXid($response->getXID());
+                $attribute->setfatchipfcskreditkartepseudonummer($response->getPCNr());
+                $attribute->setfatchipfcskreditkartebrand($response->getCCBrand());
+                $attribute->setfatchipfcskreditkarteexpiry($response->getCCExpiry());
+                $attribute->setfatchipfcsPaypalbillingagreementid($response->getBillingAgreementiD());
+                $attribute->setfatchipfcslastschriftmandateid($response->getMandateid());
+                $attribute->setfatchipfcslastschriftdos($response->getDtofsgntr());
+                $attribute->setfatchipfcskreditkarteschemereferenceid($response->getSchemeReferenceID());
                 Shopware()->Models()->persist($attribute);
                 Shopware()->Models()->flush();
             }
@@ -446,13 +446,13 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     {
         foreach ($order->getDetails() as $position) {
             $positionAttribute = $position->getAttribute();
-            $positionAttribute->setfatchipctCaptured($position->getPrice() * $position->getQuantity());
+            $positionAttribute->setfatchipfcsCaptured($position->getPrice() * $position->getQuantity());
             Shopware()->Models()->persist($positionAttribute);
         }
         Shopware()->Models()->flush();
 
         $orderAttribute = $order->getAttribute();
-        $orderAttribute->setfatchipctShipcaptured($order->getInvoiceShipping());
+        $orderAttribute->setfatchipfcsShipcaptured($order->getInvoiceShipping());
         Shopware()->Models()->persist($orderAttribute);
         Shopware()->Models()->flush();
     }
@@ -545,14 +545,14 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
 
         $orderAttribute = $order->getAttribute();
         $requestParams = $payment->getCaptureParams(
-            $orderAttribute->getfatchipctPayid(),
+            $orderAttribute->getfatchipfcsPayid(),
             round($order->getInvoiceAmount() * 100, 2),
             $order->getCurrency(),
-            $orderAttribute->getfatchipctTransid(),
-            $orderAttribute->getfatchipctXid(),
+            $orderAttribute->getfatchipfcsTransid(),
+            $orderAttribute->getfatchipfcsXid(),
             //TODO: klarna needs description
             'none',
-            $orderAttribute->getfatchipctkreditkarteschemereferenceid()
+            $orderAttribute->getfatchipfcskreditkarteschemereferenceid()
         );
 
         return $this->plugin->callComputopService($requestParams, $payment, 'CAPTURE', $payment->getCTCaptureURL());
@@ -596,9 +596,9 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     protected function customizeOrdernumber($orderNumber)
     {
         if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number' => $orderNumber])) {
-            $payID = $order->getAttribute()->getfatchipctPayid();
-            $transID = $order->getAttribute()->getfatchipctTransid();
-            $xID = $order->getAttribute()->getfatchipctPayid();
+            $payID = $order->getAttribute()->getfatchipfcsPayid();
+            $transID = $order->getAttribute()->getfatchipfcsTransid();
+            $xID = $order->getAttribute()->getfatchipfcsPayid();
             $orderPrefix = $this->config['prefixOrdernumber'];
             $orderSuffix = $this->config['suffixOrdernumber'];
             $newOrdernumber = $orderPrefix.$orderNumber.$orderSuffix;
@@ -668,7 +668,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
             $payment = $this->paymentService->getPaymentClass($paymentClass);
         }
         $attribute = $order->getAttribute();
-        $payID = $attribute->getfatchipctPayid();
+        $payID = $attribute->getfatchipfcsPayid();
         $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getNumber());
         $RefNrChangeParams['EtiId'] = $this->getUserDataParam();
 
@@ -724,7 +724,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
         $currentPaymentStatus = $order->getPaymentStatus()->getId();
 
         if ($currentPaymentStatus == self::PAYMENTSTATUSRESERVED || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID) {
-            $payID = $order->getAttribute()->getfatchipctPayid();
+            $payID = $order->getAttribute()->getfatchipfcsPayid();
             $ctOrder = $this->createCTOrderFromSWorder($order);
             if ($paymentClass !== 'PaypalExpress'
                 && $paymentClass !== 'AmazonPay'

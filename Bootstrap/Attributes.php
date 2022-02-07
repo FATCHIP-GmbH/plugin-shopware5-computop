@@ -60,14 +60,14 @@ class Attributes extends Bootstrap
      */
     public function createAttributes()
     {
-        $this->addAttributes('fatchipct', 's_order_attributes', CTPaymentAttributes::orderAttributes);
-        $this->addAttributes('fatchipct', 's_order_details_attributes', CTPaymentAttributes::orderDetailsAttributes);
-        $this->addAttributes('fatchipct', 's_user_attributes', CTPaymentAttributes::userAttributes);
+        $this->addAttributes('fatchipfcs', 's_order_attributes', CTPaymentAttributes::orderAttributes);
+        $this->addAttributes('fatchipfcs', 's_order_details_attributes', CTPaymentAttributes::orderDetailsAttributes);
+        $this->addAttributes('fatchipfcs', 's_user_attributes', CTPaymentAttributes::userAttributes);
         if (Util::isShopwareVersionGreaterThanOrEqual('5.2')) {
-            $this->addAttributes('fatchipct', 's_user_addresses_attributes', CTPaymentAttributes::userAddressAttributes);
+            $this->addAttributes('fatchipfcs', 's_user_addresses_attributes', CTPaymentAttributes::userAddressAttributes);
         } else {
-            $this->addAttributes('fatchipct', 's_user_billingaddress_attributes', CTPaymentAttributes::userAddressAttributes);
-            $this->addAttributes('fatchipct', 's_user_shippingaddress_attributes', CTPaymentAttributes::userAddressAttributes);
+            $this->addAttributes('fatchipfcs', 's_user_billingaddress_attributes', CTPaymentAttributes::userAddressAttributes);
+            $this->addAttributes('fatchipfcs', 's_user_shippingaddress_attributes', CTPaymentAttributes::userAddressAttributes);
         }
     }
 
