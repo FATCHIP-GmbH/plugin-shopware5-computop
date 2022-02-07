@@ -29,7 +29,7 @@ $.plugin("fatchipFCSCreditCardPaynow", {
         $("button[form=\"confirm--form\"]").on("click", function () {
             //event.preventDefault();
 
-            var submitUrl = "https://www.firstcash-paygate.com/paynow.aspx";
+            var submitUrl = "https://www.computop-paygate.com/paynow.aspx";
             $("#confirm--form").prop("action", submitUrl);
             var expiryYear = $("select#CCExpiryYear option:selected").val();
             var expiryMonth = $("select#CCExpiryMonth option:selected").val();
