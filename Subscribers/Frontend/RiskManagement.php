@@ -26,9 +26,9 @@
 
 namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
 
-use Fatchip\CTPayment\CTOrder\CTOrder;
-use Fatchip\CTPayment\CTCrif\CRIF;
-use Fatchip\CTPayment\CTPaymentService;
+use Fatchip\FCSPayment\CTOrder\CTOrder;
+use Fatchip\FCSPayment\CTCrif\CRIF;
+use Fatchip\FCSPayment\CTPaymentService;
 use Shopware\Components\DependencyInjection\Container;
 use Shopware\Plugins\FatchipFCSPayment\Subscribers\AbstractSubscriber;
 use Shopware\Plugins\FatchipFCSPayment\Util;
@@ -292,7 +292,7 @@ class RiskManagement extends AbstractSubscriber
                 $crifParams = $crif->getRedirectUrlParams();
                 $crifResponse = $plugin->callComputopService($crifParams, $crif, 'CRIF', $crif->getCTPaymentURL());
 
-                /** @var \Fatchip\CTPayment\CTResponse $crifResponse */
+                /** @var \Fatchip\FCSPayment\CTResponse $crifResponse */
                 $status = $crifResponse->getStatus();
                 $callResult = $crifResponse->getResult();
                 //write the result to the session for this billingaddressID

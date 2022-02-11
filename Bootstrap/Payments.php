@@ -28,7 +28,7 @@
 namespace Shopware\Plugins\FatchipFCSPayment\Bootstrap;
 
 use Doctrine\ORM\ORMException;
-use Fatchip\CTPayment\CTPaymentService;
+use Fatchip\FCSPayment\CTPaymentService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Shopware\Models\Country\Country;
 use Shopware\Models\Payment\Payment;

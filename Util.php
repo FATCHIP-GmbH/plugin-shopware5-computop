@@ -30,8 +30,8 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Enlight_Controller_Action;
 use Exception;
-use Fatchip\CTPayment\CTAddress\CTAddress;
-use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\FCSPayment\CTAddress\CTAddress;
+use Fatchip\FCSPayment\CTOrder\CTOrder;
 use Shopware\Components\Logger;
 use Shopware\Models\Customer\Customer;
 use Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap as FatchipFCSPayment;
@@ -554,7 +554,7 @@ class Util
     public function getActivatedKlarnaPaymentTypes()
     {
         /** @noinspection SqlResolve */
-        $sql = 'SELECT name FROM s_core_paymentmeans WHERE name like "%klarna%"';
+        $sql = 'SELECT name FROM s_core_paymentmeans WHERE name like "%fatchip_firstcash_klarna%"';
 
         $result = Shopware()->Db()->fetchCol($sql);
 

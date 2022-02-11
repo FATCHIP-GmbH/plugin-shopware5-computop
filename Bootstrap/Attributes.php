@@ -30,7 +30,7 @@
 namespace Shopware\Plugins\FatchipFCSPayment\Bootstrap;
 
 use Exception;
-use Fatchip\CTPayment\CTPaymentAttributes;
+use Fatchip\FCSPayment\CTPaymentAttributes;
 use Shopware\Bundle\AttributeBundle\Service\CrudService;
 use Shopware\Plugins\FatchipFCSPayment\Util;
 

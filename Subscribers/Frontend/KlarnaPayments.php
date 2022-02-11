@@ -31,7 +31,7 @@ namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
 
 
 use Enlight_Controller_ActionEventArgs;
-use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments as PaymentClass;
+use Fatchip\FCSPayment\CTPaymentMethods\KlarnaPayments as PaymentClass;
 use Shopware\Plugins\FatchipFCSPayment\Subscribers\AbstractSubscriber;
 
 /**

@@ -27,9 +27,9 @@
 
 require_once 'FatchipFCSPayment.php';
 
-use Fatchip\CTPayment\CTOrder\CTOrder;
-use Fatchip\CTPayment\CTEnums\CTEnumStatus;
-use Fatchip\CTPayment\CTEnums\CTEnumEasyCredit;
+use Fatchip\FCSPayment\CTOrder\CTOrder;
+use Fatchip\FCSPayment\CTEnums\CTEnumStatus;
+use Fatchip\FCSPayment\CTEnums\CTEnumEasyCredit;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipFCSEasyCredit *
@@ -237,7 +237,7 @@ class Shopware_Controllers_Frontend_FatchipFCSEasyCredit extends Shopware_Contro
     /**
      * Gets inforation from response to be displayed on the order confirmation page
      *
-     * @param \Fatchip\CTPayment\CTResponse $responseObject Easycredit financing information
+     * @param \Fatchip\FCSPayment\CTResponse $responseObject Easycredit financing information
      *
      * @return array
      */

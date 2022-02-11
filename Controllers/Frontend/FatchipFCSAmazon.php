@@ -27,7 +27,7 @@
 
 require_once 'FatchipFCSPayment.php';
 
-use Fatchip\CTPayment\CTEnums\CTEnumStatus;
+use Fatchip\FCSPayment\CTEnums\CTEnumStatus;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipFCSAmazon
@@ -108,7 +108,7 @@ class Shopware_Controllers_Frontend_FatchipFCSAmazon extends Shopware_Controller
     /**
      * Finishes the order by calling the computop api.
      *
-     * @return \Fatchip\CTPayment\CTResponse
+     * @return \Fatchip\FCSPayment\CTResponse
      * @throws Exception
      */
     public function ctSetAndConfirmOrderDetails()

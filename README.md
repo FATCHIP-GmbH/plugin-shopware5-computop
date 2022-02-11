@@ -21,7 +21,7 @@ Visit our Wiki pages to read the [plugin documentation](https://wiki.fatchip.de/
 ### Add payment class
 Payment classes do contain specefic params and additional requests for payment method if needed.
 
-Folder: Components/Api/lib/CTPayment/CTPaymentMethods
+Folder: Components/Api/lib/FCSPayment/CTPaymentMethods
 
 ### Add payment controller
 Does contain gateway action and specific actions if needed.

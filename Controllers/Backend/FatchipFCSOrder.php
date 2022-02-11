@@ -25,7 +25,7 @@
  * @link       https://www.firstcashsolution.de/
  */
 
-use Fatchip\CTPayment\CTPaymentService;
+use Fatchip\FCSPayment\CTPaymentService;
 
 /**
  * Backend order controller
@@ -286,13 +286,13 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
     /**
      * Creates a First Cash Solution Order object from a Shopware order object.
      * @param $swOrder
-     * @return \Fatchip\CTPayment\CTOrder\CTOrder
+     * @return \Fatchip\FCSPayment\CTOrder\CTOrder
      */
     private function createCTOrderFromSWorder($swOrder)
     {
         $swShipping = $swOrder->getShipping();
 
-        $ctShippingAddress = new \Fatchip\CTPayment\CTAddress\CTAddress($swShipping->getSalutation(),
+        $ctShippingAddress = new \Fatchip\FCSPayment\CTAddress\CTAddress($swShipping->getSalutation(),
             $swShipping->getCompany(),
             $swShipping->getFirstName(),
             $swShipping->getLastName(),
@@ -307,7 +307,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
 
         $swBilling = $swOrder->getBilling();
 
-        $ctBillingAddress = new \Fatchip\CTPayment\CTAddress\CTAddress($swBilling->getSalutation(),
+        $ctBillingAddress = new \Fatchip\FCSPayment\CTAddress\CTAddress($swBilling->getSalutation(),
             $swBilling->getCompany(),
             $swBilling->getFirstName(),
             $swBilling->getLastName(),
@@ -321,7 +321,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
             '');
 
 
-        $ctOrder = new \Fatchip\CTPayment\CTOrder\CTOrder();
+        $ctOrder = new \Fatchip\FCSPayment\CTOrder\CTOrder();
         $ctOrder->setBillingAddress($ctBillingAddress);
         $ctOrder->setShippingAddress($ctShippingAddress);
         if ($email = $swOrder->getCustomer()->getEmail()) {
@@ -545,7 +545,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
     /**
      * Returns an intantiated payment class object for the current order
      * @param $order
-     * @return \Fatchip\CTPayment\CTPaymentMethodsIframe\Sofort
+     * @return \Fatchip\FCSPayment\CTPaymentMethodsIframe\Sofort
      */
     private function getCTPaymentClassForOrder($order)
     {

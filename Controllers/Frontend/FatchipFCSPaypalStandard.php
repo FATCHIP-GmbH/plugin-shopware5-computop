@@ -27,7 +27,7 @@
 
 require_once 'FatchipFCSPayment.php';
 
-use Fatchip\CTPayment\CTEnums\CTEnumStatus;
+use Fatchip\FCSPayment\CTEnums\CTEnumStatus;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipFCSPaypalStandard
@@ -59,7 +59,7 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalStandard extends Shopware_Co
     public function gatewayAction()
     {
         $payment = $this->getPaymentClassForGatewayAction();
-        /** @var \Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard $payment */
+        /** @var \Fatchip\FCSPayment\CTPaymentMethodsIframe\PaypalStandard $payment */
 
         if ($this->utils->isAboCommerceArticleInBasket()) {
             $payment->setRTF('I');

@@ -28,7 +28,7 @@
 namespace Shopware\Plugins\FatchipFCSPayment\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
-use Fatchip\CTPayment\CTPaymentService;
+use Fatchip\FCSPayment\CTPaymentService;
 use Shopware\Plugins\FatchipFCSPayment\Util;
 
 /**

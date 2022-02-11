@@ -29,7 +29,7 @@
 namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
 
 use Enlight_Controller_ActionEventArgs;
-use Fatchip\CTPayment\CTPaymentMethodIframe;
+use Fatchip\FCSPayment\CTPaymentMethodIframe;
 use Shopware\Plugins\FatchipFCSPayment\Subscribers\AbstractSubscriber;
 
 class CreditCard extends AbstractSubscriber

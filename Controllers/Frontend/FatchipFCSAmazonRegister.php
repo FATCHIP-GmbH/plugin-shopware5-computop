@@ -25,7 +25,7 @@
  * @link       https://www.firstcashsolution.de/
  */
 
-use Fatchip\CTPayment\CTPaymentMethodIframe;
+use Fatchip\FCSPayment\CTPaymentMethodIframe;
 use Shopware\Plugins\FatchipFCSPayment\Util;
 use Shopware\Components\CSRFWhitelistAware;
 
@@ -44,7 +44,7 @@ class Shopware_Controllers_Frontend_FatchipFCSAmazonRegister extends Shopware_Co
     /**
      * Fatchip PaymentService
      *
-     * @var \Fatchip\CTPayment\CTPaymentService $service
+     * @var \Fatchip\FCSPayment\CTPaymentService $service
      */
     protected $paymentService;
 
@@ -144,7 +144,7 @@ class Shopware_Controllers_Frontend_FatchipFCSAmazonRegister extends Shopware_Co
     /**
      *  Calls the computop api with AmazonLGN after user log-ins.
      *
-     * @return \Fatchip\CTPayment\CTResponse
+     * @return \Fatchip\FCSPayment\CTResponse
      */
     public function loginComputopAmazon()
     {

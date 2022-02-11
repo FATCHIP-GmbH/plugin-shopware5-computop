@@ -27,7 +27,7 @@
 
 require_once 'FatchipFCSPayment.php';
 
-use Fatchip\CTPayment\CTEnums\CTEnumStatus;
+use Fatchip\FCSPayment\CTEnums\CTEnumStatus;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipFCSLastschrift

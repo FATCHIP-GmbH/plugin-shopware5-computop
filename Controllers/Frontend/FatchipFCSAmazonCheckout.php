@@ -43,7 +43,7 @@ class Shopware_Controllers_Frontend_FatchipFCSAmazonCheckout extends Shopware_Co
     /**
      * Fatchip PaymentService
      *
-     * @var \Fatchip\CTPayment\CTPaymentService $service
+     * @var \Fatchip\FCSPayment\CTPaymentService $service
      */
     protected $paymentService;
 
@@ -161,7 +161,7 @@ class Shopware_Controllers_Frontend_FatchipFCSAmazonCheckout extends Shopware_Co
     /**
      *  Get amazon order information from computop api
      *
-     * @return \Fatchip\CTPayment\CTResponse $response
+     * @return \Fatchip\FCSPayment\CTResponse $response
      */
     public function ctGetOrderDetails()
     {

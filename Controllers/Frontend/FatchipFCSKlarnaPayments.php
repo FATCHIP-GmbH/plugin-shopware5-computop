@@ -27,9 +27,9 @@
 
 require_once 'FatchipFCSPayment.php';
 
-use Fatchip\CTPayment\CTEnums\CTEnumStatus;
-use Fatchip\CTPayment\CTOrder\CTOrder;
-use Fatchip\CTPayment\CTPaymentMethods\KlarnaPayments;
+use Fatchip\FCSPayment\CTEnums\CTEnumStatus;
+use Fatchip\FCSPayment\CTOrder\CTOrder;
+use Fatchip\FCSPayment\CTPaymentMethods\KlarnaPayments;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipFCSKlarna.

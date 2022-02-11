@@ -25,12 +25,12 @@
  * @link       https://www.firstcashsolution.de/
  */
 
-use Fatchip\CTPayment\CTEnums\CTEnumPaymentStatus;
-use Fatchip\CTPayment\CTResponse;
+use Fatchip\FCSPayment\CTEnums\CTEnumPaymentStatus;
+use Fatchip\FCSPayment\CTResponse;
 use Shopware\Models\Order\Order;
 use Shopware\Plugins\FatchipFCSPayment\Util;
-use Fatchip\CTPayment\CTOrder\CTOrder;
-use Fatchip\CTPayment\CTEnums\CTEnumStatus;
+use Fatchip\FCSPayment\CTOrder\CTOrder;
+use Fatchip\FCSPayment\CTEnums\CTEnumStatus;
 use Shopware\Components\CSRFWhitelistAware;
 
 /**
@@ -62,7 +62,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     /**
      * Fatchip PaymentService
      *
-     * @var \Fatchip\CTPayment\CTPaymentService $service
+     * @var \Fatchip\FCSPayment\CTPaymentService $service
      */
     protected $paymentService;
 
@@ -126,7 +126,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
         $this->router = $this->Front()->Router();
 
         if(!empty($this->paymentClass)) {
-            $className = 'Fatchip\\CTPayment\\CTHelper\\' . $this->paymentClass;
+            $className = 'Fatchip\\FCSPayment\\CTHelper\\' . $this->paymentClass;
 
             if(class_exists($className)) {
                 $this->helper = new $className();
@@ -280,7 +280,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     /**
      * Helper function that creates a payment object
      *
-     * @return \Fatchip\CTPayment\CTPaymentMethodIframe
+     * @return \Fatchip\FCSPayment\CTPaymentMethodIframe
      * @throws Exception
      */
     protected function getPaymentClassForGatewayAction()
@@ -769,7 +769,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     private function createCTOrderFromSWorder($swOrder)
     {
         $swShipping = $swOrder->getShipping();
-        $ctShippingAddress = new \Fatchip\CTPayment\CTAddress\CTAddress(
+        $ctShippingAddress = new \Fatchip\FCSPayment\CTAddress\CTAddress(
             $swShipping->getSalutation(),
             $swShipping->getCompany(),
             $swShipping->getFirstName(),
@@ -785,7 +785,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
         );
 
         $swBilling = $swOrder->getBilling();
-        $ctBillingAddress = new \Fatchip\CTPayment\CTAddress\CTAddress(
+        $ctBillingAddress = new \Fatchip\FCSPayment\CTAddress\CTAddress(
             $swBilling->getSalutation(),
             $swBilling->getCompany(),
             $swBilling->getFirstName(),

@@ -46,7 +46,7 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalExpressCheckout extends Shop
     /**
      * Fatchip PaymentService
      *
-     * @var \Fatchip\CTPayment\CTPaymentService $service
+     * @var \Fatchip\FCSPayment\CTPaymentService $service
      */
     protected $paymentService;
 

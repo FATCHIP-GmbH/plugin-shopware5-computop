@@ -27,7 +27,7 @@
 
 require_once 'FatchipFCSPayment.php';
 
-use Fatchip\CTPayment\CTEnums\CTEnumStatus;
+use Fatchip\FCSPayment\CTEnums\CTEnumStatus;
 use Monolog\Handler\RotatingFileHandler;
 use Shopware\Plugins\FatchipFCSPayment\Util;
 
@@ -393,7 +393,7 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
      * expected for the next recurring payment
      * So we save the creditcard information of the original order
      *
-     * @param \Fatchip\CTPayment\CTResponse $response Computop Api response
+     * @param \Fatchip\FCSPayment\CTResponse $response Computop Api response
      * @param string $ccNumber
      * @param string $ccBrand
      * @param string $ccExpiry

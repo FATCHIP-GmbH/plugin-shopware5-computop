@@ -46,7 +46,7 @@ class Shopware_Controllers_Frontend_FatchipFCSAjax extends Enlight_Controller_Ac
     /**
      * Fatchip PaymentService
      *
-     * @var \Fatchip\CTPayment\CTPaymentService $service
+     * @var \Fatchip\FCSPayment\CTPaymentService $service
      */
     protected $paymentService;
 

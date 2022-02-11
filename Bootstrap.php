@@ -34,7 +34,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Fatchip\CTPayment\CTResponse;
+use Fatchip\FCSPayment\CTResponse;
 use Shopware\CustomModels\FatchipFCSApilog\FatchipFCSApilog;
 use Shopware\Plugins\FatchipFCSPayment\Bootstrap\Forms;
 use Shopware\Plugins\FatchipFCSPayment\Bootstrap\Attributes;
@@ -97,7 +97,7 @@ class Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap extends Shopware_Com
         $models = new Models();
 
         $forms->createForm();
-        $this->addFormTranslations(\Fatchip\CTPayment\CTPaymentConfigForms::formTranslations);
+        $this->addFormTranslations(\Fatchip\FCSPayment\CTPaymentConfigForms::formTranslations);
         $attributes->createAttributes();
         $payments->createPayments();
         $menu->createMenu();
@@ -343,7 +343,7 @@ class Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap extends Shopware_Com
         $payments = new Payments();
 
         $forms->createForm();
-        $this->addFormTranslations(\Fatchip\CTPayment\CTPaymentConfigForms::formTranslations);
+        $this->addFormTranslations(\Fatchip\FCSPayment\CTPaymentConfigForms::formTranslations);
         $attributes->createAttributes();
         $payments->createPayments();
 
@@ -376,7 +376,7 @@ class Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap extends Shopware_Com
      * this wrapper is used for logging Server requests and responses to our shopware model
      *
      * @param $requestParams
-     * @param $payment Fatchip\CTPayment\CTPaymentMethod
+     * @param $payment Fatchip\FCSPayment\CTPaymentMethod
      * @param $requestType
      * @param $url
      *

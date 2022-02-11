@@ -27,10 +27,10 @@
 
 require_once 'FatchipFCSPayment.php';
 
-use Fatchip\CTPayment\CTOrder\CTOrder;
-use Fatchip\CTPayment\CTEnums\CTEnumStatus;
-use Fatchip\CTPayment\CTPaymentMethods\PaypalExpress;
-use Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard;
+use Fatchip\FCSPayment\CTOrder\CTOrder;
+use Fatchip\FCSPayment\CTEnums\CTEnumStatus;
+use Fatchip\FCSPayment\CTPaymentMethods\PaypalExpress;
+use Fatchip\FCSPayment\CTPaymentMethodsIframe\PaypalStandard;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipFCSPaypalStandard

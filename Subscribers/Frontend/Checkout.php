@@ -28,7 +28,7 @@ namespace Shopware\Plugins\FatchipFCSPayment\Subscribers\Frontend;
 
 use Shopware\Plugins\FatchipFCSPayment\Subscribers\AbstractSubscriber;
 use Shopware\Plugins\FatchipFCSPayment\Util;
-use Fatchip\CTPayment\CTOrder\CTOrder;
+use Fatchip\FCSPayment\CTOrder\CTOrder;
 
 /**
  * Class Checkout
@@ -39,7 +39,7 @@ class Checkout extends AbstractSubscriber
 {
     /**
      * PaymentService
-     * @var \Fatchip\CTPayment\CTPaymentService $service
+     * @var \Fatchip\FCSPayment\CTPaymentService $service
      */
     protected $paymentService;
 

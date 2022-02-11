@@ -25,8 +25,8 @@
  * @link       https://www.firstcashsolution.de/
  */
 
-use Fatchip\CTPayment\CTPaymentService;
-use Fatchip\CTPayment\CTIdealIssuerService;
+use Fatchip\FCSPayment\CTPaymentService;
+use Fatchip\FCSPayment\CTIdealIssuerService;
 
 /**
  * Shopware_Controllers_Backend_FatchipFCSIdeal
@@ -81,9 +81,7 @@ class Shopware_Controllers_Backend_FatchipFCSIdeal extends Shopware_Controllers_
         // ToDo implement update mechanism
         $test = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipFCSIdeal\FatchipFCSIdealIssuers')->findAll();
         if (empty($test)) {
-
             try {
-
                 foreach ($issuerList as $issuer) {
                     $issuerModel = new \Shopware\CustomModels\FatchipFCSIdeal\FatchipFCSIdealIssuers();
                     $issuerModel->fromArray($issuer);
@@ -99,6 +97,8 @@ class Shopware_Controllers_Backend_FatchipFCSIdeal extends Shopware_Controllers_
             } else {
                 $this->View()->assign(array('success' => false, 'error' => $e->getMessage()));
             }
+        } else {
+            $this->View()->assign(array('success' => true, 'count' => $count));
         }
     }
 

@@ -29,7 +29,7 @@ namespace Shopware\Plugins\FatchipFCSPayment\Bootstrap;
 
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Fatchip\CTPayment\CTPaymentConfigForms;
+use Fatchip\FCSPayment\CTPaymentConfigForms;
 use Shopware\Models\Config\Element;
 use Shopware\Models\Config\Form;
 
