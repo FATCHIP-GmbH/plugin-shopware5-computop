@@ -102,7 +102,7 @@ class Shopware_Controllers_Frontend_FatchipFCSAmazon extends Shopware_Controller
             ->getNamespace('frontend/FatchipFCSPayment/translations')
             ->get('errorGeneral'); // . $response->getDescription();
         $ctError['CTErrorCode'] = ''; //$response->getCode();
-        return $this->forward('index', 'FatchipFCSAmazonRegister', null, ['CTError' => $ctError]);
+        return $this->forward('index', 'FatchipFCSAmazonRegister', null, ['FCSError' => $ctError]);
     }
 
     /**

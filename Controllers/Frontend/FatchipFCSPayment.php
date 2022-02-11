@@ -193,7 +193,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
         $ctError['CTErrorCode'] = $response->getCode();
         $this->session->offsetUnset('fatchipFirstCashEasyCreditPayId');
 
-        $this->forward('shippingPayment', 'checkout', null, $this->hideError($response->getCode()) ? null : ['CTError' => $ctError]);
+        $this->forward('shippingPayment', 'checkout', null, $this->hideError($response->getCode()) ? null : ['FCSError' => $ctError]);
     }
 
     /**
@@ -326,7 +326,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
                 ->getNamespace('frontend/FatchipFCSPayment/translations')
                 ->get('errorAddress');
             $ctError['CTErrorCode'] = $e->getMessage();
-            return $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
+            return $this->forward('shippingPayment', 'checkout', null, ['FCSError' => $ctError]);
         }
         $ctOrder->setEmail($userData['additional']['user']['email']);
         $ctOrder->setCustomerID($userData['additional']['user']['id']);

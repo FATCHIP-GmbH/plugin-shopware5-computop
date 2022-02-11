@@ -141,11 +141,11 @@ class Checkout extends AbstractSubscriber
             // logic shouldnt be here or in the template ...
 
             // use CTError from Session, this was done to prevent csrf Errors from forwarding
-            if ($ctError = $session->offsetGet('CTError')) {
-                $session->offsetUnset('CTError');
-                $params['CTError'] = $ctError;
+            if ($ctError = $session->offsetGet('FCSError')) {
+                $session->offsetUnset('FCSError');
+                $params['FCSError'] = $ctError;
             }
-            $view->assign('CTError', $params['CTError']);
+            $view->assign('FCSError', $params['CTError']);
         }
 
         if ($request->getActionName() == 'confirm' && (strpos($paymentName, fatchip_firstcash) === 0)) {
@@ -163,7 +163,7 @@ class Checkout extends AbstractSubscriber
                     ->get('errorAddress');
                 $ctError['CTErrorCode'] = 'Bitte prüfen Sie Straße und Hausnummer';
                 //$subject->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
-                $view->assign('CTError', $ctError);
+                $view->assign('FCSError', $ctError);
                 return;
 
             }

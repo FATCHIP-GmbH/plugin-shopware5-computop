@@ -208,7 +208,7 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalExpress extends Shopware_Con
             ->getNamespace('frontend/FatchipFCSPayment/translations')
             ->get('errorGeneral'); // . $response->getDescription();
         $ctError['CTErrorCode'] = ''; //$response->getCode();
-        $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
+        $this->forward('shippingPayment', 'checkout', null, ['FCSError' => $ctError]);
     }
 }
 

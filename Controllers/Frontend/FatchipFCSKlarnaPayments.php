@@ -123,7 +123,7 @@ class Shopware_Controllers_Frontend_FatchipFCSKlarnaPayments extends Shopware_Co
                     ->getNamespace('frontend/FatchipFCSPayment/translations')
                     ->get('errorGeneral'); // . $response->getDescription();
                 $ctError['CTErrorCode'] = ''; //$response->getCode();
-                return $this->forward('shippingPayment', 'checkout', null, array('CTError' => $ctError));
+                return $this->forward('shippingPayment', 'checkout', null, array('FCSError' => $ctError));
 
                 break;
         }

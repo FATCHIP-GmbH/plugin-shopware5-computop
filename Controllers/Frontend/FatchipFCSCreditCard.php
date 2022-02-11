@@ -116,8 +116,8 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
         $this->view->assign('fatchipFCSIframeURL', $requestParams['fatchipFCSRedirectURL']);
         $this->view->assign('fatchipFCSUniqueID', $requestParams['fatchipFCSUniqueID']);
         $this->view->assign('fatchipFCSURL', $requestParams['fatchipFCSURL']);
-        $this->view->assign('fatchipFCSErrorMessage', $requestParams['CTError']['CTErrorMessage']);
-        $this->view->assign('fatchipFCSErrorCode', $requestParams['CTError']['CTErrorCode']);
+        $this->view->assign('fatchipFCSErrorMessage', $requestParams['FCSError']['CTErrorMessage']);
+        $this->view->assign('fatchipFCSErrorCode', $requestParams['FCSError']['CTErrorCode']);
     }
 
     /**
@@ -259,11 +259,11 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
         }
 
         if ($ccMode === 'iframe') {
-            $this->forward('iframe', 'FatchipFCSCreditCard', null, ['fatchipFCSURL' => $url, 'CTError' => $ctError]);
+            $this->forward('iframe', 'FatchipFCSCreditCard', null, ['fatchipFCSURL' => $url, 'FCSError' => $ctError]);
         } else {
-            //$this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
+            //$this->forward('shippingPayment', 'checkout', null, ['FCSError' => $ctError]);
             // set CTError in Session to prevent csfrs errors
-            $this->session->offsetSet('CTError', $ctError);
+            $this->session->offsetSet('FCSError', $ctError);
             $this->redirect(['controller' => 'checkout', 'action' => 'shippingPayment']);
 
 

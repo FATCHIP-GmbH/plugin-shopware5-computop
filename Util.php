@@ -818,7 +818,7 @@ class Util
                 ->getNamespace('frontend/FatchipFCSPayment/translations')
                 ->get('errorBasket');
             $ctError['CTErrorCode'] = $e->getMessage();
-            return ['CTError' => $ctError];
+            return ['FCSError' => $ctError];
         }
 
         $ctOrder = new CTOrder();
@@ -834,7 +834,7 @@ class Util
                 ->getNamespace('frontend/FatchipFCSPayment/translations')
                 ->get('errorAddress');
             $ctError['CTErrorCode'] = $e->getMessage();
-            return ['CTError' => $ctError];
+            return ['FCSError' => $ctError];
         }
         $ctOrder->setEmail($userData['additional']['user']['email']);
         $ctOrder->setCustomerID($userData['additional']['user']['id']);
@@ -889,7 +889,7 @@ class Util
         $ctError['CTErrorMessage'] = $errMsg;
         $ctError['CTErrorCode'] = '';
 
-        $session->offsetSet('CTError', $ctError);
+        $session->offsetSet('FCSError', $ctError);
 
         try {
             $controller->redirect([

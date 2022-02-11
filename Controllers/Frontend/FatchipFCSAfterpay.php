@@ -129,7 +129,7 @@ class Shopware_Controllers_Frontend_FatchipFCSAfterpay extends Shopware_Controll
                     ->get('errorGeneral'); // . $response->getDescription();
                 $ctError['CTErrorCode'] = ''; //$response->getCode();
                 $this->session->offsetUnSet('FatchipFirstCashAfterpayProductNr');
-                $this->forward('shippingPayment', 'checkout', null, array('CTError' => $ctError));
+                $this->forward('shippingPayment', 'checkout', null, array('FCSError' => $ctError));
 
                 break;
         }

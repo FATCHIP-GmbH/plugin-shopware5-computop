@@ -2,7 +2,7 @@
 
 {block name='frontend_account_payment_error_messages'}
     <div>
-        {if $CTError}
+        {if $FCSError}
             {include file="frontend/_includes/messages.tpl" content="{$CTError.CTErrorMessage}:{$CTError.CTErrorCode}" type="error" bold=false}
         {/if}
     </div>

@@ -97,9 +97,9 @@ class KlarnaPayments extends AbstractSubscriber
         }
 
         if ($request->getActionName() == 'shippingPayment') {
-            if ($ctError = $session->offsetGet('CTError')) {
-                $session->offsetUnset('CTError');
-                $params['CTError'] = $ctError;
+            if ($ctError = $session->offsetGet('FCSError')) {
+                $session->offsetUnset('FCSError');
+                $params['FCSError'] = $ctError;
             }
 
             $requestParams = $this->payment->createCTKlarnaPayment();
@@ -120,7 +120,7 @@ class KlarnaPayments extends AbstractSubscriber
                         'CTErrorMessage' => $msg,
                         'CTErrorCode' => '',
                     ];
-                    $params['CTError'] = $ctError;
+                    $params['FCSError'] = $ctError;
                 }
 
                 $articleListBase64 = $requestParams['ArticleList'];
@@ -141,7 +141,7 @@ class KlarnaPayments extends AbstractSubscriber
                 $session->offsetSet('FatchipFCSKlarnaAccessToken', $accessToken);
             }
 
-            $view->assign('CTError', $params['CTError']);
+            $view->assign('FCSError', $params['FCSError']);
         }
     }
 
