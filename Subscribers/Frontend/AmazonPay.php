@@ -111,8 +111,8 @@ class AmazonPay extends AbstractSubscriber
             // assign plugin Config to View
             $view->assign('fatchipFCSPaymentConfig', $pluginConfig);
             // extend cart and ajax cart with Amazon Button
-            $view->extendsTemplate('frontend/checkout/ajax_cart_amazon.tpl');
-            $view->extendsTemplate('frontend/checkout/cart_amazon.tpl');
+            $view->extendsTemplate('frontend/checkout/firstcash_ajax_cart_amazon.tpl');
+            $view->extendsTemplate('frontend/checkout/firstcash_cart_amazon.tpl');
         }
     }
 }
