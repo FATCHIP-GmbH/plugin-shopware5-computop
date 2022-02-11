@@ -553,7 +553,7 @@ class Util
     public function getActivatedKlarnaPaymentTypes()
     {
         /** @noinspection SqlResolve */
-        $sql = 'SELECT name FROM s_core_paymentmeans WHERE name like "%klarna%"';
+        $sql = 'SELECT name FROM s_core_paymentmeans WHERE name like "%fatchip_computop_klarna%"';
 
         $result = Shopware()->Db()->fetchCol($sql);
 
