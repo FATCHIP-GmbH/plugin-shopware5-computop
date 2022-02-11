@@ -44,13 +44,13 @@
 
                 {block name="frontend_checkout_payment_fatchip_firstcash_creditcard_cardnumber_label"}
                     <p class="none">
-                        <label for="CCNr">{s name="CreditcardCardnumberLabel" namespace="frontend/FatchipFCSPayment/translations"}Kartennummer{/s}</label>
+                        <label for="FCSCCNr">{s name="CreditcardCardnumberLabel" namespace="frontend/FatchipFCSPayment/translations"}Kartennummer{/s}</label>
                     </p>
                 {/block}
 
                 {block name="frontend_checkout_payment_fatchip_firstcash_creditcard_cardnumber_input"}
-                    <input name="CCNr" type="text"
-                           id="CCNr"
+                    <input name="FCSCCNr" type="text"
+                           id="FCSCCNr"
                            class="payment--field is--required{if $error_flags.fatchip_firstcash__creditcard_cardnumber} has--error{/if}"
                            placeholder="{s name='CreditcardCardnumberPlaceholder' namespace='frontend/FatchipFCSPayment/translations'}Kartennummer{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
                            {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
@@ -66,8 +66,8 @@
                 {/block}
                 <div class="select-field">
                     {block name="frontend_checkout_payment_fatchip_firstcash_creditcard_expirationdate_month_input"}
-                        <select name="CCExpiryMonth"
-                                id="CCExpiryMonth"
+                        <select name="FCSCCExpiryMonth"
+                                id="FCSCCExpiryMonth"
                                 class="is--required"
                                 {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
                                 >
@@ -83,8 +83,8 @@
                 <div class="select-field">
                     {block name="frontend_checkout_payment_fatchip_firstcash_creditcard_expirationdate_year_input"}
                         {assign var=thisyear value=$smarty.now|date_format:"%Y"}
-                        <select name="CCExpiryYear"
-                                id="CCExpiryYear"
+                        <select name="FCSCCExpiryYear"
+                                id="FCSCCExpiryYear"
                                 class="is--required"
                                 {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
                                 >
@@ -116,7 +116,7 @@
                                 />
                         <input type="hidden" name="MerchantID" id="MerchantID"
                                value="{$fatchipFCSCreditCardSilentParams.MerchantID}">
-                        <input type="hidden" name="CCExpiry" id="CCExpiry" value=" ">
+                        <input type="hidden" name="FCSCCExpiry" id="FCSCCExpiry" value=" ">
                         <input type="hidden" name="CreditCardHolder" id="CreditCardHolder" value=" ">
                         <input type="hidden" name="Len" id="Len" value="{$fatchipFCSCreditCardSilentParams.Len}">
                         <input type="hidden" name="Data" id="Data" value="{$fatchipFCSCreditCardSilentParams.Data}">

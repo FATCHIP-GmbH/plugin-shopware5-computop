@@ -112,8 +112,8 @@ class PaypalExpress extends AbstractSubscriber
             // assign plugin Config to View
             $view->assign('fatchipFCSPaymentConfig', $pluginConfig);
             $view->assign('fatchipFCSPaymentPaypalButtonUrl', $url);
-            $view->extendsTemplate('frontend/checkout/ajax_cart_paypal.tpl');
-            $view->extendsTemplate('frontend/checkout/cart_paypal.tpl');
+            $view->extendsTemplate('frontend/checkout/firstcash_ajax_cart_paypal.tpl');
+            $view->extendsTemplate('frontend/checkout/firstcash_cart_paypal.tpl');
         }
     }
 }

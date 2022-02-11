@@ -85,7 +85,7 @@ class CreditCard extends AbstractSubscriber
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
 
-        if (!$request->isDispatched() or !stristr($paymentName, 'creditcard')) { // no creditcard payment method
+        if (!$request->isDispatched() or !stristr($paymentName, 'fatchip_firstcash_creditcard')) { // no creditcard payment method
             return;
         }
 

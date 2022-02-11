@@ -11,7 +11,7 @@ $.plugin("fatchipFCSCreditCardIFrame", {
         var me = this;
         me.applyDataAttributes();
 
-        window.top.location.href = me.opts.fatchipFCSCreditcardIFrameUrl + "?sUniqueID=" + me.opts.fatchipFCSUniqueID + "&CTError[CTErrorMessage]=" + me.opts.fatchipFCSErrorMessage + "&CTError[CTErrorCode]=" + me.opts.fatchipFCSErrorCode;
+        window.top.location.href = me.opts.fatchipFCSCreditcardIFrameUrl + "?sUniqueID=" + me.opts.fatchipFCSUniqueID + "&FCSError[CTErrorMessage]=" + me.opts.fatchipFCSErrorMessage + "&FCSError[CTErrorCode]=" + me.opts.fatchipFCSErrorCode;
     },
 
     destroy: function () {
@@ -31,10 +31,10 @@ $.plugin("fatchipFCSCreditCardPaynow", {
 
             var submitUrl = "https://www.computop-paygate.com/paynow.aspx";
             $("#confirm--form").prop("action", submitUrl);
-            var expiryYear = $("select#CCExpiryYear option:selected").val();
-            var expiryMonth = $("select#CCExpiryMonth option:selected").val();
+            var expiryYear = $("select#FCSCCExpiryYear option:selected").val();
+            var expiryMonth = $("select#FCSCCExpiryMonth option:selected").val();
             var expiry = expiryYear + expiryMonth;
-            $("#CCExpiry ").val(expiry);
+            $("#FCSCCExpiry ").val(expiry);
         });
     },
 
@@ -50,7 +50,7 @@ $.plugin("fatchipFCSCCNrValidator", {
     defaults: {
         ibanbicReg: /^[0-9 ]+$/,
         errorMessageClass: "register--error-msg",
-        moptIbanErrorMessage: "Dieses Feld darf nur Ziffern enthalten"
+        IbanErrorMessage: "Dieses Feld darf nur Ziffern enthalten"
     },
     init: function () {
         "use strict";
@@ -62,7 +62,7 @@ $.plugin("fatchipFCSCCNrValidator", {
             if (me.$el.val() && !me.opts.ibanbicReg.test(me.$el.val())) {
                 me.$el.addClass("has--error");
                 $("<div>", {
-                    "html": "<p>" + me.opts.moptIbanErrorMessage + "</p>",
+                    "html": "<p>" + me.opts.IbanErrorMessage + "</p>",
                     "id": "fatchipfcsiban--message",
                     "class": me.opts.errorMessageClass
                 }).insertAfter(me.$el);
@@ -82,5 +82,5 @@ $.plugin("fatchipFCSCCNrValidator", {
 
 $("#fatchipFCSCreditCardPaynow").fatchipFCSCreditCardPaynow();
 $("#fatchipFCSCreditCardIFrame").fatchipFCSCreditCardIFrame();
-$("#CCNr").fatchipFCSCCNrValidator();
-$("#CCCVC").fatchipFCSCCNrValidator();
+$("#FCSCCNr").fatchipFCSCCNrValidator();
+$("#FCSCCCVC").fatchipFCSCCNrValidator();

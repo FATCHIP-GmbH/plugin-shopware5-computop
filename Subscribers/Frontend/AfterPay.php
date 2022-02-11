@@ -103,7 +103,7 @@ class AfterPay extends AbstractSubscriber
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
 
-        if (!$request->isDispatched() or !stristr($paymentName, 'afterpay')) { // no afterpay payment method
+        if (!$request->isDispatched() or !stristr($paymentName, 'fatchip_firstcash_afterpay')) { // no afterpay payment method
             return;
         }
 

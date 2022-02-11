@@ -148,7 +148,7 @@ class Checkout extends AbstractSubscriber
             $view->assign('FCSError', $params['CTError']);
         }
 
-        if ($request->getActionName() == 'confirm' && (strpos($paymentName, fatchip_firstcash) === 0)) {
+        if ($request->getActionName() == 'confirm' && (strpos($paymentName, 'fatchip_firstcash') === 0)) {
             // check for address splitting errors and handle them here
             $util = new Util();
             $ctOrder = new CTOrder();
