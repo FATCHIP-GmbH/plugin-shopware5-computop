@@ -4,7 +4,7 @@
     {$smarty.block.parent}
     <div>
         {if $FCSError}
-            {include file="frontend/_includes/messages.tpl" content="{$CTError.CTErrorMessage}:{$CTError.CTErrorCode}" type="error" bold=false}
+            {include file="frontend/_includes/messages.tpl" content="{$FCSError.CTErrorMessage}:{$FCSError.CTErrorCode}" type="error" bold=false}
         {/if}
     </div>
 {/block}
