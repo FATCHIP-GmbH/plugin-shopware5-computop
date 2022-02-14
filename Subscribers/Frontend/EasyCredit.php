@@ -87,7 +87,7 @@ class EasyCredit extends AbstractSubscriber
 
         if ($request->getActionName() == 'confirm') {
 
-            $view->extendsTemplate('frontend/checkout/easycredit_confirm.tpl');
+            $view->extendsTemplate('frontend/checkout/computop_easycredit_confirm.tpl');
 
             // add easyCredit Information to view
             if ($session->offsetGet('FatchipComputopEasyCreditInformation')) {
