@@ -4,7 +4,7 @@
     {$smarty.block.parent}
     {if $sBasket.content}
     <div class="button--container">
-        <div id="LoginWithAmazon">
+        <div id="CTLoginWithAmazon">
         </div>
         <div class="clear"></div>
         <script>
@@ -13,7 +13,7 @@
             };
             window.onAmazonPaymentsReady = function () {
                 var authRequest;
-                OffAmazonPayments.Button('LoginWithAmazon', "{$fatchipCTPaymentConfig.amazonSellerId}",
+                OffAmazonPayments.Button('CTLoginWithAmazon', "{$fatchipCTPaymentConfig.amazonSellerId}",
                     {
                         type: "{$fatchipCTPaymentConfig.amazonButtonType}",
                         color: "{$fatchipCTPaymentConfig.amazonButtonColor}",

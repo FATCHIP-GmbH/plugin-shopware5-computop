@@ -38,7 +38,7 @@
 
     {if $sBasket.content}
     <div class="button--container right">
-        <div id="LoginWithAmazon">
+        <div id="CTLoginWithAmazon">
             <!-- RemoveMe: <BR>
             smarty.server.REQUEST_SCHEME: {$smarty.server.REQUEST_SCHEME}<BR>
             smarty.server.HTTP_REFERER: {$smarty.server.HTTP_REFERER}<BR>
@@ -57,7 +57,7 @@
             };
             window.onAmazonPaymentsReady = function () {
                 var authRequest;
-                OffAmazonPayments.Button('LoginWithAmazon', "{$fatchipCTPaymentConfig.amazonSellerId}",
+                OffAmazonPayments.Button('CTLoginWithAmazon', "{$fatchipCTPaymentConfig.amazonSellerId}",
                     {
                         type: "{$fatchipCTPaymentConfig.amazonButtonType}",
                         color: "{$fatchipCTPaymentConfig.amazonButtonColor}",
