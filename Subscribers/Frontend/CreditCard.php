@@ -95,7 +95,7 @@ class CreditCard extends AbstractSubscriber
             $router = Shopware()->Front()->Router();
             // $view->assign('url', $router->assemble(['controller' => 'checkout', 'action' => 'confirm', 'forceSecure' => true]));
             $view->assign('url', $router->assemble(['controller' => 'FatchipFCSCreditCard', 'action' => 'browserinfo', 'forceSecure' => true]));
-            $view->loadTemplate('frontend/checkout/creditcard_confirm_browserdetect.tpl');
+            $view->loadTemplate('frontend/checkout/firstcash_creditcard_confirm_browserdetect.tpl');
         } else if ($request->getActionName() == 'confirm' and $pluginConfig['creditCardMode'] == 'SILENT') {
             $view->assign('fatchipFCSCreditCardMode', "1");
 
@@ -127,7 +127,7 @@ class CreditCard extends AbstractSubscriber
             $view->assign('creditCardSilentModeBrandsAmex', (int)$pluginConfig['creditCardSilentModeBrandsAmex']);
 
             $view->assign('fatchipFCSCreditCardSilentParams', $silentParams);
-            $view->extendsTemplate('frontend/checkout/creditcard_confirm.tpl');
+            $view->extendsTemplate('frontend/checkout/firstcash_creditcard_confirm.tpl');
         }
     }
 

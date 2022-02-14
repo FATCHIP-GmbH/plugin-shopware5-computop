@@ -31,10 +31,10 @@ $.plugin("fatchipFCSCreditCardPaynow", {
 
             var submitUrl = "https://www.computop-paygate.com/paynow.aspx";
             $("#confirm--form").prop("action", submitUrl);
-            var expiryYear = $("select#FCSCCExpiryYear option:selected").val();
-            var expiryMonth = $("select#FCSCCExpiryMonth option:selected").val();
+            var expiryYear = $("select#CCExpiryYear option:selected").val();
+            var expiryMonth = $("select#CCExpiryMonth option:selected").val();
             var expiry = expiryYear + expiryMonth;
-            $("#FCSCCExpiry ").val(expiry);
+            $("#CCExpiry ").val(expiry);
         });
     },
 
