@@ -7,7 +7,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcfcsPosition', {
     var me = this;
     var toolbar = me.callParent(arguments);
 
-    me.fcctCapturePositionsButton = Ext.create('Ext.button.Button', {
+    me.fcfcsCapturePositionsButton = Ext.create('Ext.button.Button', {
       id: 'fcsbtnCapture',
       iconCls: 'sprite-money-coin',
       text: '{s name=position/capture}Positionen einziehen{/s}',
@@ -21,7 +21,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcfcsPosition', {
       }
     });
 
-    me.fcctDebitPositionsButton = Ext.create('Ext.button.Button', {
+    me.fcfcsDebitPositionsButton = Ext.create('Ext.button.Button', {
       id: 'fcsbtnDebit',
       iconCls: 'sprite-money-coin',
       text: '{s name=position/debit}Positionen gutschreiben{/s}',
@@ -35,10 +35,8 @@ Ext.define('Shopware.apps.Order.view.detail.fcfcsPosition', {
       }
     });
 
-
-
-    toolbar.items.add(me.fcctCapturePositionsButton);
-    toolbar.items.add(me.fcctDebitPositionsButton);
+    toolbar.items.add(me.fcfcsCapturePositionsButton);
+    toolbar.items.add(me.fcfcsDebitPositionsButton);
 
     Ext.Ajax.request({
       url: '{url controller="FatchipFCSOrder" action="fatchipFCSTGetButtonState"}',

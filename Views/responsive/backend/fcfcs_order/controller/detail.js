@@ -9,15 +9,15 @@ Ext.define('Shopware.apps.Order.controller.fcfcsDetail', {
 
     me.control({
       'order-detail-window order-position-panel': {
-        fcfcsCapturePositions: me.onFcctCapturePositions,
-        fcfcsDebitPositions: me.onFcctDebitPositions
+        fcfcsCapturePositions: me.onFcfcsCapturePositions,
+        fcfcsDebitPositions: me.onFcfcsDebitPositions
       }
     });
   },
 
-  onFcctDebitPositions: function(order, grid, options) {
+  onFcfcsDebitPositions: function(order, grid, options) {
     var me = this;
-    var positionIds = me.fcctGetPositionIdsFromGrid(grid);
+    var positionIds = me.fcfcsGetPositionIdsFromGrid(grid);
 
     if(!positionIds){
       return;
@@ -95,9 +95,9 @@ Ext.define('Shopware.apps.Order.controller.fcfcsDetail', {
       });
   },
 
-  onFcctCapturePositions: function(order, grid, options) {
+  onFcfcsCapturePositions: function(order, grid, options) {
     var me = this;
-    var positionIds = me.fcctGetPositionIdsFromGrid(grid);
+    var positionIds = me.fcfcsGetPositionIdsFromGrid(grid);
 
     if(!positionIds){
       return;
@@ -156,7 +156,7 @@ Ext.define('Shopware.apps.Order.controller.fcfcsDetail', {
         }
 
         if(btn === 'yes') {
-          me.fcctCallCapture(order, positionIds, false, options, includeShipment);
+          me.fcfcsCallCapture(order, positionIds, false, options, includeShipment);
         } else {
           Ext.MessageBox.hide();
         }
@@ -164,7 +164,7 @@ Ext.define('Shopware.apps.Order.controller.fcfcsDetail', {
     });
   },
 
-  fcctCallCapture: function(order, positionIds, finalize, options, includeShipment) {
+  fcfcsCallCapture: function(order, positionIds, finalize, options, includeShipment) {
     Ext.Ajax.request({
       url: '{url controller="FatchipFCSOrder" action="fatchipFCSCaptureOrder"}',
       method: 'POST',
@@ -191,8 +191,7 @@ Ext.define('Shopware.apps.Order.controller.fcfcsDetail', {
     });
   },
 
-  fcctGetPositionIdsFromGrid: function(grid) {
-
+  fcfcsGetPositionIdsFromGrid: function(grid) {
     var selectionModel = grid.getSelectionModel();
     var positions = selectionModel.getSelection();
     var positionIds = [];
