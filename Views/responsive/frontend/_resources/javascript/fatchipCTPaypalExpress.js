@@ -1,16 +1,18 @@
 $.plugin("fatchipCTPaypalExpress", {
     defaults: {
         fatchipCTPaypalExpressRegisterUrl: false,
+        birthdaySingleField: false,
 
         customerType: "private",
         salutation: "mr", // there is no way to know the gender
         firstname: false,
         lastname: false,
         email: false,
-        phone: "0",
-        //birthdayDay: false,
-        //birthdayMonth: false,
-        //birthdayYear: false,
+        phone: "0800 123456789",
+        birthdayDay: "1",
+        birthdayMonth: "1",
+        birthdayYear: "1910",
+        birthday: "1910-1-1",
         street: false,
         zip: false,
         city: false,
@@ -26,12 +28,24 @@ $.plugin("fatchipCTPaypalExpress", {
             "method": "post"
         });
 
+        var bdayForm = '';
+        if (me.opts.birthdaySingleField) {
+            bdayForm = "<input type=\"hidden\" name=\"register[personal][birthday]\" value=\"" + me.opts.birthday + "\"/>";
+        } else {
+            bdayForm = "<input type=\"hidden\" name=\"register[personal][birthday][day]\" value=\"" + me.opts.birthdayDay + "\"/>" +
+            "<input type=\"hidden\" name=\"register[personal][birthday][month]\" value=\"" + me.opts.birthdayMonth + "\"/>" +
+            "<input type=\"hidden\" name=\"register[personal][birthday][year]\" value=\"" + me.opts.birthdayYear + "\"/>";
+        }
         // SW 5.0 - 5.1
         frm.append(
             "<input type=\"hidden\" name=\"register[personal][customer_type]\" value=\"" + me.opts.customerType + "\"/>" +
             "<input type=\"hidden\" name=\"register[personal][salutation]\" value=\"" + me.opts.salutation + "\"/>" +
             "<input type=\"hidden\" name=\"register[personal][firstname]\" value=\"" + me.opts.firstname + "\"/>" +
             "<input type=\"hidden\" name=\"register[personal][lastname]\" value=\"" + me.opts.lastname + "\"/>" +
+
+            //checked for 5.0
+            bdayForm +
+
             // SW > 5.2
             "<input type=\"hidden\" name=\"register[personal][accountmode]\" value=\"1\"/>" +
 

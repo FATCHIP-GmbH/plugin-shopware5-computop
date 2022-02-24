@@ -107,6 +107,9 @@
          data-fatchipCTAmazonGODUrl='{url controller="FatchipCTAjax" action="ctGetOrderDetails" forceSecure}'
          data-fatchipCTAmazonShippingCheckUrl='{url controller="FatchipCTAjax" action="ctIsShippingCountrySupported" forceSecure}'
          data-fatchipCTAmazonRegisterUrl='{url controller="FatchipCTAmazonRegister" action="saveRegister" forceSecure}?sTarget=FatchipCTAmazonCheckout&sTargetAction=shippingPayment'
+         data-fatchipCTAmazonisPhoneMandatory = '{$fatchipCTAmazonisPhoneMandatory}'
+         data-fatchipCTAmazonisBirthdayMandatory = '{$fatchipCTAmazonisBirthdayMandatory}'
+         data-fatchipCTAmazonBirthdaySingleField = '{config name="birthdaySingleField"}'
     ></div>
 
     {* Submit button *}

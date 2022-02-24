@@ -38,10 +38,17 @@
          data-firstname='{$fatchipAddrFirstName}'
          data-lastname='{$fatchipAddrLastName}'
          data-email='{$fatchipCTResponse->getEmail()}'
-         data-phone='0' // never set, as precaution use 0 to defeat sw field validation
          data-street='{$fatchipCTResponse->getAddrStreet()}'
          data-zip='{$fatchipCTResponse->getAddrZip()}'
          data-city='{$fatchipCTResponse->getAddrCity()}'
          data-countryCodeBillingID='{$fatchipAddrCountryCodeID}'
-    ></div>
+         // never set in computop response, but may be required for shop registration
+         data-phone='{$fatchipAddrPhone}'
+         data-birthday='{$fatchipAddrBirthday}'
+         data-birthdayDay='{$fatchipAddrBirthdayDay}'
+         data-birthdayMonth='{$fatchipAddrBirthdayMonth}'
+         data-birthdayYear='{$fatchipAddrBirthdayYear}'
+         data-birthdaySingleField = {config name="birthdaySingleField"}
+    >
+    </div>
 {/block}
