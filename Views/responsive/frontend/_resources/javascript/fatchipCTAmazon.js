@@ -196,9 +196,9 @@ $.plugin("fatchipCTAmazon", {
         var bname = data.bdaddrname.split(" ");
 
         me.opts.birthday = data.birthday;
-        if (me.opts.fatchipCTAmazonisBirthdayMandatory){
-            me.opts.birthday = (data.birthday) ? data.birthday : '1910-01-01';
-        }
+        // if (me.opts.fatchipCTAmazonisBirthdayMandatory){
+            me.opts.birthday = (typeof data.birthday !== 'undefined') ? data.birthday : '1910-01-01';
+        // }
         var aBirthday = me.opts.birthday.split("-");
         me.opts.birthdayDay = parseInt(aBirthday[2]);
         me.opts.birthdayMonthy = parseInt(aBirthday[1]);
