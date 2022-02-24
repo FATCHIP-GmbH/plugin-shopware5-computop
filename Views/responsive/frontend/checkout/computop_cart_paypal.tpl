@@ -1,13 +1,12 @@
-{extends file="parent:frontend/checkout/ajax_cart.tpl"}
+{extends file="parent:frontend/checkout/cart.tpl"}
 
-{block name='frontend_checkout_ajax_cart_button_container'}
+{block name="frontend_checkout_actions_confirm"}
     {$smarty.block.parent}
     {if $sBasket.content}
         <div class="button--container">
             <a href="{url controller='FatchipCTPaypalExpress' action='gateway'}">
-                <img src="https://www.paypalobjects.com/{$Locale}/i/btn/btn_xpressCheckout.gif">
+                <img src="{$fatchipCTPaymentPaypalButtonUrl}">
             </a>
         </div>
     {/if}
 {/block}
-

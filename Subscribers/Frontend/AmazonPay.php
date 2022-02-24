@@ -63,8 +63,8 @@ class AmazonPay extends AbstractSubscriber
     {
         return [
             'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => array(
-                array('onPostDispatchFrontendCheckout'),
-                array('hidePaymentInList')
+                array('onPostDispatchFrontendCheckoutCT'),
+                array('hidePaymentInListCT')
             )
         ];
     }
@@ -72,7 +72,7 @@ class AmazonPay extends AbstractSubscriber
     /**
      * @param Enlight_Controller_ActionEventArgs $args
      */
-    public function hidePaymentInList(Enlight_Controller_ActionEventArgs $args) {
+    public function hidePaymentInListCT(Enlight_Controller_ActionEventArgs $args) {
         $controller = $args->getSubject();
         $view = $controller->View();
         $request = $controller->Request();
@@ -86,14 +86,14 @@ class AmazonPay extends AbstractSubscriber
     /**
      * @param Enlight_Controller_ActionEventArgs $args
      */
-    public function onPostDispatchFrontendCheckout(Enlight_Controller_ActionEventArgs $args)
+    public function onPostDispatchFrontendCheckoutCT(Enlight_Controller_ActionEventArgs $args)
     {
         $controller = $args->getSubject();
         $view = $controller->View();
         $request = $controller->Request();
         $pluginConfig = Shopware()->Plugins()->Frontend()->FatchipCTPayment()->Config()->toArray();
 
-        if (!$request->isDispatched() or $request->getActionName() !== 'ajaxCart') {
+        if (!$request->isDispatched() or !$request->getActionName() == 'ajaxCart') {
             return;
         }
 
@@ -111,8 +111,8 @@ class AmazonPay extends AbstractSubscriber
             // assign plugin Config to View
             $view->assign('fatchipCTPaymentConfig', $pluginConfig);
             // extend cart and ajax cart with Amazon Button
-            $view->extendsTemplate('frontend/checkout/ajax_cart_amazon.tpl');
-            $view->extendsTemplate('frontend/checkout/cart_amazon.tpl');
+            $view->extendsTemplate('frontend/checkout/computop_ajax_cart_amazon.tpl');
+            $view->extendsTemplate('frontend/checkout/computop_cart_amazon.tpl');
         }
     }
 }

@@ -136,7 +136,7 @@ class Checkout extends AbstractSubscriber
             $view->assign('FatchipCTPaymentData', $paymentData);
 
             // assign payment errors and error template to view
-            $view->extendsTemplate('frontend/checkout/shipping_payment.tpl');
+            $view->extendsTemplate('frontend/checkout/computop_shipping_payment.tpl');
             // ToDo DO not Display User canceled:22730703 at least for paydirekt
             // logic shouldnt be here or in the template ...
 
@@ -148,7 +148,7 @@ class Checkout extends AbstractSubscriber
             $view->assign('CTError', $params['CTError']);
         }
 
-        if ($request->getActionName() == 'confirm' && (strpos($paymentName, fatchip_computop) === 0)) {
+        if ($request->getActionName() == 'confirm' && (strpos($paymentName, 'fatchip_computop') === 0)) {
             // check for address splitting errors and handle them here
             $util = new Util();
             $ctOrder = new CTOrder();
@@ -161,7 +161,9 @@ class Checkout extends AbstractSubscriber
                 $ctError['CTErrorMessage'] = Shopware()->Snippets()
                     ->getNamespace('frontend/FatchipCTPayment/translations')
                     ->get('errorAddress');
-                $ctError['CTErrorCode'] = 'Bitte prüfen Sie Straße und Hausnummer';
+                $ctError['CTErrorCode'] = Shopware()->Snippets()
+                    ->getNamespace('frontend/FatchipCTPayment/translations')
+                    ->get('errorCode');;
                 //$subject->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
                 $view->assign('CTError', $ctError);
                 return;

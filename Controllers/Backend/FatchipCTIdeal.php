@@ -81,7 +81,6 @@ class Shopware_Controllers_Backend_FatchipCTIdeal extends Shopware_Controllers_B
         // ToDo implement update mechanism
         $test = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
         if (empty($test)) {
-
             try {
 
                 foreach ($issuerList as $issuer) {
@@ -99,6 +98,8 @@ class Shopware_Controllers_Backend_FatchipCTIdeal extends Shopware_Controllers_B
             } else {
                 $this->View()->assign(array('success' => false, 'error' => $e->getMessage()));
             }
+        } else {
+            $this->View()->assign(array('success' => true, 'count' => $count));
         }
     }
 

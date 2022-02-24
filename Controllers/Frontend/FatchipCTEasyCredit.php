@@ -248,7 +248,6 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $financing = json_decode($responseObject->getFinancing(), true);
         $easyCreditInformation['anzahlRaten'] = $financing['ratenplan']['zahlungsplan']['anzahlRaten'];
         $easyCreditInformation['tilgungsplanText'] = $financing['tilgungsplanText'];
-        $easyCreditInformation['urlVorvertraglicheInformationen'] = $process['allgemeineVorgangsdaten']['urlVorvertraglicheInformationen'];
         $easyCreditInformation['bestellwert'] = $financing['finanzierung']['bestellwert'];
         $easyCreditInformation['anfallendeZinsen'] = $financing['ratenplan']['zinsen']['anfallendeZinsen'];
         $easyCreditInformation['gesamtsumme'] = $financing['ratenplan']['gesamtsumme'];
@@ -256,7 +255,6 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
         $easyCreditInformation['nominalzins'] = $financing['ratenplan']['zinsen']['nominalzins'];
         $easyCreditInformation['betragRate'] = $financing['ratenplan']['zahlungsplan']['betragRate'];
         $easyCreditInformation['betragLetzteRate'] = $financing['ratenplan']['zahlungsplan']['betragLetzteRate'];
-        $easyCreditInformation['urlVorvertraglicheInformationen'] = $process['allgemeineVorgangsdaten']['urlVorvertraglicheInformationen'];
         $easyCreditInformation['urlVorvertraglicheInformationen'] = $process['allgemeineVorgangsdaten']['urlVorvertraglicheInformationen'];
         return $easyCreditInformation;
     }

@@ -8,7 +8,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcctPosition', {
     var toolbar = me.callParent(arguments);
 
     me.fcctCapturePositionsButton = Ext.create('Ext.button.Button', {
-      id: 'btnCapture',
+      id: 'ctbtnCapture',
       iconCls: 'sprite-money-coin',
       text: '{s name=position/capture}Positionen einziehen{/s}',
       action: 'fcctCapturePositions',
@@ -22,7 +22,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcctPosition', {
     });
 
     me.fcctDebitPositionsButton = Ext.create('Ext.button.Button', {
-      id: 'btnDebit',
+      id: 'ctbtnDebit',
       iconCls: 'sprite-money-coin',
       text: '{s name=position/debit}Positionen gutschreiben{/s}',
       action: 'fcctDebitPositions',
@@ -47,14 +47,14 @@ Ext.define('Shopware.apps.Order.view.detail.fcctPosition', {
         var response = Ext.JSON.decode(response.responseText);
         if(response.success) {
           if (response.isOrderCapturable) {
-            toolbar.items.get('btnCapture').enable();
+            toolbar.items.get('ctbtnCapture').enable();
           } else {
-            toolbar.items.get('btnCapture').disable();
+            toolbar.items.get('ctbtnCapture').disable();
           }
           if (response.isOrderRefundable) {
-            toolbar.items.get('btnDebit').enable();
+            toolbar.items.get('ctbtnDebit').enable();
           } else {
-            toolbar.items.get('btnDebit').disable();
+            toolbar.items.get('ctbtnDebit').disable();
           }
 
         }
