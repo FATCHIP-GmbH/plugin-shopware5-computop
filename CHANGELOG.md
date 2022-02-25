@@ -1,5 +1,11 @@
 # Changelog - Shopware Computop Payment Connector
 
+#1.1.0
+2022-02-28
+* Added better compatibility with other payment plugins
+* Fixed problems with Paypal Express and phone numer/birthday when configured mandatory
+* Fixed problems with Amazon Pay and phone numer/birthday when configured mandatory
+
 # 1.0.50
 2022-02-07
 * Added language parameter for iFrame 
