@@ -1,5 +1,6 @@
 # Shopware First Cash Solution Payment Connector
 
+
 Licence GPLv3
 
 ## About Shopware First Cash Solution Payment Connector
