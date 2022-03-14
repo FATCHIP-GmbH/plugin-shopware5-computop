@@ -96,6 +96,16 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalExpressRegister extends Shop
         $request = $this->Request();
         $params = $request->getParams();
         $session= Shopware()->Session();
+        $isPhoneMandatory = Shopware()->Config()->get('requirePhoneField');
+        $isBirthdayMandatory = Shopware()->Config()->get('requireBirthdayField');
+        // $params['CTResponse']->setBirthday('1977-12-19');
+        // $params['CTResponse']->setBirthday('1600-01-01');
+        $birthday = (empty($params['CTResponse']->getBirthday()) && $isBirthdayMandatory) ? '1910-01-01' : $params['CTResponse']->getBirthday() ;
+        $aBirthday = explode("-", $birthday);
+        $birthdayDay = (int)$aBirthday[2];
+        $birthdayMonth = (int)$aBirthday[1];
+        $birthdayYear = (int)$aBirthday[0];
+        $phone = (empty($params['CTResponse']->getPhonenumber()) && $isPhoneMandatory) ? '0800 123456789' : $params['CTResponse']->getPhonenumber() ;
 
         $session->offsetSet('sPaymentID', $this->utils->getPaymentIdFromName('fatchip_firstcash_paypal_express'));
 
@@ -105,6 +115,11 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalExpressRegister extends Shop
         $this->view->assign('fatchipAddrCountryCodeID', $AddrCountryCodeID);
         $this->view->assign('fatchipAddrFirstName', $params['CTResponse']->getFirstName());
         $this->view->assign('fatchipAddrLastName', $params['CTResponse']->getLastName());
+        $this->view->assign('fatchipAddrBirthday', $birthday);
+        $this->view->assign('fatchipAddrBirthdayDay',$birthdayDay);
+        $this->view->assign('fatchipAddrBirthdayMonth',$birthdayMonth);
+        $this->view->assign('fatchipAddrBirthdayYear',$birthdayYear);
+        $this->view->assign('fatchipAddrPhone',$phone);
         $this->view->assign('fatchipFCSPaymentConfig', $this->config);
         $this->view->loadTemplate('frontend/fatchipFCSPaypalExpressRegister/index.tpl');
     }

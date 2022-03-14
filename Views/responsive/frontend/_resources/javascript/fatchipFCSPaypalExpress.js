@@ -1,6 +1,9 @@
 $.plugin("fatchipFCSPaypalExpress", {
     defaults: {
         fatchipFCSPaypalExpressRegisterUrl: false,
+        birthdaySingleField: false,
+        showBirthday: false,
+        requireBirthday : false,
 
         customerType: "private",
         salutation: "mr", // there is no way to know the gender
@@ -26,12 +29,31 @@ $.plugin("fatchipFCSPaypalExpress", {
             "method": "post"
         });
 
+        var bdayForm = '';
+        if (me.opts.showBirthday || me.opts.requireBirthday) {
+            if (me.opts.birthdaySingleField == 1 ) {
+                bdayForm = "<input type=\"hidden\" name=\"register[personal][birthday]\" value=\"" + me.opts.birthday + "\"/>";
+            } else {
+                console.log(me.opts.birthdayDay);
+                console.log(me.opts.birthdayMonth);
+                console.log(me.opts.birthdayYear);
+                bdayForm = "<input type=\"hidden\" name=\"register[personal][birthday][day]\" value=\"" + me.opts.birthdayDay + "\"/>" +
+                    "<input type=\"hidden\" name=\"register[personal][birthday][month]\" value=\"" + me.opts.birthdayMonth + "\"/>" +
+                    "<input type=\"hidden\" name=\"register[personal][birthday][year]\" value=\"" + me.opts.birthdayYear + "\"/>";
+            }
+        } else  {
+            bdayForm = '';
+        }
         // SW 5.0 - 5.1
         frm.append(
             "<input type=\"hidden\" name=\"register[personal][customer_type]\" value=\"" + me.opts.customerType + "\"/>" +
             "<input type=\"hidden\" name=\"register[personal][salutation]\" value=\"" + me.opts.salutation + "\"/>" +
             "<input type=\"hidden\" name=\"register[personal][firstname]\" value=\"" + me.opts.firstname + "\"/>" +
             "<input type=\"hidden\" name=\"register[personal][lastname]\" value=\"" + me.opts.lastname + "\"/>" +
+
+            //checked for 5.0
+            bdayForm +
+
             // SW > 5.2
             "<input type=\"hidden\" name=\"register[personal][accountmode]\" value=\"1\"/>" +
 
