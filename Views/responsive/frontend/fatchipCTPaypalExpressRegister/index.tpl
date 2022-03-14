@@ -49,6 +49,8 @@
          data-birthdayMonth='{$fatchipAddrBirthdayMonth}'
          data-birthdayYear='{$fatchipAddrBirthdayYear}'
          data-birthdaySingleField = {config name="birthdaySingleField"}
+         data-showBirthday = {config name="showBirthdayField"}
+         data-requireBirthday = {config name="requireBirthdayField"}
     >
     </div>
 {/block}

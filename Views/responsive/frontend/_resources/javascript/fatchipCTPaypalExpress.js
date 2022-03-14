@@ -2,7 +2,8 @@ $.plugin("fatchipCTPaypalExpress", {
     defaults: {
         fatchipCTPaypalExpressRegisterUrl: false,
         birthdaySingleField: false,
-
+        showBirthday: false,
+        requireBirthday : false,
         customerType: "private",
         salutation: "mr", // there is no way to know the gender
         firstname: false,
@@ -29,12 +30,19 @@ $.plugin("fatchipCTPaypalExpress", {
         });
 
         var bdayForm = '';
-        if (me.opts.birthdaySingleField) {
-            bdayForm = "<input type=\"hidden\" name=\"register[personal][birthday]\" value=\"" + me.opts.birthday + "\"/>";
-        } else {
-            bdayForm = "<input type=\"hidden\" name=\"register[personal][birthday][day]\" value=\"" + me.opts.birthdayDay + "\"/>" +
-            "<input type=\"hidden\" name=\"register[personal][birthday][month]\" value=\"" + me.opts.birthdayMonth + "\"/>" +
-            "<input type=\"hidden\" name=\"register[personal][birthday][year]\" value=\"" + me.opts.birthdayYear + "\"/>";
+        if (me.opts.showBirthday || me.opts.requireBirthday) {
+            if (me.opts.birthdaySingleField == 1 ) {
+                bdayForm = "<input type=\"hidden\" name=\"register[personal][birthday]\" value=\"" + me.opts.birthday + "\"/>";
+            } else {
+                console.log(me.opts.birthdayDay);
+                console.log(me.opts.birthdayMonth);
+                console.log(me.opts.birthdayYear);
+                bdayForm = "<input type=\"hidden\" name=\"register[personal][birthday][day]\" value=\"" + me.opts.birthdayDay + "\"/>" +
+                "<input type=\"hidden\" name=\"register[personal][birthday][month]\" value=\"" + me.opts.birthdayMonth + "\"/>" +
+                "<input type=\"hidden\" name=\"register[personal][birthday][year]\" value=\"" + me.opts.birthdayYear + "\"/>";
+            }
+        } else  {
+            bdayForm = '';
         }
         // SW 5.0 - 5.1
         frm.append(

@@ -103,6 +103,8 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpressRegister extends Shopw
         $session= Shopware()->Session();
         $isPhoneMandatory = Shopware()->Config()->get('requirePhoneField');
         $isBirthdayMandatory = Shopware()->Config()->get('requireBirthdayField');
+        // $params['CTResponse']->setBirthday('1977-12-19');
+        // $params['CTResponse']->setBirthday('1600-01-01');
         $birthday = (empty($params['CTResponse']->getBirthday()) && $isBirthdayMandatory) ? '1910-01-01' : $params['CTResponse']->getBirthday() ;
         $aBirthday = explode("-", $birthday);
         $birthdayDay = (int)$aBirthday[2];
