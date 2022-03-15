@@ -123,7 +123,8 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
                 $order->getAttribute()->getfatchipfcsXid(),
                 $orderDesc,
                 $order->getAttribute()->getfatchipfcsKlarnainvno(),
-                $order->getAttribute()->getfatchipfcskreditkarteschemereferenceid()
+                $order->getAttribute()->getfatchipfcskreditkarteschemereferenceid(),
+                $order->getInvoiceAmount() * 100,
             );
 
 
