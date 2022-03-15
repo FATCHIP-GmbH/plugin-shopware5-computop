@@ -1,5 +1,11 @@
 # Changelog - Shopware Computop Payment Connector
 
+#1.1.1
+2022-03-15
+* Problem solved with PayPal Express when birthday is not transferred (standard)
+* Fixed address splitting when no street number is provided
+* Fixed EasyCredit
+
 #1.1.0
 2022-02-28
 * Added better compatibility with other payment plugins
