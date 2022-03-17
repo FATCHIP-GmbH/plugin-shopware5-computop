@@ -2,7 +2,7 @@
  * $Id: $
  */
 
-//{namespace name=backend/fatchip_ct_apilog/main}
+//{namespace name="backend/fatchip_ct_apilog/main"}
 //{block name="backend/fatchip_ct_apilog/view/main/detailwindow"}
 Ext.define('Shopware.apps.FatchipCTApilog.view.main.Detailwindow', {
 	extend: 'Enlight.app.Window',
@@ -25,7 +25,7 @@ Ext.define('Shopware.apps.FatchipCTApilog.view.main.Detailwindow', {
      */
     initComponent: function() {
         var me = this;
-        me.title = '{s name=api_log_details_for}Apilog Details zu ID {/s}' + me.itemSelected;
+        me.title = '{s name="api_log_details_for"}Apilog Details zu ID {/s}' + me.itemSelected;
         me.items = [{
             xtype: 'fatchipCTApilogMainDetail',
             itemSelected: me.itemSelected

@@ -2,7 +2,7 @@
  * $Id: $
  */
 
-//{namespace name=backend/fatchip_ct_apilog/main}
+//{namespace name="backend/fatchip_ct_apilog/main"}
 
 
 //{block name="backend/fatchip_ct_apilog/controller/log"}

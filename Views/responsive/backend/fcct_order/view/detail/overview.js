@@ -43,7 +43,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcctOverview',
       if(fcctShowShippingCosts)
       {
         return Ext.create('Ext.panel.Panel', {
-          title: '{s name=overview/title}Computop: Versandkosten{/s}',
+          title: '{s name="overview/title"}Computop: Versandkosten{/s}',
           bodyPadding: 10,
           flex: 1,
           paddingRight: 5,
@@ -61,7 +61,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcctOverview',
       else
       {
         return Ext.create('Ext.panel.Panel', {
-          title: '{s name=overview/title}Computop: Versandkosten{/s}',
+          title: '{s name="overview/title"}Computop: Versandkosten{/s}',
           bodyPadding: 10,
           flex: 1,
           paddingRight: 5,
@@ -85,7 +85,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcctOverview',
       var me = this;
 
       return Ext.create('Ext.panel.Panel', {
-        title: '{s name=overview/title}Computop: Versandkosten{/s}',
+        title: '{s name="overview/title"}Computop: Versandkosten{/s}',
         bodyPadding: 10,
         flex: 1,
         paddingRight: 5,
@@ -108,8 +108,8 @@ Ext.define('Shopware.apps.Order.view.detail.fcctOverview',
      */
     createFcctShippingCostTemplate:function ()
     {
-      var labelCaptured = '{s name=overview/captured}Bisher eingezogenen: {/s}';
-      var labelDebited = '{s name=overview/debited}Bisher gutgeschrieben: {/s}';
+      var labelCaptured = '{s name="overview/captured"}Bisher eingezogenen: {/s}';
+      var labelDebited = '{s name="overview/debited"}Bisher gutgeschrieben: {/s}';
 
       return new Ext.XTemplate(
         '{literal}<tpl for=".">',
@@ -134,7 +134,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcctOverview',
      */
     createFcctShippingCostTemplateExtraPosition:function ()
     {
-      var labelExtraPositon = '{s name=overview/extraPosition}Die Versandkosten sind als eigener Artikel in der Positionsliste verfügbar.{/s}';
+      var labelExtraPositon = '{s name="overview/extraPosition"}Die Versandkosten sind als eigener Artikel in der Positionsliste verfügbar.{/s}';
 
       return new Ext.XTemplate(
         '{literal}<tpl for=".">',
@@ -156,7 +156,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcctOverview',
      */
     createFcctNoComputopOrderTemplate:function ()
     {
-      var labelNotComputop = '{s name=overview/notComputop}Diese Bestellung wurde nicht mit einer Computop Zahlart durchgeführt.{/s}';
+      var labelNotComputop = '{s name="overview/notComputop"}Diese Bestellung wurde nicht mit einer Computop Zahlart durchgeführt.{/s}';
 
       return new Ext.XTemplate(
         '{literal}<tpl for=".">',

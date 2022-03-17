@@ -10,7 +10,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcctPosition', {
     me.fcctCapturePositionsButton = Ext.create('Ext.button.Button', {
       id: 'ctbtnCapture',
       iconCls: 'sprite-money-coin',
-      text: '{s name=position/capture}Positionen einziehen{/s}',
+      text: '{s name="position/capture"}Positionen einziehen{/s}',
       action: 'fcctCapturePositions',
       handler: function() {
         me.fireEvent('fcctCapturePositions', me.record, me.orderPositionGrid, {
@@ -24,7 +24,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcctPosition', {
     me.fcctDebitPositionsButton = Ext.create('Ext.button.Button', {
       id: 'ctbtnDebit',
       iconCls: 'sprite-money-coin',
-      text: '{s name=position/debit}Positionen gutschreiben{/s}',
+      text: '{s name="position/debit"}Positionen gutschreiben{/s}',
       action: 'fcctDebitPositions',
       handler: function() {
         me.fireEvent('fcctDebitPositions', me.record, me.orderPositionGrid, {
@@ -76,12 +76,12 @@ Ext.define('Shopware.apps.Order.view.detail.fcctPosition', {
     columns = me.callParent(arguments);
 
     columns.push({
-        header: '{s name=position/captured}Eingezogen{/s}',
+        header: '{s name="position/captured"}Eingezogen{/s}',
         dataIndex: 'fcctcaptured',
         flex:1
       },
       {
-        header: '{s name=position/debited}Gutgeschrieben{/s}',
+        header: '{s name="position/debited"}Gutgeschrieben{/s}',
         dataIndex: 'fcctdebit',
         flex:1
       }

@@ -2,11 +2,11 @@
  * $Id: $
  */
 
-//{namespace name=backend/fatchip_ct_apilog/main}
+//{namespace name="backend/fatchip_ct_apilog/main"}
 //{block name="backend/fatchip_ct_apilog/view/main/window"}
 Ext.define('Shopware.apps.FatchipCTApilog.view.main.Window', {
   extend: 'Enlight.app.Window',
-  title: '{s name=window_title}Apilog{/s}',
+  title: '{s name="window_title"}Apilog{/s}',
   cls: Ext.baseCSSPrefix + 'log-window',
   alias: 'widget.log-main-window-api',
   border: false,

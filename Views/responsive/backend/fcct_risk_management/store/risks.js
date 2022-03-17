@@ -1,4 +1,4 @@
-//{namespace name=backend/mopt_risk_management/main}
+//{namespace name="backend/mopt_risk_management/main"}
 //{block name="backend/risk_management/store/risks" append}
 Ext.define('Shopware.apps.RiskManagement.store.fcct__Risks', {
 
@@ -10,8 +10,8 @@ Ext.define('Shopware.apps.RiskManagement.store.fcct__Risks', {
       
       if(!me.fatchip_computop__isExtended())
       {
-        me.data.push({ description: '{s name=risks_store/comboBox/computopTrafficLight}Computop Risikoampel IST{/s}', value: 'FATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS' });
-        me.data.push({ description: '{s name=risks_store/comboBox/computopTrafficLightNot}Computop Risikoampel IST NICHT{/s}', value: 'FATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS_NOT' });
+        me.data.push({ description: '{s name="risks_store/comboBox/computopTrafficLight"}Computop Risikoampel IST{/s}', value: 'FATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS' });
+        me.data.push({ description: '{s name="risks_store/comboBox/computopTrafficLightNot"}Computop Risikoampel IST NICHT{/s}', value: 'FATCHIP_COMPUTOP__TRAFFIC_LIGHT_IS_NOT' });
       }
       
       me.callParent(arguments);

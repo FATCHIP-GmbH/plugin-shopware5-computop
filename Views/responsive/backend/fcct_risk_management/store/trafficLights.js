@@ -1,4 +1,4 @@
-//{namespace name=backend/fcct_risk_management/main}
+//{namespace name="backend/fcct_risk_management/main"}
 //{block name="backend/risk_management/app" append}
 Ext.define('Shopware.apps.RiskManagement.store.TrafficLights', {
   
@@ -10,9 +10,9 @@ Ext.define('Shopware.apps.RiskManagement.store.TrafficLights', {
 	],
 
 	data: [
-		{ description: '{s name=trafficLights_store/comboBox/green}grün{/s}', value: "GREEN" },
-		{ description: '{s name=trafficLights_store/comboBox/yellow}gelb{/s}', value: "YELLOW" },
-		{ description: '{s name=trafficLights_store/comboBox/red}rot{/s}', value: "RED" }
+		{ description: '{s name="trafficLights_store/comboBox/green"}grün{/s}', value: "GREEN" },
+		{ description: '{s name="trafficLights_store/comboBox/yellow"}gelb{/s}', value: "YELLOW" },
+		{ description: '{s name="trafficLights_store/comboBox/red"}rot{/s}', value: "RED" }
 	]
 });
 //{/block}

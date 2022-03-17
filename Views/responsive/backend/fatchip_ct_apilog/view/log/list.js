@@ -2,7 +2,7 @@
  * $Id: $
  */
 
-//{namespace name=backend/fatchip_ct_apilog/main}
+//{namespace name="backend/fatchip_ct_apilog/main"}
 /**
  * Shopware UI - Log view list
  *
@@ -69,46 +69,46 @@ Ext.define('Shopware.apps.FatchipCTApilog.view.log.List', {
   getColumns: function() {
     var me = this;
     var columns = [{
-        header: '{s name=fatchip_ct_apilog/grid/column_id}ID{/s}',
+        header: '{s name="fatchip_ct_apilog/grid/column_id"}ID{/s}',
         dataIndex: 'id',
         flex: 1
       },         {
-        header: '{s name=fatchip_ct_apilog/grid/column_request}Typ{/s}',
+        header: '{s name="fatchip_ct_apilog/grid/column_request"}Typ{/s}',
         dataIndex: 'request',
         flex: 1
       }, {
-        header: '{s name=fatchip_ct_apilog/grid/column_payment_name}Zahlart{/s}',
+        header: '{s name="fatchip_ct_apilog/grid/column_payment_name"}Zahlart{/s}',
         dataIndex: 'paymentName',
         flex: 1
       }, {
-        header: '{s name=fatchip_ct_apilog/grid/column_response}Status{/s}',
+        header: '{s name="fatchip_ct_apilog/grid/column_response"}Status{/s}',
         dataIndex: 'response',
         flex: 1
       }, {
-        header: '{s name=fatchip_ct_apilog/grid/column_date}Datum{/s}',
+        header: '{s name="fatchip_ct_apilog/grid/column_date"}Datum{/s}',
         dataIndex: 'creationDate',
         flex: 1,
         xtype: 'datecolumn',
         renderer: me.renderDate
       }, {
-        header: '{s name=fatchip_ct_apilog/grid/column_mode}TransID{/s}',
+        header: '{s name="fatchip_ct_apilog/grid/column_mode"}TransID{/s}',
         dataIndex: 'transId',
         flex: 1
       }, {
-        header: '{s name=fatchip_ct_apilog/grid/column_merchant}PayID{/s}',
+        header: '{s name="fatchip_ct_apilog/grid/column_merchant"}PayID{/s}',
         dataIndex: 'payId',
         flex: 1
       }, {
-        header: '{s name=fatchip_ct_apilog/grid/column_portal_id}XID{/s}',
+        header: '{s name="fatchip_ct_apilog/grid/column_portal_id"}XID{/s}',
         dataIndex: 'xId',
         flex: 1
       },
       /*{
-        header: '{s name=fatchip_ct_apilog/grid/column_request_details}Request{/s}',
+        header: '{s name="fatchip_ct_apilog/grid/column_request_details"}Request{/s}',
         dataIndex: 'requestDetails',
         flex: 1
       }, {
-        header: '{s name=fatchip_ct_apilog/grid/column_response_details}Response{/s}',
+        header: '{s name="fatchip_ct_apilog/grid/column_response_details"}Response{/s}',
         dataIndex: 'responseDetails',
         flex: 1
       }
@@ -164,11 +164,11 @@ Ext.define('Shopware.apps.FatchipCTApilog.view.log.List', {
         name: 'searchApi',
         id: 'searchFieldApi',
         dock: 'top',
-        fieldLabel: '{s name=toolbar/searchField}Freitext{/s}'
+        fieldLabel: '{s name="toolbar/searchField"}Freitext{/s}'
       }, {
         xtype: 'button',
         name: 'searchbtnapi',
-        text: '{s name=toolbar/searchButton}Suchen{/s}',
+        text: '{s name="toolbar/searchButton"}Suchen{/s}',
         id: 'searchBtnApi',
         width: '50px',
         dock: 'top',
@@ -190,7 +190,7 @@ Ext.define('Shopware.apps.FatchipCTApilog.view.log.List', {
       {
         xtype: 'button',
         name: 'resetApiBtn',
-        text: '{s name=toolbar/searchReset}Suche zurücksetzen{/s}',
+        text: '{s name="toolbar/searchReset"}Suche zurücksetzen{/s}',
         id: 'resetApiBtn',
         dock: 'top',
         handler: function(btn, event) {
