@@ -934,6 +934,9 @@ class Util
     }
 
     public function hidePayment($name, $payments) {
+        if (empty($payments)) {
+            return $payments;
+        }
         $paymentIndexes = array_combine(array_column($payments, 'name'), array_keys($payments));
 
         if(array_key_exists($name, $paymentIndexes)) {
