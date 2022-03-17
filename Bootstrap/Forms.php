@@ -87,6 +87,7 @@ class Forms extends Bootstrap
 
         try {
             $this->removeFormElements();
+            $this->updateFormElements();
         } catch (OptimisticLockException $e) {
         } catch (ORMException $e) {
         }
@@ -120,6 +121,27 @@ class Forms extends Bootstrap
         }
 
         $em->flush();
+    }
+
+    /**
+     * used for updating config element values
+     *
+     */
+    public function updateFormElements() {
+
+        if(!$this->plugin) {
+            return;
+        }
+
+        $creditCardTemplateElement = $this->plugin->Form()->getElement('creditCardTemplate');
+        $sql = 'SELECT value FROM s_core_config_values WHERE element_id = ' . $creditCardTemplateElement->getId();
+        $result = Shopware()->Db()->query($sql);
+        $value = $result->fetch();
+        $unserialized = unserialize($value['value']);
+        if ($unserialized !== false && ($unserialized === '' || $unserialized === 'ct_responsive_ch' )) {
+            $sql = 'UPDATE s_core_config_values SET value = \'' . serialize('ct_responsive') . '\' WHERE element_id = ' . $creditCardTemplateElement->getId();
+            $result = Shopware()->Db()->query($sql);
+        }
     }
 
     /**
