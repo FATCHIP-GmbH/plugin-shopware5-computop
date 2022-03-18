@@ -86,7 +86,7 @@
 {block name='frontend_checkout_confirm_left_payment_method_actions'}
     <div class="panel--actions is--wide payment--actions">
         {* Action buttons *}
-        <a href="{url controller=FatchipCTAmazonCheckout action=shippingPayment sTarget=checkout}" class="btn is--small btn--change-payment">
+        <a href="{url controller="FatchipCTAmazonCheckout" action="shippingPayment" sTarget="checkout"}" class="btn is--small btn--change-payment">
             Ändern
         </a>
     </div>
@@ -102,10 +102,11 @@
 
     <script async="async"
         {if $fatchipCTPaymentConfig.amazonLiveMode === 'Live'}
-            src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/lpa/js/Widgets.js'>
+            src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/lpa/js/Widgets.js'
         {else}
-            src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/sandbox/lpa/js/Widgets.js'>
+            src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/sandbox/lpa/js/Widgets.js'
         {/if}
+        >
     </script>
 
     {$smarty.block.parent}

@@ -64,12 +64,17 @@
             max-height: 400px;
             display: none;
         }
+        #AmazonErrors {
+            display: none;
+            padding-left: 50px;
+        }
+        #RegistrationErrors {
+            padding-left: 50px;
+        }
     </style>
 
-    {* ToDo merge PHP and js error to one Block, beautify errors *}
-    {* Error Messages Javascript *}
-    <div id="AmazonErrors" style="display:none">
-        <div class="alert is--error is--rounded">
+    <div id="AmazonErrors">
+        <div class="alert content is--error is--rounded">
             <div class="alert--icon">
                 <i class="icon--element icon--cross"></i>
             </div>
@@ -80,17 +85,19 @@
 
     {* Error Messages php *}
     {if $errorMessage}
-        <div class="alert is--error is--rounded">
-            <div class="alert--icon">
-                <i class="icon--element icon--cross"></i>
-            </div>
-            <div id="AmazonErrorContent" class="alert--content">
-                {$errorMessage}
-                <ul>
-                    {foreach from=$errorFields item=error_field}
-                        <li>{$error_field}</li>
-                    {/foreach}
-                </ul>
+        <div id="RegistrationErrors">
+            <div class="alert content is--error is--rounded">
+                <div class="alert--icon">
+                    <i class="icon--element icon--cross"></i>
+                </div>
+                <div id="AmazonErrorContent" class="alert--content">
+                    {$errorMessage}
+                    <ul class="alert--list">
+                        {foreach from=$errorFields item=error_field}
+                            <li class="list--entry">{$error_field}</li>
+                        {/foreach}
+                    </ul>
+                </div>
             </div>
         </div>
     {/if}
@@ -171,9 +178,10 @@
     </script>
     <script async="async"
         {if $fatchipCTPaymentConfig.amazonLiveMode === 'Live'}
-            src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/lpa/js/Widgets.js'>
+            src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/lpa/js/Widgets.js'
         {else}
-            src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/sandbox/lpa/js/Widgets.js'>
+            src='https://static-eu.payments-amazon.com/OffAmazonPayments/de/sandbox/lpa/js/Widgets.js'
         {/if}
+        >
     </script>
 {/block}

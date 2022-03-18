@@ -122,7 +122,11 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonRegister extends Shopware_Con
 
         if (Util::isShopwareVersionGreaterThanOrEqual('5.2')) {
             $register = $this->View()->getAssign('errors');
-            $errors = array_merge($register['personal'], $register['billing'], $register['shipping']);
+            if (!empty($register)) {
+                $errors = array_merge($register['personal'], $register['billing'], $register['shipping']);
+            } else {
+                $errors = [];
+            }
         } else {
             $registerArrObj = $this->View()->getAssign('register')->getArrayCopy();
             $register = $this->getArrayFromArrayObjs($registerArrObj);

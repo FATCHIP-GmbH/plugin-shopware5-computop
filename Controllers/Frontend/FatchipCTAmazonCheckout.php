@@ -77,7 +77,7 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
     public function init()
     {
         // init method may or may not exists depending on sw version
-        if (method_exists(parent::init())) {
+        if (method_exists('Shopware_Controllers_Frontend_Checkout', 'init')) {
             parent::init();
         }
         // ToDo handle possible Exception
