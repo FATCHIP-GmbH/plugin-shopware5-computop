@@ -79,7 +79,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpressCheckout extends Shopw
      */
     public function init()
     {
-        if (method_exists(parent::init())) {
+        if (method_exists('Shopware_Controllers_Frontend_Checkout', 'init')) {
             parent::init();
         }
         // ToDo handle possible Exception
