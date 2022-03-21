@@ -82,6 +82,7 @@ class Shopware_Controllers_Backend_FatchipFCSIdeal extends Shopware_Controllers_
         $test = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipFCSIdeal\FatchipFCSIdealIssuers')->findAll();
         if (empty($test)) {
             try {
+
                 foreach ($issuerList as $issuer) {
                     $issuerModel = new \Shopware\CustomModels\FatchipFCSIdeal\FatchipFCSIdealIssuers();
                     $issuerModel->fromArray($issuer);

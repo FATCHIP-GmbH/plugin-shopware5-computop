@@ -83,6 +83,11 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalExpressRegister extends Shop
         $this->utils = Shopware()->Container()->get('FatchipFCSPaymentUtils');
     }
 
+    public function indexAction()
+    {
+        $this->forward('Index', 'Register');
+    }
+
     /**
      * Registers users in shopware.
      *

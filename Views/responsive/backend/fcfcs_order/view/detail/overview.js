@@ -43,7 +43,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcfcsOverview',
       if(fcfcsShowShippingCosts)
       {
         return Ext.create('Ext.panel.Panel', {
-          title: '{s name=overview/title}First Cash: Versandkosten{/s}',
+          title: '{s name="overview/title"}First Cash: Versandkosten{/s}',
           bodyPadding: 10,
           flex: 1,
           paddingRight: 5,
@@ -61,7 +61,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcfcsOverview',
       else
       {
         return Ext.create('Ext.panel.Panel', {
-          title: '{s name=overview/title}First Cash: Versandkosten{/s}',
+          title: '{s name="overview/title"}First Cash: Versandkosten{/s}',
           bodyPadding: 10,
           flex: 1,
           paddingRight: 5,
@@ -85,7 +85,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcfcsOverview',
       var me = this;
 
       return Ext.create('Ext.panel.Panel', {
-        title: '{s name=overview/title}First Cash: Versandkosten{/s}',
+        title: '{s name="overview/title"}First Cash: Versandkosten{/s}',
         bodyPadding: 10,
         flex: 1,
         paddingRight: 5,
@@ -108,8 +108,8 @@ Ext.define('Shopware.apps.Order.view.detail.fcfcsOverview',
      */
     createFcfcsShippingCostTemplate:function ()
     {
-      var labelCaptured = '{s name=overview/captured}Bisher eingezogenen: {/s}';
-      var labelDebited = '{s name=overview/debited}Bisher gutgeschrieben: {/s}';
+      var labelCaptured = '{s name="overview/captured"}Bisher eingezogenen: {/s}';
+      var labelDebited = '{s name="overview/debited"}Bisher gutgeschrieben: {/s}';
 
       return new Ext.XTemplate(
         '{literal}<tpl for=".">',
@@ -134,7 +134,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcfcsOverview',
      */
     createFcfcsShippingCostTemplateExtraPosition:function ()
     {
-      var labelExtraPositon = '{s name=overview/extraPosition}Die Versandkosten sind als eigener Artikel in der Positionsliste verfügbar.{/s}';
+      var labelExtraPositon = '{s name="overview/extraPosition"}Die Versandkosten sind als eigener Artikel in der Positionsliste verfügbar.{/s}';
 
       return new Ext.XTemplate(
         '{literal}<tpl for=".">',
@@ -156,7 +156,7 @@ Ext.define('Shopware.apps.Order.view.detail.fcfcsOverview',
      */
     createFcfcsNoFirstCashOrderTemplate:function ()
     {
-      var labelNotFirstCash = '{s name=overview/notFirstCash}Diese Bestellung wurde nicht mit einer First Cash Solution Zahlart durchgeführt.{/s}';
+      var labelNotFirstCash = '{s name="overview/notFirstCash"}Diese Bestellung wurde nicht mit einer First Cash Solution Zahlart durchgeführt.{/s}';
 
       return new Ext.XTemplate(
         '{literal}<tpl for=".">',

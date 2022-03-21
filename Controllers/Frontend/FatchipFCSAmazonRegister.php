@@ -122,7 +122,11 @@ class Shopware_Controllers_Frontend_FatchipFCSAmazonRegister extends Shopware_Co
 
         if (Util::isShopwareVersionGreaterThanOrEqual('5.2')) {
             $register = $this->View()->getAssign('errors');
-            $errors = array_merge($register['personal'], $register['billing'], $register['shipping']);
+            if (!empty($register)) {
+                $errors = array_merge($register['personal'], $register['billing'], $register['shipping']);
+            } else {
+                $errors = [];
+            }
         } else {
             $registerArrObj = $this->View()->getAssign('register')->getArrayCopy();
             $register = $this->getArrayFromArrayObjs($registerArrObj);
@@ -138,6 +142,8 @@ class Shopware_Controllers_Frontend_FatchipFCSAmazonRegister extends Shopware_Co
         }
         // TODO  add a config->toView method which removed sensitive data from view
         $this->view->assign('fatchipFCSPaymentConfig', $this->config);
+        $this->view->assign('fatchipFCSAmazonisBirthdayMandatory',Shopware()->Config()->get('requireBirthdayField'));
+        $this->view->assign('fatchipFCSAmazonisPhoneMandatory', Shopware()->Config()->get('requirePhoneField'));
         $this->view->loadTemplate('frontend/fatchipFCSAmazonRegister/index.tpl');
     }
 

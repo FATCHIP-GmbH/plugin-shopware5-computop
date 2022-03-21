@@ -140,10 +140,10 @@ class Checkout extends AbstractSubscriber
             // ToDo DO not Display User canceled:22730703 at least for paydirekt
             // logic shouldnt be here or in the template ...
 
-            // use CTError from Session, this was done to prevent csrf Errors from forwarding
+            // use FCSError from Session, this was done to prevent csrf Errors from forwarding
             if ($ctError = $session->offsetGet('FCSError')) {
                 $session->offsetUnset('FCSError');
-                $params['FCSError'] = $ctError;
+                $params['CTError'] = $ctError;
             }
             $view->assign('FCSError', $params['CTError']);
         }
@@ -161,7 +161,9 @@ class Checkout extends AbstractSubscriber
                 $ctError['CTErrorMessage'] = Shopware()->Snippets()
                     ->getNamespace('frontend/FatchipFCSPayment/translations')
                     ->get('errorAddress');
-                $ctError['CTErrorCode'] = 'Bitte prüfen Sie Straße und Hausnummer';
+                $ctError['CTErrorCode'] = Shopware()->Snippets()
+                    ->getNamespace('frontend/FatchipFCSPayment/translations')
+                    ->get('errorCode');;
                 //$subject->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
                 $view->assign('FCSError', $ctError);
                 return;

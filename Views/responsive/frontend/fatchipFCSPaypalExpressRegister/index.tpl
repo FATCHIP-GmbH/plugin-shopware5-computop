@@ -34,15 +34,15 @@
 {* Replace Register content with Amazon Widget SW 5.0 *}
 {block name='frontend_register_index_registration'}
     <div id="fatchipFCSPaypalExpressInformation" hidden
-         data-fatchipFCSPaypalExpressRegisterUrl='{url controller="FatchipFCSPaypalExpressRegister" action="saveRegister" forceSecure}?sTarget=FatchipFCSPaypalExpressCheckout&sTargetAction=shippingPayment'
-         data-firstname='{$fatchipAddrFirstName}'
-         data-lastname='{$fatchipAddrLastName}'
-         data-email='{$fatchipFCSResponse->getEmail()}'
-         data-street='{$fatchipFCSResponse->getAddrStreet()}'
-         data-zip='{$fatchipFCSResponse->getAddrZip()}'
-         data-city='{$fatchipFCSResponse->getAddrCity()}'
-         data-countryCodeBillingID='{$fatchipAddrCountryCodeID}'
-    // never set in computop response, but may be required for shop registration
+        data-fatchipFCSPaypalExpressRegisterUrl='{url controller="FatchipFCSPaypalExpressRegister" action="saveRegister" forceSecure}?sTarget=FatchipFCSPaypalExpressCheckout&sTargetAction=shippingPayment'
+        data-firstname='{$fatchipAddrFirstName}'
+        data-lastname='{$fatchipAddrLastName}'
+        data-email='{$fatchipFCSResponse->getEmail()}'
+        data-street='{$fatchipFCSResponse->getAddrStreet()}'
+        data-zip='{$fatchipFCSResponse->getAddrZip()}'
+        data-city='{$fatchipFCSResponse->getAddrCity()}'
+        data-countryCodeBillingID='{$fatchipAddrCountryCodeID}'
+        // never set in computop response, but may be required for shop registration
         data-phone='{$fatchipAddrPhone}'
         data-birthday='{$fatchipAddrBirthday}'
         data-birthdayDay='{$fatchipAddrBirthdayDay}'
@@ -51,5 +51,6 @@
         data-birthdaySingleField = {config name="birthdaySingleField"}
         data-showBirthday = {config name="showBirthdayField"}
         data-requireBirthday = {config name="requireBirthdayField"}
-    ></div>
+    >
+    </div>
 {/block}

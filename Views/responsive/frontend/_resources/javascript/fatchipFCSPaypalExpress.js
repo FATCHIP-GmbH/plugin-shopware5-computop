@@ -4,16 +4,16 @@ $.plugin("fatchipFCSPaypalExpress", {
         birthdaySingleField: false,
         showBirthday: false,
         requireBirthday : false,
-
         customerType: "private",
         salutation: "mr", // there is no way to know the gender
         firstname: false,
         lastname: false,
         email: false,
-        phone: "0",
-        //birthdayDay: false,
-        //birthdayMonth: false,
-        //birthdayYear: false,
+        phone: "0800 123456789",
+        birthdayDay: "1",
+        birthdayMonth: "1",
+        birthdayYear: "1910",
+        birthday: "1910-1-1",
         street: false,
         zip: false,
         city: false,
@@ -38,8 +38,8 @@ $.plugin("fatchipFCSPaypalExpress", {
                 console.log(me.opts.birthdayMonth);
                 console.log(me.opts.birthdayYear);
                 bdayForm = "<input type=\"hidden\" name=\"register[personal][birthday][day]\" value=\"" + me.opts.birthdayDay + "\"/>" +
-                    "<input type=\"hidden\" name=\"register[personal][birthday][month]\" value=\"" + me.opts.birthdayMonth + "\"/>" +
-                    "<input type=\"hidden\" name=\"register[personal][birthday][year]\" value=\"" + me.opts.birthdayYear + "\"/>";
+                "<input type=\"hidden\" name=\"register[personal][birthday][month]\" value=\"" + me.opts.birthdayMonth + "\"/>" +
+                "<input type=\"hidden\" name=\"register[personal][birthday][year]\" value=\"" + me.opts.birthdayYear + "\"/>";
             }
         } else  {
             bdayForm = '';

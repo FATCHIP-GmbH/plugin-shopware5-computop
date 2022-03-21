@@ -107,15 +107,23 @@ class Util
      */
     public function getCTAddress(array $swAddress)
     {
-        $splitAddress = AddressSplitter::splitAddress($swAddress['street']);
+        // to support addresses without house number only use the splitter when numbers are found in street
+        if (preg_match('~[0-9]+~', $swAddress['street'])) {
+            $splitAddress = AddressSplitter::splitAddress($swAddress['street']);
+            $street = $splitAddress['streetName'];
+            $housenr = $splitAddress['houseNumber'];
+        } else {
+            $street = $swAddress['street'];
+            $housenr = '';
+        }
 
         return new CTAddress(
             ($swAddress['salutation'] == 'mr') ? 'Herr' : 'Frau',
             $swAddress['company'],
             ($swAddress['firstname']) ? $swAddress['firstname'] : $swAddress['firstName'],
             ($swAddress['lastname']) ? $swAddress['lastname'] : $swAddress['lastName'],
-            $splitAddress['streetName'],
-            $splitAddress['houseNumber'],
+            $street,
+            $housenr,
             ($swAddress['zipcode']) ? $swAddress['zipcode'] : $swAddress['zipCode'],
             $swAddress['city'],
             $this->getCTCountryIso($this->getCountryIdFromAddress($swAddress)),
@@ -927,6 +935,9 @@ class Util
     }
 
     public function hidePayment($name, $payments) {
+        if (empty($payments)) {
+            return $payments;
+        }
         $paymentIndexes = array_combine(array_column($payments, 'name'), array_keys($payments));
 
         if(array_key_exists($name, $paymentIndexes)) {

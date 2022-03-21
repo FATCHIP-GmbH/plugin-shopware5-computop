@@ -1,10 +1,31 @@
 # Changelog - Shopware First Cash Solution Payment Connector
 
+#1.1.1
+2022-03-15
+* Problem solved with PayPal Express when birthday is not transferred (standard)
+* Fixed address splitting when no street number is provided
+* Fixed EasyCredit
+
+#1.1.0
+2022-02-28
+* Added better compatibility with other payment plugins
+* Fixed problems with Paypal Express and phone numer/birthday when configured mandatory
+* Fixed problems with Amazon Pay and phone numer/birthday when configured mandatory
+
+# 1.0.50
+2022-02-07
+* Added language parameter for iFrame 
+
+# 1.0.49
+2022-02-03
+* Added missing translations
+* Added Paypal Express fallback button
+
 # 1.0.48
 2022-01-17
-* Added mulitlanguage support
+* Added multi language support
 * Fixed removal of leading zeroes in Paypal Express and AmazonPay zip codes and phone numbers
-* Fixed creditcard payments failing in some cases depending onbrowser colorDepth
+* Fixed credit card payments failing in some cases depending on browser colorDepth
 * Fixed backend exception on capture / refund
 * Fixed help text for credit card silent mode
 * Added support for schemeReferenceID parameter
