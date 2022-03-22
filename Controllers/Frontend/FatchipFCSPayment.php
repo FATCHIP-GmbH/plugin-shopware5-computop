@@ -123,7 +123,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
         $this->config = $this->plugin->Config()->toArray();
         //add shop language to config array to avoid more argument bloat in paymentService::getIFramePaymentClass() & CTPaymentMethods::__construct()
         $this->config['language'] = $this->getLanguageFromCurrentShop();
-        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
+        $this->utils = Shopware()->Container()->get('FatchipFCSPaymentUtils');
         $this->session = Shopware()->Session();
         $this->router = $this->Front()->Router();
 
