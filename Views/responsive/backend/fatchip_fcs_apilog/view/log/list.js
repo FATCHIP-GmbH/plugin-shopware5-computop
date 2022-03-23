@@ -69,7 +69,7 @@ Ext.define('Shopware.apps.FatchipFCSApilog.view.log.List', {
   getColumns: function() {
     var me = this;
     var columns = [{
-        header: '{s name="fatchip_fcs_apilog/grid/column_id}ID"{/s}',
+        header: '{s name="fatchip_fcs_apilog/grid/column_id"}ID{/s}',
         dataIndex: 'id',
         flex: 1
       },         {
