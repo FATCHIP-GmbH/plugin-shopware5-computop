@@ -49,7 +49,7 @@ Ext.define('Shopware.apps.Order.controller.fcfcsDetail', {
       + '<p><label for="fcfcs__capture_shipment">{s name="detail/debit4"}Versandkosten mit gutschreiben{/s}</label>'
       + '<input type="checkbox" id="fcfcs__debit_shipment" class="x-form-field x-form-checkbox"'
       + 'style="margin: 0 0 0 4px; height: 15px !important; width: 15px !important;"/></p>'
-      + '<br><p>{s name=detail/debit5}Sind Sie sicher{/s}?</p>';
+      + '<br><p>{s name="detail/debit5"}Sind Sie sicher{/s}?</p>';
 
     if(!showShippingCostsCheckbox)
     {
