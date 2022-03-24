@@ -1,5 +1,11 @@
 # Changelog - Shopware Computop Payment Connector
 
+#1.1.2
+2022-03-24
+* Fixed issues with PHP 8.0
+* Fixed payment logos during checkout process
+* Changed default credit card template to correct template
+
 #1.1.1
 2022-03-15
 * Problem solved with PayPal Express when birthday is not transferred (standard)
