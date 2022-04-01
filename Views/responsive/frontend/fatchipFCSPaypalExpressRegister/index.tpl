@@ -35,10 +35,13 @@
 {block name='frontend_register_index_registration'}
     <div id="fatchipFCSPaypalExpressInformation" hidden
         data-fatchipFCSPaypalExpressRegisterUrl='{url controller="FatchipFCSPaypalExpressRegister" action="saveRegister" forceSecure}?sTarget=FatchipFCSPaypalExpressCheckout&sTargetAction=shippingPayment'
+        data-shippingFirstname='{$fatchipAddrShippingFirstname}'
+        data-shippingLastname='{$fatchipAddrShippingLastname}'
         data-firstname='{$fatchipAddrFirstName}'
         data-lastname='{$fatchipAddrLastName}'
         data-email='{$fatchipFCSResponse->getEmail()}'
         data-street='{$fatchipFCSResponse->getAddrStreet()}'
+        data-additionalAddressLine1='{$fatchipFCSResponse->getAddrStreet2()}'
         data-zip='{$fatchipFCSResponse->getAddrZip()}'
         data-city='{$fatchipFCSResponse->getAddrCity()}'
         data-countryCodeBillingID='{$fatchipAddrCountryCodeID}'
