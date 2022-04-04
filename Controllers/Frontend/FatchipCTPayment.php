@@ -171,6 +171,14 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $params = $payment->getRedirectUrlParams();
 
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
+
+        if ($this->config['debuglog'] === 'extended') {
+            $sessionID = $this->session->getId();
+            $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
+            $customerId = $this->session->offsetGet('sUserId');
+            $paymentName = $this->paymentClass;
+            $this->utils->log('Redirecting to ' . $payment->getHTTPGetURL($params), ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'parmas' => $params]);
+        }
         $this->redirect($payment->getHTTPGetURL($params));
     }
 
@@ -186,6 +194,13 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     {
         $requestParams = $this->Request()->getParams();
         $response = $this->paymentService->getDecryptedResponse($requestParams);
+        if ($this->config['debuglog'] === 'extended') {
+            $sessionID = $this->session->getId();
+            $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
+            $customerId = $this->session->offsetGet('sUserId');
+            $paymentName = $this->paymentClass;
+            $this->utils->log('FailureAction: ' , ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'request' => $requestParams, 'response' => $response ]);
+        }
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
 
         $ctError = [];
@@ -217,16 +232,45 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         }
 
         $response = $this->paymentService->getDecryptedResponse($requestParams);
+        if ($this->config['debuglog'] === 'extended') {
+            $sessionID = $this->session->getId();
+            if (!is_null($this->session->offsetGet('sOrderVariables'))) {
+                $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
+            } else {
+                $basket = 'NULL';
+            }
+            $customerId = $this->session->offsetGet('sUserId');
+            $paymentName = $this->paymentClass;
+            $this->utils->log('SuccessAction: ' , ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'Request' => $requestParams, 'Response' => $response]);
+        }
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'REDIRECT', $response);
         if (is_null($response) || $response->getStatus() !== CTEnumStatus::OK) {
+            if ($this->config['debuglog'] === 'extended') {
+                $sessionID = $this->session->getId();
+                $customerId = $this->session->offsetGet('sUserId');
+                $paymentName = $this->paymentClass;
+                $this->utils->log('SuccessAction Payment Status was NOT OK: forwarding to failureAction' , ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+            }
             $this->forward('failure');
         }
 
+        try {
         $orderNumber = $this->saveOrder(
             $response->getTransID(),
             $response->getPayID(),
             self::PAYMENTSTATUSRESERVED
         );
+        } catch (Exception $e) {
+            $this->utils->log('SuccessAction Order could not be saved. Check if session was lost upon returning:' , ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID, 'response' => $response, 'error' => $e->getMessage()]);
+            $this->forward('failure');
+        }
+
+        if ($this->config['debuglog'] === 'extended') {
+            $sessionID = $this->session->getId();
+            $customerId = $this->session->offsetGet('sUserId');
+            $paymentName = $this->paymentClass;
+            $this->utils->log('SuccessAction Order was saved with orderNumber : ' . $orderNumber, ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+        }
         $this->saveTransactionResult($response);
         $this->handleDelayedCapture($orderNumber);
 
@@ -234,6 +278,12 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $response = $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
 
         if(is_null($response) || $response->getStatus() !== 'OK') {
+            if ($this->config['debuglog'] === 'extended') {
+                $sessionID = $this->session->getId();
+                $customerId = $this->session->offsetGet('sUserId');
+                $paymentName = $this->paymentClass;
+                $this->utils->log('updateRefNrWithComputopFromOrderNumber: failure updating RefNR with new orderNumber, Response Status was not O.k. ' , ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+            }
             $this->forward('failure');
         }
 
@@ -288,6 +338,16 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     protected function getPaymentClassForGatewayAction()
     {
         $ctOrder = $this->createCTOrder();
+
+        if ($this->config['debuglog'] === 'extended') {
+            $sessionID = $this->session->getId();
+            $customerId = $this->session->offsetGet('sUserId');
+            $paymentName = $this->paymentClass;
+            $order = var_export($ctOrder, true);
+            $this->utils->log('creating Order : ' , ['payment' => $paymentName, 'UserID' => $customerId, 'order' => $order, 'SessionID' => $sessionID]);
+        }
+
+
         $payment = $this->paymentService->getIframePaymentClass(
             $this->paymentClass,
             $this->config,
@@ -510,6 +570,12 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             || ($paymentName === 'fatchip_computop_paypal_express' && $this->config['paypalCaption'] === 'AUTO')
             || ($paymentName === 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] === 'AUTO'))
         ) {
+            if ($this->config['debuglog'] === 'extended') {
+                $sessionID = $this->session->getId();
+                $customerId = $this->session->offsetGet('sUserId');
+                $paymentName = $this->paymentClass;
+                $this->utils->log('autoCapture: skipping for ' . $paymentName , ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+            }
             return;
         }
 
@@ -518,8 +584,20 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         if ( $captureResponseStatus === 'OK') {
             $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSPAID);
             $this->markOrderDetailsAsFullyCaptured($order);
+            if ($this->config['debuglog'] === 'extended') {
+                $sessionID = $this->session->getId();
+                $customerId = $this->session->offsetGet('sUserId');
+                $paymentName = $this->paymentClass;
+                $this->utils->log('autoCapture: success for ' . $paymentName . 'setting order status to ' . self::PAYMENTSTATUSPAID , ['order' => $orderNumber,  'payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+            }
         } else {
             $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSREVIEWNECESSARY);
+            if ($this->config['debuglog'] === 'extended') {
+                $sessionID = $this->session->getId();
+                $customerId = $this->session->offsetGet('sUserId');
+                $paymentName = $this->paymentClass;
+                $this->utils->log('autoCapture: failure for ' . $paymentName . 'setting order status to ' . self::PAYMENTSTATUSREVIEWNECESSARY , ['order' => $orderNumber, 'payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+            }
             /** @see https://tickets.fatchip.de/view.php?id=80218 */
             if ($paymentName === 'fatchip_computop_paypal_standard' && $this->config['paypalSetOrderStatus'] === "An") {
                 $this->setOrderStatus($order, self::ORDERSTATUSREVIEWNECESSARY);
@@ -575,8 +653,14 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     protected function handleDelayedCapture($orderNumber)
     {
         $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number' => $orderNumber]);
-        if ($order) {
 
+        if ($this->config['debuglog'] === 'extended') {
+            $sessionID = $this->session->getId();
+            $customerId = $this->session->offsetGet('sUserId');
+            $paymentName = $this->paymentClass;
+            $this->utils->log('HandleCapture: loading order' . $orderNumber . ' from shopware' , ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+        }
+        if ($order) {
             $paymentName = $order->getPayment()->getName();
             if (($paymentName == 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] == 'DELAYED')
                 || ($paymentName == 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] == 'DELAYED')
@@ -585,6 +669,21 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSPAID);
                 $this->markOrderDetailsAsFullyCaptured($order);
             }
+
+            if ($this->config['debuglog'] === 'extended') {
+                $sessionID = $this->session->getId();
+                $customerId = $this->session->offsetGet('sUserId');
+                $paymentName = $this->paymentClass;
+                $this->utils->log('HandleCapture: updating status for order '. $orderNumber . ' to ' . self::PAYMENTSTATUSPAID, ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+            }
+        } else {
+            if ($this->config['debuglog'] === 'extended') {
+                $sessionID = $this->session->getId();
+                $customerId = $this->session->offsetGet('sUserId');
+                $paymentName = $this->paymentClass;
+                $this->utils->log('HandleCapture: updating status for order '. $orderNumber . ' to ' . self::PAYMENTSTATUSPAID . ' failed. Order not found in database', ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+            }
+
         }
     }
 
@@ -620,6 +719,13 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $sql = 'UPDATE  `s_order_details` SET ordernumber = ? WHERE ordernumber = ?';
             Shopware()->Db()->query($sql, [$newOrdernumber, $orderNumber]);
 
+            if ($this->config['debuglog'] === 'extended') {
+                $sessionID = $this->session->getId();
+                $customerId = $this->session->offsetGet('sUserId');
+                $paymentName = $this->paymentClass;
+                $this->utils->log('customizeOrdernumber: updating orderNumber '. $orderNumber . ' to ' . $newOrdernumber, ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+            }
+
         }
         return isset($newOrdernumber) ? $newOrdernumber : $orderNumber;
     }
@@ -635,8 +741,22 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     protected function updateRefNrWithComputopFromOrderNumber($orderNumber)
     {
         $repository = Shopware()->Models()->getRepository(Order::class);
+
+        if ($this->config['debuglog'] === 'extended') {
+            $sessionID = $this->session->getId();
+            $customerId = $this->session->offsetGet('sUserId');
+            $paymentName = $this->paymentClass;
+            $this->utils->log('updateRefNrWithComputopFromOrderNumber: updating RefNR with new orderNumber '. $orderNumber, ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+        }
+
         /** @var Order $order */
         if (!$order = $repository->findOneBy(['number' => $orderNumber])) {
+            if ($this->config['debuglog'] === 'extended') {
+                $sessionID = $this->session->getId();
+                $customerId = $this->session->offsetGet('sUserId');
+                $paymentName = $this->paymentClass;
+                $this->utils->log('updateRefNrWithComputopFromOrderNumber: failure updating RefNR with new orderNumber '. $orderNumber, ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+            }
             return null;
         }
 
@@ -673,6 +793,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $payID = $attribute->getfatchipctPayid();
         $RefNrChangeParams = $payment->getRefNrChangeParams($payID, $order->getNumber());
         $RefNrChangeParams['EtiId'] = $this->getUserDataParam();
+
 
         return $this->plugin->callComputopService(
             $RefNrChangeParams,
