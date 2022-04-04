@@ -84,6 +84,14 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         }
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
 
+        if ($this->config['debuglog'] === 'extended') {
+            $sessionID = $this->session->getId();
+            $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
+            $customerId = $this->session->offsetGet('sUserId');
+            $paymentName = $this->paymentClass;
+            $this->utils->log('Redirecting to ' . $payment->getHTTPGetURL($params, $this->config['creditCardTemplate']), ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'parmas' => $params]);
+        }
+
         $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params, $this->config['creditCardTemplate'])));
     }
 
@@ -153,19 +161,44 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $ret = $logger->error($e->getMessage());
             }
         }
+
         // used for paynow silent mode
         $response = !empty($requestParams['response']) ? $requestParams['response'] : $this->paymentService->getDecryptedResponse($requestParams);
+
+        if ($this->config['debuglog'] === 'extended') {
+            $sessionID = $this->session->getId();
+            if (!is_null($this->session->offsetGet('sOrderVariables'))) {
+                $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
+            } else {
+                $basket = 'NULL';
+            }
+            $customerId = $this->session->offsetGet('sUserId');
+            $paymentName = $this->paymentClass;
+            $this->utils->log('SuccessAction: ' , ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'Request' => $requestParams, 'Response' => $response]);
+        }
 
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $this->paymentClass, 'AUTH', $response);
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
             case CTEnumStatus::AUTHORIZED:
+            try {
                 $orderNumber = $this->saveOrder(
                     $response->getTransID(),
                     $response->getPayID(),
                     self::PAYMENTSTATUSRESERVED
                 );
+            } catch (Exception $e) {
+                $this->utils->log('SuccessAction Order could not be saved. Check if session was lost upon returning:' , ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID, 'response' => $response, 'error' => $e->getMessage()]);
+                $this->forward('failure');
+            }
+
+            if ($this->config['debuglog'] === 'extended') {
+                $sessionID = $this->session->getId();
+                $customerId = $this->session->offsetGet('sUserId');
+                $paymentName = $this->paymentClass;
+                $this->utils->log('SuccessAction Order was saved with orderNumber : ' . $orderNumber, ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+            }
                 $this->saveTransactionResult($response);
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);

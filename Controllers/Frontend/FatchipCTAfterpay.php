@@ -105,15 +105,40 @@ class Shopware_Controllers_Frontend_FatchipCTAfterpay extends Shopware_Controlle
             */
         }
 
+        if ($this->config['debuglog'] === 'extended') {
+            $sessionID = $this->session->getId();
+            $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
+            $customerId = $this->session->offsetGet('sUserId');
+            $paymentName = $this->paymentClass;
+            $this->utils->log('Redirecting to ' . $payment->getRedirectUrlParams(), ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID]);
+        }
+
         $response = $this->plugin->callComputopService($requestParams, $payment, 'AFTERPAY', $payment->getCTPaymentURL());
+
+        if ($this->config['debuglog'] === 'extended') {
+            $sessionID = $this->session->getId();
+            if (!is_null($this->session->offsetGet('sOrderVariables'))) {
+                $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
+            } else {
+                $basket = 'NULL';
+            }
+            $customerId = $this->session->offsetGet('sUserId');
+            $paymentName = $this->paymentClass;
+            $this->utils->log('SuccessAction: ' , ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'Request' => $requestParams, 'Response' => $response]);
+        }
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
-                $orderNumber = $this->saveOrder(
-                    $response->getTransID(),
-                    $response->getPayID(),
-                    self::PAYMENTSTATUSRESERVED
-                );
+                try {
+                    $orderNumber = $this->saveOrder(
+                        $response->getTransID(),
+                        $response->getPayID(),
+                        self::PAYMENTSTATUSRESERVED
+                    );
+                } catch (Exception $e) {
+                    $this->utils->log('SuccessAction Order could not be saved. Check if session was lost upon returning:' , ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID, 'response' => $response, 'error' => $e->getMessage()]);
+                    $this->forward('failure');
+                }
                 $this->saveTransactionResult($response);
 
                 $this->session->offsetUnSet('FatchipComputopAfterpayProductNr');

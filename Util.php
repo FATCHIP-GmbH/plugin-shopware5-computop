@@ -32,6 +32,7 @@ use Enlight_Controller_Action;
 use Exception;
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTOrder\CTOrder;
+use Monolog\Handler\RotatingFileHandler;
 use Shopware\Components\Logger;
 use Shopware\Models\Customer\Customer;
 use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap as FatchipCTPayment;
@@ -973,5 +974,23 @@ class Util
             return $_SERVER['HTTP_CF_CONNECTING_IP'];
         }
         return $remoteAddr;
+    }
+
+    /**
+     * @param $message
+     * @param array $context
+     * @return void
+     */
+    public function log($message, array $context) {
+        $logPath = Shopware()->DocPath();
+        if (Util::isShopwareVersionGreaterThanOrEqual('5.1')) {
+            $logFile = $logPath . 'var/log/FatchipCTPaymentExtended_production.log';
+        } else {
+            $logFile = $logPath . 'logs/FatchipCTPaymentExtended_production.log';
+        }
+        $rfh = new RotatingFileHandler($logFile, 14);
+        $logger = new Logger('FatchipCTPayment');
+        $logger->pushHandler($rfh);
+        $logger->error($message, $context);
     }
 }

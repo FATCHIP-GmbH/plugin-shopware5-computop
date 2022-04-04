@@ -67,6 +67,15 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalStandard extends Shopware_Con
         }
         $params = $payment->getRedirectUrlParams();
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
+
+        if ($this->config['debuglog'] === 'extended') {
+            $sessionID = $this->session->getId();
+            $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
+            $customerId = $this->session->offsetGet('sUserId');
+            $paymentName = $this->paymentClass;
+            $this->utils->log('Redirecting to ' . $payment->getHTTPGetURL($params, $this->config['creditCardTemplate']), ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'parmas' => $params]);
+        }
+
         $this->redirect($payment->getHTTPGetURL($params));
     }
 

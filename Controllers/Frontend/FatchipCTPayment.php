@@ -196,7 +196,12 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $response = $this->paymentService->getDecryptedResponse($requestParams);
         if ($this->config['debuglog'] === 'extended') {
             $sessionID = $this->session->getId();
-            $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
+            if (!is_null($this->session->offsetGet('sOrderVariables'))) {
+                $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
+            } else {
+                $basket = 'NULL';
+            }
+            $sessionID = $this->session->getId();
             $customerId = $this->session->offsetGet('sUserId');
             $paymentName = $this->paymentClass;
             $this->utils->log('FailureAction: ' , ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'request' => $requestParams, 'response' => $response ]);
@@ -282,18 +287,20 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 $sessionID = $this->session->getId();
                 $customerId = $this->session->offsetGet('sUserId');
                 $paymentName = $this->paymentClass;
-                $this->utils->log('updateRefNrWithComputopFromOrderNumber: failure updating RefNR with new orderNumber, Response Status was not O.k. ' , ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+                $this->utils->log('updateRefNrWithComputopFromOrderNumber: failure updating RefNR with new orderNumber, Response Status was NOT OK. ' , ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
             }
             $this->forward('failure');
         }
 
         $this->autoCapture($customOrdernumber);
 
-        if($this->paymentClass == 'AmazonPay') {
-            $this->forward('finish', 'FatchipCTAmazonCheckout', null, ['sUniqueID' => $response->getPayID()]);
-        }
-        else {
-            $this->forward('finish', 'checkout', null, ['sUniqueID' => $response->getPayID()]);
+        if (!is_null($response)) {
+            if($this->paymentClass == 'AmazonPay') {
+                $this->forward('finish', 'FatchipCTAmazonCheckout', null, ['sUniqueID' => $response->getPayID()]);
+            }
+            else {
+                $this->forward('finish', 'checkout', null, ['sUniqueID' => $response->getPayID()]);
+            }
         }
     }
 
@@ -658,7 +665,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $sessionID = $this->session->getId();
             $customerId = $this->session->offsetGet('sUserId');
             $paymentName = $this->paymentClass;
-            $this->utils->log('HandleCapture: loading order' . $orderNumber . ' from shopware' , ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+            $this->utils->log('HandleCapture: loading order ' . $orderNumber . ' from shopware' , ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
         }
         if ($order) {
             $paymentName = $order->getPayment()->getName();
