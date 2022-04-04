@@ -122,7 +122,7 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalExpressRegister extends Shop
         $shippingFirstname = implode(" ", [$shipping->getFirstname(), $shipping->getInitials(), $shipping->getMiddlename()]);
         $shippingLastname = $shipping->getLastname();
 
-        $this->view->assign('fatchipCTResponse', $params['CTResponse']);
+        $this->view->assign('fatchipFCSResponse', $params['CTResponse']);
         $this->view->assign('fatchipAddrCountryCodeID', $AddrCountryCodeID);
         $this->view->assign('fatchipAddrFirstName', $params['CTResponse']->getFirstName());
         $this->view->assign('fatchipAddrShippingFirstname', $shippingFirstname);
