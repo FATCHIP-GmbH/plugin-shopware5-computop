@@ -77,9 +77,9 @@
     <exec executable="bash">
       <arg value="${basedir}/../bin/github-release.sh" />
       <arg value="${repository}" />
-      <arg value="v${version}" />
+      <arg value="v${version}_fcs" />
       <arg value="${githubtoken}" />
-      <arg value="${releasetitle}_fcs" />
+      <arg value="${releasetitle}" />
       <arg value="${releasecomment}" />
       <arg value="--publish" />
       <arg value="--" />
