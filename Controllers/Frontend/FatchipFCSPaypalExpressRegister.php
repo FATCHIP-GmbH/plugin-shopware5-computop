@@ -29,6 +29,7 @@ require_once 'FatchipFCSPayment.php';
 
 use Shopware\Plugins\FatchipFCSPayment\Util;
 use Shopware\Components\CSRFWhitelistAware;
+use TheIconic\NameParser\Parser;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipFCSPaypalExpressRegisters
@@ -116,10 +117,17 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalExpressRegister extends Shop
 
         $AddrCountryCodeID = $this->utils->getCountryIdFromIso($params['CTResponse']->getAddrCountryCode());
 
+        $parser = new Parser();
+        $shipping = $parser->parse($params['CTResponse']->getName());
+        $shippingFirstname = implode(" ", [$shipping->getFirstname(), $shipping->getInitials(), $shipping->getMiddlename()]);
+        $shippingLastname = $shipping->getLastname();
+
         $this->view->assign('fatchipFCSResponse', $params['CTResponse']);
         $this->view->assign('fatchipAddrCountryCodeID', $AddrCountryCodeID);
         $this->view->assign('fatchipAddrFirstName', $params['CTResponse']->getFirstName());
+        $this->view->assign('fatchipAddrShippingFirstname', $shippingFirstname);
         $this->view->assign('fatchipAddrLastName', $params['CTResponse']->getLastName());
+        $this->view->assign('fatchipAddrShippingLastname', $shippingLastname);
         $this->view->assign('fatchipAddrBirthday', $birthday);
         $this->view->assign('fatchipAddrBirthdayDay',$birthdayDay);
         $this->view->assign('fatchipAddrBirthdayMonth',$birthdayMonth);
