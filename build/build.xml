@@ -79,7 +79,7 @@
       <arg value="${repository}" />
       <arg value="v${version}" />
       <arg value="${githubtoken}" />
-      <arg value="${releasetitle}" />
+      <arg value="${releasetitle}_fcs" />
       <arg value="${releasecomment}" />
       <arg value="--publish" />
       <arg value="--" />
