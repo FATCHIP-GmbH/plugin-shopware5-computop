@@ -1,5 +1,11 @@
 # Changelog - Shopware Computop Payment Connector
 
+#1.1.3
+2022-04-06
+* Removed Afterpay Installment
+* Added advanced logging
+* Fixed address handling of PayPal Express
+
 #1.1.2
 2022-03-24
 * Fixed issues with PHP 8.0
