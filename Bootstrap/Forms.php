@@ -82,8 +82,8 @@ class Forms extends Bootstrap
         // $this->createFormSelectElements(CTPaymentConfigForms::formAfterpaySelectElements);
 
         // riskchecks
-        $this->createFormSelectElements(CTPaymentConfigForms::formBonitaetSelectElements);
-        $this->createFormTextElements(CTPaymentConfigForms::formBonitaetElements);
+        //$this->createFormSelectElements(CTPaymentConfigForms::formBonitaetSelectElements);
+        //$this->createFormTextElements(CTPaymentConfigForms::formBonitaetElements);
 
         try {
             $this->removeFormElements();
