@@ -48,9 +48,9 @@ class RiskRules extends Bootstrap
     {
         $this->createFirstCashRiskRule('fatchip_firstcash_easycredit',
             'ORDERVALUELESS', '200');
-
+/*
         $this->createFirstCashRiskRule('fatchip_firstcash_przelewy24',
-            'CURRENCIESISOISNOT', 'PLN');
+            'CURRENCIESISOISNOT', 'PLN');*/
 
         $this->createFirstCashRiskRule('fatchip_firstcash_ideal',
             'BILLINGLANDISNOT', 'NL');
