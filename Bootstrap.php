@@ -93,7 +93,7 @@ class Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap extends Shopware_Com
         $attributes = new Attributes();
         $payments = new Payments();
         $menu = new Menu();
-        $riskRules = new RiskRules();
+        //$riskRules = new RiskRules();
         $models = new Models();
 
         $forms->createForm();
@@ -101,7 +101,7 @@ class Shopware_Plugins_Frontend_FatchipFCSPayment_Bootstrap extends Shopware_Com
         $attributes->createAttributes();
         $payments->createPayments();
         $menu->createMenu();
-        $riskRules->createRiskRules();
+        //$riskRules->createRiskRules();
         $models->createModels();
 
         $this->registerJavascript();
