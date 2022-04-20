@@ -177,7 +177,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
             $customerId = $this->session->offsetGet('sUserId');
             $paymentName = $this->paymentClass;
-            $this->utils->log('Redirecting to ' . $payment->getHTTPGetURL($params), ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'parmas' => $params]);
+            $this->utils->log('Redirecting to ' . $payment->getHTTPGetURL($params), ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'params' => $params]);
+            $this->saveBasketVars($sessionID);
         }
         $this->redirect($payment->getHTTPGetURL($params));
     }
@@ -254,7 +255,13 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 $sessionID = $this->session->getId();
                 $customerId = $this->session->offsetGet('sUserId');
                 $paymentName = $this->paymentClass;
-                $this->utils->log('SuccessAction Payment Status was NOT OK: forwarding to failureAction' , ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+                $this->utils->log('SuccessAction Payment Status was NOT OK: forwarding to failureAction',
+                    [
+                        'payment' => $paymentName,
+                        'UserID' => $customerId,
+                        'SessionID' => $sessionID
+                    ]
+                );
             }
             $this->forward('failure');
         }
@@ -266,11 +273,74 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             self::PAYMENTSTATUSRESERVED
         );
         } catch (Exception $e) {
-            $this->utils->log('SuccessAction Order could not be saved. Check if session was lost upon returning:' , ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID, 'response' => $response, 'error' => $e->getMessage()]);
+            $this->utils->log('SuccessAction Order could not be saved. Check if session was lost upon returning:',
+                [
+                    'payment' => $paymentName,
+                    'UserID' => $customerId,
+                    'SessionID' => $sessionID,
+                    'response' => $response,
+                    'error' => $e->getMessage()
+                ]
+            );
             $this->forward('failure');
         }
-
         if ($this->config['debuglog'] === 'extended') {
+            if (empty($orderNumber)) {
+                $sessionId = $requestParams['session'];
+                $this->utils->log('SuccessAction Got no orderNumber on first save attempt. Restoring session from original sessionID and trying to save again', ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID, 'originalSessionID' => $sessionId, 'TransID' => $response->getTransID(), 'PayID' => $response->getPayID()]);
+                if ($sessionId) {
+                    try {
+                        $this->restoreSession($sessionId);
+                        // remove ordervars array from session to test basket restores from file
+                        // Shopware()->Session()->offsetUnset('sOrderVariables');
+                    } catch (Zend_Session_Exception $e) {
+                        $this->utils->log('SuccessAction Exception on session restore.',
+                            [
+                                'payment' => $paymentName, 'UserID' => $customerId,
+                                'SessionID' => $sessionID, 'originalSessionID' => $sessionId,
+                                'TransID' => $response->getTransID(),
+                                'PayID' => $response->getPayID(),
+                                'error' => $e->getMessage()
+                            ]
+                        );
+                    }
+                    try {
+                        $orderNumber = $this->saveOrder(
+                            $response->getTransID(),
+                            $response->getPayID(),
+                            self::PAYMENTSTATUSRESERVED
+                        );
+                    } catch (Exception $e) {
+                        $this->utils->log('SuccessAction Exception on second order save attempt:',
+                            [
+                                'payment' => $paymentName,
+                                'UserID' => $customerId,
+                                'SessionID' => $sessionID,
+                                'response' => $response,
+                                'error' => $e->getMessage()
+                            ]
+                        );
+                    }
+                }
+            }
+
+            /*
+            if (empty($orderNumber)) {
+                $sessionId = $requestParams['session'];
+                $this->utils->log('SuccessAction Got no orderNumber on second save attempt. Restoring basket content and userid from file and trying to save again', ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID, 'originalSessionID' => $sessionId, 'TransID' => $response->getTransID(), 'PayID' => $response->getPayID()]);
+                if ($sessionId) {
+                    try {
+                        $this->restoreBasketVars($sessionId);
+                    } catch (Zend_Session_Exception $e) {
+                    }
+                    $orderNumber = $this->saveOrder(
+                        $response->getTransID(),
+                        $response->getPayID(),
+                        self::PAYMENTSTATUSRESERVED
+                    );
+                }
+            }
+            */
             $sessionID = $this->session->getId();
             $customerId = $this->session->offsetGet('sUserId');
             $paymentName = $this->paymentClass;
@@ -279,10 +349,10 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $this->saveTransactionResult($response);
         $this->handleDelayedCapture($orderNumber);
 
-        $customOrdernumber = $this->customizeOrdernumber($orderNumber);
-        $response = $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
+        // $customOrdernumber = $this->customizeOrdernumber($orderNumber);
+        // $response = $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
 
-        if(is_null($response) || $response->getStatus() !== 'OK') {
+        /* if(is_null($response) || $response->getStatus() !== 'OK') {
             if ($this->config['debuglog'] === 'extended') {
                 $sessionID = $this->session->getId();
                 $customerId = $this->session->offsetGet('sUserId');
@@ -291,8 +361,9 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             }
             $this->forward('failure');
         }
+        */
 
-        $this->autoCapture($customOrdernumber);
+        $this->autoCapture($orderNumber);
 
         if (!is_null($response)) {
             if($this->paymentClass == 'AmazonPay') {
@@ -721,7 +792,6 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
             // update ordernumber in Session
             $this->session['sOrderVariables']->sOrderNumber = $newOrdernumber;
-
             // update order details with new ordernumber
             $sql = 'UPDATE  `s_order_details` SET ordernumber = ? WHERE ordernumber = ?';
             Shopware()->Db()->query($sql, [$newOrdernumber, $orderNumber]);
@@ -959,6 +1029,78 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             return null;
         }
         return $match['language'];
+    }
+
+    /**
+     * restore shopware user session from Id
+     *
+     * @param string $sessionId
+     */
+    protected function restoreSession($sessionId)
+    {
+        if (version_compare(Shopware()->Config()->get('version'), '5.7.0', '>=')) {
+            Shopware()->Session()->save();
+            Shopware()->Session()->setId($sessionId);
+            Shopware()->Session()->start();
+        } else {
+            \Enlight_Components_Session::writeClose();
+            \Enlight_Components_Session::setId($sessionId);
+            \Enlight_Components_Session::start();
+        }
+    }
+
+    /**
+     * restore shopware user Id, basket and sOrdervariables from
+     * file backups
+     * @param string $sessionId
+     */
+    protected function restoreBasketVars($sessionId)
+    {
+        $logPath = Shopware()->DocPath();
+        $session = Shopware()->Session();
+        if (Util::isShopwareVersionGreaterThanOrEqual('5.1')) {
+            $filename_orderVars = $logPath . 'var/log/'. $sessionId . '_ordervars.json';
+        } else {
+            $filename_orderVars = $logPath . 'logs/'. $sessionId . '_ordervars.json';
+        }
+
+        $vars = json_decode(file_get_contents($filename_orderVars), true);
+        if ($vars) {
+            $session->set('sUserId', $vars['sUserId']);
+            $session->set('sDispatch', $vars['sDispatch']);
+            $session->set('sPaymentID', $vars['sPaymentID']);
+            $session['sOrderVariables'] = new ArrayObject($vars['sOrderVariables'], ArrayObject::ARRAY_AS_PROPS);
+        }
+        unlink($filename_orderVars);
+    }
+
+    /**
+     * restore shopware user Id, basket and sOrdervariables from
+     * file backups
+     * @param string $sessionId
+     */
+    protected function saveBasketVars($sessionId)
+    {
+        $logPath = Shopware()->DocPath();
+        $session = Shopware()->Session();
+        if (Util::isShopwareVersionGreaterThanOrEqual('5.1')) {
+            $filename_orderVars = $logPath . 'var/log/'. $sessionId . '_ordervars.json';
+        } else {
+            $filename_orderVars = $logPath . 'logs/'. $sessionId . '_ordervars.json';
+        }
+
+        $sUserId = $session->offsetGet('sUserId');
+        $sDispatch = $session->offsetGet('sDispatch');
+        $sOrderVariables = $session->offsetGet('sOrderVariables')->getArrayCopy();
+        $sPaymentID = $sOrderVariables['sPayment']['id'];
+        $vars =
+            [
+                'sUserId'         => $sUserId,
+                'sDispatch'       => $sDispatch,
+                'sPaymentID'      => $sPaymentID,
+                'sOrderVariables' => $sOrderVariables,
+            ];
+        file_put_contents($filename_orderVars ,json_encode($vars));
     }
 }
 

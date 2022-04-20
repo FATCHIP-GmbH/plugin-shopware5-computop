@@ -72,6 +72,7 @@ class Shopware_Controllers_Frontend_FatchipCTIdeal extends Shopware_Controllers_
             $customerId = $this->session->offsetGet('sUserId');
             $paymentName = $this->paymentClass;
             $this->utils->log('Redirecting to ' . $payment->getHTTPGetURL($params, $this->config['creditCardTemplate']), ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'parmas' => $params]);
+            $this->saveBasketVars($sessionID);
         }
 
         $this->redirect($payment->getHTTPGetURL($params));
