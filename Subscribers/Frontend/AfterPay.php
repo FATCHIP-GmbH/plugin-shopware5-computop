@@ -76,11 +76,6 @@ class AfterPay extends AbstractSubscriber
 
         $payments = $args->getReturn();
 
-        if (!$this->utils->afterpayProductExistsforBasketValue($this->config['merchantID'], $userData, false))
-        {
-            $payments = $this->utils->hidePayment('fatchip_computop_afterpay_installment', $payments);
-        }
-
         if (!empty($userData['billingaddress']['company']))
         {
             $payments = $this->utils->hidePayment('fatchip_computop_afterpay_installment', $payments);
