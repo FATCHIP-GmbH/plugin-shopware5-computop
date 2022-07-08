@@ -77,7 +77,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         // initialPayment true or false accordingly
         $user = $this->getUser();
         $initialPayment = ($this->utils->getUserCreditcardInitialPaymentSuccess($user) === "1") ? false : true;
-        $payment->setCredentialsOnFile($initialPayment);
+        $payment->setCredentialsOnFile('CIT', $initialPayment);
         $params = $payment->getRedirectUrlParams();
         if ($params['AccVerify'] !== 'Yes') {
             unset($params['AccVerify']);
@@ -318,6 +318,11 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
             $requestParams['CCNr'] = $this->getParamCCPseudoCardNumber($params['orderId']);
             $requestParams['CCBrand'] = $this->getParamCCCardBrand($params['orderId']);
             $requestParams['CCExpiry'] = $this->getParamCCCardExpiry($params['orderId']);
+            $requestParams['schemeReferenceID'] = $this->getParamKreditkarteschemereferenceid($params['orderId']);
+            // check if user already used cc payment successfully and send
+            // initialPayment true or false accordingly
+            $payment->setCredentialsOnFile('MIT', false);
+            $requestParams['credentialOnFile'] = $payment->getCredentialsOnFile();
             $response = $this->plugin->callComputopService($requestParams, $payment, 'CreditCardRecurring', $payment->getCTRecurringURL());
 
             $status = $response->getStatus();
@@ -452,6 +457,26 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 Shopware()->Models()->flush();
             }
         }
+    }
+    /**
+     * returns schemeReferenceID from
+     * the last order to use it to authorize
+     * recurring payments
+     *
+     * @param string $orderNumber shopware order-number
+     *
+     * @return boolean | string creditcard schemeReferenceID
+     */
+    protected function getParamKreditkarteschemereferenceid($orderNumber)
+    {
+        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['id' => $orderNumber]);
+        $refID = false;
+        if ($order) {
+            $orderAttribute = $order->getAttribute();
+            $refID = $orderAttribute->getfatchipctkreditkarteschemereferenceid();
+
+        }
+        return $refID;
     }
 }
 

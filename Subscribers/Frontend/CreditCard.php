@@ -111,7 +111,7 @@ class CreditCard extends AbstractSubscriber
             // check if user already used cc payment successfully and send
             // initialPayment true or false accordingly
             $initialPayment = ($this->utils->getUserCreditcardInitialPaymentSuccess($userData) === "1") ? false : true;
-            $payment->setCredentialsOnFile($initialPayment);
+            $payment->setCredentialsOnFile('CIT', $initialPayment);
 
             $requestParams = $payment->getRedirectUrlParams();
             if ($requestParams['AccVerify'] !== 'Yes') {
