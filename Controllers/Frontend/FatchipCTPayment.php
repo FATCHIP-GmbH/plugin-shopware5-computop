@@ -497,6 +497,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 $attribute->setfatchipctlastschriftmandateid($response->getMandateid());
                 $attribute->setfatchipctlastschriftdos($response->getDtofsgntr());
                 $attribute->setfatchipctkreditkarteschemereferenceid($response->getSchemeReferenceID());
+                $attribute->setfatchipctkreditkartecardholdername($response->getCardholderName());
                 Shopware()->Models()->persist($attribute);
                 Shopware()->Models()->flush();
             }

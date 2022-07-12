@@ -86,6 +86,7 @@ class Checkout extends AbstractSubscriber
             $this->updateUserAfterpayInstallmentIban($paymentName, $session->get('sUserId'), $params);
             $this->setAfterpayProductNrInSession($params);
             $this->setIssuerInSession($paymentName, $params);
+            // $this->setCardholderInSession($params);
         }
     }
 
@@ -324,6 +325,22 @@ class Checkout extends AbstractSubscriber
             );
         }
     }
+
+    /**
+     * Saves cardholder in session
+     *
+     * @param $params
+     */
+    /* private function setCardholderInSession($params)
+    {
+        $session = Shopware()->Session();
+        if (!empty($params['CreditCardHolder'])){
+            $session->offsetSet('FatchipComputopCreditCardHolder',
+                $params['CreditCardHolder']
+            );
+        }
+    }
+*/
 
     /**
      * Saves Afterpay ProductNr in Session
