@@ -559,10 +559,11 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
     /**
      * @param $orderNumber
+     * @param $force
      *
      * @throws Exception
      */
-    protected function autoCapture($orderNumber) {
+    protected function autoCapture($orderNumber, $force = false) {
         /** @var Order $order */
         $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number' => $orderNumber]);
 
@@ -572,7 +573,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
         $paymentName = $order->getPayment()->getName();
 
-        if ( ! (($paymentName === 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] === 'AUTO')
+        if ( $force !== true && (!($paymentName === 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] === 'AUTO')
             || ($paymentName === 'fatchip_computop_lastschrift' && $this->config['lastschriftCaption'] === 'AUTO')
             || ($paymentName === 'fatchip_computop_paypal_standard' && $this->config['paypalCaption'] === 'AUTO')
             || ($paymentName === 'fatchip_computop_paypal_express' && $this->config['paypalCaption'] === 'AUTO')
