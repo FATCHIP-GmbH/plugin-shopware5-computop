@@ -470,7 +470,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
      * @return void
      * @throws Exception
      */
-    public function saveTransactionResultRecurring($response, $ccNumber, $ccBrand, $ccExpiry, $ccCardholdername)
+    public function saveTransactionResultRecurring($response, $ccNumber, $ccBrand, $ccExpiry)
     {
         $transactionId = $response->getTransID();
         if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $transactionId])) {
@@ -482,7 +482,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $attribute->setfatchipctkreditkartepseudonummer($ccNumber);
                 $attribute->setfatchipctkreditkartebrand($ccBrand);
                 $attribute->setfatchipctkreditkarteexpiry($ccExpiry);
-                $attribute->setfatchipctkreditkartecardholdername($ccCardholdername);
+                $attribute->setfatchipctkreditkartecardholdername($response->getCardHolder());
                 $attribute->setfatchipctPaypalbillingagreementid($response->getBillingAgreementiD());
 
                 Shopware()->Models()->persist($attribute);
