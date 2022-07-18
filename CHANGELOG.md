@@ -1,5 +1,12 @@
 # Changelog - Shopware Computop Payment Connector
 
+#1.1.4
+2022-07-18
+* Updated compatibility with AboCommerce (Credit Card, Paypal, Direct Debit)
+* Removed unnecessary external call used for hiding afterpay installment
+* Replacement of the paydirekt logo
+* Fixed generation for birthday year dropdowns
+
 #1.1.3
 2022-04-06
 * Removed Afterpay Installment
