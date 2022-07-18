@@ -3,9 +3,9 @@
 #1.1.4
 2022-07-18
 * Updated compatibility with AboCommerce (Credit Card, Paypal, Direct Debit)
-* Removed unnecessary external call used for hiding afterpay installment
+* Removed unnecessary external call used for hidden afterpay installment
 * Replacement of the paydirekt logo
-* Fixed generation for birthday year dropdowns
+* Fixed generation years in birthday dropdown
 
 #1.1.3
 2022-04-06
