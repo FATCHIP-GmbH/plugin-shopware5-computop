@@ -179,7 +179,7 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
 
 
                 if(!is_null($response) && $response->getStatus() == 'OK') {
-                    $this->autoCapture($orderNumber, true);
+                    $this->autoCapture($customOrdernumber, true);
                 }
 
                 $data = [
