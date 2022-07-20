@@ -354,10 +354,13 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                     $response->getPayID(),
                     self::PAYMENTSTATUSRESERVED
                 );
-                $this->saveTransactionResultRecurring($response, $requestParams['CCNr'], $requestParams['CCBrand'], $requestParams['CCExpiry']);
+                $this->saveTransactionResultRecurring($response, $cardParams['number'], $cardParams['brand'], $cardParams['expiryDate'], $cardParams['cardholderName']);
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
                 $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
+                if(!is_null($response) && $response->getStatus() == 'OK') {
+                    $this->autoCapture($customOrdernumber, true);
+                }
                 $data = [
                     'success' => true,
                     'data' => [
@@ -466,11 +469,12 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
      * @param string $ccNumber
      * @param string $ccBrand
      * @param string $ccExpiry
+     * @param string $ccCardHolder
      *
      * @return void
      * @throws Exception
      */
-    public function saveTransactionResultRecurring($response, $ccNumber, $ccBrand, $ccExpiry)
+    public function saveTransactionResultRecurring($response, $ccNumber, $ccBrand, $ccExpiry, $ccCardHolder)
     {
         $transactionId = $response->getTransID();
         if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $transactionId])) {
@@ -482,7 +486,8 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $attribute->setfatchipctkreditkartepseudonummer($ccNumber);
                 $attribute->setfatchipctkreditkartebrand($ccBrand);
                 $attribute->setfatchipctkreditkarteexpiry($ccExpiry);
-                $attribute->setfatchipctkreditkartecardholdername($response->getCardHolder());
+                $attribute->setfatchipctkreditkartecardholdername($ccCardHolder);
+                $attribute->setfatchipctkreditkarteschemereferenceid($response->getSchemeReferenceID());
                 $attribute->setfatchipctPaypalbillingagreementid($response->getBillingAgreementiD());
 
                 Shopware()->Models()->persist($attribute);
