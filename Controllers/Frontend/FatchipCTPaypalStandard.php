@@ -108,7 +108,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalStandard extends Shopware_Con
                 $this->saveTransactionResult($response);
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
-                $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
+                $result = $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
                 if(!is_null($response) && $response->getStatus() == 'OK') {
                     $this->autoCapture($customOrdernumber, true);
                 }

@@ -173,10 +173,13 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
                     self::PAYMENTSTATUSRESERVED
                 );
                 $this->saveTransactionResult($response);
-                $result = $this->updateRefNrWithComputopFromOrderNumber($orderNumber);
 
-                if(!is_null($result) && $result->getStatus() == 'OK') {
-                    $this->autoCapture($orderNumber);
+                $customOrdernumber = $this->customizeOrdernumber($orderNumber);
+                $result = $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
+
+
+                if(!is_null($response) && $response->getStatus() == 'OK') {
+                    $this->autoCapture($orderNumber, true);
                 }
 
                 $data = [
