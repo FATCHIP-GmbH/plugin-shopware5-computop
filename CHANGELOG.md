@@ -1,31 +1,31 @@
 # Changelog - Shopware Computop Payment Connector
 
-#1.1.4
+# 1.1.4
 2022-07-18
 * Updated compatibility with AboCommerce (Credit Card, Paypal, Direct Debit)
 * Removed unnecessary external call used for hidden afterpay installment
 * Replacement of the paydirekt logo
 * Fixed generation years in birthday dropdown
 
-#1.1.3
+# 1.1.3
 2022-04-06
 * Removed Afterpay Installment
 * Added advanced logging
 * Fixed address handling of PayPal Express
 
-#1.1.2
+# 1.1.2
 2022-03-24
 * Fixed issues with PHP 8.0
 * Fixed payment logos during checkout process
 * Changed default credit card template to correct template
 
-#1.1.1
+# 1.1.1
 2022-03-15
 * Problem solved with PayPal Express when birthday is not transferred (standard)
 * Fixed address splitting when no street number is provided
 * Fixed EasyCredit
 
-#1.1.0
+# 1.1.0
 2022-02-28
 * Added better compatibility with other payment plugins
 * Fixed problems with Paypal Express and phone numer/birthday when configured mandatory
