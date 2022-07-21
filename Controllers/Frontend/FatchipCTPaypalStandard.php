@@ -63,7 +63,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalStandard extends Shopware_Con
 
         if ($this->utils->isAboCommerceArticleInBasket()) {
             $payment->setRTF('I');
-            $payment->setTxType('BAID');
+            $payment->setTxType('AUTH');
         }
         $params = $payment->getRedirectUrlParams();
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
@@ -89,6 +89,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalStandard extends Shopware_Con
         $this->container->get('front')->Plugins()->ViewRenderer()->setNoRender();
         $payment = $this->getPaymentClassForGatewayAction();
         $payment->setRTF('R');
+        $payment->setTxType('AUTH');
         $requestParams = $payment->getRedirectUrlParams();
         $requestParams['BillingAgreementID'] = $this->getParamPaypalBillingAgreementId($params['orderId']);
         $response = $this->plugin->callComputopService($requestParams, $payment, 'PaypalRecurring', $payment->getRecurringURL());
