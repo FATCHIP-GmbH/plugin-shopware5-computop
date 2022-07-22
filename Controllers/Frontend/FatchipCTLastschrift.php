@@ -185,7 +185,7 @@ class Shopware_Controllers_Frontend_FatchipCTLastschrift extends Shopware_Contro
                 $data = [
                     'success' => true,
                     'data' => [
-                        'orderNumber' => $orderNumber,
+                        'orderNumber' => $customOrdernumber,
                         'transactionId' => $response->getTransID(),
                     ],
                 ];
