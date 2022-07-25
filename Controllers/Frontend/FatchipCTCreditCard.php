@@ -91,8 +91,11 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
             $paymentName = $this->paymentClass;
             $this->utils->log('Redirecting to ' . $payment->getHTTPGetURL($params, $this->config['creditCardTemplate']), ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'parmas' => $params]);
         }
-
-        $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params, $this->config['creditCardTemplate'])));
+        if ($this->config['creditCardMode'] === 'IFRAME') {
+            $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params, $this->config['creditCardTemplate'])));
+        } else if ($this->config['creditCardMode'] === 'PAYMENTPAGE') {
+            $this->forward('paymentpage', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params, $this->config['creditCardTemplate'])));
+        }
     }
 
     /**
@@ -119,6 +122,23 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     public function iframeAction()
     {
         $this->view->loadTemplate('frontend/fatchipCTCreditCard/index.tpl');
+        $this->view->assign('fatchipCTPaymentConfig', $this->config);
+        $requestParams = $this->Request()->getParams();
+        $this->view->assign('fatchipCTIframeURL', $requestParams['fatchipCTRedirectURL']);
+        $this->view->assign('fatchipCTUniqueID', $requestParams['fatchipCTUniqueID']);
+        $this->view->assign('fatchipCTURL', $requestParams['fatchipCTURL']);
+        $this->view->assign('fatchipCTErrorMessage', $requestParams['CTError']['CTErrorMessage']);
+        $this->view->assign('fatchipCTErrorCode', $requestParams['CTError']['CTErrorCode']);
+    }
+
+    /**
+     * Shows Computop Creditcard Iframe within shop layout
+     *
+     * @return void
+     */
+    public function paymentpageAction()
+    {
+        $this->view->loadTemplate('frontend/fatchipCTCreditCard/paymentpage.tpl');
         $this->view->assign('fatchipCTPaymentConfig', $this->config);
         $requestParams = $this->Request()->getParams();
         $this->view->assign('fatchipCTIframeURL', $requestParams['fatchipCTRedirectURL']);
@@ -203,7 +223,6 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $this->saveTransactionResult($response);
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
-                $ccMode = strtolower($this->config['creditCardMode']);
                 $result = $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
 
                 // flag user for successfull initial payment
@@ -216,7 +235,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
 
                 $url = $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'finish']);
 
-                if ($ccMode === 'iframe') {
+                if ($this->config['creditCardMode'] === 'IFRAME' || $this->config['creditCardMode'] === 'PAYMENTPAGE') {
                     $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTURL' => $url, 'fatchipCTUniqueID' => $response->getPayID()));
                 } else {
                     $this->redirect(array(
@@ -292,7 +311,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
             $this->utils->updateUserCreditcardInitialPaymentSuccess($this->session->get('sUserId'), 0);
         }
 
-        if ($ccMode === 'iframe') {
+        if ($ccMode === 'iframe' || $ccMode === 'paymentpage') {
             $this->forward('iframe', 'FatchipCTCreditCard', null, ['fatchipCTURL' => $url, 'CTError' => $ctError]);
         } else {
             //$this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
