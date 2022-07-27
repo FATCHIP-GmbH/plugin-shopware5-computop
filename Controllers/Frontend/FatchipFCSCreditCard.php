@@ -77,13 +77,20 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
         // initialPayment true or false accordingly
         $user = $this->getUser();
         $initialPayment = ($this->utils->getUserCreditcardInitialPaymentSuccess($user) === "1") ? false : true;
-        $payment->setCredentialsOnFile($initialPayment);
+        $payment->setCredentialsOnFile('CIT', $initialPayment);
         $params = $payment->getRedirectUrlParams();
         if ($params['AccVerify'] !== 'Yes') {
             unset($params['AccVerify']);
         }
         $this->session->offsetSet('fatchipFCSRedirectParams', $params);
 
+        if ($this->config['debuglog'] === 'extended') {
+            $sessionID = $this->session->getId();
+            $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
+            $customerId = $this->session->offsetGet('sUserId');
+            $paymentName = $this->paymentClass;
+            $this->utils->log('Redirecting to ' . $payment->getHTTPGetURL($params, $this->config['creditCardTemplate']), ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'parmas' => $params]);
+        }
         $this->forward('iframe', 'FatchipFCSCreditCard', null, array('fatchipFCSRedirectURL' => $payment->getHTTPGetURL($params, $this->config['creditCardTemplate'])));
     }
 
@@ -156,16 +163,40 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
         // used for paynow silent mode
         $response = !empty($requestParams['response']) ? $requestParams['response'] : $this->paymentService->getDecryptedResponse($requestParams);
 
+        if ($this->config['debuglog'] === 'extended') {
+            $sessionID = $this->session->getId();
+            if (!is_null($this->session->offsetGet('sOrderVariables'))) {
+                $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
+            } else {
+                $basket = 'NULL';
+            }
+            $customerId = $this->session->offsetGet('sUserId');
+            $paymentName = $this->paymentClass;
+            $this->utils->log('SuccessAction: ' , ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'Request' => $requestParams, 'Response' => $response]);
+        }
+
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipFCSRedirectParams'), $this->paymentClass, 'AUTH', $response);
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
             case CTEnumStatus::AUTHORIZED:
+            try {
                 $orderNumber = $this->saveOrder(
                     $response->getTransID(),
                     $response->getPayID(),
                     self::PAYMENTSTATUSRESERVED
                 );
+            } catch (Exception $e) {
+                $this->utils->log('SuccessAction Order could not be saved. Check if session was lost upon returning:' , ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID, 'response' => $response, 'error' => $e->getMessage()]);
+                $this->forward('failure');
+            }
+
+            if ($this->config['debuglog'] === 'extended') {
+                $sessionID = $this->session->getId();
+                $customerId = $this->session->offsetGet('sUserId');
+                $paymentName = $this->paymentClass;
+                $this->utils->log('SuccessAction Order was saved with orderNumber : ' . $orderNumber, ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+            }
                 $this->saveTransactionResult($response);
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
@@ -281,10 +312,25 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
         if ($this->Request()->isXmlHttpRequest()) {
 
             $payment = $this->getPaymentClassForGatewayAction();
+            // check if user already used cc payment successfully and send
+            // initialPayment true or false accordingly
+            $payment->setCredentialsOnFile('MIT', false);
             $requestParams = $payment->getRedirectUrlParams();
-            $requestParams['CCNr'] = $this->getParamCCPseudoCardNumber($params['orderId']);
-            $requestParams['CCBrand'] = $this->getParamCCCardBrand($params['orderId']);
-            $requestParams['CCExpiry'] = $this->getParamCCCardExpiry($params['orderId']);
+            $requestParams['schemeReferenceID'] = $this->getParamKreditkarteschemereferenceid($params['orderId']);
+            /** old 3D Secure 1.0 params */
+            unset($requestParams['CCNr']);
+            unset($requestParams['CCBrand']);
+            unset($requestParams['CCExpiry']);
+            unset($requestParams['AccVerify']);
+
+            // $requestParams['credentialOnFile'] = $payment->getCredentialsOnFile();
+            $cardParams = [];
+            $cardParams['number'] = $this->getParamCCPseudoCardNumber($params['orderId']);;
+            $cardParams['brand'] = $this->getParamCCCardBrand($params['orderId']);
+            $cardParams['expiryDate'] = $this->getParamCCCardExpiry($params['orderId']);
+            $cardParams['cardholderName'] = $this->getParamCCCardholdername($params['orderId']);
+            $requestParams['card'] = base64_encode(json_encode($cardParams));
+
             $response = $this->plugin->callComputopService($requestParams, $payment, 'CreditCardRecurring', $payment->getCTRecurringURL());
 
             $status = $response->getStatus();
@@ -305,10 +351,13 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
                     $response->getPayID(),
                     self::PAYMENTSTATUSRESERVED
                 );
-                $this->saveTransactionResultRecurring($response, $requestParams['CCNr'], $requestParams['CCBrand'], $requestParams['CCExpiry']);
+                $this->saveTransactionResultRecurring($response, $cardParams['number'], $cardParams['brand'], $cardParams['expiryDate'], $cardParams['cardholderName']);
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
                 $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
+                if(!is_null($response) && $response->getStatus() == 'OK') {
+                    $this->autoCapture($customOrdernumber, true);
+                }
                 $data = [
                     'success' => true,
                     'data' => [
@@ -387,6 +436,26 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
     }
 
     /**
+     * returns credircard full name from
+     * the last order to use it to authorize
+     * recurring payments
+     *
+     * @param string $orderNumber shopware order-number
+     *
+     * @return boolean | string $cardexpiry pseudo credit card number
+     */
+    protected function getParamCCCardholdername($orderNumber)
+    {
+        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['id' => $orderNumber]);
+        $cardholder = false;
+        if ($order) {
+            $orderAttribute = $order->getAttribute();
+            $cardholder = $orderAttribute->getfatchipfcsKreditkartecardholdername();
+        }
+        return $cardholder;
+    }
+
+    /**
      * Saves the TransationIds in the Order attributes.
      * overridden, because the first recurring payment when using AboCommerce
      * will not return a pseudocardnumber or any creditcard attributes which are
@@ -397,11 +466,12 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
      * @param string $ccNumber
      * @param string $ccBrand
      * @param string $ccExpiry
+     * @param string $ccCardHolder
      *
      * @return void
      * @throws Exception
      */
-    public function saveTransactionResultRecurring($response, $ccNumber, $ccBrand, $ccExpiry)
+    public function saveTransactionResultRecurring($response, $ccNumber, $ccBrand, $ccExpiry, $ccCardHolder)
     {
         $transactionId = $response->getTransID();
         if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $transactionId])) {
@@ -413,12 +483,34 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
                 $attribute->setfatchipfcskreditkartepseudonummer($ccNumber);
                 $attribute->setfatchipfcskreditkartebrand($ccBrand);
                 $attribute->setfatchipfcskreditkarteexpiry($ccExpiry);
+                $attribute->setfatchipfcskreditkartecardholdername($ccCardHolder);
+                $attribute->setfatchipfcskreditkarteschemereferenceid($response->getSchemeReferenceID());
                 $attribute->setfatchipfcsPaypalbillingagreementid($response->getBillingAgreementiD());
 
                 Shopware()->Models()->persist($attribute);
                 Shopware()->Models()->flush();
             }
         }
+    }
+    /**
+     * returns schemeReferenceID from
+     * the last order to use it to authorize
+     * recurring payments
+     *
+     * @param string $orderNumber shopware order-number
+     *
+     * @return boolean | string creditcard schemeReferenceID
+     */
+    protected function getParamKreditkarteschemereferenceid($orderNumber)
+    {
+        $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['id' => $orderNumber]);
+        $refID = false;
+        if ($order) {
+            $orderAttribute = $order->getAttribute();
+            $refID = $orderAttribute->getfatchipfcskreditkarteschemereferenceid();
+
+        }
+        return $refID;
     }
 }
 

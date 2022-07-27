@@ -67,6 +67,15 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalStandard extends Shopware_Co
         }
         $params = $payment->getRedirectUrlParams();
         $this->session->offsetSet('fatchipFCSRedirectParams', $params);
+
+        if ($this->config['debuglog'] === 'extended') {
+            $sessionID = $this->session->getId();
+            $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
+            $customerId = $this->session->offsetGet('sUserId');
+            $paymentName = $this->paymentClass;
+            $this->utils->log('Redirecting to ' . $payment->getHTTPGetURL($params, $this->config['creditCardTemplate']), ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'parmas' => $params]);
+        }
+
         $this->redirect($payment->getHTTPGetURL($params));
     }
 
@@ -99,7 +108,10 @@ class Shopware_Controllers_Frontend_FatchipFCSPaypalStandard extends Shopware_Co
                 $this->saveTransactionResult($response);
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
-                $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
+                $result = $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
+                if(!is_null($response) && $response->getStatus() == 'OK') {
+                    $this->autoCapture($customOrdernumber, true);
+                }
                 $data = [
                     'success' => true,
                     'data' => [
