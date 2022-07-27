@@ -205,7 +205,7 @@ $.plugin("fatchipFCSAmazon", {
         me.opts.birthdayYear = aBirthday[0];
 
         me.opts.phone = data.phonenumber;
-        if (me.opts.fatchipCTAmazonisPhoneMandatory){
+        if (me.opts.fatchipFCSAmazonisPhoneMandatory){
             me.opts.phone = (data.phonenumber) ? data.phonenumber : '0800 123456789';
         }
 

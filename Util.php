@@ -988,7 +988,7 @@ class Util
             $logFile = $logPath . 'logs/FatchipFCSPaymentExtended_production.log';
         }
         $rfh = new RotatingFileHandler($logFile, 14);
-        $logger = new Logger('FatchipCTPayment');
+        $logger = new Logger('FatchipFCSPayment');
         $logger->pushHandler($rfh);
         $logger->error($message, $context);
     }
