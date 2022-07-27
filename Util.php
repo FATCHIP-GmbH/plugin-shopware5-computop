@@ -717,8 +717,7 @@ class Util
             ->innerJoin('basket.attribute', 'attribute')
             ->where('basket.sessionId = :sessionId')
             ->andWhere('attribute.swagAboCommerceDeliveryInterval IS NOT NULL')
-            ->setParameters(array('sessionId' => Shopware()->SessionID()));
-
+            ->setParameters(array('sessionId' => Shopware()->Session()->offsetGet('sessionId')));
         $count = $builder->getQuery()->getSingleScalarResult();
 
         return (bool)$count;
@@ -974,5 +973,23 @@ class Util
             return $_SERVER['HTTP_CF_CONNECTING_IP'];
         }
         return $remoteAddr;
+    }
+
+    /**
+     * @param $message
+     * @param array $context
+     * @return void
+     */
+    public function log($message, array $context) {
+        $logPath = Shopware()->DocPath();
+        if (Util::isShopwareVersionGreaterThanOrEqual('5.1')) {
+            $logFile = $logPath . 'var/log/FatchipFCSPaymentExtended_production.log';
+        } else {
+            $logFile = $logPath . 'logs/FatchipFCSPaymentExtended_production.log';
+        }
+        $rfh = new RotatingFileHandler($logFile, 14);
+        $logger = new Logger('FatchipCTPayment');
+        $logger->pushHandler($rfh);
+        $logger->error($message, $context);
     }
 }
