@@ -29,6 +29,7 @@ namespace Shopware\Plugins\FatchipFCSPayment;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Enlight_Controller_Action;
+use Monolog\Handler\RotatingFileHandler;
 use Exception;
 use Fatchip\FCSPayment\CTAddress\CTAddress;
 use Fatchip\FCSPayment\CTOrder\CTOrder;
