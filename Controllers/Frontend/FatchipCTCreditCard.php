@@ -85,7 +85,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $this->session->offsetSet('fatchipCTRedirectParams', $params);
 
         if ($this->config['debuglog'] === 'extended') {
-            $sessionID = $this->session->getId();
+            $sessionID = $this->session->get('sessionId');
             $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
             $customerId = $this->session->offsetGet('sUserId');
             $paymentName = $this->paymentClass;
@@ -167,7 +167,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         $response = !empty($requestParams['response']) ? $requestParams['response'] : $this->paymentService->getDecryptedResponse($requestParams);
 
         if ($this->config['debuglog'] === 'extended') {
-            $sessionID = $this->session->getId();
+            $sessionID = $this->session->get('sessionId');
             if (!is_null($this->session->offsetGet('sOrderVariables'))) {
                 $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
             } else {
@@ -195,7 +195,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
             }
 
             if ($this->config['debuglog'] === 'extended') {
-                $sessionID = $this->session->getId();
+                $sessionID = $this->session->get('sessionId');
                 $customerId = $this->session->offsetGet('sUserId');
                 $paymentName = $this->paymentClass;
                 $this->utils->log('SuccessAction Order was saved with orderNumber : ' . $orderNumber, ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);

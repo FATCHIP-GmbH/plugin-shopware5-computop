@@ -106,7 +106,7 @@ class Shopware_Controllers_Frontend_FatchipCTAfterpay extends Shopware_Controlle
         }
 
         if ($this->config['debuglog'] === 'extended') {
-            $sessionID = $this->session->getId();
+            $sessionID = $this->session->get('sessionId');
             $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
             $customerId = $this->session->offsetGet('sUserId');
             $paymentName = $this->paymentClass;
@@ -116,7 +116,7 @@ class Shopware_Controllers_Frontend_FatchipCTAfterpay extends Shopware_Controlle
         $response = $this->plugin->callComputopService($requestParams, $payment, 'AFTERPAY', $payment->getCTPaymentURL());
 
         if ($this->config['debuglog'] === 'extended') {
-            $sessionID = $this->session->getId();
+            $sessionID = $this->session->get('sessionId');
             if (!is_null($this->session->offsetGet('sOrderVariables'))) {
                 $basket = var_export($this->session->offsetGet('sOrderVariables')->getArrayCopy(), true);
             } else {
