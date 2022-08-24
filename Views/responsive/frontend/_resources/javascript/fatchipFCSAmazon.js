@@ -192,8 +192,8 @@ $.plugin("fatchipFCSAmazon", {
         "use strict";
         var me = this;
 
-        var sname = data.addrname.split(" ");
-        var bname = data.bdaddrname.split(" ");
+        var sname = (data.addrname) ? data.addrname.split(" ") : '';
+        var bname = (data.bdaddrname) ? data.bdaddrname.split(" ") : '';
 
         me.opts.birthday = data.birthday;
         // if (me.opts.fatchipFCSAmazonisBirthdayMandatory){
