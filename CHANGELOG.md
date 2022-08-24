@@ -1,9 +1,10 @@
 # Changelog - Shopware Computop Payment Connector
 
 # 1.1.5
-2022-08-23
+2022-08-24
 * Fixed session backward compatibility with SW < 5.7
 * Fixed payment status for successful orders using iDeal and Sofort 
+* Prevent JS-Errors in console when name splitting fails
 
 # 1.1.4
 2022-07-18
