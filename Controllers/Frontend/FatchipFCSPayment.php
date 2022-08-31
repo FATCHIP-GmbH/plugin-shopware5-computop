@@ -260,7 +260,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
         }
         $userData = Shopware()->Modules()->Admin()->sGetUserData();
         $paymentName = $this->utils->getPaymentNameFromId($userData['additional']['payment']['id']);
-        $paymentStatus = ($paymentName === 'fatchip_computop_ideal' || $paymentName === 'fatchip_computop_sofort') ? self::PAYMENTSTATUSPAID : self::PAYMENTSTATUSRESERVED;
+        $paymentStatus = ($paymentName === 'fatchip_firstcash_ideal' || $paymentName === 'fatchip_firstcash_sofort') ? self::PAYMENTSTATUSPAID : self::PAYMENTSTATUSRESERVED;
 
         try {
         $orderNumber = $this->saveOrder(
