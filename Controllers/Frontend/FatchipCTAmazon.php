@@ -67,11 +67,12 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
             return;
         }
 
+        $paymentStatus = ($this->config['amazonCaptureType'] === 'AUTO') ? self::PAYMENTSTATUSPAID : self::PAYMENTSTATUSRESERVED;
         if($response->getStatus() == CTEnumStatus::OK) {
             $orderNumber = $this->saveOrder(
                 $response->getTransID(),
                 $response->getOrderid(),
-                self::PAYMENTSTATUSPAID
+                $paymentStatus
             );
             $this->saveTransactionResult($response);
 

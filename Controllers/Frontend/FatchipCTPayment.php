@@ -589,6 +589,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             || ($paymentName === 'fatchip_computop_paypal_standard' && $this->config['paypalCaption'] === 'AUTO')
             || ($paymentName === 'fatchip_computop_paypal_express' && $this->config['paypalCaption'] === 'AUTO')
             || ($paymentName === 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] === 'AUTO')
+            || ($paymentName === 'fatchip_computop_amazonpay' && $this->config['amazonCaptureType'] === 'AUTO')
             ))
         ) {
             if ($this->config['debuglog'] === 'extended') {
