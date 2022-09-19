@@ -226,6 +226,10 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
                 $this->markPositionsAsCaptured($order, $positionIds, $includeShipment);
                 $this->inquireAndupdatePaymentStatusAfterCapture($order, $paymentClass);
                 $this->saveInvNo($captureResponse);
+                // for amazonpay update the xid from capture response for usage in refund requests
+                if (strpos($order->getPayment()->getName(), 'fatchip_computop_amazonpay') === 0) {
+                    $this->saveXid($captureResponse);
+                }
                 $response = array('success' => true);
             } else {
                 $errorMessage = 'Capture (zur Zeit) nicht möglich: ' . $captureResponse->getDescription();
@@ -694,6 +698,24 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
                         $attribute->setfatchipctKlarnainvno($response->getInvNo());
                         Shopware()->Models()->persist($attribute);
                         Shopware()->Models()->flush();
+                }
+            }
+        }
+    }
+
+    /**
+     * Saves the InvoiceNr from Computop response in order attributes for Klarna payments
+     * @param $response
+     */
+    private function saveXid($response)
+    {
+        $transactionId = $response->getTransID();
+        if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $transactionId])) {
+            if ($attribute = $order->getAttribute()) {
+                if (!empty($response->getXID())) {
+                    $attribute->setfatchipctXid($response->getXid());
+                    Shopware()->Models()->persist($attribute);
+                    Shopware()->Models()->flush();
                 }
             }
         }
