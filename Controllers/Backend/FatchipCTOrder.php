@@ -131,10 +131,13 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
             $refundResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'REFUND', $paymentClass->getCTRefundURL());
 
-            if ($refundResponse->getStatus() == 'OK') {
+            if ($refundResponse->getStatus() === 'OK') {
                 $this->markPositionsAsRefunded($order, $positionIds, $includeShipment);
                 $this->inquireAndupdatePaymentStatusAfterRefund($order, $paymentClass);
                 $response = array('success' => true);
+            } elseif (strpos($order->getPayment()->getName(), 'fatchip_computop_amazonpay') === 0 && $refundResponse->getStatus() === 'CREDIT_REQUEST' && $refundResponse->getAmazonstatus() === 'Pending') {
+                $errorMessage = 'Gutschrift wurde veranlasst.';
+                $response = array('success' => false, 'error_message' => $errorMessage);
             } else {
                 $errorMessage = 'Gutschrift (zur Zeit) nicht möglich: ' . $refundResponse->getDescription();
                 $response = array('success' => false, 'error_message' => $errorMessage);
