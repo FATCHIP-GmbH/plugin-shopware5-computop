@@ -55,6 +55,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     const PAYMENTSTATUSRESERVED = CTEnumPaymentStatus::PAYMENTSTATUSRESERVED;
     const PAYMENTSTATUSREVIEWNECESSARY = CTEnumPaymentStatus::PAYMENTSTATUSREVIEWNECESSARY;
     const ORDERSTATUSREVIEWNECESSARY  = Shopware\Models\Order\Status::ORDER_STATE_CLARIFICATION_REQUIRED;
+    const PAYMENTSTATUSREFUNDED = Shopware\Models\Order\Status::PAYMENT_STATE_RE_CREDITING;
 
 
     const ERRORMSG = 'Es ist ein Fehler aufgetreten. Bitte wählen Sie eine andere Zahlungsart oder versuchen Sie es später noch einmal.<br>';
@@ -324,7 +325,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $response = $this->paymentService->getDecryptedResponse($requestParams);
         $this->plugin->logRedirectParams(null, $this->paymentClass, 'NOTIFY', $response);
 
-        switch ($response->getStatus()) {
+;        switch ($response->getStatus()) {
             case CTEnumStatus::OK:
             case CTEnumStatus::AUTHORIZED:
             case CTEnumStatus::AUTHORIZE_REQUEST:
@@ -528,6 +529,29 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
         $orderAttribute = $order->getAttribute();
         $orderAttribute->setfatchipctShipcaptured($order->getInvoiceShipping());
+        Shopware()->Models()->persist($orderAttribute);
+        Shopware()->Models()->flush();
+    }
+
+    /**
+     * Marks all OrderDetails and Shipping as Fully Refunded
+     *
+     * @param Shopware\Models\Order\Order $order shopware order object
+     *
+     * @return void
+     * @throws Exception
+     */
+    private function markOrderDetailsAsFullyRefunded($order)
+    {
+        foreach ($order->getDetails() as $position) {
+            $positionAttribute = $position->getAttribute();
+            $positionAttribute->setfatchipctDebit($position->getPrice() * $position->getQuantity());
+            Shopware()->Models()->persist($positionAttribute);
+        }
+        Shopware()->Models()->flush();
+
+        $orderAttribute = $order->getAttribute();
+        $orderAttribute->setfatchipctShipdebit($order->getInvoiceShipping());
         Shopware()->Models()->persist($orderAttribute);
         Shopware()->Models()->flush();
     }
@@ -867,7 +891,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     {
         $currentPaymentStatus = $order->getPaymentStatus()->getId();
 
-        if ($currentPaymentStatus == self::PAYMENTSTATUSRESERVED || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID) {
+        if ($currentPaymentStatus == self::PAYMENTSTATUSRESERVED || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID || $currentPaymentStatus == self::PAYMENTSTATUSPAID) {
             $payID = $order->getAttribute()->getfatchipctPayid();
             $ctOrder = $this->createCTOrderFromSWorder($order);
             if ($paymentClass !== 'PaypalExpress'
@@ -882,7 +906,13 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $inquireResponse = $this->plugin->callComputopService($inquireParams, $payment, 'INQUIRE', $payment->getCTInquireURL());
 
             if ($inquireResponse->getStatus() == 'OK') {
-                if ($inquireResponse->getAmountAuth() == $inquireResponse->getAmountCap()) {
+                    // used for amazonpay manual refunds
+                if ($paymentClass === 'AmazonPay' && $inquireResponse->getAmountCred() > 0) {
+                    $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', self::PAYMENTSTATUSREFUNDED);
+                    $order->setPaymentStatus($paymentStatus);
+                    $this->markOrderDetailsAsFullyRefunded($order);
+                    $this->get('models')->flush($order);
+                } else if ($inquireResponse->getAmountAuth() == $inquireResponse->getAmountCap()) {
                     // fully paid
                     $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', self::PAYMENTSTATUSPAID);
                     $order->setPaymentStatus($paymentStatus);
