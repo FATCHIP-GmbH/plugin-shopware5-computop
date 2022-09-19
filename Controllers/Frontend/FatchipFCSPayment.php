@@ -55,6 +55,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     const PAYMENTSTATUSRESERVED = CTEnumPaymentStatus::PAYMENTSTATUSRESERVED;
     const PAYMENTSTATUSREVIEWNECESSARY = CTEnumPaymentStatus::PAYMENTSTATUSREVIEWNECESSARY;
     const ORDERSTATUSREVIEWNECESSARY  = Shopware\Models\Order\Status::ORDER_STATE_CLARIFICATION_REQUIRED;
+    const PAYMENTSTATUSREFUNDED = Shopware\Models\Order\Status::PAYMENT_STATE_RE_CREDITING;
 
 
     const ERRORMSG = 'Es ist ein Fehler aufgetreten. Bitte wählen Sie eine andere Zahlungsart oder versuchen Sie es später noch einmal.<br>';
@@ -531,6 +532,30 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
         Shopware()->Models()->flush();
     }
 
+
+    /**
+     * Marks all OrderDetails and Shipping as Fully Refunded
+     *
+     * @param Shopware\Models\Order\Order $order shopware order object
+     *
+     * @return void
+     * @throws Exception
+     */
+    private function markOrderDetailsAsFullyRefunded($order)
+    {
+        foreach ($order->getDetails() as $position) {
+            $positionAttribute = $position->getAttribute();
+            $positionAttribute->setfatchipfcsDebit($position->getPrice() * $position->getQuantity());
+            Shopware()->Models()->persist($positionAttribute);
+        }
+        Shopware()->Models()->flush();
+
+        $orderAttribute = $order->getAttribute();
+        $orderAttribute->setfatchipfcsShipdebit($order->getInvoiceShipping());
+        Shopware()->Models()->persist($orderAttribute);
+        Shopware()->Models()->flush();
+    }
+
     /**
      * Updates Paymentstatus for an order
      *
@@ -587,6 +612,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
             || ($paymentName === 'fatchip_firstcash_lastschrift' && $this->config['lastschriftCaption'] === 'AUTO')
             || ($paymentName === 'fatchip_firstcash_paypal_standard' && $this->config['paypalCaption'] === 'AUTO')
             || ($paymentName === 'fatchip_firstcash_paypal_express' && $this->config['paypalCaption'] === 'AUTO')
+            || ($paymentName === 'fatchip_firstcash_amazonpay' && $this->config['amazonCaptureType'] === 'AUTO')
             || ($paymentName === 'fatchip_firstcash_paydirekt' && $this->config['payDirektCaption'] === 'AUTO')))
         ) {
             if ($this->config['debuglog'] === 'extended') {
@@ -858,7 +884,7 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
     {
         $currentPaymentStatus = $order->getPaymentStatus()->getId();
 
-        if ($currentPaymentStatus == self::PAYMENTSTATUSRESERVED || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID) {
+        if ($currentPaymentStatus == self::PAYMENTSTATUSRESERVED || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID || $currentPaymentStatus == self::PAYMENTSTATUSPAID) {
             $payID = $order->getAttribute()->getfatchipfcsPayid();
             $ctOrder = $this->createCTOrderFromSWorder($order);
             if ($paymentClass !== 'PaypalExpress'
@@ -873,7 +899,13 @@ abstract class Shopware_Controllers_Frontend_FatchipFCSPayment extends Shopware_
             $inquireResponse = $this->plugin->callComputopService($inquireParams, $payment, 'INQUIRE', $payment->getCTInquireURL());
 
             if ($inquireResponse->getStatus() == 'OK') {
-                if ($inquireResponse->getAmountAuth() == $inquireResponse->getAmountCap()) {
+                // used for amazonpay manual refunds
+                if ($paymentClass === 'AmazonPay' && $inquireResponse->getAmountCred() > 0) {
+                    $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', self::PAYMENTSTATUSREFUNDED);
+                    $order->setPaymentStatus($paymentStatus);
+                    $this->markOrderDetailsAsFullyRefunded($order);
+                    $this->get('models')->flush($order);
+                } else if ($inquireResponse->getAmountAuth() == $inquireResponse->getAmountCap()) {
                     // fully paid
                     $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', self::PAYMENTSTATUSPAID);
                     $order->setPaymentStatus($paymentStatus);
