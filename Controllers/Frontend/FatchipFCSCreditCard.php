@@ -91,7 +91,11 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
             $paymentName = $this->paymentClass;
             $this->utils->log('Redirecting to ' . $payment->getHTTPGetURL($params, $this->config['creditCardTemplate']), ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'parmas' => $params]);
         }
-        $this->forward('iframe', 'FatchipFCSCreditCard', null, array('fatchipFCSRedirectURL' => $payment->getHTTPGetURL($params, $this->config['creditCardTemplate'])));
+        if ($this->config['creditCardMode'] === 'IFRAME') {
+            $this->forward('iframe', 'FatchipFCSCreditCard', null, array('fatchipFCSRedirectURL' => $payment->getHTTPGetURL($params, $this->config['creditCardTemplate'])));
+        } else if ($this->config['creditCardMode'] === 'PAYMENTPAGE') {
+            $this->forward('paymentpage', 'FatchipFCSCreditCard', null, array('fatchipFCSRedirectURL' => $payment->getHTTPGetURL($params, $this->config['creditCardTemplate'])));
+        }
     }
 
     /**
@@ -118,6 +122,23 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
     public function iframeAction()
     {
         $this->view->loadTemplate('frontend/fatchipFCSCreditCard/index.tpl');
+        $this->view->assign('fatchipFCSPaymentConfig', $this->config);
+        $requestParams = $this->Request()->getParams();
+        $this->view->assign('fatchipFCSIframeURL', $requestParams['fatchipFCSRedirectURL']);
+        $this->view->assign('fatchipFCSUniqueID', $requestParams['fatchipFCSUniqueID']);
+        $this->view->assign('fatchipFCSURL', $requestParams['fatchipFCSURL']);
+        $this->view->assign('fatchipFCSErrorMessage', $requestParams['FCSError']['CTErrorMessage']);
+        $this->view->assign('fatchipFCSErrorCode', $requestParams['FCSError']['CTErrorCode']);
+    }
+
+    /**
+     * Shows Computop Creditcard Iframe within shop layout
+     *
+     * @return void
+     */
+    public function paymentpageAction()
+    {
+        $this->view->loadTemplate('frontend/fatchipFCSCreditCard/paymentpage.tpl');
         $this->view->assign('fatchipFCSPaymentConfig', $this->config);
         $requestParams = $this->Request()->getParams();
         $this->view->assign('fatchipFCSIframeURL', $requestParams['fatchipFCSRedirectURL']);
@@ -200,7 +221,6 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
                 $this->saveTransactionResult($response);
 
                 $customOrdernumber = $this->customizeOrdernumber($orderNumber);
-                $ccMode = strtolower($this->config['creditCardMode']);
                 $result = $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
 
                 // flag user for successfull initial payment
@@ -213,7 +233,7 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
 
                 $url = $this->Front()->Router()->assemble(['controller' => 'checkout', 'action' => 'finish']);
 
-                if ($ccMode === 'iframe') {
+                if ($this->config['creditCardMode'] === 'IFRAME' || $this->config['creditCardMode'] === 'PAYMENTPAGE') {
                     $this->forward('iframe', 'FatchipFCSCreditCard', null, array('fatchipFCSURL' => $url, 'fatchipFCSUniqueID' => $response->getPayID()));
                 } else {
                     $this->redirect(array(
@@ -289,15 +309,13 @@ class Shopware_Controllers_Frontend_FatchipFCSCreditCard extends Shopware_Contro
             $this->utils->updateUserCreditcardInitialPaymentSuccess($this->session->get('sUserId'), 0);
         }
 
-        if ($ccMode === 'iframe') {
+        if ($ccMode === 'iframe' || $ccMode === 'paymentpage') {
             $this->forward('iframe', 'FatchipFCSCreditCard', null, ['fatchipFCSURL' => $url, 'FCSError' => $ctError]);
         } else {
             //$this->forward('shippingPayment', 'checkout', null, ['FCSError' => $ctError]);
             // set CTError in Session to prevent csfrs errors
             $this->session->offsetSet('FCSError', $ctError);
             $this->redirect(['controller' => 'checkout', 'action' => 'shippingPayment']);
-
-
         }
     }
 
