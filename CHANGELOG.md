@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.1.7
+2022-10-11
+* Fixed a problem with credit card default mode
+
 # 1.1.6
 2022-09-19
 * Added payment page as option for credit card mode
