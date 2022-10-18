@@ -323,15 +323,18 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         $this->Front()->Plugins()->ViewRenderer()->setNoRender();
         $requestParams = $this->Request()->getParams();
         $response = $this->paymentService->getDecryptedResponse($requestParams);
+        if (isset($requestParams['orderVars'])) {
+            $response->setOrderVars(base64_decode($requestParams['orderVars']));
+        }
         $this->plugin->logRedirectParams(null, $this->paymentClass, 'NOTIFY', $response);
 
-;        switch ($response->getStatus()) {
+        switch ($response->getStatus()) {
             case CTEnumStatus::OK:
             case CTEnumStatus::AUTHORIZED:
             case CTEnumStatus::AUTHORIZE_REQUEST:
                 if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $response->getTransID()])) {
 //                    $this->updateRefNrWithComputop($order, $this->paymentClass);
-                    $this->inquireAndupdatePaymentStatus($order, $this->paymentClass);
+                    $this->inquireAndupdatePaymentStatus($order, $this->paymentClass, json_decode($response->getOrderVars(), true));
                 }
 
                 // else do nothing notify got here before success
@@ -882,16 +885,17 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      * If nothing has been captured, an error is thrown, so Computop will try again
      *
      * @param Order $order        shopware order
-     * @param string                       $paymentClass paymentclass name
+     * @param string              $paymentClass paymentclass name
+     * @param array              $orderVars
      *
      * @return void
      * @throws Exception
      */
-    private function inquireAndupdatePaymentStatus($order, $paymentClass)
+    private function inquireAndupdatePaymentStatus($order, $paymentClass, $orderVars)
     {
         $currentPaymentStatus = $order->getPaymentStatus()->getId();
 
-        if ($currentPaymentStatus == self::PAYMENTSTATUSRESERVED || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID || $currentPaymentStatus == self::PAYMENTSTATUSPAID) {
+        if ($currentPaymentStatus == self::PAYMENTSTATUSRESERVED || $currentPaymentStatus == self::PAYMENTSTATUSPARTIALLYPAID || $currentPaymentStatus == self::PAYMENTSTATUSPAID || $currentPaymentStatus == self::PAYMENTSTATUSREFUNDED) {
             $payID = $order->getAttribute()->getfatchipctPayid();
             $ctOrder = $this->createCTOrderFromSWorder($order);
             if ($paymentClass !== 'PaypalExpress'
@@ -910,8 +914,9 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 if ($paymentClass === 'AmazonPay' && $inquireResponse->getAmountCred() > 0) {
                     $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', self::PAYMENTSTATUSREFUNDED);
                     $order->setPaymentStatus($paymentStatus);
-                    $this->markOrderDetailsAsFullyRefunded($order);
-                    $this->get('models')->flush($order);
+                    $positionIds = array_column($orderVars, 'positionID');
+                    $includeShipping = array_column($orderVars, 'includeShipping')[0];
+                    $this->markPositionsAsRefunded($order, $positionIds, $includeShipping);
                 } else if ($inquireResponse->getAmountAuth() == $inquireResponse->getAmountCap()) {
                     // fully paid
                     $paymentStatus = $this->get('models')->find('Shopware\Models\Order\Status', self::PAYMENTSTATUSPAID);
@@ -1003,6 +1008,40 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             return null;
         }
         return $match['language'];
+    }
+
+    /**
+     * Saves the amount debited in position attributes and the amount shipping debited in the order attributes
+     *
+     * @param $order
+     * @param $positionIds
+     * @param bool $includeShipment
+     */
+    private function markPositionsAsRefunded($order, $positionIds, $includeShipment = false)
+    {
+        foreach ($order->getDetails() as $position) {
+            if (!in_array($position->getId(), $positionIds)) {
+                continue;
+            }
+
+            $positionAttribute = $position->getAttribute();
+            $positionAttribute->setfatchipctDebit($position->getPrice() * $position->getQuantity());
+
+            Shopware()->Models()->persist($positionAttribute);
+            Shopware()->Models()->flush();
+
+            //check if shipping is included as position
+            if ($position->getArticleNumber() == 'SHIPPING') {
+                $includeShipment = false;
+            }
+        }
+
+        if ($includeShipment) {
+            $orderAttribute = $order->getAttribute();
+            $orderAttribute->setfatchipctShipdebit($order->getInvoiceShipping());
+            Shopware()->Models()->persist($orderAttribute);
+            Shopware()->Models()->flush();
+        }
     }
 }
 

@@ -127,13 +127,17 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
                 $order->getInvoiceAmount() * 100
             );
 
+            if (strpos($order->getPayment()->getName(), 'fatchip_computop_amazonpay') === 0) {
+                $requestParams['Custom'] = 'orderVars=' . base64_encode(json_encode($this->getAmazonRefundPositions($order, $positionIds, $includeShipment)));
+            }
 
 
             $refundResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'REFUND', $paymentClass->getCTRefundURL());
 
-            if ($refundResponse->getStatus() === 'OK') {
-                $this->markPositionsAsRefunded($order, $positionIds, $includeShipment);
+            // amazon refunds are handled on receiving the notify call from computop
+            if ($refundResponse->getStatus() === 'OK' && strpos($order->getPayment()->getName(), 'fatchip_computop_amazonpay') !== 0 ) {
                 $this->inquireAndupdatePaymentStatusAfterRefund($order, $paymentClass);
+                $this->markPositionsAsRefunded($order, $positionIds, $includeShipment);
                 $response = array('success' => true);
             } elseif (strpos($order->getPayment()->getName(), 'fatchip_computop_amazonpay') === 0 && $refundResponse->getStatus() === 'CREDIT_REQUEST' && $refundResponse->getAmazonstatus() === 'Pending') {
                 $errorMessage = 'Gutschrift wurde veranlasst.';
@@ -610,7 +614,6 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
             $inquireResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'INQUIRE', $paymentClass->getCTInquireURL());
 
-
             if ($inquireResponse->getStatus() == 'OK') {
                 if ($inquireResponse->getAmountAuth() == $inquireResponse->getAmountCap()) {
                     //Fully paid
@@ -683,9 +686,32 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
 
 
             return $orderDesc;
-
-
         }
+    }
+
+    /**
+     * For klarna capture or debit actions, a certain formatting of the orderdescription is needed.
+     * @param $order
+     * @param $positionIds
+     * @return array
+     */
+    private function getAmazonRefundPositions($order, $positionIds, $includeShipping)
+    {
+        $positions = [];
+        $i = 0;
+        foreach ($order->getDetails() as $position) {
+            if (!in_array($position->getId(), $positionIds)) {
+                continue;
+            }
+            $positions[$i]['includeShipping'] = $includeShipping;
+            $positions[$i]['positionID'] = $position->getId();
+            $positions[$i]['articleID'] = $position->getArticleID();
+            $positions[$i]['price'] = $position->getPrice();
+            $positions[$i]['quantity'] = $position->getQuantity();
+            $positions[$i]['articleName'] = $position->getArticleName();
+            $i = $i + 1;
+        }
+        return $positions;
     }
 
     /**
