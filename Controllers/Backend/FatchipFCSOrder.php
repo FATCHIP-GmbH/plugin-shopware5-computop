@@ -126,14 +126,12 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
                 $order->getAttribute()->getfatchipfcskreditkarteschemereferenceid(),
                 $order->getInvoiceAmount() * 100,
             );
-
-
-
             $refundResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'REFUND', $paymentClass->getCTRefundURL());
 
-            if ($refundResponse->getStatus() === 'OK') {
-                $this->markPositionsAsRefunded($order, $positionIds, $includeShipment);
+            // amazon refunds are handled on receiving the notify call from computop
+            if ($refundResponse->getStatus() === 'OK' && strpos($order->getPayment()->getName(), 'fatchip_firstcash_amazonpay') !== 0 ) {
                 $this->inquireAndupdatePaymentStatusAfterRefund($order, $paymentClass);
+                $this->markPositionsAsRefunded($order, $positionIds, $includeShipment);
                 $response = array('success' => true);
             } elseif (strpos($order->getPayment()->getName(), 'fatchip_firstcash_amazonpay') === 0 && $refundResponse->getStatus() === 'CREDIT_REQUEST' && $refundResponse->getAmazonstatus() === 'Pending') {
                 $errorMessage = 'Gutschrift wurde veranlasst.';
@@ -686,6 +684,31 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
 
 
         }
+    }
+
+    /**
+     * For amazonpay capture or debit actions, a certain formatting of the orderdescription is needed.
+     * @param $order
+     * @param $positionIds
+     * @return array
+     */
+    private function getAmazonRefundPositions($order, $positionIds, $includeShipping)
+    {
+        $positions = [];
+        $i = 0;
+        foreach ($order->getDetails() as $position) {
+            if (!in_array($position->getId(), $positionIds)) {
+                continue;
+            }
+            $positions[$i]['includeShipping'] = $includeShipping;
+            $positions[$i]['positionID'] = $position->getId();
+            $positions[$i]['articleID'] = $position->getArticleID();
+            $positions[$i]['price'] = $position->getPrice();
+            $positions[$i]['quantity'] = $position->getQuantity();
+            $positions[$i]['articleName'] = $position->getArticleName();
+            $i = $i + 1;
+        }
+        return $positions;
     }
 
     /**
