@@ -891,7 +891,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      * @return void
      * @throws Exception
      */
-    private function inquireAndupdatePaymentStatus($order, $paymentClass, $orderVars)
+    private function inquireAndupdatePaymentStatus($order, $paymentClass, $orderVars = [])
     {
         $currentPaymentStatus = $order->getPaymentStatus()->getId();
 
