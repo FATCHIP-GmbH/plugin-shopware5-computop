@@ -622,8 +622,8 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             if ($this->config['debuglog'] === 'extended') {
                 $sessionID = $this->session->get('sessionId');
                 $customerId = $this->session->offsetGet('sUserId');
-                $paymentName = $this->paymentClass;
-                $this->utils->log('autoCapture: skipping for ' . $paymentName , ['payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+                $paymentClass = $this->paymentClass;
+                $this->utils->log('autoCapture: skipping for ' . $paymentName , ['payment' => $paymentClass, 'UserID' => $customerId, 'SessionID' => $sessionID]);
             }
             return;
         }
@@ -636,16 +636,16 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             if ($this->config['debuglog'] === 'extended') {
                 $sessionID = $this->session->get('sessionId');
                 $customerId = $this->session->offsetGet('sUserId');
-                $paymentName = $this->paymentClass;
-                $this->utils->log('autoCapture: success for ' . $paymentName . 'setting order status to ' . self::PAYMENTSTATUSPAID , ['order' => $orderNumber,  'payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+                $paymentClass = $this->paymentClass;
+                $this->utils->log('autoCapture: success for ' . $paymentName . 'setting order status to ' . self::PAYMENTSTATUSPAID , ['order' => $orderNumber,  'payment' => $paymentClass, 'UserID' => $customerId, 'SessionID' => $sessionID]);
             }
         } else {
             $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSREVIEWNECESSARY);
             if ($this->config['debuglog'] === 'extended') {
                 $sessionID = $this->session->get('sessionId');
                 $customerId = $this->session->offsetGet('sUserId');
-                $paymentName = $this->paymentClass;
-                $this->utils->log('autoCapture: failure for ' . $paymentName . 'setting order status to ' . self::PAYMENTSTATUSREVIEWNECESSARY , ['order' => $orderNumber, 'payment' => $paymentName, 'UserID' => $customerId, 'SessionID' => $sessionID]);
+                $paymentClass = $this->paymentClass;
+                $this->utils->log('autoCapture: failure for ' . $paymentName . 'setting order status to ' . self::PAYMENTSTATUSREVIEWNECESSARY , ['order' => $orderNumber, 'payment' => $paymentClass, 'UserID' => $customerId, 'SessionID' => $sessionID]);
             }
             /** @see https://tickets.fatchip.de/view.php?id=80218 */
             if ($paymentName === 'fatchip_computop_paypal_standard' && $this->config['paypalSetOrderStatus'] === "An") {
