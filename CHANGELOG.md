@@ -3,8 +3,7 @@
 ## 1.1.8
 2022-10-24
 * Added handling of AmazonPay partial refunds
-* Fixed Paypal order status not set due to variable re-use
-* 
+* Fixed Paypal order status not set due to variable re-use 
 
 ## 1.1.7
 2022-10-11
