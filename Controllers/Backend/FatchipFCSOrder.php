@@ -124,7 +124,7 @@ class Shopware_Controllers_Backend_FatchipFCSOrder extends Shopware_Controllers_
                 $orderDesc,
                 $order->getAttribute()->getfatchipfcsKlarnainvno(),
                 $order->getAttribute()->getfatchipfcskreditkarteschemereferenceid(),
-                $order->getInvoiceAmount() * 100,
+                $order->getInvoiceAmount() * 100
             );
             $refundResponse = $this->plugin->callComputopService($requestParams, $paymentClass, 'REFUND', $paymentClass->getCTRefundURL());
 
