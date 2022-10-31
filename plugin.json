@@ -1,7 +1,8 @@
 {
   "label": {
     "de": "First Cash Solution Payment Connector",
-    "en": "First Cash Solution Payment Connector"
+    "en": "First Cash Solution Payment Connector",
+    "fr": "First Cash Solution Payment Connector"
   },
   "copyright": "(c) by FATCHIP GmbH",
   "license": "GPLv3",
@@ -12,17 +13,24 @@
   "solution_name": "FatchipFCSPayment",
   "changelog": {
     "de": {
-      "1.0.0": "Erstveröffentlichung - Weitere Updates in der Datei CHANGELOG.md"
+      "1.1.8": "Erstveröffentlichung - Weitere Updates in der Datei CHANGELOG.md"
     },
     "en": {
-      "1.0.0": "First release - Further updates in the file CHANGELOG.md"
+      "1.1.8": "First release - Further updates in the file CHANGELOG.md"
+    },
+    "fr": {
+      "1.1.8": "Première publication - Plus d'information dans le fichier CHANGELOG.md"
     }
   },
-  "description":"<h3>Shopware First Cash Solution Payment Connector</h3><h4>About Shopware First Cash Solution Payment Connector</h4><p style=\"font-size:12px; font-weight: 500;\">For further details about the plugin and updates please visit <a href=\"https://github.com/FATCHIP-GmbH/plugin-shopware5-firstcash\">our Github repository</a>.</p><h4>License Details</h4><p style=\"font-size:12px; font-weight: 500;\">Please see the file \"LICENSE.md\" for more information.</p>",
-  "compatibility": {
-    "minimumVersion": "5.0.0",
-    "maximumVersion": null,
-    "blacklist": [
-    ]
+  "description": {
+    "en": "<h3>Shopware First Cash Solution Payment Connector</h3><h4>About Shopware First Cash Solution Payment Connector</h4><p style=\"font-size:12px; font-weight: 500;\">For further details about the plugin and updates please visit <a href=\"https://github.com/FATCHIP-GmbH/plugin-shopware5-firstcash\">our Github repository</a>.</p><h4>License Details</h4><p style=\"font-size:12px; font-weight: 500;\">Please see the file \"LICENSE.md\" for more information.</p>",
+    "de": "<h3>Shopware First Cash Solution Payment Connector</h3><h4>Über den Shopware First Cash Solution Payment Connector</h4><p style=\"font-size:12px; font-weight: 500;\">Weitere Details zum Plugin und zu Updates finden Sie unter <a href=\"https://github.com/FATCHIP-GmbH/plugin-shopware5-firstcash\">our Github repository</a>.</p><h4>Lizenz Details</h4><p style=\"font-size:12px; font-weight: 500;\">Weitere Informationen entnehmen Sie bitte der Datei \"LICENSE.md\" .</p>",
+    "fr": "<h3>Shopware First Cash Solution Payment Connector</h3><h4>A propos de Shopware First Cash Solution Payment Connector</h4><p style=\"font-size:12px; font-weight: 500;\">Pour plus de détails à propos de l'extension et des mises à jour, veuillez consulter <a href=\"https://github.com/FATCHIP-GmbH/plugin-shopware5-firstcash\">notre dépôt GitHub</a>.</p><h4>Information de license</h4><p style=\"font-size:12px; font-weight: 500;\">Veuillez consulter le fichier \"LICENSE.md\" pour plus d'information.</p>"
+  },
+    "compatibility": {
+      "minimumVersion": "5.0.0",
+      "maximumVersion": null,
+      "blacklist": [
+      ]
+    }
   }
-}
