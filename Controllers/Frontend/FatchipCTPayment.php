@@ -144,7 +144,9 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      */
     public function indexAction()
     {
-        $this->forward('gateway');
+        if ($this->checkBasket() !== true) {
+            $this->forward('gateway');
+        }
     }
 
     /**
@@ -1042,6 +1044,22 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             Shopware()->Models()->persist($orderAttribute);
             Shopware()->Models()->flush();
         }
+    }
+
+    /**
+     * forwards to checkout/confirm if articles in basket are no longer available
+     *
+     * @return bool
+     */
+    protected function checkBasket()
+    {
+        $basket = Shopware()->Modules()->Basket();
+        $checkQuantities = $basket->sCheckBasketQuantities();
+        if (!empty($checkQuantities['hideBasket'])) {
+            $this->forward('confirm', 'checkout');
+            return true;
+        }
+        return false;
     }
 }
 

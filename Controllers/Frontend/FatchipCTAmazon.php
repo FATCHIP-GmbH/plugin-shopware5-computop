@@ -58,6 +58,9 @@ class Shopware_Controllers_Frontend_FatchipCTAmazon extends Shopware_Controllers
      */
     public function gatewayAction()
     {
+        if ($this->checkBasket() === true) {
+            return;
+        }
         $response = $this->ctFinishAuthorization();
 
         $amznStatus = $response->getAmazonstatus();
