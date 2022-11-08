@@ -20,7 +20,7 @@
   },
   "description":"<h3>Shopware Computop Payment Connector</h3><h4>About Shopware Computop Payment Connector</h4><p style=\"font-size:12px; font-weight: 500;\">For further details about the plugin and updates please visit <a href=\"https://github.com/FATCHIP-GmbH/plugin-shopware5-computop\">our Github repository</a>.</p><h4>License Details</h4><p style=\"font-size:12px; font-weight: 500;\">Please see the file \"LICENSE.md\" for more information.</p>",
   "compatibility": {
-    "minimumVersion": "5.0.0",
+    "minimumVersion": "5.6.0",
     "maximumVersion": null,
     "blacklist": [
     ]
