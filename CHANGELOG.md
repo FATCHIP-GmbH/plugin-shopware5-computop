@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.1.9
+2022-11-09
+* Added check for all payments to make sure all products in basket are still available
+
 ## 1.1.8
 2022-10-24
 * Added handling of AmazonPay partial refunds
