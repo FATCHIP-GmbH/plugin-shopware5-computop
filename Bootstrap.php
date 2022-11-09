@@ -49,7 +49,6 @@ use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\AmazonPay;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Checkout;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\CreditCard;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\EasyCredit;
-use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Klarna;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\KlarnaPayments;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Logger;
 use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Debit;
@@ -108,7 +107,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         $this->subscribeEvent('Enlight_Controller_Front_DispatchLoopStartup', 'onStartDispatch');
 
-        return ['success' => true, 'invalidateCache' => ['backend', 'config', 'proxy']];
+        return ['success' => true];
     }
 
     /**
