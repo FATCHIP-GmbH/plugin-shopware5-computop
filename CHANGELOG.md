@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.1.10
+2022-12-05
+* Added fallback for empty house number on address splitting exception
+
 ## 1.1.9
 2022-11-09
 * Added check for all payments to make sure all products in basket are still available
