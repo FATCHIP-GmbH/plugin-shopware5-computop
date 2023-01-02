@@ -32,7 +32,7 @@ namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
 use Exception;
 use Fatchip\CTPayment\CTPaymentAttributes;
 use Shopware\Bundle\AttributeBundle\Service\CrudService;
-use Shopware\Plugins\FatchipCTGPayment\Subscribers\Frontend\Logger;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Logger;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
 /**
@@ -131,7 +131,7 @@ class Attributes extends Bootstrap
     /**
      * sets backend visibility for custom attributes.
      *
-     * Adds attributes to shopware models by calling addAttribute().
+     * Add attributes to shopware models by calling addAttribute().
      * Regenerates the shopware model
      * Also sets backend visibility attributes for SW >= 5.2
      *
