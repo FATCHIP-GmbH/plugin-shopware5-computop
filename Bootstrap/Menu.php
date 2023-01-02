@@ -37,7 +37,7 @@ class Menu extends Bootstrap
 {
     const LABELPARENTFIND = ['label' => 'Einstellungen'];
     const LABELCOMPUTOPMENU = 'Computop';
-    const LABELCOMPUTOPAPILOG = 'API Protokoll';
+    const LABELCOMPUTOPAPILOG = 'API-Log';
 
     /**
      * Create menu items to access configuration, logs and support page

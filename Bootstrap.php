@@ -137,7 +137,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $this->createCronJob('Cleanup Computop Payment Logs', 'cleanupCTPaymentLogs', 86400, true);
         $this->subscribeEvent('Shopware_CronJob_CleanupCTPaymentLogs', 'cleanupCTPaymentLogs');
 
-        return ['success' => true, 'invalidateCache' => ['backend', 'config', 'proxy']];
+        return ['success' => true];
     }
 
     /**
@@ -348,17 +348,25 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      */
     public function uninstall()
     {
-        return $this->disable();
+        $models = new Models();
+        $models->removeModels();
+        $riskRules = new RiskRules();
+        $riskRules->removeRiskRules();
+        $this->removeBackendSnippets();
+        return ['success' => true];
     }
 
     /**
      * Secure uninstall plugin method
      *
+     * does not remove Plugin data only subscribers,
+     * cronjobs, config elemtents
+     *
      * @return array
      */
     public function secureUninstall()
     {
-        return $this->disable();
+        return ['success' => true];
     }
 
     /**
@@ -380,11 +388,11 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $attributes->createAttributes();
         $payments->createPayments();
 
-        return $this->invalidateCaches(true);
+        return ['success' => true];
     }
 
     /**
-     * invalidates all caches
+     * invalidates caches
      * @param bool $return
      * @return array
      */
@@ -394,12 +402,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             'success' => $return,
             'invalidateCache' => [
                 'backend',
-                'config',
-                'frontend',
-                'http',
                 'proxy',
-                'router',
-                'template',
                 'theme',
             ],
         ];
@@ -462,6 +465,30 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $log->setResponseDetails(json_encode($response->toArray()));
         Shopware()->Models()->persist($log);
         Shopware()->Models()->flush($log);
+    }
+
+    public function removeBackendSnippets()
+    {
+        $builder = Shopware()->Models()->createQueryBuilder();
+        $builder->delete('Shopware\Models\Snippet\Snippet', 'snippets')
+            ->where('snippets.namespace = :namespace1')
+            ->setParameter('namespace1', 'backend/fcct__order/main')
+            ->orwhere('snippets.namespace = :namespace1')
+            ->setParameter('namespace1', 'backend/fcct_order/main')
+            ->orwhere('snippets.namespace = :namespace1')
+            ->setParameter('namespace1', 'frontend/checkout/computop_easycredit_confirm')
+            ->orwhere('snippets.namespace = :namespace1')
+            ->setParameter('namespace1', 'frontend/checkout/computop_easycredit_confirm')
+            ->orwhere('snippets.namespace = :namespace1')
+            ->setParameter('namespace1', 'backend/fatchip_ct_apilog/main');
+        $result = $builder->getQuery()->execute();
+
+        $builder->delete('Shopware\Models\Snippet\Snippet', 'snippets')
+            ->where('snippets.namespace = :namespace1')
+            ->setParameter('namespace1', 'backend/index/view/main');
+        $builder->andWhere('snippets.name = :name1')
+            ->setParameter('name1', 'FatchipCTApilog/index');
+        $result = $builder->getQuery()->execute();
     }
 
     public function removeOldPayments()
@@ -531,19 +558,18 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         }
     }
 
-
     /**
      * adds all payment controllers to seo blacklist
      * this will set noindex, nofollow in the meta header
      *
      * @return void
      */
-    public function addControllersToSeoBlacklist() {
+    public function addControllersToSeoBlacklist()
+    {
         $controllerBlacklist = $this->getControllerBlacklist();
-        if (array_diff(self::pluginControllers, $controllerBlacklist))
-        {
+        if (array_diff(self::pluginControllers, $controllerBlacklist)) {
             $newControllerBlacklist = array_merge(self::pluginControllers, $controllerBlacklist);
-            $this->updateBlackList($newControllerBlacklist);
+            $this->updateBlackList($newControllerBlacklist, true);
         }
     }
 
@@ -573,12 +599,28 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
     /**
      * updates the seo blacklist in database
-     * @param $blackList
+     * @param array $blackList
+     * @param bool $install set to false on uninstall
      * @return void
      */
-    private function updateBlackList($blackList)
+    private function updateBlackList($blackList, $install)
     {
-        $sql = 'UPDATE s_core_config_values SET value=\'' . serialize(implode(',', $blackList)) . '\' WHERE element_id = (SELECT id FROM s_core_config_elements WHERE name = "' . self::blacklistDBConfigVar . '");';
-        $result = Shopware()->Db()->query($sql);
+        $result = Shopware()->Db()->executeQuery(
+            "UPDATE s_core_config_values SET value= :value WHERE element_id = (SELECT id FROM s_core_config_elements WHERE name = :name)",
+            [
+                ':value' => serialize(implode(',', $blackList)),
+                ':name' => self::blacklistDBConfigVar
+            ]
+        );
+
+        if ($result->rowCount() === 0 && $install) {
+            $result = Shopware()->Db()->executeQuery(
+                "INSERT INTO s_core_config_values (`element_id`, `value`, `shop_id`) VALUES ((SELECT id FROM s_core_config_elements WHERE name = :name), :value, 1)",
+                [
+                    ':name' => self::blacklistDBConfigVar,
+                    ':value' => serialize(implode(',', $blackList))
+                ]
+            );
+        }
     }
 }

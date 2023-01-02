@@ -56,6 +56,19 @@ class RiskRules extends Bootstrap
             'BILLINGLANDISNOT', 'NL');
     }
 
+    /**
+     * removes risk rules.
+     *
+     * @throws \Exception
+     * @return void
+     */
+    public function removeRiskRules()
+    {
+        $this->removeComputopRiskRule('fatchip_computop_easycredit');
+
+        $this->removeComputopRiskRule('fatchip_computop_ideal');
+    }
+
 
     /**
      * Create risk rules.
@@ -87,12 +100,40 @@ class RiskRules extends Bootstrap
         $valueRule->setPayment($payment);
         $rules[] = $valueRule;
 
-        if ($payment->getRuleSets() === null ||
+        if ($payment->getRuleSets() == null ||
             $payment->getRuleSets()->count() < $this->getNumberOfRiskrules($paymentName)) {
             $payment->setRuleSets($rules);
             foreach ($rules as $rule) {
                 $manager->persist($rule);
             }
+            $manager->flush($payment);
+        }
+    }
+
+    /**
+     * removes risk rules.
+     *
+     * @see RuleSet
+     *
+     * @param string $paymentName payment method to unrescrict
+     *
+     * @throws \Exception
+     * @return void
+     */
+    private function removeComputopRiskRule($paymentName)
+    {
+        /** @var \Shopware\Components\Model\ModelManager $manager */
+        $manager = $this->plugin->get('models');
+        $payment = $this->getPaymentObjByName($paymentName);
+
+        if ($payment) {
+            $rules = $payment->getRuleSets();
+            foreach ($rules as $rule) {
+                $manager->remove($rule);
+                $manager->flush($rule);
+            }
+            $payment->setRuleSets(null);
+            $manager->persist($payment);
             $manager->flush($payment);
         }
     }
@@ -109,7 +150,7 @@ class RiskRules extends Bootstrap
      */
     private function getNumberOfRiskrules($paymentName)
     {
-        if ($paymentName == 'fatchip_computop_klarna_installment' || $paymentName == 'fatchip_computop_klarna_invoice') {
+        if ($paymentName === 'fatchip_computop_klarna_installment' || $paymentName === 'fatchip_computop_klarna_invoice') {
             return 5;
         }
         return 1;
