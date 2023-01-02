@@ -132,7 +132,9 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $this->registerJavascript();
 
         $this->subscribeEvent('Enlight_Controller_Front_DispatchLoopStartup', 'onStartDispatch');
-        $this->addControllersToSeoBlacklist();
+
+        $this->createCronJob('Cleanup Computop Payment Logs', 'cleanupCTPaymentLogs', 86400, true);
+        $this->subscribeEvent('Shopware_CronJob_CleanupCTPaymentLogs', 'cleanupCTPaymentLogs');
 
         return ['success' => true, 'invalidateCache' => ['backend', 'config', 'proxy']];
     }
@@ -322,6 +324,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      */
     public function enable()
     {
+        $this->addControllersToSeoBlacklist();
         return $this->invalidateCaches(true);
     }
 
@@ -469,6 +472,35 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         foreach ($oldPayments as $payment) {
             $this->removePayment($payment);
         }
+    }
+
+    /**
+     * used by Cleanup Comutop Payment Logs Cronjob
+     * deletes all entries in
+     * s_plugin_fatchip_computop_api_log
+     * older than 2 years
+     *
+     * @return void
+     */
+    public function cleanupCTPaymentLogs() {
+        $builder = $this->getLogQuery();
+        $result = $builder->getQuery()->getArrayResult();
+    }
+
+    /**
+     * returns sql base query
+     *
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function getLogQuery()
+    {
+        $twoYearsAgo = date('Y-m-d H:i:s', strtotime('-2 years'));
+
+        $builder = Shopware()->Models()->createQueryBuilder();
+        $builder->delete()
+            ->from('Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog', 'log')
+            ->where($builder->expr()->lte('log.creationDate', "'" . $twoYearsAgo . "'"));
+        return $builder;
     }
 
     /**
