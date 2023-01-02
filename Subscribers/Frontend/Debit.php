@@ -41,7 +41,7 @@ class Debit extends AbstractSubscriber
         return [
             'Shopware_Controllers_Frontend_Account::savePaymentAction::after' => 'account__savePaymentAction__after',
             'Shopware_Controllers_Frontend_Account::paymentAction::after' => 'account__paymentAction__after',
-            'Enlight_Controller_Action_PostDispatchSecure' => 'onPostDispatchSecure'
+            'Enlight_Controller_Action_PostDispatchSecure_Frontend' => 'onPostDispatchSecure'
         ];
     }
 
