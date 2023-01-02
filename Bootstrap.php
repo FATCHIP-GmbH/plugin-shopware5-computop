@@ -65,6 +65,31 @@ use Shopware\Plugins\FatchipCTPayment\Subscribers\TemplateRegistration;
  */
 class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
+    const pluginControllers = [
+        'FatchipCTAfterpay',
+        'FatchipCTAjax',
+        'FatchipCTAmazon',
+        'FatchipCTAmazonCheckout',
+        'FatchipCTAmazonRegister',
+        'FatchipCTCreditCard',
+        'FatchipCTEasyCredit',
+        'FatchipCTIdeal',
+        'FatchipCTKlarnaPayments',
+        'FatchipCTLastschrift',
+        'FatchipCTPaydirekt',
+        'FatchipCTPayment',
+        'FatchipCTPaypalExpress',
+        'FatchipCTPaypalExpressCheckout',
+        'FatchipCTPaypalExpressRegister',
+        'FatchipCTPaypalStandard',
+        'FatchipCTPostFinance',
+        'FatchipCTPrzelewy24',
+        'FatchipCTSofort'
+    ];
+
+    const blacklistConfigVar = 'sSEOVIEWPORTBLACKLIST';
+    const blacklistDBConfigVar = 'seoviewportblacklist';
+
     /**
      * registers the custom models and plugin namespaces
      */
@@ -107,6 +132,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $this->registerJavascript();
 
         $this->subscribeEvent('Enlight_Controller_Front_DispatchLoopStartup', 'onStartDispatch');
+        $this->addControllersToSeoBlacklist();
 
         return ['success' => true, 'invalidateCache' => ['backend', 'config', 'proxy']];
     }
@@ -305,6 +331,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      */
     public function disable()
     {
+        $this->removeControllersFromSeoBlacklist();
         return $this->invalidateCaches(true);
     }
 
@@ -467,5 +494,56 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             } catch (ORMException $e) {
             }
         }
+    }
+
+
+    /**
+     * adds all payment controllers to seo blacklist
+     * this will set noindex, nofollow in the meta header
+     *
+     * @return void
+     */
+    public function addControllersToSeoBlacklist() {
+        $controllerBlacklist = $this->getControllerBlacklist();
+        if (array_diff(self::pluginControllers, $controllerBlacklist))
+        {
+            $newControllerBlacklist = array_merge(self::pluginControllers, $controllerBlacklist);
+            $this->updateBlackList($newControllerBlacklist);
+        }
+    }
+
+    /**
+     * adds removes all payment controllers from the seo blacklist
+     *
+     * @return void
+     */
+    public function removeControllersFromSeoBlacklist() {
+        $controllerBlacklist = $this->getControllerBlacklist();
+        if (array_diff($controllerBlacklist, self::pluginControllers))
+        {
+            $newControllerBlacklist = array_diff($controllerBlacklist, self::pluginControllers);
+            $this->updateBlackList($newControllerBlacklist);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    private function getControllerBlacklist()
+    {
+        $config = $this->get(\Shopware_Components_Config::class);
+        $controllerBlacklist = preg_replace('#\s#', '', $config[self::blacklistConfigVar]);
+        return explode(',', $controllerBlacklist);
+    }
+
+    /**
+     * updates the seo blacklist in database
+     * @param $blackList
+     * @return void
+     */
+    private function updateBlackList($blackList)
+    {
+        $sql = 'UPDATE s_core_config_values SET value=\'' . serialize(implode(',', $blackList)) . '\' WHERE element_id = (SELECT id FROM s_core_config_elements WHERE name = "' . self::blacklistDBConfigVar . '");';
+        $result = Shopware()->Db()->query($sql);
     }
 }
