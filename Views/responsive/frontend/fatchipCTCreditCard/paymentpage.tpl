@@ -10,7 +10,7 @@
     >
     </div>
 {else}
-    <iframe src="{$fatchipCTIframeURL}" style="width:100%; height:750px;" frameBorder="0"></iframe>
+    <iframe src="{$fatchipCTIframeURL}" style="width:100%; height:750px;" frameBorder="0" allow="payment"></iframe>
 {/if}
 </body>
 </html>
