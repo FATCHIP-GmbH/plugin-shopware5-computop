@@ -37,9 +37,7 @@ use Shopware\Models\Payment\Payment;
 class RiskRules extends Bootstrap
 {
     /**
-     * Create risk rules.
-     *
-     * @see createComputopRiskRule
+     * Create risk rules
      *
      * @throws \Exception
      * @return void
@@ -65,7 +63,7 @@ class RiskRules extends Bootstrap
     public function removeRiskRules()
     {
         $this->removeComputopRiskRule('fatchip_computop_easycredit');
-
+        $this->removeComputopRiskRule('fatchip_computop_przelewy24');
         $this->removeComputopRiskRule('fatchip_computop_ideal');
     }
 

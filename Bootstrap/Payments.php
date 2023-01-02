@@ -32,7 +32,6 @@ use Fatchip\CTPayment\CTPaymentService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Shopware\Models\Country\Country;
 use Shopware\Models\Payment\Payment;
-use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap;
 
 /**
  * Class Payments.

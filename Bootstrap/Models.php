@@ -30,7 +30,6 @@ namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
 use Doctrine\ORM\Tools\SchemaTool;
 use Exception;
 use Shopware\Components\Model\ModelManager;
-use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap;
 use  Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Logger;
 
 /**
@@ -117,5 +116,4 @@ class Models extends Bootstrap
             ]);
         }
     }
-
 }
