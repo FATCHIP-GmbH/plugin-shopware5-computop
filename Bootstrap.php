@@ -268,7 +268,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         $info['label'] = $info['label']['de'];
         $info['version'] = $info['currentVersion'];
-        $info['description'] = '<p><img alt="Logo" src="data:image/png;base64,' . $logo . '" /></p>' .$info['description'];
+        $info['description'] = '<p><img alt="Logo" src="data:image/png;base64,' . $logo . '" /></p>'
+            . file_get_contents(__DIR__ . '/description.txt');
 
         return $info;
     }
@@ -432,11 +433,13 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         try {
             Shopware()->Models()->persist($log);
             Shopware()->Models()->flush($log);
-        } catch (OptimisticLockException $e) {
-            // TODO: log
-        } catch (ORMException $e) {
-            // TODO: log
+        } catch (Exception $e) {
+            $logger = new Logger();
+            $logger->logError('Unable to save API Log', [
+                'error' => $e->getMessage()
+            ]);
         }
+
         return $response;
     }
 
@@ -553,7 +556,11 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             try {
                 Shopware()->Models()->remove($payment);
                 Shopware()->Models()->flush();
-            } catch (ORMException $e) {
+            } catch (Exception $e) {
+                $logger = new Logger();
+                $logger->logError('Unable to remove payment ' . $paymentName, [
+                    'error' => $e->getMessage()
+                ]);
             }
         }
     }

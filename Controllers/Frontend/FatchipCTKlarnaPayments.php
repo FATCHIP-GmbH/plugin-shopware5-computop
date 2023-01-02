@@ -101,7 +101,7 @@ class Shopware_Controllers_Frontend_FatchipCTKlarnaPayments extends Shopware_Con
         try {
             $response = $this->plugin->callComputopService($ctRequest, $payment, 'KLARNA', $CTPaymentURL);
         } catch (Exception $e) {
-            // TODO: log
+            $this->utils->log('error calling API:' , ['request' => $ctRequest , 'payment' => $payment, 'response' => $response, 'error' => $e->getMessage()]);
         }
 
         switch ($response->getStatus()) {

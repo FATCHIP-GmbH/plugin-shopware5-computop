@@ -200,6 +200,9 @@ class Shopware_Controllers_Frontend_FatchipCTAmazonCheckout extends Shopware_Con
         }
         catch(\Exception $e) {
             //if for whatever reasons deleting birthday is not possible, we don't want to break the order process
+            $this->utils->log('Unable to remove fake Amazon Birthday from User ' . $userId, [
+                'error' => $e->getMessage()
+            ]);
         }
     }
 }

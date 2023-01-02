@@ -185,20 +185,10 @@ class Shopware_Controllers_Backend_FatchipCTApilog extends Shopware_Controllers_
         foreach ($filters as $filter) {
             if ($filter['property'] == 'search' && !empty($filter['value'])) {
                 $builder->where($builder->expr()->orx(
-                    $builder->expr()->like(
-                        'log.requestDetails',
-                        $builder->expr()->literal(
-                            '%' . $filter['value'] . '%'
-                        )
-                    ),
-                    $builder->expr()->like('log.responseDetails', $builder->expr()->literal(
-                        '%' . $filter['value'] . '%'
-                    ))
+                    $builder->expr()->like('log.requestDetails','?1'),
+                    $builder->expr()->like('log.responseDetails','?1')
                 ));
-            } elseif ($filter['property'] == 'searchtrans' && !empty($filter['value'])) {
-                $builder->where($builder->expr()->orx($builder->expr()->like('log.responseDetails', $builder->expr()->literal(
-                    '%PayID=' . $filter['value'] . '%'
-                ))));
+                $builder->setParameter('1', '%' . $filter['value'] . '%');
             }
         }
 

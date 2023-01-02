@@ -31,6 +31,7 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Exception;
 use Shopware\Components\Model\ModelManager;
 use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap;
+use  Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Logger;
 
 /**
  * Class Models.
@@ -49,6 +50,7 @@ class Models extends Bootstrap
      */
     public function createModels()
     {
+        $logger = new Logger();
         $em = $this->plugin->get('models');
         $schemaTool = new SchemaTool($em);
 
@@ -59,7 +61,9 @@ class Models extends Bootstrap
                 ]
             );
         } catch (Exception $e) {
-            // ignore
+            $logger->logError('Unable to create FatchipCTIdealIssuers', [
+                'error' => $e->getMessage()
+            ]);
         }
 
         try {
@@ -69,7 +73,9 @@ class Models extends Bootstrap
                 ]
             );
         } catch (Exception $e) {
-            // ignore
+            $logger->logError('Unable to create FatchipFCSApilog', [
+                'error' => $e->getMessage()
+            ]);
         }
     }
 
@@ -83,6 +89,7 @@ class Models extends Bootstrap
      */
     public function removeModels()
     {
+        $logger = new Logger();
         $em = $this->plugin->get('models');
         $schemaTool = new SchemaTool($em);
 
@@ -93,7 +100,9 @@ class Models extends Bootstrap
                 ]
             );
         } catch (Exception $e) {
-            // ignore
+            $logger->logError('Unable to remove FatchipCTIdealIssuers', [
+                'error' => $e->getMessage()
+            ]);
         }
 
         try {
@@ -103,7 +112,9 @@ class Models extends Bootstrap
                 ]
             );
         } catch (Exception $e) {
-            // ignore
+            $logger->logError('Unable to remove FatchipFCSApilog', [
+                'error' => $e->getMessage()
+            ]);
         }
     }
 

@@ -61,6 +61,7 @@ class Shopware_Controllers_Backend_FatchipCTIdeal extends Shopware_Controllers_B
         $this->plugin = Shopware()->Plugins()->Frontend()->FatchipCTPayment();
         $this->config = $this->plugin->Config()->toArray();
         $this->paymentService = Shopware()->Container()->get('FatchipCTPaymentApiClient');
+        $this->utils = Shopware()->Container()->get('FatchipCTPaymentUtils');
         parent::init();
     }
 
@@ -91,6 +92,9 @@ class Shopware_Controllers_Backend_FatchipCTIdeal extends Shopware_Controllers_B
                 }
                 Shopware()->Models()->flush($issuerModel);
             } catch (Exception $e) {
+                $this->utils->log('Unable to save iDeal issuer list to db table : ', [
+                    'error' => $e->getMessage()
+                ]);
             }
 
             if ($count > 0) {

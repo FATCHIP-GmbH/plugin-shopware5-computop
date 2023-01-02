@@ -32,6 +32,7 @@ use Doctrine\ORM\ORMException;
 use Fatchip\CTPayment\CTPaymentConfigForms;
 use Shopware\Models\Config\Element;
 use Shopware\Models\Config\Form;
+use Shopware\Plugins\FatchipCTPayment\Subscribers\Frontend\Logger;
 
 /**
  * Class Forms.
@@ -51,6 +52,8 @@ class Forms extends Bootstrap
      */
     public function createForm()
     {
+        $logger = new Logger();
+
         // general settings
         $this->createGeneralConfigForm(CTPaymentConfigForms::formGeneralTextElements, CTPaymentConfigForms::formGeneralSelectElements);
 
@@ -93,8 +96,10 @@ class Forms extends Bootstrap
         try {
             $this->removeFormElements();
             $this->updateFormElements();
-        } catch (OptimisticLockException $e) {
-        } catch (ORMException $e) {
+        } catch (\Exception $e) {
+            $logger->logError('Unable to remove / update form elements:', [
+                'error' => $e->getMessage()
+            ]);
         }
     }
 
@@ -139,13 +144,22 @@ class Forms extends Bootstrap
         }
 
         $creditCardTemplateElement = $this->plugin->Form()->getElement('creditCardTemplate');
-        $sql = 'SELECT value FROM s_core_config_values WHERE element_id = ' . $creditCardTemplateElement->getId();
-        $result = Shopware()->Db()->query($sql);
+        $result = Shopware()->Db()->executeQuery(
+            "SELECT value FROM s_core_config_values WHERE element_id = :element_id",
+            [
+                ':element_id' => $creditCardTemplateElement->getId()
+            ]
+        );
         $value = $result->fetch();
         $unserialized = unserialize($value['value']);
         if ($unserialized !== false && ($unserialized === '' || $unserialized === 'ct_responsive_ch' )) {
-            $sql = 'UPDATE s_core_config_values SET value = \'' . serialize('ct_responsive') . '\' WHERE element_id = ' . $creditCardTemplateElement->getId();
-            $result = Shopware()->Db()->query($sql);
+            $result = Shopware()->Db()->executeQuery(
+                "UPDATE s_core_config_values SET value = :value WHERE element_id = :element_id",
+                [
+                    ':value' => serialize('ct_responsive'),
+                    ':element_id' => $creditCardTemplateElement->getId()
+                ]
+            );
         }
     }
 

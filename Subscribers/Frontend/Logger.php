@@ -150,4 +150,14 @@ class Logger extends AbstractSubscriber
         // strpos returns false or int for position
         return is_int(strpos($controllerName, 'FatchipCT'));
     }
+
+    /**
+     * @param $message
+     * @param $logData
+     * @return void
+     */
+    public function logError($message, $logData) {
+
+        $this->logger->error($message . ' : ', $logData);
+    }
 }

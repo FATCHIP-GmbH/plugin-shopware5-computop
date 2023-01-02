@@ -32,6 +32,7 @@ namespace Shopware\Plugins\FatchipCTPayment\Bootstrap;
 use Exception;
 use Fatchip\CTPayment\CTPaymentAttributes;
 use Shopware\Bundle\AttributeBundle\Service\CrudService;
+use Shopware\Plugins\FatchipCTGPayment\Subscribers\Frontend\Logger;
 use Shopware\Plugins\FatchipCTPayment\Util;
 
 /**
@@ -52,7 +53,7 @@ class Attributes extends Bootstrap
     /**
      * Extends shopware models with custom attributes.
      *
-     * Adds attributes to shopware models by calling addAttributes() helper method.
+     * Add attributes to shopware models by calling addAttributes() helper method.
      *
      * @see addAttributes()
      *
@@ -74,7 +75,7 @@ class Attributes extends Bootstrap
     /**
      * extends shopware models with custom attributes .
      *
-     * Adds attributes to shopware models by calling addAttribute().
+     * Add attributes to shopware models by calling addAttribute().
      * Regenerates the shopware model
      * Also sets backend visibility attributes for SW >= 5.2
      *
@@ -99,6 +100,7 @@ class Attributes extends Bootstrap
      */
     private function addAttributes($prefix, $table, $attributes)
     {
+        $logger = new Logger();
         foreach ($attributes as $name => $attribute) {
             try {
                 if (Util::isShopwareVersionGreaterThanOrEqual('5.2')) {
@@ -109,7 +111,9 @@ class Attributes extends Bootstrap
                     $this->plugin->get('models')->addAttribute($table, $prefix, $name, $attribute['type']);
                 }
             } catch (Exception $e) {
-                // do nothing
+                $logger->logError('Unable to create Attribute Model:', [
+                    'error' => $e->getMessage()
+                ]);
             }
         }
 
@@ -150,6 +154,7 @@ class Attributes extends Bootstrap
      */
     private function setAttributeVisibilityInBackend($prefix, $table, $attributes)
     {
+        $logger = new Logger();
         foreach ($attributes as $name => $attribute) {
             try {
                 if (isset($attribute['additionalInfo'])) {
@@ -160,7 +165,9 @@ class Attributes extends Bootstrap
                     ]);
                 }
             } catch (Exception $e) {
-                // do nothing
+                $logger->logError('Unable to create Attribute Model:', [
+                    'error' => $e->getMessage()
+                ]);
             }
         }
     }
