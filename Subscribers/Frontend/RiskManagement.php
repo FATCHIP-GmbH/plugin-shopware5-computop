@@ -460,7 +460,7 @@ class RiskManagement extends AbstractSubscriber
         } // SW 5.2
         else if (array_key_exists('fatchipCT_crifresult', $aAddress['attributes'])) {
             return $aAddress['attributes']['fatchipCT_crifresult'];
-        } // SW 5.1fatchipct
+        } // SW 5.1
         else if (array_key_exists('fatchipctCrifresult', $aAddress)) {
             return $aAddress['fatchipctCrifresult'];
         }
@@ -545,7 +545,7 @@ class RiskManagement extends AbstractSubscriber
         if ($address = $util->getCustomerAddressById($addressID, 'billing')) {
             //only update the address, if something changed. This check is important, because if nothing changed
             //callin persist and flush does not result in calling afterAddressUpdate and the session variable
-            //fatchipComputopCrifAutoAddressUpdate woould not get cleared.
+            //fatchipComputopCrifAutoAddressUpdate would not get cleared.
             //also check if crifResponse contains addressdata at all, because an internal server error sometimes returns empty
             //address data, which would result in clearing the billing address.
             if ($this->crifResponseContainsAdressdata($crifResponse) &&

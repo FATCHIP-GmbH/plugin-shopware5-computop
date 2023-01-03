@@ -327,22 +327,6 @@ class Checkout extends AbstractSubscriber
     }
 
     /**
-     * Saves cardholder in session
-     *
-     * @param $params
-     */
-    /* private function setCardholderInSession($params)
-    {
-        $session = Shopware()->Session();
-        if (!empty($params['CreditCardHolder'])){
-            $session->offsetSet('FatchipComputopCreditCardHolder',
-                $params['CreditCardHolder']
-            );
-        }
-    }
-*/
-
-    /**
      * Saves Afterpay ProductNr in Session
      *
      * @param array $params

@@ -91,7 +91,7 @@ class CreditCard extends AbstractSubscriber
 
         if ($request->getActionName() == 'confirm' and $pluginConfig['creditCardMode'] == 'SILENT' and !isset($session->FatchipCTBrowserInfoParams['javaScriptEnabled'])) {
             // inject javascript template responsible for Browser Detection
-            // this will sent all vars via POST Request to this controller
+            // this will send all vars via POST Request to this controller
             $router = Shopware()->Front()->Router();
             // $view->assign('url', $router->assemble(['controller' => 'checkout', 'action' => 'confirm', 'forceSecure' => true]));
             $view->assign('url', $router->assemble(['controller' => 'FatchipCTCreditCard', 'action' => 'browserinfo', 'forceSecure' => true]));

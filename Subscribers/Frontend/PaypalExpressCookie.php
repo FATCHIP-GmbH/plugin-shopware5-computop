@@ -87,7 +87,7 @@ class PaypalExpressCookie extends AbstractSubscriber
 
             $collection = new CookieCollection();
             $collection->add(new CookieStruct(
-                'fatchipCTAmazon',
+                'fatchipCTPaypalExpress',
                 '/^(ts_c | X-PP-ADS | rmuc | ddi | cookie_prefs | cookie_check | d_id | ts | enforce_policy | _ga | navlns | login_email | ui_experience | LANG | fn_dt | x-cdn | TLTSID | l7_az | id_token | KHcl0EuY7AKSMgfvHl7J5E7hPtK | tsrce | x-pp | Tv7XaFXkAfcLyjkmtYddHHs5nwS | -1ILhdyICORs4hS4xTUr41S8iP0 | Tv7XaFXkAfcLyjkmtYddHHs5nwS | feel_cookie | consumer_display | _gcl_au | x-csrf-jwt)/',
                 'Computop Paypal Express Cookies',
                 CookieGroupStruct::TECHNICAL
