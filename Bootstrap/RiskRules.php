@@ -148,9 +148,6 @@ class RiskRules extends Bootstrap
      */
     private function getNumberOfRiskrules($paymentName)
     {
-        if ($paymentName === 'fatchip_computop_klarna_installment' || $paymentName === 'fatchip_computop_klarna_invoice') {
-            return 5;
-        }
         return 1;
     }
 
