@@ -191,13 +191,13 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             $this->Path() . 'Models/'
         );
     }
+
     /**
      * Registers namespaces used by the plugin
      * and its components
      */
     private function registerComponents()
     {
-
         Shopware()->Loader()->registerNamespace(
             'Shopware\Plugins\FatchipCTPayment',
             $this->Path()
@@ -243,7 +243,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             [CreditCard::class, null],
             [AfterPay::class, null],
             [AmazonPayCookie::class, null],
-            [PaypalExpressCookie::class, null],
+            [PaypalExpressCookie::class, null]
         ];
 
         foreach ($subscribers as $subscriberClass) {
@@ -344,6 +344,9 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
     /**
      * Uninstalls the plugin
+     * and removes Plugin data
+     * sw base removes ini snippets, configuration,
+     * menu entries and template entries
      *
      * @return array
      */
@@ -362,7 +365,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      *
      * does not remove Plugin data only subscribers,
      * cronjobs, config elemtents
-     *
      * @return array
      */
     public function secureUninstall()
@@ -403,6 +405,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             'success' => $return,
             'invalidateCache' => [
                 'backend',
+                'config',
                 'proxy',
                 'theme',
             ],
@@ -419,12 +422,13 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      *
      * @return CTResponse
      */
-    public function callComputopService($requestParams, $payment, $requestType, $url){
+    public function callComputopService($requestParams, $payment, $requestType, $url)
+    {
         $log = new FatchipCTApilog();
         $log->setPaymentName($payment::paymentClass);
         $log->setRequest($requestType);
         $log->setRequestDetails(json_encode($requestParams));
-        $response =  $payment->callComputop($requestParams, $url);
+        $response = $payment->callComputop($requestParams, $url);
         $log->setTransId($response->getTransID());
         $log->setPayId($response->getPayID());
         $log->setXId($response->getXID());
@@ -439,7 +443,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 'error' => $e->getMessage()
             ]);
         }
-
         return $response;
     }
 
@@ -454,7 +457,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      * @return void
      * @throws Exception
      */
-    public function logRedirectParams($requestParams, $paymentName, $requestType, $response){
+    public function logRedirectParams($requestParams, $paymentName, $requestType, $response)
+    {
         // fix wrong amount is logged PHP Version >= 7.1 see https://stackoverflow.com/questions/42981409/php7-1-json-encode-float-issue/43056278
         $requestParams['amount'] = (string) $requestParams['amount'];
         $log = new FatchipCTApilog();
@@ -468,6 +472,47 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $log->setResponseDetails(json_encode($response->toArray()));
         Shopware()->Models()->persist($log);
         Shopware()->Models()->flush($log);
+    }
+
+    public function removeOldPayments()
+    {
+        $oldPayments = [
+            'fatchip_computop_klarna_installment',
+            'fatchip_computop_klarna_invoice',
+            'fatchip_computop_afterpay_installment',
+        ];
+
+        foreach ($oldPayments as $payment) {
+            $this->removePayment($payment);
+        }
+    }
+
+    /**
+     * Remove payment instance
+     *
+     * @param string $paymentName
+     *
+     */
+    public function removePayment($paymentName)
+    {
+        $payment = $this->Payments()->findOneBy(
+            array(
+                'name' => $paymentName
+            )
+        );
+        if ($payment === null) {
+            // do nothing
+        } else {
+            try {
+                Shopware()->Models()->remove($payment);
+                Shopware()->Models()->flush();
+            } catch (Exception $e) {
+                $logger = new Logger();
+                $logger->logError('Unable to remove payment ' . $paymentName, [
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
     }
 
     public function removeBackendSnippets()
@@ -494,28 +539,16 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $result = $builder->getQuery()->execute();
     }
 
-    public function removeOldPayments()
-    {
-        $oldPayments = [
-            'fatchip_computop_klarna_installment',
-            'fatchip_computop_klarna_invoice',
-            'fatchip_computop_afterpay_installment',
-        ];
-
-        foreach ($oldPayments as $payment) {
-            $this->removePayment($payment);
-        }
-    }
-
     /**
-     * used by Cleanup Comutop Payment Logs Cronjob
+     * used by Cleanup Computop Payment Logs Cronjob
      * deletes all entries in
      * s_plugin_fatchip_computop_api_log
      * older than 2 years
      *
      * @return void
      */
-    public function cleanupCTPaymentLogs() {
+    public function cleanupCTPaymentLogs()
+    {
         $builder = $this->getLogQuery();
         $result = $builder->getQuery()->getArrayResult();
     }
@@ -534,35 +567,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             ->from('Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog', 'log')
             ->where($builder->expr()->lte('log.creationDate', "'" . $twoYearsAgo . "'"));
         return $builder;
-    }
-
-    /**
-     * Remove payment instance
-     *
-     * @param string $paymentName
-     *
-     */
-    public function removePayment($paymentName)
-    {
-        $payment = $this->Payments()->findOneBy(
-            array(
-                'name' => $paymentName
-            )
-        );
-        if ($payment === null) {
-            // do nothing
-
-        } else {
-            try {
-                Shopware()->Models()->remove($payment);
-                Shopware()->Models()->flush();
-            } catch (Exception $e) {
-                $logger = new Logger();
-                $logger->logError('Unable to remove payment ' . $paymentName, [
-                    'error' => $e->getMessage()
-                ]);
-            }
-        }
     }
 
     /**
@@ -585,12 +589,13 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      *
      * @return void
      */
-    public function removeControllersFromSeoBlacklist() {
+    public function removeControllersFromSeoBlacklist()
+    {
         $controllerBlacklist = $this->getControllerBlacklist();
         if (array_diff($controllerBlacklist, self::pluginControllers))
         {
             $newControllerBlacklist = array_diff($controllerBlacklist, self::pluginControllers);
-            $this->updateBlackList($newControllerBlacklist);
+            $this->updateBlackList($newControllerBlacklist, false);
         }
     }
 
@@ -599,6 +604,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      */
     private function getControllerBlacklist()
     {
+        $mgr = $this->get(Shopware\Components\CacheManager::class);
+        $mgr->clearByTag(Shopware\Components\CacheManager::CACHE_TAG_CONFIG);
         $config = $this->get(\Shopware_Components_Config::class);
         $controllerBlacklist = preg_replace('#\s#', '', $config[self::blacklistConfigVar]);
         return explode(',', $controllerBlacklist);

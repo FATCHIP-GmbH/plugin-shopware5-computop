@@ -1,7 +1,8 @@
 {
   "label": {
     "de": "Computop Payment Connector",
-    "en": "Computop payment connector"
+    "en": "Computop Payment Connector",
+    "fr": "Computop Payment Connector"
   },
   "copyright": "(c) by FATCHIP GmbH",
   "license": "GPLv3",
@@ -16,6 +17,9 @@
     },
     "en": {
       "1.0.0": "First release - Further updates in the file CHANGELOG.md"
+    },
+    "fr": {
+      "1.0.0": "Première publication - Plus d'information dans le fichier CHANGELOG.md"
     }
   },
   "compatibility": {

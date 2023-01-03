@@ -29,10 +29,10 @@ namespace Shopware\Plugins\FatchipCTPayment;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Enlight_Controller_Action;
+use Monolog\Handler\RotatingFileHandler;
 use Exception;
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTOrder\CTOrder;
-use Monolog\Handler\RotatingFileHandler;
 use Shopware\Components\Logger;
 use Shopware\Models\Customer\Customer;
 use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap as FatchipCTPayment;
@@ -877,7 +877,6 @@ class Util
                 'paymentID' => $userData['additional']['user']['paymentID'],
                 'defaultPayment' => $defaultPayment
             ]);
-        } catch (ORMException $e) {
         }
     }
 
