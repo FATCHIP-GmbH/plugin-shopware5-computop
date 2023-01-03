@@ -690,7 +690,7 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
     }
 
     /**
-     * For klarna capture or debit actions, a certain formatting of the orderdescription is needed.
+     * For amazonpay capture or debit actions, a certain formatting of the orderdescription is needed.
      * @param $order
      * @param $positionIds
      * @return array

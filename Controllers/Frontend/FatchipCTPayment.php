@@ -719,6 +719,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             ) {
                 $this->setOrderPaymentStatus($order, self::PAYMENTSTATUSPAID);
                 $this->markOrderDetailsAsFullyCaptured($order);
+
                 if ($this->config['debuglog'] === 'extended') {
                     $sessionID = $this->session->get('sessionId');
                     $customerId = $this->session->offsetGet('sUserId');
@@ -886,9 +887,9 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
      * If the order is Fully or Partly captured, the Order PaymentStatus is updated accordingly
      * If nothing has been captured, an error is thrown, so Computop will try again
      *
-     * @param Order $order        shopware order
-     * @param string              $paymentClass paymentclass name
-     * @param array              $orderVars
+     * @param Order   $order        shopware order
+     * @param string  $paymentClass paymentclass name
+     * @param array   $orderVars    refund data
      *
      * @return void
      * @throws Exception
@@ -1061,5 +1062,6 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         }
         return false;
     }
+
 }
 

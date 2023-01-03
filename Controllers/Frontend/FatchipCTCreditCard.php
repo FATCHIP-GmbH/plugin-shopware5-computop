@@ -167,7 +167,6 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
         if ($sessionId) {
             try {
                 $this->restoreSession($sessionId);
-                $this->session = Shopware()->Session();
             } catch (Zend_Session_Exception $e) {
                 $logPath = Shopware()->DocPath();
 
@@ -182,7 +181,6 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
                 $ret = $logger->error($e->getMessage());
             }
         }
-
         // used for paynow silent mode
         $response = !empty($requestParams['response']) ? $requestParams['response'] : $this->paymentService->getDecryptedResponse($requestParams);
 
@@ -345,7 +343,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
             /** old 3D Secure 1.0 params */
             unset($requestParams['CCNr']);
             unset($requestParams['CCBrand']);
-            unset($requestParams['CCExpiry']);            
+            unset($requestParams['CCExpiry']);
             unset($requestParams['AccVerify']);
 
             // $requestParams['credentialOnFile'] = $payment->getCredentialsOnFile();
@@ -355,7 +353,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
             $cardParams['expiryDate'] = $this->getParamCCCardExpiry($params['orderId']);
             $cardParams['cardholderName'] = $this->getParamCCCardholdername($params['orderId']);
             $requestParams['card'] = base64_encode(json_encode($cardParams));
-           
+
             $response = $this->plugin->callComputopService($requestParams, $payment, 'CreditCardRecurring', $payment->getCTRecurringURL());
 
             $status = $response->getStatus();
