@@ -1,5 +1,15 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.1.11
+2023-01-11
+* Added cleanup cronjob for old log entries
+* Added button in backend to test API credentials
+* Blowfish implementation replaced by Openssl
+* Improved Cache handling and cleanup on install/reinstall/uninstall
+* Improved Cookie registration for Amazonpay and Paypal Express
+* Fixed Google Pay js error
+* Smaller bugfixes and improvements
+
 ## 1.1.10
 2022-12-05
 * Added fallback for empty house number on address splitting exception
