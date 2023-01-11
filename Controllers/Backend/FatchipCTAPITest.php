@@ -34,13 +34,13 @@ use Fatchip\CTPayment\CTAPITestService;
 class Shopware_Controllers_Backend_FatchipCTAPITest extends Shopware_Controllers_Backend_ExtJs
 {
     /**
-     * FatchipFCSpayment Plugin Bootstrap Class
+     * FatchipCTpayment Plugin Bootstrap Class
      * @var \Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap
      */
     private $plugin;
 
     /**
-     * FatchipFCSPayment Configuration
+     * FatchipCTPayment Configuration
      * @var array
      */
     private $config;

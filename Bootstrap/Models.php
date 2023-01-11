@@ -72,7 +72,7 @@ class Models extends Bootstrap
                 ]
             );
         } catch (Exception $e) {
-            $logger->logError('Unable to create FatchipFCSApilog', [
+            $logger->logError('Unable to create FatchipCTApilog', [
                 'error' => $e->getMessage()
             ]);
         }
@@ -111,7 +111,7 @@ class Models extends Bootstrap
                 ]
             );
         } catch (Exception $e) {
-            $logger->logError('Unable to remove FatchipFCSApilog', [
+            $logger->logError('Unable to remove FatchipCTApilog', [
                 'error' => $e->getMessage()
             ]);
         }
