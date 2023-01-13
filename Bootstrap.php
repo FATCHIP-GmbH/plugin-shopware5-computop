@@ -390,6 +390,9 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $this->addFormTranslations(\Fatchip\CTPayment\CTPaymentConfigForms::formTranslations);
         $attributes->createAttributes();
         $payments->createPayments();
+        $this->addControllersToSeoBlacklist();
+        $this->createCronJob('Cleanup Computop Payment Logs', 'cleanupCTPaymentLogs', 86400, true);
+        $this->subscribeEvent('Shopware_CronJob_CleanupCTPaymentLogs', 'cleanupCTPaymentLogs');
 
         return ['success' => true];
     }
