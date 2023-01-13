@@ -391,8 +391,10 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $attributes->createAttributes();
         $payments->createPayments();
         $this->addControllersToSeoBlacklist();
-        $this->createCronJob('Cleanup Computop Payment Logs', 'cleanupCTPaymentLogs', 86400, true);
-        $this->subscribeEvent('Shopware_CronJob_CleanupCTPaymentLogs', 'cleanupCTPaymentLogs');
+        if (! $this->cronjobExists()) {
+            $this->createCronJob('Cleanup Computop Payment Logs', 'cleanupCTPaymentLogs', 86400, true);
+            $this->subscribeEvent('Shopware_CronJob_CleanupCTPaymentLogs', 'cleanupCTPaymentLogs');
+        }
 
         return ['success' => true];
     }
@@ -639,5 +641,18 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
                 ]
             );
         }
+    }
+
+    /**
+     * @return bool
+     */
+    private function cronjobExists()
+    {
+        $result = Shopware()->Db()->executeQuery("SELECT * from s_crontab where name = 'Cleanup Computop Payment Logs'");
+
+        if ($result->rowCount() === 0) {
+            return false;
+        }
+        return true;
     }
 }
