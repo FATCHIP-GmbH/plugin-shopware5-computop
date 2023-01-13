@@ -135,7 +135,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         $this->subscribeEvent('Enlight_Controller_Front_DispatchLoopStartup', 'onStartDispatch');
 
-        $this->createCronJob('Cleanup Computop Payment Logs', 'cleanupCTPaymentLogs', 86400, true);
+        $this->createCronJob(self::cronjobName, 'cleanupCTPaymentLogs', 86400, true);
         $this->subscribeEvent('Shopware_CronJob_CleanupCTPaymentLogs', 'cleanupCTPaymentLogs');
 
         return ['success' => true];
