@@ -90,6 +90,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
     const blacklistConfigVar = 'sSEOVIEWPORTBLACKLIST';
     const blacklistDBConfigVar = 'seoviewportblacklist';
+    const cronjobName = 'Cleanup Computop Payment Logs';
 
     /**
      * registers the custom models and plugin namespaces
@@ -392,7 +393,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $payments->createPayments();
         $this->addControllersToSeoBlacklist();
         if (! $this->cronjobExists()) {
-            $this->createCronJob('Cleanup Computop Payment Logs', 'cleanupCTPaymentLogs', 86400, true);
+            $this->createCronJob(self::cronjobName, 'cleanupCTPaymentLogs', 86400, true);
             $this->subscribeEvent('Shopware_CronJob_CleanupCTPaymentLogs', 'cleanupCTPaymentLogs');
         }
 
@@ -648,7 +649,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      */
     private function cronjobExists()
     {
-        $result = Shopware()->Db()->executeQuery("SELECT * from s_crontab where name = 'Cleanup Computop Payment Logs'");
+        $query = "SELECT * from s_crontab where name ='" . self::cronjobName . "'";
+        $result = Shopware()->Db()->executeQuery($query);
 
         if ($result->rowCount() === 0) {
             return false;
