@@ -105,8 +105,6 @@ class CreditCard extends AbstractSubscriber
             $payment->setCapture('MANUAL');
 
             $shopContext = Shopware()->Container()->get('shopware_storefront.context_service')->getShopContext();
-            $shopName = $shopContext->getShop()->getName();
-            $payment->setOrderDesc($shopName);
 
             // check if user already used cc payment successfully and send
             // initialPayment true or false accordingly
