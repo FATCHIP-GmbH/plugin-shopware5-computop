@@ -104,6 +104,13 @@ class CreditCard extends AbstractSubscriber
             $payment = $this->getPaymentClassForGatewayAction();
             $payment->setCapture('MANUAL');
 
+            $shopContext = Shopware()->Container()->get('shopware_storefront.context_service')->getShopContext();
+            $shopName = $shopContext->getShop()->getName();
+
+            if (!$pluginConfig['creditCardTestMode']) {
+                $payment->setOrderDesc($shopName);
+            }
+
             // check if user already used cc payment successfully and send
             // initialPayment true or false accordingly
             $initialPayment = ($this->utils->getUserCreditcardInitialPaymentSuccess($userData) === "1") ? false : true;
@@ -207,7 +214,7 @@ class CreditCard extends AbstractSubscriber
 
         if (in_array($colorDepth, $acceptedValues, true)) {
             $apiColorDepth = $colorDepth;
-        } elseif ($colorDepth <=1 ) {
+        } elseif ($colorDepth <= 1) {
             $apiColorDepth = 1;
         } elseif ($colorDepth <= 4) {
             $apiColorDepth = 4;
@@ -215,9 +222,9 @@ class CreditCard extends AbstractSubscriber
             $apiColorDepth = 8;
         } elseif ($colorDepth <= 15) {
             $apiColorDepth = 15;
-        } elseif ($colorDepth <= 24){
+        } elseif ($colorDepth <= 24) {
             $apiColorDepth = 24;
-        } elseif ($colorDepth <= 32){
+        } elseif ($colorDepth <= 32) {
             $apiColorDepth = 32;
         } else {
             $apiColorDepth = 48;
