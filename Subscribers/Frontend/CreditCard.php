@@ -104,8 +104,6 @@ class CreditCard extends AbstractSubscriber
             $payment = $this->getPaymentClassForGatewayAction();
             $payment->setCapture('MANUAL');
 
-            $shopContext = Shopware()->Container()->get('shopware_storefront.context_service')->getShopContext();
-
             // check if user already used cc payment successfully and send
             // initialPayment true or false accordingly
             $initialPayment = ($this->utils->getUserCreditcardInitialPaymentSuccess($userData) === "1") ? false : true;
