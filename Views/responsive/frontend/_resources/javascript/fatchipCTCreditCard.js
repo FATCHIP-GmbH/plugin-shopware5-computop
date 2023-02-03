@@ -151,7 +151,7 @@ $.plugin("fatchipCTCCBrandDetect", {
                                 $("#fatchipctinactive--message").remove();
                                 // Show message for unsupported cards
                                 if (($.inArray(me.opts.brands[i], me.opts.unsupportedBrands) > -1)) {
-                                    me.$el.addClass(me.opts.errorMessageClass);
+                                    me.$el.addClass("has--error");
                                     $("<div>", {
                                         "html": "<p>" + me.opts.unsupportedMessage + "</p>",
                                         "id": "fatchipctunsupported--message",
@@ -161,7 +161,7 @@ $.plugin("fatchipCTCCBrandDetect", {
                                 }
                                 // Show message for supported but inactive cards
                                 if (($.inArray(me.opts.brands[i], me.opts.activeBrands)) < 0) {
-                                    me.$el.addClass(me.opts.errorMessageClass);
+                                    me.$el.addClass("has--error");
                                     $("<div>", {
                                         "html": "<p>" + me.opts.inactiveMessage + "</p>",
                                         "id": "fatchipctinactive--message",
