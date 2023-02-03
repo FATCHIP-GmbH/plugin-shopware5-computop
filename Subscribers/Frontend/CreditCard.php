@@ -128,6 +128,7 @@ class CreditCard extends AbstractSubscriber
             $view->assign('creditCardSilentModeBrandsVisa', (int)$pluginConfig['creditCardSilentModeBrandsVisa']);
             $view->assign('creditCardSilentModeBrandsMaster', (int)$pluginConfig['creditCardSilentModeBrandsMaster']);
             $view->assign('creditCardSilentModeBrandsAmex', (int)$pluginConfig['creditCardSilentModeBrandsAmex']);
+            $view->assign('creditCardSilentModeBrandDetection', (int)$pluginConfig['creditCardSilentModeBrandDetection']);
 
             $view->assign('fatchipCTCreditCardSilentParams', $silentParams);
             $view->extendsTemplate('frontend/checkout/computop_creditcard_confirm.tpl');
