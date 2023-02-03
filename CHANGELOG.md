@@ -1,5 +1,11 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.1.12
+2023-02-06
+* Added automatic credit card detection in silent mode
+* Fixed test mode for credit card silent mode
+* Removed Klarna Pay now
+
 ## 1.1.11
 2023-01-11
 * Added cleanup cronjob for old log entries
