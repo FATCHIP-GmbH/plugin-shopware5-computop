@@ -91,7 +91,7 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
             $paymentName = $this->paymentClass;
             $this->utils->log('Redirecting to ' . $payment->getHTTPGetURL($params, $this->config['creditCardTemplate']), ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'parmas' => $params]);
         }
-        if ($this->config['creditCardMode'] === 'IFRAME') {
+        if ($this->config['creditCardMode'] === 'IFRAME' || $this->config['creditCardMode'] === 'IFrame') {
             $this->forward('iframe', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params, $this->config['creditCardTemplate'])));
         } else if ($this->config['creditCardMode'] === 'PAYMENTPAGE') {
             $this->forward('paymentpage', 'FatchipCTCreditCard', null, array('fatchipCTRedirectURL' => $payment->getHTTPGetURL($params, $this->config['creditCardTemplate'])));
