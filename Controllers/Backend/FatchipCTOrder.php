@@ -60,8 +60,9 @@ class Shopware_Controllers_Backend_FatchipCTOrder extends Shopware_Controllers_B
     private $paymentService;
 
     /**
-     * Utlis
-     * @var \Shopware\Plugins\FatchipCTPayment\Util $utils * */
+     * Utils
+     * @var \Shopware\Plugins\FatchipCTPayment\Util $utils
+     */
     protected $utils;
 
 
