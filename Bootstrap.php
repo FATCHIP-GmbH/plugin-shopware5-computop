@@ -35,6 +35,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Fatchip\CTPayment\CTResponse;
+use Fatchip\CTPayment\Encryption;
 use Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Forms;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Attributes;
@@ -92,6 +93,10 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     const blacklistDBConfigVar = 'seoviewportblacklist';
     const cronjobName = 'Cleanup Computop Payment Logs';
 
+    // used only for testing OpenSSL cipher platform Support
+    private String $encryption = 'blowfish';
+    private String $blowfishPassword = 'blowfishPassword';
+
     /**
      * registers the custom models and plugin namespaces
      */
@@ -137,6 +142,17 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
 
         $this->createCronJob(self::cronjobName, 'cleanupCTPaymentLogs', 86400, true);
         $this->subscribeEvent('Shopware_CronJob_CleanupCTPaymentLogs', 'cleanupCTPaymentLogs');
+
+        try {
+            $this->checkOpenSSLSupport();
+        } catch (Exception $e) {
+            Shopware()->Container()->get('shopware.snippet_database_handler')
+                ->loadToDatabase($this->Path() . '/Snippets/');
+            $message = Shopware()->Snippets()
+                ->getNamespace('frontend/FatchipCTPayment/translations')
+                ->get('errorBlowfishNotSupported');
+            return ['success' => true, 'message' => $message];
+        }
 
         return ['success' => true];
     }
@@ -395,6 +411,16 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         if (! $this->cronjobExists()) {
             $this->createCronJob(self::cronjobName, 'cleanupCTPaymentLogs', 86400, true);
             $this->subscribeEvent('Shopware_CronJob_CleanupCTPaymentLogs', 'cleanupCTPaymentLogs');
+        }
+        try {
+            $this->checkOpenSSLSupport();
+        } catch (Exception $e) {
+            Shopware()->Container()->get('shopware.snippet_database_handler')
+                ->loadToDatabase($this->Path() . '/Snippets/');
+            $message = Shopware()->Snippets()
+                ->getNamespace('frontend/FatchipCTPayment/translations')
+                ->get('errorBlowfishNotSupported');
+            return ['success' => true, 'message' => $message];
         }
 
         return ['success' => true];
@@ -657,5 +683,45 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             return false;
         }
         return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function checkOpenSSLSupport()
+    {
+        $ciphers = openssl_get_cipher_methods(false);
+        $isBlowfishSupported = in_array(Encryption::blowfishCipher, $ciphers);
+        $isAES128Supported = in_array(Encryption::aes128Cipher, $ciphers);
+        $isAES192Supported = in_array(Encryption::aes192Cipher, $ciphers);
+        $isAES256Supported = in_array(Encryption::aes256Cipher, $ciphers);
+
+        $pwLength = strlen($this->blowfishPassword);
+        if ($pwLength <= 16) {
+            $keyLength = 16;
+        } else if ($pwLength <= 24) {
+            $keyLength = 24;
+        } else {
+            $keyLength = 32;
+        }
+
+        if ($this->encryption === 'blowfish' && !$isBlowfishSupported) {
+            throw new Exception('Openssl ' . Encryption::blowfishCipher . ' Encryption is not supported on your platform');
+            return false;
+        }
+        if ($keyLength === 16 && $this->encryption === 'aes' && !$isAES128Supported) {
+            throw new Exception('Openssl ' . Encryption::aes128Cipher . ' Encryption is not supported on your platform');
+            return false;
+        }
+
+        if ($keyLength === 24 && $this->encryption === 'aes' && !$isAES192Supported) {
+            throw new Exception('Openssl ' . Encryption::aes192Cipher . ' Encryption is not supported on your platform');
+            return false;
+        }
+
+        if ($keyLength === 32 && $this->encryption === 'aes' && !$isAES256Supported) {
+            throw new Exception('Openssl ' .Encryption::aes256Cipher . ' Encryption is not supported n your platform');
+            return false;
+        }
     }
 }
