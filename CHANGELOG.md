@@ -1,5 +1,10 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.1.13
+2023-03-30
+* Added option for encryption method used
+* Fixed iDEAL bank retrieval
+
 ## 1.1.12
 2023-02-06
 * Added automatic credit card detection in silent mode
