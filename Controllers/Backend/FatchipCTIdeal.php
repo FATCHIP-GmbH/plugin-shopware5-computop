@@ -54,6 +54,12 @@ class Shopware_Controllers_Backend_FatchipCTIdeal extends Shopware_Controllers_B
     private $paymentService;
 
     /**
+     * Utils
+     * @var \Shopware\Plugins\FatchipCTPayment\Util $utils
+     */
+    protected $utils;
+
+    /**
      * {@inheritdoc}
      */
     public function init()

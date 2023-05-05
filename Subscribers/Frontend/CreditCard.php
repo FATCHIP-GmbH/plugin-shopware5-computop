@@ -106,7 +106,10 @@ class CreditCard extends AbstractSubscriber
 
             $shopContext = Shopware()->Container()->get('shopware_storefront.context_service')->getShopContext();
             $shopName = $shopContext->getShop()->getName();
-            $payment->setOrderDesc($shopName);
+
+            if (!$pluginConfig['creditCardTestMode']) {
+                $payment->setOrderDesc($shopName);
+            }
 
             // check if user already used cc payment successfully and send
             // initialPayment true or false accordingly
@@ -125,6 +128,7 @@ class CreditCard extends AbstractSubscriber
             $view->assign('creditCardSilentModeBrandsVisa', (int)$pluginConfig['creditCardSilentModeBrandsVisa']);
             $view->assign('creditCardSilentModeBrandsMaster', (int)$pluginConfig['creditCardSilentModeBrandsMaster']);
             $view->assign('creditCardSilentModeBrandsAmex', (int)$pluginConfig['creditCardSilentModeBrandsAmex']);
+            $view->assign('creditCardSilentModeBrandDetection', (int)$pluginConfig['creditCardSilentModeBrandDetection']);
 
             $view->assign('fatchipCTCreditCardSilentParams', $silentParams);
             $view->extendsTemplate('frontend/checkout/computop_creditcard_confirm.tpl');
@@ -211,7 +215,7 @@ class CreditCard extends AbstractSubscriber
 
         if (in_array($colorDepth, $acceptedValues, true)) {
             $apiColorDepth = $colorDepth;
-        } elseif ($colorDepth <=1 ) {
+        } elseif ($colorDepth <= 1) {
             $apiColorDepth = 1;
         } elseif ($colorDepth <= 4) {
             $apiColorDepth = 4;
@@ -219,9 +223,9 @@ class CreditCard extends AbstractSubscriber
             $apiColorDepth = 8;
         } elseif ($colorDepth <= 15) {
             $apiColorDepth = 15;
-        } elseif ($colorDepth <= 24){
+        } elseif ($colorDepth <= 24) {
             $apiColorDepth = 24;
-        } elseif ($colorDepth <= 32){
+        } elseif ($colorDepth <= 32) {
             $apiColorDepth = 32;
         } else {
             $apiColorDepth = 48;

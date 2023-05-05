@@ -10,13 +10,14 @@
 
             <div class="panel--body is--wide">
                 {block name="frontend_checkout_payment_fatchip_computop_creditcard_cardnumber_label"}
-                    <div class="select-field">
+                    <div class="select-field {if $creditCardSilentModeBrandDetection == 1}is--hidden{/if}">
                         {block name="frontend_checkout_payment_fatchip_computop_creditcard_brand_input"}
                             <select name="CCBrand"
                                     id="CCBrand"
-                                    class="is--required"
+                                    class="is--required  "
                                     {if $payment_mean.id == $form_data.payment}required="required"
                                     aria-required="true"{/if}
+                                    {if $creditCardSilentModeBrandDetection == 1}hidden{/if}
                                     >
                                 {if $creditCardSilentModeBrandsVisa == 1}<option value="VISA">Visa</option>{/if}
                                 {if $creditCardSilentModeBrandsMaster == 1}<option value="MasterCard">MasterCard</option>{/if}
@@ -51,10 +52,14 @@
                 {block name="frontend_checkout_payment_fatchip_computop_creditcard_cardnumber_input"}
                     <input name="CCNr" type="text"
                            id="CCNr"
-                           class="payment--field is--required{if $error_flags.fatchip_computop__creditcard_cardnumber} has--error{/if}"
+                           class="payment--field is--required{if $error_flags.fatchip_computop__creditcard_cardnumber} has--error{/if} {if $creditCardSilentModeBrandDetection == 1} computop-brand-detect{/if}"
                            placeholder="{s name='CreditcardCardnumberPlaceholder' namespace='frontend/FatchipCTPayment/translations'}Kartennummer{/s}{s name="RequiredField" namespace="frontend/register/index"}{/s}"
                            {if $payment_mean.id == $form_data.payment}required="required" aria-required="true"{/if}
                            value="{$FatchipCTPaymentData.creditcardcardnumber}"
+                           data-CCNRErrorMessage="{s name='CreditcardNrErrorMessage' namespace='frontend/FatchipCTPayment/translations'}Dieses Feld darf nur Ziffern enthalten{/s}"
+                           data-unsupportedMessage="{s name='CreditcardNrUnsupportedMessage' namespace='frontend/FatchipCTPayment/translations'}Dieser Kartentyp wird nicht unterstützt!{/s}"
+                           data-inactiveMessage="{s name='CreditcardNrInactiveMessage' namespace='frontend/FatchipCTPayment/translations'}Dieser Kartentyp wird nicht vom Händler akzeptiert!{/s}"
+                           data-activeBrands="{if $creditCardSilentModeBrandsVisa == 1}visa {/if}{if $creditCardSilentModeBrandsMaster == 1}master {/if}{if $creditCardSilentModeBrandsAmex == 1}amex {/if}"
                             />
                 {/block}
 
