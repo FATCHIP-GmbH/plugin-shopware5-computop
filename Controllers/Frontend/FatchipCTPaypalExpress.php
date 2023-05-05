@@ -75,10 +75,19 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
     public function gatewayAction()
     {
         $basket= Shopware()->Modules()->Basket()->sGetBasket();
+        $taxAutoMode = Shopware()->Config()->get('sTAXAUTOMODE');
+        $userData=$this->getUserData();
+        if (!empty($taxAutoMode)) {
+            $discount_tax = Shopware()->Modules()->Basket()->getMaxTax() / 100;
+        } else {
+            $discount_tax = Shopware()->Config()->get('sDISCOUNTTAX');
+            $discount_tax = empty($discount_tax) ? 0 : (float) str_replace(',', '.', $discount_tax) / 100;
+        }
+        $shippingCosts = $userData['additional']['show_net'] === true ? $this->request->getParam('shipping') : $this->request->getParam('shipping') * (1 + $discount_tax) ;
 
         // TODO refactor ctOrder creation
         $ctOrder = new CTOrder();
-        $ctOrder->setAmount($basket['AmountNumeric'] * 100);
+        $ctOrder->setAmount(($basket['AmountNumeric'] * 100) + $shippingCosts);
         $ctOrder->setCurrency($this->getCurrencyShortName());
         // mandatory for paypalStandard
         $ctOrder->setOrderDesc($this->getOrderDesc());
