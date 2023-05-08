@@ -69,25 +69,25 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
      * User is redirected here after clicking on the paypal express checkout button
      * Redirects the user to the paypal website
      *
-     * @throws Exception
      * @return void
+     * @throws Exception
      */
     public function gatewayAction()
     {
-        $basket= Shopware()->Modules()->Basket()->sGetBasket();
+        $basket = Shopware()->Modules()->Basket()->sGetBasket();
         $taxAutoMode = Shopware()->Config()->get('sTAXAUTOMODE');
-        $userData=$this->getUserData();
+        $userData = $this->getUserData();
         if (!empty($taxAutoMode)) {
             $discount_tax = Shopware()->Modules()->Basket()->getMaxTax() / 100;
         } else {
             $discount_tax = Shopware()->Config()->get('sDISCOUNTTAX');
-            $discount_tax = empty($discount_tax) ? 0 : (float) str_replace(',', '.', $discount_tax) / 100;
+            $discount_tax = empty($discount_tax) ? 0 : (float)str_replace(',', '.', $discount_tax) / 100;
         }
-        $shippingCosts = $userData['additional']['show_net'] === true ? $this->request->getParam('shipping') : $this->request->getParam('shipping') * (1 + $discount_tax) ;
+        $shippingCosts = $userData['additional']['show_net'] === true ? $this->request->getParam('shipping') : $this->request->getParam('shipping') * (1 + $discount_tax);
 
         // TODO refactor ctOrder creation
         $ctOrder = new CTOrder();
-        $ctOrder->setAmount(($basket['AmountNumeric'] * 100) + $shippingCosts);
+        $ctOrder->setAmount(($basket['AmountNumeric'] * 100) + ($shippingCosts * 100));
         $ctOrder->setCurrency($this->getCurrencyShortName());
         // mandatory for paypalStandard
         $ctOrder->setOrderDesc($this->getOrderDesc());
@@ -131,7 +131,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
                 $session->offsetSet('FatchipCTPaypalExpressXID', $response->getXID());
                 $session->offsetSet('FatchipCTPaypalExpressTransID', $response->getXID());
 
-                $this->forward('register', 'FatchipCTPaypalExpressRegister', null, [ 'CTResponse' => $response]);
+                $this->forward('register', 'FatchipCTPaypalExpressRegister', null, ['CTResponse' => $response]);
                 break;
             default:
                 $this->forward('failure');
@@ -156,7 +156,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
         /** @var PaypalExpress $payment */
         $payment = $this->paymentService->getPaymentClass($this->paymentClass);
 
-        $requestParams =  $payment->getPaypalExpressCompleteParams(
+        $requestParams = $payment->getPaypalExpressCompleteParams(
             $session->offsetGet('FatchipCTPaypalExpressPayID'),
             $session->offsetGet('FatchipCTPaypalExpressTransID'),
             $this->getAmount() * 100,
@@ -168,7 +168,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
         // ORDER call
         $response = $this->plugin->callComputopService($requestParams, $payment, 'ORDER', $payment->getCTPaymentURL());
 
-        if ($response->getStatus() !== CTEnumStatus::OK){
+        if ($response->getStatus() !== CTEnumStatus::OK) {
             // TODO: add error log
             $this->forward('failure');
         }
@@ -186,7 +186,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
         // REFNRCHANGE call
         $response = $this->updateRefNrWithComputopFromOrderNumber($customOrdernumber);
 
-        if ($response->getStatus() !== CTEnumStatus::OK){
+        if ($response->getStatus() !== CTEnumStatus::OK) {
             // TODO: add error log
             $this->savePaymentStatus(
                 $response->getTransID(),
@@ -220,6 +220,69 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
             ->get('errorGeneral'); // . $response->getDescription();
         $ctError['CTErrorCode'] = ''; //$response->getCode();
         $this->forward('shippingPayment', 'checkout', null, ['CTError' => $ctError]);
+    }
+
+    /**
+     * @return array
+     * @deprecated in 5.6, will be protected in 5.8
+     *
+     * Get complete user-data as an array to use in view
+     *
+     */
+    public function getUserData()
+    {
+        $system = Shopware()->System();
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        if (!empty($userData['additional']['countryShipping'])) {
+            $system->sUSERGROUPDATA = Shopware()->Db()->fetchRow('
+                SELECT * FROM s_core_customergroups
+                WHERE groupkey = ?
+            ', [$system->sUSERGROUP]);
+
+            $taxFree = $this->isTaxFreeDelivery($userData);
+            $this->session->offsetSet('taxFree', $taxFree);
+
+            if ($taxFree) {
+                $system->sUSERGROUPDATA['tax'] = 0;
+                $system->sCONFIG['sARTICLESOUTPUTNETTO'] = 1; // Old template
+                Shopware()->Session()->set('sUserGroupData', $system->sUSERGROUPDATA);
+                $userData['additional']['charge_vat'] = false;
+                $userData['additional']['show_net'] = false;
+                Shopware()->Session()->set('sOutputNet', true);
+            } else {
+                $userData['additional']['charge_vat'] = true;
+                $userData['additional']['show_net'] = !empty($system->sUSERGROUPDATA['tax']);
+                Shopware()->Session()->set('sOutputNet', empty($system->sUSERGROUPDATA['tax']));
+            }
+        }
+
+        return $userData;
+    }
+
+    /**
+     * Validates if the provided customer should get a tax free delivery
+     *
+     * @param array $userData
+     *
+     * @return bool
+     */
+    protected function isTaxFreeDelivery($userData)
+    {
+        if (!empty($userData['additional']['countryShipping']['taxfree'])) {
+            return true;
+        }
+
+        if (empty($userData['additional']['countryShipping']['taxfree_ustid'])) {
+            return false;
+        }
+
+        if (empty($userData['shippingaddress']['ustid'])
+            && !empty($userData['billingaddress']['ustid'])
+            && !empty($userData['additional']['country']['taxfree_ustid'])) {
+            return true;
+        }
+
+        return !empty($userData['shippingaddress']['ustid']);
     }
 }
 
