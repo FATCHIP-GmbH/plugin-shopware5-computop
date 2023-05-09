@@ -4,7 +4,7 @@
     {$smarty.block.parent}
     {if $sBasket.content}
         <div class="button--container">
-            <a href="{url controller='FatchipCTPaypalExpress' action='gateway' shipping=$sShippingcosts}">
+            <a href="{url controller='FatchipCTPaypalExpress' action='gateway' shipping=$sShippingcosts paymentId=$sPayment['id'] dispatch=$sDispatch['id']}">
                 <img src="{$fatchipCTPaymentPaypalButtonUrl}">
             </a>
         </div>

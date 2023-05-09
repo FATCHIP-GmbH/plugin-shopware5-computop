@@ -31,6 +31,8 @@ use Fatchip\CTPayment\CTOrder\CTOrder;
 use Fatchip\CTPayment\CTEnums\CTEnumStatus;
 use Fatchip\CTPayment\CTPaymentMethods\PaypalExpress;
 use Fatchip\CTPayment\CTPaymentMethodsIframe\PaypalStandard;
+use Shopware\Models\Payment\Payment;
+use Shopware\Models\Dispatch\Dispatch;
 
 /**
  * Class Shopware_Controllers_Frontend_FatchipCTPaypalStandard
@@ -74,24 +76,41 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
      */
     public function gatewayAction()
     {
+        /** @var Shopware\Models\Payment\Payment $paypalExpressPayment */
+        $paypalExpressPayment = Shopware()->Models()->getRepository(Payment::class)->findOneBy(['name' => 'fatchip_computop_paypal_express']);
         $basket = Shopware()->Modules()->Basket()->sGetBasket();
+        $dispatch = Shopware()->Models()->getRepository(Dispatch::class)->findOneBy(['id' => $this->request->getParam('dispatch')]);
+        $selectedPayment = (int) $this->request->getParam('paymentId');
+        $addsurcharges = $selectedPayment !== $paypalExpressPayment->getId();
+
         $taxAutoMode = Shopware()->Config()->get('sTAXAUTOMODE');
         $userData = $this->getUserData();
+
         if (!empty($taxAutoMode)) {
             $discount_tax = Shopware()->Modules()->Basket()->getMaxTax() / 100;
         } else {
             $discount_tax = Shopware()->Config()->get('sDISCOUNTTAX');
             $discount_tax = empty($discount_tax) ? 0 : (float)str_replace(',', '.', $discount_tax) / 100;
         }
-        $shippingCosts = $userData['additional']['show_net'] === true ? $this->request->getParam('shipping') : $this->request->getParam('shipping') * (1 + $discount_tax);
 
-        // TODO refactor ctOrder creation
+        $basketAmount = $userData['additional']['show_net'] === true ? $basket['AmountNumeric'] : $basket['AmountNetNumeric'] * (1 + $discount_tax);
+        $shippingCosts = $userData['additional']['show_net'] === true ? $this->request->getParam('shipping') : $this->request->getParam('shipping') * (1 + $discount_tax);
+        $surcharge = $addsurcharges ? $paypalExpressPayment->getSurcharge() : 0.0;
+        $surchargePercent = $paypalExpressPayment->getDebitPercent();
+        $surchargeAmountPercent = $addsurcharges ? (($basket['AmountNetNumeric'] + $surcharge) / 100  * $surchargePercent) : 0.0;
+
+        if ((int) $dispatch->getSurchargeCalculation() !== Dispatch::SURCHARGE_CALCULATION_AS_CART_ITEM) {
+            $surcharge = $userData['additional']['show_net'] === true ? $surcharge : $surcharge  * (1 + $discount_tax);
+        }
+        $surchargeAmountPercent = $userData['additional']['show_net'] === true ? $surchargeAmountPercent : $surchargeAmountPercent  * (1 + $discount_tax);
+
+        $fullAmount = $basketAmount + $shippingCosts + $surcharge + $surchargeAmountPercent;
+
         $ctOrder = new CTOrder();
-        $ctOrder->setAmount(($basket['AmountNumeric'] * 100) + ($shippingCosts * 100));
+        $ctOrder->setAmount($fullAmount * 100);
         $ctOrder->setCurrency($this->getCurrencyShortName());
         // mandatory for paypalStandard
         $ctOrder->setOrderDesc($this->getOrderDesc());
-
         /** @var PaypalStandard $payment */
         $payment = $this->paymentService->getIframePaymentClass(
             'PaypalStandard',
