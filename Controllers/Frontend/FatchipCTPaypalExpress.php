@@ -102,7 +102,7 @@ class Shopware_Controllers_Frontend_FatchipCTPaypalExpress extends Shopware_Cont
         if ((int) $dispatch->getSurchargeCalculation() !== Dispatch::SURCHARGE_CALCULATION_AS_CART_ITEM) {
             $surcharge = $userData['additional']['show_net'] === true ? $surcharge : $surcharge  * (1 + $discount_tax);
         }
-        $surchargeAmountPercent = $userData['additional']['show_net'] === true ? $surchargeAmountPercent : $surchargeAmountPercent  * (1 + $discount_tax);
+        $surchargeAmountPercent = $surchargeAmountPercent  * (1 + $discount_tax);
 
         $fullAmount = $basketAmount + $shippingCosts + $surcharge + $surchargeAmountPercent;
 
