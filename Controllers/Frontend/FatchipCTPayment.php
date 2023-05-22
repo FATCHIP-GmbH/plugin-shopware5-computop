@@ -1063,28 +1063,5 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         return false;
     }
 
-    /**
-     * restore shopware user session from Id
-     *
-     * @param string $sessionId
-     */
-    protected function restoreSession($sessionId)
-    {
-        if ($this->config['debuglog'] === 'extended') {
-            $sessionID = $this->session->get('sessionId');
-            $this->utils->log('Restore Session: ' , ['active sessionid' => $sessionID, 'restored sessionid' => $sessionId]);
-        }
-
-        if (version_compare(Shopware()->Config()->get('version'), '5.7.0', '>=')) {
-            Shopware()->Session()->save();
-            Shopware()->Session()->setId($sessionId);
-            Shopware()->Session()->start();
-        } else {
-            \Enlight_Components_Session::writeClose();
-            \Enlight_Components_Session::setId($sessionId);
-            \Enlight_Components_Session::start();
-        }
-    }
-
 }
 
