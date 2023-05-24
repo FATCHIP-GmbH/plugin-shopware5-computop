@@ -509,6 +509,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
                 $attribute->setfatchipctkreditkarteschemereferenceid($response->getSchemeReferenceID());
                 $cardParam = json_decode($response->getCard(), true);
                 $attribute->setfatchipctkreditkartecardholdername($cardParam['cardholderName']);
+                $attribute->setfatchipctsessionId(Shopware()->Session()->get('sessionId'));
                 Shopware()->Models()->persist($attribute);
                 Shopware()->Models()->flush();
             }
@@ -1084,6 +1085,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             \Enlight_Components_Session::setId($sessionId);
             \Enlight_Components_Session::start();
         }
+        $this->session = Shopware()->Session();
     }
 
 }

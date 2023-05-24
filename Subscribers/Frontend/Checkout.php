@@ -55,6 +55,7 @@ class Checkout extends AbstractSubscriber
         return array(
             'Shopware_Controllers_Frontend_Checkout::saveShippingPaymentAction::after' => 'onAfterPaymentAction',
             'Enlight_Controller_Action_PostDispatch_Frontend_Checkout' => 'onPostdispatchFrontendCheckout',
+            'Enlight_Controller_Action_PreDispatch_Frontend'=> 'onPreDispatchFrontendCheckout',
         );
     }
 
@@ -170,6 +171,35 @@ class Checkout extends AbstractSubscriber
                 return;
 
             }
+        }
+    }
+
+    /**
+     * handles missing ordervariables after breaking out of iFrame
+     *
+     * @param \Enlight_Controller_ActionEventArgs $args
+     * @return void
+     */
+    public function onPreDispatchFrontendCheckout(\Enlight_Controller_ActionEventArgs $args)
+    {
+        $subject = $args->getSubject();
+        $request = $subject->Request();
+        $response = $subject->Response();
+
+        if ($response->isException()) {
+            return;
+        }
+
+        if ($request->getActionName() === 'finish' && !empty($request->getParam('sUniqueID')) && empty(Shopware()->Session()->get('sOrderVariables'))) {
+            if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['temporaryId' => $request->getParam('sUniqueID')])) {
+                if ($attribute = $order->getAttribute()) {
+                    $orderSessionid = $attribute->getfatchipctsessionId();
+                }
+            }
+            if (empty($orderSessionid)) {
+                return;
+            }
+            $this->restoreSession($orderSessionid);
         }
     }
 
@@ -359,5 +389,23 @@ class Checkout extends AbstractSubscriber
     public function getUserDataParam()
     {
         return 'Shopware Version: ' . Util::getShopwareVersion() . ', Modul Version: ' . $this->plugin->getVersion();
+    }
+
+    /**
+     * restore shopware user session from Id
+     *
+     * @param string $sessionId
+     */
+    protected function restoreSession($sessionId)
+    {
+        if (version_compare(Shopware()->Config()->get('version'), '5.7.0', '>=')) {
+            Shopware()->Session()->save();
+            Shopware()->Session()->setId($sessionId);
+            Shopware()->Session()->start();
+        } else {
+            \Enlight_Components_Session::writeClose();
+            \Enlight_Components_Session::setId($sessionId);
+            \Enlight_Components_Session::start();
+        }
     }
 }
