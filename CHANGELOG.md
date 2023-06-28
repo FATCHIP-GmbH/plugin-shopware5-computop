@@ -1,8 +1,12 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.1.15
+* Optimized session handling for iDeal payments
+* Respect customer group when calculation Paypal express shipping costs
+
 ## 1.1.14
 2023-05-15
-* Added transfer of standard shipping costs with Paypal Express
+* Added transfer of standard shipping costs with Paypal Express 
 
 ## 1.1.13
 2023-03-30

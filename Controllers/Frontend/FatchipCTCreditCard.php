@@ -249,6 +249,24 @@ class Shopware_Controllers_Frontend_FatchipCTCreditCard extends Shopware_Control
     }
 
     /**
+     * restore shopware user session from Id
+     *
+     * @param string $sessionId
+     */
+    protected function restoreSession($sessionId)
+    {
+        if (version_compare(Shopware()->Config()->get('version'), '5.7.0', '>=')) {
+            Shopware()->Session()->save();
+            Shopware()->Session()->setId($sessionId);
+            Shopware()->Session()->start();
+        } else {
+            \Enlight_Components_Session::writeClose();
+            \Enlight_Components_Session::setId($sessionId);
+            \Enlight_Components_Session::start();
+        }
+    }
+
+    /**
      * Handle user cancellation.
      *
      * Overridden cause for Creditcard we forward to iframe action.
