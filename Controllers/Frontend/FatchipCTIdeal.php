@@ -76,4 +76,35 @@ class Shopware_Controllers_Frontend_FatchipCTIdeal extends Shopware_Controllers_
 
         $this->redirect($payment->getHTTPGetURL($params));
     }
+
+    /**
+     * Handle successful payments.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function successAction()
+    {
+        $requestParams = $this->Request()->getParams();
+
+        $sessionId = $requestParams['session'];
+        if ($sessionId) {
+            try {
+                $this->restoreSession($sessionId);
+            } catch (Zend_Session_Exception $e) {
+                $logPath = Shopware()->DocPath();
+
+                if (Util::isShopwareVersionGreaterThanOrEqual('5.1')) {
+                    $logFile = $logPath . 'var/log/FatchipCTPayment_production.log';
+                } else {
+                    $logFile = $logPath . 'logs/FatchipCTPayment_production.log';
+                }
+                $rfh = new RotatingFileHandler($logFile, 14);
+                $logger = new \Shopware\Components\Logger('FatchipCTPayment');
+                $logger->pushHandler($rfh);
+                $ret = $logger->error($e->getMessage());
+            }
+        }
+        parent::successAction();
+    }
 }
