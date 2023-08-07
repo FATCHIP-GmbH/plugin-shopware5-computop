@@ -3,7 +3,11 @@
 {block name='frontend_account_payment_error_messages'}
     <div>
         {if $CTError}
-            {include file="frontend/_includes/messages.tpl" content="{$CTError.CTErrorMessage}:{$CTError.CTErrorCode}" type="error" bold=false}
+            {if $CTError.CTErrorCode}
+                {include file="frontend/_includes/messages.tpl" content="{$CTError.CTErrorMessage}:{$CTError.CTErrorCode}" type="error" bold=false}
+            {else}
+                {include file="frontend/_includes/messages.tpl" content="{$CTError.CTErrorMessage}" type="error" bold=false}
+            {/if}
         {/if}
     </div>
     {$smarty.block.parent}
