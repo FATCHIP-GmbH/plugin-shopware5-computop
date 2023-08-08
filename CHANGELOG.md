@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.1.17
+DATE
+* Added cancel button to credit card iFrame and payment page
+
 ## 1.1.16
 2023-07-11
 * Fixed session handling for iDeal payments
