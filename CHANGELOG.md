@@ -1,7 +1,7 @@
 # Changelog - Shopware Computop Payment Connector
 
 ## 1.1.17
-DATE
+2023-08-24
 * Added cancel button to credit card iFrame and payment page
 
 ## 1.1.16
