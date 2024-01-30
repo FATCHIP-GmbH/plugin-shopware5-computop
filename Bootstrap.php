@@ -36,6 +36,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Fatchip\CTPayment\CTResponse;
 use Fatchip\CTPayment\Encryption;
+use Shopware\Components\CacheManager;
 use Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Forms;
 use Shopware\Plugins\FatchipCTPayment\Bootstrap\Attributes;
@@ -637,9 +638,9 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      */
     private function getControllerBlacklist()
     {
-        $mgr = $this->get(Shopware\Components\CacheManager::class);
-        $mgr->clearByTag(Shopware\Components\CacheManager::CACHE_TAG_CONFIG);
-        $config = $this->get(\Shopware_Components_Config::class);
+        $mgr = $this->get('shopware.cache_manager');
+        $mgr->clearByTag(CacheManager::CACHE_TAG_CONFIG);
+        $config = $this->get('config');
         $controllerBlacklist = preg_replace('#\s#', '', $config[self::blacklistConfigVar]);
         return explode(',', $controllerBlacklist);
     }
