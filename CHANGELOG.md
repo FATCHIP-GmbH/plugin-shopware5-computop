@@ -1,6 +1,10 @@
 # Changelog - Shopware Computop Payment Connector
 
 ## 1.1.17
+2024-02-01
+* Fixed class loading problem with SW 5.6.9 and PHP 7.4
+
+## 1.1.17
 2023-08-24
 * Added cancel button to credit card iFrame and payment page
 
