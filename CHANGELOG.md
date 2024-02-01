@@ -1,6 +1,6 @@
 # Changelog - Shopware Computop Payment Connector
 
-## 1.1.17
+## 1.1.18
 2024-02-01
 * Fixed class loading problem with SW 5.6.9 and PHP 7.4
 
