@@ -33,6 +33,7 @@ use Monolog\Handler\RotatingFileHandler;
 use Exception;
 use Fatchip\CTPayment\CTAddress\CTAddress;
 use Fatchip\CTPayment\CTOrder\CTOrder;
+use Shopware\Bundle\CartBundle\CartKey;
 use Shopware\Components\Logger;
 use Shopware\Models\Customer\Customer;
 use Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap as FatchipCTPayment;
@@ -820,7 +821,7 @@ class Util
      */
     public function createCTOrder()
     {
-        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        $userData = $this->getUserData();
 
         try {
             $basket = Shopware()->Modules()->Basket()->sGetBasket();
@@ -834,7 +835,26 @@ class Util
         }
 
         $ctOrder = new CTOrder();
-        $ctOrder->setAmount(($basket['AmountNumeric'] + $this->calculateShippingCosts()) * 100);
+
+        $taxAutoMode = Shopware()->Config()->get('sTAXAUTOMODE');
+
+        if (!empty($taxAutoMode)) {
+            $discount_tax = Shopware()->Modules()->Basket()->getMaxTax() / 100;
+        } else {
+            $discount_tax = Shopware()->Config()->get('sDISCOUNTTAX');
+            $discount_tax = empty($discount_tax) ? 0 : (float)str_replace(',', '.', $discount_tax) / 100;
+        }
+        $test = $userData['additional']['charge_vat'];
+        $test1 = !empty($test);
+        if (!empty($userData['additional']['charge_vat'])) {
+            $basketAmount = empty($basket[CartKey::AMOUNT_WITH_TAX_NUMERIC]) ? $basket[CartKey::AMOUNT_NUMERIC] : $basket[CartKey::AMOUNT_WITH_TAX_NUMERIC];
+            $shippingCosts = $userData['additional']['show_net'] === true ? $this->calculateShippingCosts(true) : $this->calculateShippingCosts(true) * (1 + $discount_tax);
+        } else {
+            $basketAmount = $basket[CartKey::AMOUNT_NET_NUMERIC];
+            $shippingCosts = $this->calculateShippingCosts(true);
+        }
+
+        $ctOrder->setAmount(($basketAmount + $shippingCosts) * 100);
         $ctOrder->setCurrency(Shopware()->Container()->get('currency')->getShortName());
         // try catch in case Address Splitter return exceptions
         try {
@@ -880,11 +900,11 @@ class Util
         }
     }
 
-    public function calculateShippingCosts()
+    public function calculateShippingCosts($net = false)
     {
         $shippingCosts = Shopware()->Modules()->Admin()->sGetPremiumShippingcosts();
 
-        return $shippingCosts['brutto'];
+        return $net ? $shippingCosts['netto'] : $shippingCosts['brutto'];
     }
 
     /**
@@ -994,5 +1014,67 @@ class Util
         $logger = new Logger('FatchipCTPayment');
         $logger->pushHandler($rfh);
         $logger->error($message, $context);
+    }
+
+    /**
+     * @return array
+     * @deprecated in 5.6, will be protected in 5.8
+     *
+     * Get complete user-data as an array to use in view
+     *
+     */
+    public function getUserData()
+    {
+        $system = Shopware()->System();
+        $userData = Shopware()->Modules()->Admin()->sGetUserData();
+        if (!empty($userData['additional']['countryShipping'])) {
+            $system->sUSERGROUPDATA = Shopware()->Db()->fetchRow('
+                SELECT * FROM s_core_customergroups
+                WHERE groupkey = ?
+            ', [$system->sUSERGROUP]);
+
+            $taxFree = $this->isTaxFreeDelivery($userData);
+
+            if ($taxFree) {
+                $system->sUSERGROUPDATA['tax'] = 0;
+                $system->sCONFIG['sARTICLESOUTPUTNETTO'] = 1; // Old template
+                Shopware()->Session()->set('sUserGroupData', $system->sUSERGROUPDATA);
+                $userData['additional']['charge_vat'] = false;
+                $userData['additional']['show_net'] = false;
+                Shopware()->Session()->set('sOutputNet', true);
+            } else {
+                $userData['additional']['charge_vat'] = true;
+                $userData['additional']['show_net'] = !empty($system->sUSERGROUPDATA['tax']);
+                Shopware()->Session()->set('sOutputNet', empty($system->sUSERGROUPDATA['tax']));
+            }
+        }
+
+        return $userData;
+    }
+
+    /**
+     * Validates if the provided customer should get a tax free delivery
+     *
+     * @param array $userData
+     *
+     * @return bool
+     */
+    protected function isTaxFreeDelivery($userData)
+    {
+        if (!empty($userData['additional']['countryShipping']['taxfree'])) {
+            return true;
+        }
+
+        if (empty($userData['additional']['countryShipping']['taxfree_ustid'])) {
+            return false;
+        }
+
+        if (empty($userData['shippingaddress']['ustid'])
+            && !empty($userData['billingaddress']['ustid'])
+            && !empty($userData['additional']['country']['taxfree_ustid'])) {
+            return true;
+        }
+
+        return !empty($userData['shippingaddress']['ustid']);
     }
 }
