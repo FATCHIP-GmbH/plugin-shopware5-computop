@@ -1,6 +1,11 @@
 # Changelog - Shopware Computop Payment Connector
 
 ## 1.1.18
+TBA
+* Fixed issue with shippingcost taxes
+* Transmission of new mandatory fields for credit card added
+
+## 1.1.18
 2024-02-01
 * Fixed class loading problem with SW 5.6.9 and PHP 7.4
 
