@@ -458,7 +458,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
     public function callComputopService($requestParams, $payment, $requestType, $url)
     {
         $log = new FatchipCTApilog();
-        $log->setPaymentName($payment::paymentClass);
+        $paymentName = $payment::paymentClass === 'Paydirekt' ? 'Giropay' : $payment::paymentClass;
+        $log->setPaymentName($paymentName);
         $log->setRequest($requestType);
         $log->setRequestDetails(json_encode($requestParams));
         $response = $payment->callComputop($requestParams, $url);
@@ -495,6 +496,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         // fix wrong amount is logged PHP Version >= 7.1 see https://stackoverflow.com/questions/42981409/php7-1-json-encode-float-issue/43056278
         $requestParams['amount'] = (string) $requestParams['amount'];
         $log = new FatchipCTApilog();
+        $paymentName = $paymentName === 'Paydirekt' ? 'Giropay' : $paymentName;
         $log->setPaymentName($paymentName);
         $log->setRequest($requestType);
         $log->setRequestDetails(json_encode($requestParams));
