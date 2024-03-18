@@ -62,6 +62,10 @@ class Payments extends Bootstrap
                 ) {
                     $this->updateAfterpay($paymentMethod);
                 }
+                if ($paymentMethod['name'] === 'fatchip_computop_paydirekt'
+                ) {
+                    $this->updatePaydirekt($paymentMethod);
+                }
                 continue;
             }
 
@@ -97,6 +101,25 @@ class Payments extends Bootstrap
         }
         if ($paymentMethod['name'] === 'fatchip_computop_afterpay_invoice') {
             $payment->setTemplate('fatchip_computop_afterpay_invoice.tpl');
+        }
+        Shopware()->Models()->persist($payment);
+        Shopware()->Models()->flush($payment);
+    }
+
+    /** make sure afterpay template names are set correctly
+     * needed for upgrading form 1.0.12 / 1.0.13 to 1.0.14
+     * @param $paymentMethod
+     * @return void
+     * @throws ORMException
+     */
+    protected function updatePaydirekt($paymentMethod)
+    {
+        $payment = $this->plugin->Payments()->findOneBy(array('name' => $paymentMethod['name']));
+        // update payment template
+        if ($paymentMethod['name'] === 'fatchip_computop_paydirekt') {
+            $payment->setName('fatchip_computop_giropay');
+            $payment->setDescription('Computop Giropay');
+
         }
         Shopware()->Models()->persist($payment);
         Shopware()->Models()->flush($payment);
