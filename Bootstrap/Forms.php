@@ -78,7 +78,7 @@ class Forms extends Bootstrap
 
         $this->createLastschriftConfigForm(CTPaymentConfigForms::formLastschriftSelectElements, CTPaymentConfigForms::formLastschriftNumberElements);
 
-        // $this->createPayDirektConfigForm(CTPaymentConfigForms::formPayDirektTextElements, CTPaymentConfigForms::formPayDirektSelectElements, CTPaymentConfigForms::formPayDirektNumberElements);
+        $this->createPayDirektConfigForm(CTPaymentConfigForms::formPayDirektSelectElements);
 
         // paypal
         $this->createFormSelectElements(CTPaymentConfigForms::formPayPalSelectElements);
@@ -109,12 +109,11 @@ class Forms extends Bootstrap
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function removeFormElements()
-    {
+    public function removeFormElements() {
         $elements = [];
         $em = Shopware()->Models();
 
-        if (!$this->plugin) {
+        if(!$this->plugin) {
             return;
         }
 
@@ -123,7 +122,6 @@ class Forms extends Bootstrap
         $elements[] = $this->plugin->Form()->getElement('lastschriftEvoDebitDelay');
         $elements[] = $this->plugin->Form()->getElement('payDirektCardDelay');
         $elements[] = $this->plugin->Form()->getElement('payDirektShopApiKey');
-        $elements[] = $this->plugin->Form()->getElement('payDirektCaption');
 
         foreach ($elements as $element) {
             //$element = $em->find('Shopware\Models\Config\Element', $elementId);
@@ -241,11 +239,9 @@ class Forms extends Bootstrap
      *
      * @return void
      */
-    private function createPayDirektConfigForm($formPayDirektTextElements, $formPayDirektSelectElements, $formPayDirektNumberElements)
+    private function createPayDirektConfigForm($formPayDirektSelectElements)
     {
-        $this->createFormTextElements($formPayDirektTextElements);
         $this->createFormSelectElements($formPayDirektSelectElements);
-        $this->createFormTextElements($formPayDirektNumberElements);
     }
 
     /**

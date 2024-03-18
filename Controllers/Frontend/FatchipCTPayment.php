@@ -329,9 +329,6 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         if (isset($requestParams['orderVars'])) {
             $response->setOrderVars(base64_decode($requestParams['orderVars']));
         }
-
-        $paymentName = $this->paymentClass === 'Paydirekt' ? 'Giropay' : $this->paymentClass;
-
         $this->plugin->logRedirectParams(null, $paymentName, 'NOTIFY', $response);
 
         switch ($response->getStatus()) {
@@ -623,10 +620,11 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
 
         if ( $force !== true && (!
             (($paymentName === 'fatchip_computop_creditcard' && $this->config['creditCardCaption'] === 'AUTO')
-                || ($paymentName === 'fatchip_computop_lastschrift' && $this->config['lastschriftCaption'] === 'AUTO')
-                || ($paymentName === 'fatchip_computop_paypal_standard' && $this->config['paypalCaption'] === 'AUTO')
-                || ($paymentName === 'fatchip_computop_paypal_express' && $this->config['paypalCaption'] === 'AUTO')
-                || ($paymentName === 'fatchip_computop_amazonpay' && $this->config['amazonCaptureType'] === 'AUTO')
+            || ($paymentName === 'fatchip_computop_lastschrift' && $this->config['lastschriftCaption'] === 'AUTO')
+            || ($paymentName === 'fatchip_computop_paypal_standard' && $this->config['paypalCaption'] === 'AUTO')
+            || ($paymentName === 'fatchip_computop_paypal_express' && $this->config['paypalCaption'] === 'AUTO')
+            || ($paymentName === 'fatchip_computop_paydirekt' && $this->config['payDirektCaption'] === 'AUTO')
+            || ($paymentName === 'fatchip_computop_amazonpay' && $this->config['amazonCaptureType'] === 'AUTO')
             ))
         ) {
             if ($this->config['debuglog'] === 'extended') {
