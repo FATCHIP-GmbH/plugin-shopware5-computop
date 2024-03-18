@@ -230,22 +230,6 @@ class Forms extends Bootstrap
     }
 
     /**
-     * create elements for the paydirekt section of the config form.
-     *
-     * creates Text and Select Elements.
-     *
-     * @param array $formPayDirektTextElements
-     * @param array $formPayDirektSelectElements
-     * @param array $formPayDirektNumberElements
-     *
-     * @return void
-     */
-    private function createPayDirektConfigForm($formPayDirektSelectElements)
-    {
-        $this->createFormSelectElements($formPayDirektSelectElements);
-    }
-
-    /**
      * create elements for the amazonpay section of the config form.
      *
      * creates Text and Select Elements.

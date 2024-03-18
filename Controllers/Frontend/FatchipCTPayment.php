@@ -329,7 +329,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
         if (isset($requestParams['orderVars'])) {
             $response->setOrderVars(base64_decode($requestParams['orderVars']));
         }
-        $this->plugin->logRedirectParams(null, $paymentName, 'NOTIFY', $response);
+        $this->plugin->logRedirectParams(null, $this->paymentClass, 'NOTIFY', $response);
 
         switch ($response->getStatus()) {
             case CTEnumStatus::OK:
