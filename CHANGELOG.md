@@ -1,9 +1,11 @@
 # Changelog - Shopware Computop Payment Connector
 
-## 1.1.18
-TBA
+## 1.1.19
+2024-03-18
 * Fixed issue with shippingcost taxes
 * Transmission of new mandatory fields for credit card added
+* Removed paydirekt
+* Added Giropay
 
 ## 1.1.18
 2024-02-01
