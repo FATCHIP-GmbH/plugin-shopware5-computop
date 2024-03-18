@@ -78,7 +78,7 @@ class Forms extends Bootstrap
 
         $this->createLastschriftConfigForm(CTPaymentConfigForms::formLastschriftSelectElements, CTPaymentConfigForms::formLastschriftNumberElements);
 
-        $this->createPayDirektConfigForm(CTPaymentConfigForms::formPayDirektSelectElements);
+        // $this->createPayDirektConfigForm(CTPaymentConfigForms::formPayDirektSelectElements);
 
         // paypal
         $this->createFormSelectElements(CTPaymentConfigForms::formPayPalSelectElements);
@@ -122,6 +122,7 @@ class Forms extends Bootstrap
         $elements[] = $this->plugin->Form()->getElement('lastschriftEvoDebitDelay');
         $elements[] = $this->plugin->Form()->getElement('payDirektCardDelay');
         $elements[] = $this->plugin->Form()->getElement('payDirektShopApiKey');
+        $elements[] = $this->plugin->Form()->getElement('payDirektCaption');
 
         foreach ($elements as $element) {
             //$element = $em->find('Shopware\Models\Config\Element', $elementId);
