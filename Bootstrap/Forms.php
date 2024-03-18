@@ -78,7 +78,7 @@ class Forms extends Bootstrap
 
         $this->createLastschriftConfigForm(CTPaymentConfigForms::formLastschriftSelectElements, CTPaymentConfigForms::formLastschriftNumberElements);
 
-        $this->createPayDirektConfigForm(CTPaymentConfigForms::formPayDirektTextElements, CTPaymentConfigForms::formPayDirektSelectElements, CTPaymentConfigForms::formPayDirektNumberElements);
+        // $this->createPayDirektConfigForm(CTPaymentConfigForms::formPayDirektTextElements, CTPaymentConfigForms::formPayDirektSelectElements, CTPaymentConfigForms::formPayDirektNumberElements);
 
         // paypal
         $this->createFormSelectElements(CTPaymentConfigForms::formPayPalSelectElements);
@@ -109,11 +109,12 @@ class Forms extends Bootstrap
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function removeFormElements() {
+    public function removeFormElements()
+    {
         $elements = [];
         $em = Shopware()->Models();
 
-        if(!$this->plugin) {
+        if (!$this->plugin) {
             return;
         }
 
@@ -121,11 +122,13 @@ class Forms extends Bootstrap
         $elements[] = $this->plugin->Form()->getElement('lastschriftDelay');
         $elements[] = $this->plugin->Form()->getElement('lastschriftEvoDebitDelay');
         $elements[] = $this->plugin->Form()->getElement('payDirektCardDelay');
+        $elements[] = $this->plugin->Form()->getElement('payDirektShopApiKey');
+        $elements[] = $this->plugin->Form()->getElement('payDirektCaption');
 
         foreach ($elements as $element) {
             //$element = $em->find('Shopware\Models\Config\Element', $elementId);
 
-            if($element) {
+            if ($element) {
                 $em->remove($element);
             }
         }
@@ -137,9 +140,9 @@ class Forms extends Bootstrap
      * used for updating config element values
      *
      */
-    public function updateFormElements() {
-
-        if(!$this->plugin) {
+    public function updateFormElements()
+    {
+        if (!$this->plugin) {
             return;
         }
 
@@ -152,7 +155,7 @@ class Forms extends Bootstrap
         );
         $value = $result->fetch();
         $unserialized = unserialize($value['value']);
-        if ($unserialized !== false && ($unserialized === '' || $unserialized === 'ct_responsive_ch' )) {
+        if ($unserialized !== false && ($unserialized === '' || $unserialized === 'ct_responsive_ch')) {
             $result = Shopware()->Db()->executeQuery(
                 "UPDATE s_core_config_values SET value = :value WHERE element_id = :element_id",
                 [
