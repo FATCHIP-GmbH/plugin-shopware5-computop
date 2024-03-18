@@ -62,12 +62,9 @@ class Payments extends Bootstrap
                 ) {
                     $this->updateAfterpay($paymentMethod);
                 }
-                if ($paymentMethod['name'] === 'fatchip_computop_paydirekt'
-                ) {
-                    $this->updatePaydirekt($paymentMethod);
-                }
                 continue;
             }
+            $this->updatePaydirekt();
 
             $payment = [
                 'name' => $paymentMethod['name'],
@@ -114,15 +111,14 @@ class Payments extends Bootstrap
      */
     protected function updatePaydirekt($paymentMethod)
     {
-        $payment = $this->plugin->Payments()->findOneBy(array('name' => $paymentMethod['name']));
+        $payment = $this->plugin->Payments()->findOneBy(array('name' => 'fatchip_computop_paydirekt'));
         // update payment template
-        if ($paymentMethod['name'] === 'fatchip_computop_paydirekt') {
+        if ($payment) {
             $payment->setName('fatchip_computop_giropay');
             $payment->setDescription('Computop Giropay');
-
+            Shopware()->Models()->persist($payment);
+            Shopware()->Models()->flush($payment);
         }
-        Shopware()->Models()->persist($payment);
-        Shopware()->Models()->flush($payment);
     }
 
     /**
