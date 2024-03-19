@@ -55,6 +55,8 @@ class Payments extends Bootstrap
         $service = new CTPaymentService(null);
         $paymentMethods = $service->getPaymentMethods();
 
+        $this->updatePaydirekt();
+
         foreach ($paymentMethods as $paymentMethod) {
             if ($this->plugin->Payments()->findOneBy(array('name' => $paymentMethod['name']))) {
                 if ($paymentMethod['name'] === 'fatchip_computop_afterpay_invoice' ||
@@ -80,7 +82,6 @@ class Payments extends Bootstrap
                 $this->restrictPaymentShippingCountries($paymentObject, $paymentMethod['countries']);
             }
         }
-        $this->updatePaydirekt();
     }
 
     /** make sure afterpay template names are set correctly
