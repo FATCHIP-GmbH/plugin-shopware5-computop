@@ -109,7 +109,7 @@ class Payments extends Bootstrap
      * @return void
      * @throws ORMException
      */
-    protected function updatePaydirekt($paymentMethod)
+    protected function updatePaydirekt()
     {
         $payment = $this->plugin->Payments()->findOneBy(array('name' => 'fatchip_computop_paydirekt'));
         // update payment template
