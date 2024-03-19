@@ -64,7 +64,6 @@ class Payments extends Bootstrap
                 }
                 continue;
             }
-            $this->updatePaydirekt();
 
             $payment = [
                 'name' => $paymentMethod['name'],
@@ -81,6 +80,7 @@ class Payments extends Bootstrap
                 $this->restrictPaymentShippingCountries($paymentObject, $paymentMethod['countries']);
             }
         }
+        $this->updatePaydirekt();
     }
 
     /** make sure afterpay template names are set correctly
