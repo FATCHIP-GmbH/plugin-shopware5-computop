@@ -209,6 +209,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $paymentName = $this->paymentClass === 'Paydirekt' ? 'Giropay' : $this->paymentClass;
             $this->utils->log('FailureAction: ' , ['payment' => $paymentName, 'UserID' => $customerId, 'basket' => $basket, 'SessionID' => $sessionID, 'request' => $requestParams, 'response' => $response ]);
         }
+        $paymentName = $this->paymentClass === 'Paydirekt' ? 'Giropay' : $this->paymentClass;
         $this->plugin->logRedirectParams($this->session->offsetGet('fatchipCTRedirectParams'), $paymentName, 'REDIRECT', $response);
 
         $ctError = [];
