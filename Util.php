@@ -836,7 +836,7 @@ class Util
 
         $ctOrder = new CTOrder();
 
-        if (!empty($userDataNew['additional']['charge_vat'])) {
+        if (!empty($userData['additional']['charge_vat'])) {
             $shippingCosts =  $this->calculateShippingCosts(false);
             $basketAmount = empty($basket[CartKey::AMOUNT_WITH_TAX_NUMERIC]) ? $basket[CartKey::AMOUNT_NUMERIC] : $basket[CartKey::AMOUNT_WITH_TAX_NUMERIC];
         } else {
@@ -844,7 +844,7 @@ class Util
             $basketAmount = $basket[CartKey::AMOUNT_NET_NUMERIC];
         }
 
-        $ctOrder->setAmount((int)($basketAmount + $shippingCosts) * 100);
+        $ctOrder->setAmount((int)(($basketAmount + $shippingCosts) * 100));
         $ctOrder->setCurrency(Shopware()->Container()->get('currency')->getShortName());
         // try catch in case Address Splitter return exceptions
         try {
