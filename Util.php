@@ -836,25 +836,15 @@ class Util
 
         $ctOrder = new CTOrder();
 
-        $taxAutoMode = Shopware()->Config()->get('sTAXAUTOMODE');
-
-        if (!empty($taxAutoMode)) {
-            $discount_tax = Shopware()->Modules()->Basket()->getMaxTax() / 100;
-        } else {
-            $discount_tax = Shopware()->Config()->get('sDISCOUNTTAX');
-            $discount_tax = empty($discount_tax) ? 0 : (float)str_replace(',', '.', $discount_tax) / 100;
-        }
-        $test = $userData['additional']['charge_vat'];
-        $test1 = !empty($test);
-        if (!empty($userData['additional']['charge_vat'])) {
+        if (!empty($userDataNew['additional']['charge_vat'])) {
+            $shippingCosts =  $this->calculateShippingCosts(false);
             $basketAmount = empty($basket[CartKey::AMOUNT_WITH_TAX_NUMERIC]) ? $basket[CartKey::AMOUNT_NUMERIC] : $basket[CartKey::AMOUNT_WITH_TAX_NUMERIC];
-            $shippingCosts = $userData['additional']['show_net'] === true ? $this->calculateShippingCosts(true) : $this->calculateShippingCosts(true) * (1 + $discount_tax);
         } else {
+            $shippingCosts =  $this->calculateShippingCosts(true);
             $basketAmount = $basket[CartKey::AMOUNT_NET_NUMERIC];
-            $shippingCosts = $this->calculateShippingCosts(true);
         }
 
-        $ctOrder->setAmount(($basketAmount + $shippingCosts) * 100);
+        $ctOrder->setAmount((int)($basketAmount + $shippingCosts) * 100);
         $ctOrder->setCurrency(Shopware()->Container()->get('currency')->getShortName());
         // try catch in case Address Splitter return exceptions
         try {
@@ -1069,6 +1059,7 @@ class Util
             return false;
         }
 
+        // new
         if (empty($userData['shippingaddress']['ustid'])
             && !empty($userData['billingaddress']['ustid'])
             && !empty($userData['additional']['country']['taxfree_ustid'])) {
