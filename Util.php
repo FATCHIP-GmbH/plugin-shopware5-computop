@@ -844,7 +844,9 @@ class Util
             $basketAmount = $basket[CartKey::AMOUNT_NET_NUMERIC];
         }
 
-        $ctOrder->setAmount((int)(($basketAmount + $shippingCosts) * 100));
+        $amount = ($basketAmount + $shippingCosts) * 100;
+        $amountInt = (int) round($amount,0);
+        $ctOrder->setAmount($amountInt);
         $ctOrder->setCurrency(Shopware()->Container()->get('currency')->getShortName());
         // try catch in case Address Splitter return exceptions
         try {
