@@ -1,8 +1,12 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.1.21
+2024-04-17
+* Fixed order lines with Klarna payments
+
 ## 1.1.20
 2024-03-19
-* Fixed issue with logging after introduing Giropay
+* Fixed issue with logging after introducing Giropay
 
 ## 1.1.19
 2024-03-18
