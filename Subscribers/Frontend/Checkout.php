@@ -128,7 +128,8 @@ class Checkout extends AbstractSubscriber
             $paymentData['phone'] = $this->utils->getUserPhone($userData);
             $paymentData['idealIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
             $paymentData['idealIssuer'] = $session->offsetGet('FatchipComputopIdealIssuer');
-
+            $config = $this->plugin->Config()->toArray();
+            $paymentData['isIdealPPRO'] = $config['idealDirektOderUeberSofort'] === 'PPRO' ? true : false;
             $paymentData['isCompany'] = !empty($userData['billingaddress']['company']);
             $paymentData['lastschriftbank'] = $this->utils->getUserLastschriftBank($userData);
             $paymentData['lastschriftiban'] = $this->utils->getUserLastschriftIban($userData);
