@@ -3,6 +3,7 @@
 ## 1.1.22
 2024-06-19
 * Removed Postfinance PPRO
+* Removed iDeal Issuerlist for iDeal via PPRO
 * Refactored RefNr and TransID for compatibility with iDeal 2.0
 
 ## 1.1.21
