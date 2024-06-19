@@ -123,6 +123,8 @@ class Forms extends Bootstrap
         $elements[] = $this->plugin->Form()->getElement('payDirektCardDelay');
         $elements[] = $this->plugin->Form()->getElement('payDirektShopApiKey');
         $elements[] = $this->plugin->Form()->getElement('payDirektCaption');
+        $elements[] = $this->plugin->Form()->getElement('prefixOrdernumber');
+        $elements[] = $this->plugin->Form()->getElement('suffixOrdernumber');
 
         foreach ($elements as $element) {
             //$element = $em->find('Shopware\Models\Config\Element', $elementId);

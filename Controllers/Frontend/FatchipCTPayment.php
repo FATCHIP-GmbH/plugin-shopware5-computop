@@ -338,7 +338,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             case CTEnumStatus::AUTHORIZE_REQUEST:
                 if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['transactionId' => $response->getTransID()])) {
 //                    $this->updateRefNrWithComputop($order, $this->paymentClass);
-                    $this->inquireAndupdatePaymentStatus($order, $paymentName, json_decode($response->getOrderVars(), true));
+                    $this->inquireAndupdatePaymentStatus($order, $this->paymentClass, json_decode($response->getOrderVars(), true));
                 }
 
                 // else do nothing notify got here before success
@@ -757,17 +757,13 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     protected function customizeOrdernumber($orderNumber)
     {
         if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number' => $orderNumber])) {
-            $payID = $order->getAttribute()->getfatchipctPayid();
-            $transID = $order->getAttribute()->getfatchipctTransid();
-            $xID = $order->getAttribute()->getfatchipctPayid();
-            $orderPrefix = $this->config['prefixOrdernumber'];
-            $orderSuffix = $this->config['suffixOrdernumber'];
-            $newOrdernumber = $orderPrefix.$orderNumber.$orderSuffix;
-
-            // replace placeholders
-            $newOrdernumber = str_replace('%transid%', $transID, $newOrdernumber);
-            $newOrdernumber = str_replace('%payid%', $payID, $newOrdernumber);
-            $newOrdernumber = str_replace('%xid%', $xID, $newOrdernumber);
+            // make sure only 4 chars are used for pre and suffix
+            // there is no easy way to validate the field in shopware 5
+            $orderPrefix = substr($this->config['prefixOrdernumber'], 0, 4);
+            $orderSuffix = substr($this->config['suffixOrdernumber'], 0, 4);
+            $orderNumberLength = 15 - (strlen($orderPrefix) + strlen($orderSuffix));
+            $orderNumberCut = substr($orderNumber, 0, $orderNumberLength);
+            $newOrdernumber = $orderPrefix.$orderNumberCut.$orderSuffix;
 
             $order->setNumber($newOrdernumber);
             Shopware()->Models()->flush($order);
