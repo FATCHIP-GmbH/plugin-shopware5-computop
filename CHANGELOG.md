@@ -1,5 +1,10 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.1.22
+2024-06-19
+* Removed Postfinance PPRO
+* Refactored RefNr and TransID for compatibility with iDeal 2.0
+
 ## 1.1.21
 2024-04-17
 * Fixed order lines with Klarna payments
