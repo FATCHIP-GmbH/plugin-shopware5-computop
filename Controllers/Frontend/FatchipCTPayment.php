@@ -757,10 +757,12 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
     protected function customizeOrdernumber($orderNumber)
     {
         if ($order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(['number' => $orderNumber])) {
+            $whitelist = '/[^a-zA-Z0-9/';
             // make sure only 4 chars are used for pre and suffix
             // there is no easy way to validate the field in shopware 5
-            $orderPrefix = substr($this->config['prefixOrdernumber'], 0, 4);
-            $orderSuffix = substr($this->config['suffixOrdernumber'], 0, 4);
+            $orderPrefix = preg_replace($whitelist, '', substr($this->config['prefixOrdernumber'], 0, 4));
+            $orderSuffix = preg_replace($whitelist, '', substr($this->config['suffixOrdernumber'], 0, 4));
+
             $orderNumberLength = 15 - (strlen($orderPrefix) + strlen($orderSuffix));
             $orderNumberCut = substr($orderNumber, 0, $orderNumberLength);
             $newOrdernumber = $orderPrefix.$orderNumberCut.$orderSuffix;
