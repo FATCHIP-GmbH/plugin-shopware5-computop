@@ -516,6 +516,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             'fatchip_computop_klarna_invoice',
             'fatchip_computop_afterpay_installment',
             'fatchip_computop_klarna_pay_now',
+            'fatchip_computop_klarna_pay_now',
+            'fatchip_computop_postfinance'
         ];
 
         foreach ($oldPayments as $payment) {
