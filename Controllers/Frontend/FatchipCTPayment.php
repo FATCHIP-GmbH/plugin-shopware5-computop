@@ -763,7 +763,7 @@ abstract class Shopware_Controllers_Frontend_FatchipCTPayment extends Shopware_C
             $orderPrefix = preg_replace($whitelist, '', substr($this->config['prefixOrdernumber'], 0, 4));
             $orderSuffix = preg_replace($whitelist, '', substr($this->config['suffixOrdernumber'], 0, 4));
 
-            $orderNumberLength = 15 - (strlen($orderPrefix) + strlen($orderSuffix));
+            $orderNumberLength = 11 - (strlen($orderPrefix) + strlen($orderSuffix));
             $orderNumberCut = substr($orderNumber, 0, $orderNumberLength);
             $newOrdernumber = $orderPrefix.$orderNumberCut.$orderSuffix;
 
