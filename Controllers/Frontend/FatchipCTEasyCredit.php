@@ -157,9 +157,9 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
                 // page 11
                 $decisionParams = $payment->getDecisionParams($response->getPayID(), $response->getTransID(), $amount * 100, $this->getCurrencyShortName());
                 $responseObject = $this->plugin->callComputopService($decisionParams, $payment, 'GET', $payment->getCTCreditCheckURL());
-                $decision = json_decode($responseObject->getDecision(), true);
+                $decision = json_decode($responseObject->getFinancing(), true);
 
-                if (!($decision['entscheidung']['entscheidungsergebnis'] === 'GRUEN')) {
+                if (!($decision['decision']['decisionOutcome'] === 'POSITIVE')) {
                     $this->forward('failure');
                 } else {
 
@@ -246,18 +246,17 @@ class Shopware_Controllers_Frontend_FatchipCTEasyCredit extends Shopware_Control
     private function getConfirmPageInformation($responseObject)
     {
         $easyCreditInformation = [];
-        $process = json_decode($responseObject->getProcess(), true);
         $financing = json_decode($responseObject->getFinancing(), true);
-        $easyCreditInformation['anzahlRaten'] = $financing['ratenplan']['zahlungsplan']['anzahlRaten'];
-        $easyCreditInformation['tilgungsplanText'] = $financing['tilgungsplanText'];
-        $easyCreditInformation['bestellwert'] = $financing['finanzierung']['bestellwert'];
-        $easyCreditInformation['anfallendeZinsen'] = $financing['ratenplan']['zinsen']['anfallendeZinsen'];
-        $easyCreditInformation['gesamtsumme'] = $financing['ratenplan']['gesamtsumme'];
-        $easyCreditInformation['effektivzins'] = $financing['ratenplan']['zinsen']['effektivzins'];
-        $easyCreditInformation['nominalzins'] = $financing['ratenplan']['zinsen']['nominalzins'];
-        $easyCreditInformation['betragRate'] = $financing['ratenplan']['zahlungsplan']['betragRate'];
-        $easyCreditInformation['betragLetzteRate'] = $financing['ratenplan']['zahlungsplan']['betragLetzteRate'];
-        $easyCreditInformation['urlVorvertraglicheInformationen'] = $process['allgemeineVorgangsdaten']['urlVorvertraglicheInformationen'];
+        $easyCreditInformation['anzahlRaten'] = $financing['decision']['numberOfInstallments'];
+        $easyCreditInformation['tilgungsplanText'] = $financing['decision']['amortizationPlanText'];
+        $easyCreditInformation['bestellwert'] = $financing['decision']['orderValue'];
+        $easyCreditInformation['anfallendeZinsen'] = $financing['decision']['interest'];
+        $easyCreditInformation['gesamtsumme'] = $financing['decision']['totalValue'];
+        $easyCreditInformation['effektivzins'] = $financing['decision']['effectiveInterest'];
+        $easyCreditInformation['nominalzins'] = $financing['decision']['nominalInterest'];
+        $easyCreditInformation['betragRate'] = $financing['decision']['installment'];
+        $easyCreditInformation['betragLetzteRate'] = $financing['decision']['lastInstallment'];
+        $easyCreditInformation['urlVorvertraglicheInformationen'] = $financing['decision']['urlPreContractualInformation'];
         return $easyCreditInformation;
     }
 }
