@@ -1,10 +1,11 @@
 # Changelog - Shopware Computop Payment Connector
 
 ## 1.1.22
-2024-06-19
+2024-06-25
 * Removed Postfinance PPRO
 * Removed iDeal Issuerlist for iDeal via PPRO
 * Refactored RefNr and TransID for compatibility with iDeal 2.0
+* Fixed easycredit
 
 ## 1.1.21
 2024-04-17
