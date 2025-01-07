@@ -56,18 +56,6 @@ class Models extends Bootstrap
         try {
             $schemaTool->createSchema(
                 [
-                    $em->getClassMetadata('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers'),
-                ]
-            );
-        } catch (Exception $e) {
-            $logger->logError('Unable to create FatchipCTIdealIssuers', [
-                'error' => $e->getMessage()
-            ]);
-        }
-
-        try {
-            $schemaTool->createSchema(
-                [
                     $em->getClassMetadata('Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog'),
                 ]
             );
