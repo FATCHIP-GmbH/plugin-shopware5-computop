@@ -116,8 +116,6 @@ class Forms extends Bootstrap
         $elements[] = $this->plugin->Form()->getElement('payDirektCardDelay');
         $elements[] = $this->plugin->Form()->getElement('payDirektShopApiKey');
         $elements[] = $this->plugin->Form()->getElement('payDirektCaption');
-        $elements[] = $this->plugin->Form()->getElement('prefixOrdernumber');
-        $elements[] = $this->plugin->Form()->getElement('suffixOrdernumber');
         $elements[] = $this->plugin->Form()->getElement('fatchip_computop_ideal_button');
 
         foreach ($elements as $element) {
