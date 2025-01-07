@@ -67,13 +67,6 @@ class Forms extends Bootstrap
 
         $this->createFormSelectElements(CTPaymentConfigForms::formIdealSelectElements);
 
-        // ideal and sofort
-        $this->plugin->Form()->setElement('button', 'fatchip_computop_ideal_button', [
-            'label' => '<strong>iDeal Banken aktualisieren <strong>',
-            'handler' => "function(btn) {" . file_get_contents(__DIR__ . '/../Views/common/backend/ideal/ideal_button_handler.js') . "}"
-        ]);
-
-
         $this->createKlarnaConfigForm(CTPaymentConfigForms::formKlarnaTextElements);
 
         $this->createLastschriftConfigForm(CTPaymentConfigForms::formLastschriftSelectElements, CTPaymentConfigForms::formLastschriftNumberElements);
@@ -125,6 +118,7 @@ class Forms extends Bootstrap
         $elements[] = $this->plugin->Form()->getElement('payDirektCaption');
         $elements[] = $this->plugin->Form()->getElement('prefixOrdernumber');
         $elements[] = $this->plugin->Form()->getElement('suffixOrdernumber');
+        $elements[] = $this->plugin->Form()->getElement('fatchip_computop_ideal_button');
 
         foreach ($elements as $element) {
             //$element = $em->find('Shopware\Models\Config\Element', $elementId);
