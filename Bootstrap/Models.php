@@ -83,18 +83,6 @@ class Models extends Bootstrap
         try {
             $schemaTool->dropSchema(
                 [
-                    $em->getClassMetadata('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers'),
-                ]
-            );
-        } catch (Exception $e) {
-            $logger->logError('Unable to remove FatchipCTIdealIssuers', [
-                'error' => $e->getMessage()
-            ]);
-        }
-
-        try {
-            $schemaTool->dropSchema(
-                [
                     $em->getClassMetadata('Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog'),
                 ]
             );
