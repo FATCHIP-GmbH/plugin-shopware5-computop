@@ -136,7 +136,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $menu->createMenu();
         $riskRules->createRiskRules();
         $models->createModels();
-        $models->removeModels();
         $this->removeIdealIssuerTable();
 
         $this->registerJavascript();
