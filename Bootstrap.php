@@ -136,6 +136,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $menu->createMenu();
         $riskRules->createRiskRules();
         $models->createModels();
+        $this->removeIdealIssuerTable();
 
         $this->registerJavascript();
 
@@ -403,7 +404,9 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $forms = new Forms();
         $attributes = new Attributes();
         $payments = new Payments();
+        $models = new Models();
 
+        $models->removeModels();
         $forms->createForm();
         $this->addFormTranslations(\Fatchip\CTPayment\CTPaymentConfigForms::formTranslations);
         $attributes->createAttributes();
@@ -413,6 +416,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
             $this->createCronJob(self::cronjobName, 'cleanupCTPaymentLogs', 86400, true);
             $this->subscribeEvent('Shopware_CronJob_CleanupCTPaymentLogs', 'cleanupCTPaymentLogs');
         }
+        $this->removeIdealIssuerTable();
         try {
             $this->checkOpenSSLSupport();
         } catch (Exception $e) {
@@ -523,6 +527,12 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         foreach ($oldPayments as $payment) {
             $this->removePayment($payment);
         }
+    }
+
+    public function removeIdealIssuerTable()
+    {
+        $sql = 'DROP TABLE IF EXISTS `s_plugin_fatchip_computop_ideal_issuers`;';
+        Shopware()->Db()->query($sql);
     }
 
     /**

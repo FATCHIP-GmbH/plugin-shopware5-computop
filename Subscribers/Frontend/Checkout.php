@@ -86,7 +86,6 @@ class Checkout extends AbstractSubscriber
             $this->updateUserLastschriftKontoinhaber($paymentName, $session->get('sUserId'), $params);
             $this->updateUserAfterpayInstallmentIban($paymentName, $session->get('sUserId'), $params);
             $this->setAfterpayProductNrInSession($params);
-            $this->setIssuerInSession($paymentName, $params);
             // $this->setCardholderInSession($params);
         }
     }
@@ -126,8 +125,6 @@ class Checkout extends AbstractSubscriber
             $paymentData['birthmonth'] = $birthday[1];
             $paymentData['birthyear'] = $birthday[0];
             $paymentData['phone'] = $this->utils->getUserPhone($userData);
-            $paymentData['idealIssuerList'] = Shopware()->Models()->getRepository('Shopware\CustomModels\FatchipCTIdeal\FatchipCTIdealIssuers')->findAll();
-            $paymentData['idealIssuer'] = $session->offsetGet('FatchipComputopIdealIssuer');
             $config = $this->plugin->Config()->toArray();
             $paymentData['isIdealPPRO'] = $config['idealDirektOderUeberSofort'] === 'PPRO' ? true : false;
             $paymentData['isCompany'] = !empty($userData['billingaddress']['company']);
@@ -337,22 +334,6 @@ class Checkout extends AbstractSubscriber
         if (!empty($params['FatchipComputopPaymentData'][$paymentName . '_kontoinhaber'])) {
             $this->utils->updateUserLastschriftKontoinhaber($userId,
                 $params['FatchipComputopPaymentData'][$paymentName . '_kontoinhaber']
-            );
-        }
-    }
-
-    /**
-     * Saves issuer info in session
-     *
-     * @param $paymentName
-     * @param $params
-     */
-    private function setIssuerInSession($paymentName, $params)
-    {
-        $session = Shopware()->Session();
-        if (!empty($params['FatchipComputopPaymentData']['fatchip_computop_ideal_issuer']) && $paymentName === 'fatchip_computop_ideal') {
-            $session->offsetSet('FatchipComputopIdealIssuer',
-                $params['FatchipComputopPaymentData']['fatchip_computop_ideal_issuer']
             );
         }
     }

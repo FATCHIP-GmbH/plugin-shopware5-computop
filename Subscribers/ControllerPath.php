@@ -99,8 +99,6 @@ class ControllerPath extends AbstractSubscriber
             'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipCTAfterpay'
             => 'onGetFrontendControllerPath',
             // Backend
-            'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipCTIdeal'
-            => 'onGetBackendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipCTOrder'
             => 'onGetBackendControllerPath',
             'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipCTApilog'
