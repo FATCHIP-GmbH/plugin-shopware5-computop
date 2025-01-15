@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.1.23
+2025-01-15
+* Removed iDeal Issuerlist for iDeal via direct
+
 ## 1.1.22
 2024-06-25
 * Removed Postfinance PPRO
