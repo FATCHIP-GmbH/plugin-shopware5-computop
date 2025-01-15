@@ -404,9 +404,7 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $forms = new Forms();
         $attributes = new Attributes();
         $payments = new Payments();
-        $models = new Models();
 
-        $models->removeModels();
         $forms->createForm();
         $this->addFormTranslations(\Fatchip\CTPayment\CTPaymentConfigForms::formTranslations);
         $attributes->createAttributes();
