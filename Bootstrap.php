@@ -79,7 +79,6 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         'FatchipCTIdeal',
         'FatchipCTKlarnaPayments',
         'FatchipCTLastschrift',
-        'FatchipCTPaydirekt',
         'FatchipCTPayment',
         'FatchipCTPaypalExpress',
         'FatchipCTPaypalExpressCheckout',
