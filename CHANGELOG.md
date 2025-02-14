@@ -1,5 +1,9 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.1.24
+2025-02-14
+* Remove Giropay
+
 ## 1.1.23
 2025-01-15
 * Removed iDeal Issuerlist for iDeal via direct
