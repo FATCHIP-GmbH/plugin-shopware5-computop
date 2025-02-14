@@ -55,8 +55,6 @@ class Payments extends Bootstrap
         $service = new CTPaymentService(null);
         $paymentMethods = $service->getPaymentMethods();
 
-        $this->updatePaydirekt();
-
         foreach ($paymentMethods as $paymentMethod) {
             if ($this->plugin->Payments()->findOneBy(array('name' => $paymentMethod['name']))) {
                 if ($paymentMethod['name'] === 'fatchip_computop_afterpay_invoice' ||
@@ -122,24 +120,6 @@ class Payments extends Bootstrap
         }
         Shopware()->Models()->persist($payment);
         Shopware()->Models()->flush($payment);
-    }
-
-    /** make sure afterpay template names are set correctly
-     * needed for upgrading form 1.0.12 / 1.0.13 to 1.0.14
-     * @param $paymentMethod
-     * @return void
-     * @throws ORMException
-     */
-    protected function updatePaydirekt()
-    {
-        $payment = $this->plugin->Payments()->findOneBy(array('name' => 'fatchip_computop_paydirekt'));
-        // update payment template
-        if ($payment) {
-            $payment->setName('fatchip_computop_giropay');
-            $payment->setDescription('Computop Giropay');
-            Shopware()->Models()->persist($payment);
-            Shopware()->Models()->flush($payment);
-        }
     }
 
     /**
