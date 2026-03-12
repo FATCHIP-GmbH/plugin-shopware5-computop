@@ -610,7 +610,8 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
         $builder = Shopware()->Models()->createQueryBuilder();
         $builder->delete()
             ->from('Shopware\CustomModels\FatchipCTApilog\FatchipCTApilog', 'log')
-            ->where($builder->expr()->lte('log.creationDate', "'" . $twoYearsAgo . "'"));
+            ->where($builder->expr()->lte('log.creationDate', ':cutoff'))
+            ->setParameter('cutoff', $twoYearsAgo);
         return $builder;
     }
 
@@ -688,8 +689,10 @@ class Shopware_Plugins_Frontend_FatchipCTPayment_Bootstrap extends Shopware_Comp
      */
     private function cronjobExists()
     {
-        $query = "SELECT * from s_crontab where name ='" . self::cronjobName . "'";
-        $result = Shopware()->Db()->executeQuery($query);
+        $result = Shopware()->Db()->executeQuery(
+            'SELECT 1 FROM s_crontab WHERE name = :name',
+            [':name' => self::cronjobName]
+        );
 
         if ($result->rowCount() === 0) {
             return false;

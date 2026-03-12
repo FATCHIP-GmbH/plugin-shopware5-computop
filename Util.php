@@ -765,11 +765,24 @@ class Util
     public function afterpayProductExistsforBasketValue($merchantId, $userData, $fallback = true)
     {
         $countryCode = strtolower($userData['additional']['country']['countryiso']);
+        if (!preg_match('/^[a-z]{2,3}$/', $countryCode)) {
+            if (!$fallback) {
+                return false;
+            }
+        }
         $afterpayMerchantId = 'CP_'.$merchantId;
         $basket = Shopware()->Modules()->Basket()->sGetBasket();
 
-        $handle = curl_init('https://cdn.myafterpay.com/config/'.$countryCode.'/'.$afterpayMerchantId.'json');
-        curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+        $handle = curl_init('https://cdn.myafterpay.com/config/'.$countryCode.'/'.$afterpayMerchantId.'.json');
+        curl_setopt_array($handle, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT => 10,
+            CURLOPT_FOLLOWLOCATION => false,
+        ]);
 
         /* Get the HTML or whatever is linked in $url. */
         $response = curl_exec($handle);
@@ -782,7 +795,15 @@ class Util
                 return false;
             } else {
                 $handle = curl_init('https://cdn.myafterpay.com/config/de/4564.json');
-                curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+                curl_setopt_array($handle, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,
+                    CURLOPT_SSL_VERIFYPEER => true,
+                    CURLOPT_SSL_VERIFYHOST => 2,
+                    CURLOPT_CONNECTTIMEOUT => 5,
+                    CURLOPT_TIMEOUT => 10,
+                    CURLOPT_FOLLOWLOCATION => false,
+                ]);
                 /* Get the HTML or whatever is linked in $url. */
                 $response = curl_exec($handle);
                 curl_close($handle);
