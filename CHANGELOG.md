@@ -1,5 +1,10 @@
 # Changelog - Shopware Computop Payment Connector
 
+## 1.1.25
+2026-03-16
+* Security Hardening
+* Rebranding iDEAL / Wero
+
 ## 1.1.24
 2025-02-14
 * Remove Giropay
